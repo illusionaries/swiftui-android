@@ -1504,13 +1504,13 @@ void ab_draw_shadow_round_rect(ABCanvas *c, float l, float t, float r, float b, 
         return;
     }
 
-    const int layers = 6;
+    const int layers = 8;
     uint32_t rgb = argb & 0x00FFFFFFu;
     for (int i = 0; i < layers; i++) {
         float f = (float)i / (float)(layers - 1); /* 0 = outermost */
         float spread = spread_max * (1.0f - f);
         float weight = 1.0f - f;
-        int a = (int)(255.0f * alpha * weight / (float)layers * 2.4f);
+        int a = (int)(255.0f * alpha * weight / (float)layers * 1.1f);
         if (a <= 0) {
             a = 1;
         }

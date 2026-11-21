@@ -269,9 +269,12 @@ public final class LayoutNode {
             default: result = true
             }
         case let .frame(spec):
+            // Only an *explicit* infinity makes a frame flexible along an axis. A `nil` maximum
+            // means "no constraint" (natural size) — treating it as flexible made
+            // `.frame(maxWidth: .infinity)` cards collapse to zero height inside a VStack.
             switch axis {
-            case .horizontal: result = spec.maxWidth == nil || spec.maxWidth == .infinity
-            case .vertical: result = spec.maxHeight == nil || spec.maxHeight == .infinity
+            case .horizontal: result = spec.maxWidth == .infinity
+            case .vertical: result = spec.maxHeight == .infinity
             }
         case .padding:
             result = children.first?.isFlexible(along: axis) ?? false
