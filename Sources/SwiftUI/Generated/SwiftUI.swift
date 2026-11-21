@@ -28022,7 +28022,10 @@ extension SwiftUI.View {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 nonisolated public struct Button<Label> : SwiftUI.View, ~Swift.Sendable where Label : SwiftUI.View {
-  @preconcurrency nonisolated public init(action: @escaping @_Concurrency.MainActor () -> Swift.Void, @SwiftUI.ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUI.Button.init(action:label:)") }
+  internal var _portAction: (@MainActor () -> Void)?
+  internal var _portLabel: Label?
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.Button.body") }
   }
@@ -28040,12 +28043,12 @@ nonisolated public struct Button<Label> : SwiftUI.View where Label : SwiftUI.Vie
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.Button where Label == SwiftUI.Text {
-  @preconcurrency nonisolated public init(_ titleKey: SwiftUI.LocalizedStringKey, action: @escaping @_Concurrency.MainActor () -> Swift.Void) { _suiUnimplemented("SwiftUI.Button.init(_:action:)") }
-  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  @preconcurrency @_disfavoredOverload @export(implementation) nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, action: @escaping @_Concurrency.MainActor () -> Swift.Void) {
-        self.init(action: action) { Text(titleResource) }
-    }
-  @preconcurrency @_disfavoredOverload nonisolated public init<S>(_ title: S, action: @escaping @_Concurrency.MainActor () -> Swift.Void) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.Button.init(_:action:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.Button where Label == SwiftUI.Label<SwiftUI.Text, SwiftUI.Image> {

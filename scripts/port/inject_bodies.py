@@ -181,6 +181,7 @@ import glob
 import json
 import os
 import re
+import re
 import sys
 import time
 from bisect import bisect_right
@@ -3342,16 +3343,97 @@ def load_body_overrides() -> dict[str, str]:
 
 
 def apply_body_overrides(sources: dict[str, str], overrides: dict[str, str]) -> int:
+    """Replaces stub bodies in place.
+
+    Overloads share one symbol string (`appendInterpolation(_:)` exists for String, Text, …), so a
+    key may carry an occurrence selector: `Symbol#2` rewrites only the second occurrence.
+    """
     if not overrides:
         return 0
     applied = 0
     for file_stem, source in sources.items():
-        for symbol, body in overrides.items():
+        for key, body in overrides.items():
+            symbol, _, selector = key.partition("#")
             needle = f'{{ _suiUnimplemented("{symbol}") }}'
-            if needle in source:
-                source = source.replace(needle, f"{{ {body} }}")
+            replacement = f"{{ {body} }}"
+            if not selector:
+                if needle in source:
+                    source = source.replace(needle, replacement)
+                    applied += 1
+                continue
+            occurrence = int(selector) if selector.isdigit() else 0
+            if occurrence < 1:
+                continue
+            cursor = 0
+            for _ in range(occurrence):
+                found = source.find(needle, cursor)
+                if found < 0:
+                    break
+                cursor = found + len(needle)
+            else:
+                source = source[: found] + replacement + source[found + len(needle):]
                 applied += 1
         sources[file_stem] = source
+    return applied
+
+
+# MARK: - Supplementary storage
+#
+# Apple's interfaces hide the stored properties of a few control types (`Button` recompiles to an
+# empty struct), yet the port *is* the implementation module and needs somewhere to keep state.
+# `port-impl/storage.txt` maps a type to the properties to inject.
+STORAGE_PATH = os.path.join(ROOT, "port-impl", "storage.txt")
+
+
+def load_storage_injections() -> dict[str, str]:
+    entries: dict[str, str] = {}
+    if not os.path.exists(STORAGE_PATH):
+        return entries
+    with open(STORAGE_PATH, encoding="utf-8") as handle:
+        for raw in handle:
+            line = raw.rstrip("\n")
+            if not line.strip() or line.lstrip().startswith("#"):
+                continue
+            anchor, _, declarations = line.partition("=>")
+            entries[anchor.strip()] = declarations.strip()
+    return entries
+
+
+def apply_storage_injections(sources: dict[str, str], entries: dict[str, str]) -> int:
+    """Inserts declarations right after a type's opening brace.
+
+    Matches by name *and* generic clause, so `Button<Label>` does not hit the nested
+    `Alert.Button`, which merely shares the name.
+    """
+    if not entries:
+        return 0
+    declaration = re.compile(
+        r"^(?:\s*(?:@\w+(?:\([^)]*\))?|public|internal|package|fileprivate|private|final|nonisolated|"
+        r"frozen|indirect|@_Concurrency::MainActor|@preconcurrency|@usableFromInline))*\s*"
+        r"(?:struct|class|actor|enum)\s+(?P<name>[A-Za-z_][A-Za-z0-9_]*)(?P<generics><[^{]*?>)?\s*(?::|where|\{)"
+    )
+    applied = 0
+    for file_stem, source in sources.items():
+        lines = source.splitlines(keepends=True)
+        for anchor, declarations in entries.items():
+            name = anchor.split("<")[0].split(".")[-1]
+            generics = anchor[anchor.find("<"):] if "<" in anchor else ""
+            target = None
+            for index, line in enumerate(lines):
+                match = declaration.match(line)
+                if not match or match.group("name") != name:
+                    continue
+                if (match.group("generics") or "").replace(" ", "") != generics.replace(" ", ""):
+                    continue
+                if not line.rstrip().endswith("{"):
+                    continue
+                target = index
+                break
+            if target is None:
+                continue
+            lines[target + 1:target + 1] = [f"  {decl}\n" for decl in declarations.split("; ")]
+            applied += 1
+        sources[file_stem] = "".join(lines)
     return applied
 
 
@@ -3410,6 +3492,11 @@ def main(argv: list[str]) -> int:
         missing = sorted(set(overrides) - set())
         if not arguments.quiet:
             print(f"  body overrides: {replaced} applied from port-impl/bodies.txt")
+    storage = load_storage_injections()
+    if storage:
+        injected = apply_storage_injections(sources, storage)
+        if not arguments.quiet:
+            print(f"  storage injections: {injected} applied from port-impl/storage.txt")
     manifest = build_manifest(generators, shared)
 
     if arguments.check:

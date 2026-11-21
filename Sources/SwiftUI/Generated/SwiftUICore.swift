@@ -6558,7 +6558,8 @@ public static var back: SwiftUI::DepthAlignment { get { _suiUnimplemented("Swift
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::Text {
-  @_semantics("swiftui.init_with_localization") public init(_ key: SwiftUI::LocalizedStringKey, tableName: Swift::String? = nil, bundle: Foundation::Bundle? = nil, comment: Swift::StaticString? = nil) { _suiUnimplemented("SwiftUICore.Text.init(_:tableName:bundle:comment:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6570,9 +6571,9 @@ extension SwiftUI::Text {
   internal var key: Swift::String
   internal var hasFormatting: Swift::Bool = false
   private var arguments: [SwiftUI::LocalizedStringKey.FormatArgument]
-  public init(_ value: Swift::String) { _suiUnimplemented("SwiftUICore.LocalizedStringKey.init(_:)") }
-  @_semantics("swiftui.localized_string_key.init_literal") public init(stringLiteral value: Swift::String) { _suiUnimplemented("SwiftUICore.LocalizedStringKey.init(stringLiteral:)") }
-  @_semantics("swiftui.localized_string_key.init_interpolation") public init(stringInterpolation: SwiftUI::LocalizedStringKey.StringInterpolation) { _suiUnimplemented("SwiftUICore.LocalizedStringKey.init(stringInterpolation:)") }
+  public init(_ value: Swift::String) { self.key = value; self.hasFormatting = false; self.arguments = [] }
+  @_semantics("swiftui.localized_string_key.init_literal") public init(stringLiteral value: Swift::String) { self.key = value; self.hasFormatting = false; self.arguments = [] }
+  @_semantics("swiftui.localized_string_key.init_interpolation") public init(stringInterpolation: SwiftUI::LocalizedStringKey.StringInterpolation) { self.key = stringInterpolation._portText; self.hasFormatting = false; self.arguments = [] }
   @usableFromInline
   internal struct FormatArgument : Swift::Equatable, ~Swift::Sendable {
     @usableFromInline
@@ -6581,9 +6582,10 @@ extension SwiftUI::Text {
     public init() { _suiUnimplemented("SwiftUICore.LocalizedStringKey.FormatArgument.init()") }
 }
   public struct StringInterpolation : Swift::StringInterpolationProtocol, ~Swift::Sendable {
-    @_semantics("swiftui.localized.interpolation_init") public init(literalCapacity: Swift::Int, interpolationCount: Swift::Int) { _suiUnimplemented("SwiftUICore.LocalizedStringKey.StringInterpolation.init(literalCapacity:interpolationCount:)") }
-    @_semantics("swiftui.localized.appendLiteral") public mutating func appendLiteral(_ literal: Swift::String) { _suiUnimplemented("SwiftUICore.LocalizedStringKey.StringInterpolation.appendLiteral(_:)") }
-    @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(_ string: Swift::String) { _suiUnimplemented("SwiftUICore.LocalizedStringKey.StringInterpolation.appendInterpolation(_:)") }
+  internal var _portText: String = ""
+    @_semantics("swiftui.localized.interpolation_init") public init(literalCapacity: Swift::Int, interpolationCount: Swift::Int) { self._portText = "" }
+    @_semantics("swiftui.localized.appendLiteral") public mutating func appendLiteral(_ literal: Swift::String) { self._portText += literal }
+    @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(_ string: Swift::String) { self._portText += string }
     @export(implementation) @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(_ substring: Swift::Substring) {
             appendInterpolation(String(substring))
         }
@@ -6596,7 +6598,7 @@ extension SwiftUI::Text {
     @_transparent public mutating func appendInterpolation<T>(_ value: T) where T : SwiftUI::_FormatSpecifiable {
             appendInterpolation(value, specifier: formatSpecifier(T.self))
         }
-    @_semantics("swiftui.localized.appendInterpolation_param_specifier") public mutating func appendInterpolation<T>(_ value: T, specifier: Swift::String) where T : SwiftUI::_FormatSpecifiable { _suiUnimplemented("SwiftUICore.LocalizedStringKey.StringInterpolation.appendInterpolation(_:specifier:)") }
+    @_semantics("swiftui.localized.appendInterpolation_param_specifier") public mutating func appendInterpolation<T>(_ value: T, specifier: Swift::String) where T : SwiftUI::_FormatSpecifiable { self._portText += String(describing: value) }
     @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
     @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(_ text: SwiftUI::Text) { _suiUnimplemented("SwiftUICore.LocalizedStringKey.StringInterpolation.appendInterpolation(_:)") }
     @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)

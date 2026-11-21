@@ -1,0 +1,12 @@
+# Stored properties Apple's interfaces hide but the port needs.
+#
+# Apple's .swiftinterface omits the storage of a few control types (`Button` recompiles to an
+# empty struct). The port is the implementation module, so it supplies them; the declarations
+# themselves (signatures, conformances) stay Apple's.
+#
+# format: <Type<Generics>> => var a: T; var b: U
+
+SwiftUI.Button<Label> => internal var _portAction: (@MainActor () -> Void)?; internal var _portLabel: Label?
+
+# String interpolation for LocalizedStringKey: the interface hides the accumulating storage.
+SwiftUI.LocalizedStringKey.StringInterpolation => internal var _portText: String = ""

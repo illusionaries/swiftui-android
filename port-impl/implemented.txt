@@ -131,3 +131,8 @@ SwiftUICore.Text.bold()
 SwiftUICore.Text.italic()
 SwiftUICore.Text.kerning(_:)
 SwiftUICore.Text.tracking(_:)
+
+# Buttons: storage is injected (port-impl/storage.txt); the adapters supply the behaviour.
+SwiftUI.Button.init(action:label:)
+SwiftUI.Button.init(_:action:)
+SwiftUICore.Text.init(_:tableName:bundle:comment:)

@@ -5,9 +5,8 @@
 // Generated/, and this file supplies only the behaviour Apple's binary would have provided.
 #if canImport(CoreGraphics)
 import CoreGraphics
-#else
-import Foundation
 #endif
+import Foundation
 import FoundationShims
 
 // MARK: - Text
@@ -49,6 +48,13 @@ extension Text {
     /// Generated `@inlinable` bodies call this overload, so the port supplies the body.
     public init(_ resource: FoundationShims.LocalizedStringResource) {
         self.init(verbatim: resource.key)
+    }
+
+    /// The localised-key overload (`Text("Hello")` funnels through it). Android has no resource
+    /// bundles yet, so the key itself is shown — the same text Apple displays for a literal.
+    public init(_ key: LocalizedStringKey, tableName: String? = nil, bundle: Bundle? = nil,
+                comment: StaticString? = nil) {
+        self.init(verbatim: key.key)
     }
 }
 

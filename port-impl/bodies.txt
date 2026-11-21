@@ -22,3 +22,16 @@ SwiftUICore._FrameLayout.animatableData => fatalError("animatableData is not use
 SwiftUICore._FlexFrameLayout.init(minWidth:idealWidth:maxWidth:minHeight:idealHeight:maxHeight:alignment:) => self.minWidth = minWidth; self.idealWidth = idealWidth; self.maxWidth = maxWidth; self.minHeight = minHeight; self.idealHeight = idealHeight; self.maxHeight = maxHeight; self.alignment = alignment
 SwiftUICore._FlexFrameLayout.animatableData => fatalError("animatableData is not used by the port")
 SwiftUICore._PaddingLayout.animatableData => fatalError("animatableData is not used by the port")
+
+# LocalizedStringKey keeps its text in real storage; `arguments` is private, so the assignments
+# must live in the generated file itself (this override is applied there).
+SwiftUICore.LocalizedStringKey.init(_:) => self.key = value; self.hasFormatting = false; self.arguments = []
+SwiftUICore.LocalizedStringKey.init(stringLiteral:) => self.key = value; self.hasFormatting = false; self.arguments = []
+
+# LocalizedStringKey interpolation accumulates plain text (Android has no resource bundles yet).
+# The occurrence selectors target overloads that share one symbol string.
+SwiftUICore.LocalizedStringKey.StringInterpolation.init(literalCapacity:interpolationCount:) => self._portText = ""
+SwiftUICore.LocalizedStringKey.StringInterpolation.appendLiteral(_:) => self._portText += literal
+SwiftUICore.LocalizedStringKey.StringInterpolation.appendInterpolation(_:)#1 => self._portText += string
+SwiftUICore.LocalizedStringKey.StringInterpolation.appendInterpolation(_:specifier:) => self._portText += String(describing: value)
+SwiftUICore.LocalizedStringKey.init(stringInterpolation:) => self.key = stringInterpolation._portText; self.hasFormatting = false; self.arguments = []

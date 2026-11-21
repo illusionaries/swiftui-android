@@ -34,6 +34,20 @@ struct PortDemoView: View {
                 stat(value: "128", label: "screens", tint: .green)
                 stat(value: "4.9", label: "rating", tint: .orange)
             }
+
+            VStack(spacing: 12) {
+                Text("Taps: \(PortDemoCounter.count)")
+                    .font(.headline)
+                HStack(spacing: 12) {
+                    Button("Tap me") { PortDemoCounter.count += 1 }
+                    Button("Reset") { PortDemoCounter.count = 0 }
+                }
+            }
+            .padding(16)
+            .background(
+                RoundedRectangle(cornerSize: CGSize(width: 16, height: 16))
+                    .fill(Color.blue.opacity(0.12))
+            )
         }
         .padding(20)
     }
@@ -73,6 +87,12 @@ struct PortDemoView: View {
     }
 }
 
+/// Stand-in for `@State` while dynamic properties are still stubbed: the host rebuilds the view
+/// tree on every frame, so a plain global reads back the value the buttons changed.
+enum PortDemoCounter {
+    nonisolated(unsafe) static var count = 0
+}
+
 public final class SwiftUIHostScene: PortScene {
     private var width: CGFloat = 0
     private var height: CGFloat = 0
@@ -102,6 +122,7 @@ public final class SwiftUIHostScene: PortScene {
 
         let size = root.measure(ProposedSize(width: width, height: height))
         root.place(in: CGRect(x: 0, y: max(safeArea.top, 0), width: width, height: max(size.height, height)))
+        tree = root
         root.paint(into: &list)
     }
 
