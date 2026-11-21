@@ -40,7 +40,7 @@ public protocol TransferRepresentation<Item>: Sendable {
 @resultBuilder
 public struct TransferRepresentationBuilder<Item> where Item: Transferable {
     public static func buildBlock<Content>(_ content: Content) -> Content
-        where Item == Content.Item, Content: TransferRepresentation
+        where Item == Content.Item, Content: TransferRepresentation { fatalError() }
 }
 
 // MARK: - Transferable  (interface line 249)
@@ -54,9 +54,11 @@ public protocol Transferable: Sendable {
 // MARK: - TransferRepresentationVisibility  (interface line ~231)
 
 public struct TransferRepresentationVisibility: Sendable, Equatable {
-    public static let all: TransferRepresentationVisibility
+    public static let all = TransferRepresentationVisibility()
 
-    public static let ownProcess: TransferRepresentationVisibility
+    public static let ownProcess = TransferRepresentationVisibility()
+
+    private init() { fatalError() }
 
     public static func == (a: TransferRepresentationVisibility, b: TransferRepresentationVisibility) -> Bool {
         fatalError()

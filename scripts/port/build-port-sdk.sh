@@ -57,10 +57,12 @@ real_modules=(SwiftUICore SwiftUI Symbols Combine DeveloperToolsSupport)
 # Imports that a Darwin interface only sees through its framework's ObjC umbrella
 # header (which does not exist on the port). `retarget_interface.py --imports` inserts
 # these after the module header; they add no declarations, only visibility.
-declare -A umbrella_imports=()
+declare -A umbrella_imports=(
+    [SwiftUICore]="import CoreGraphics"
+)
 # Modules that do not exist on Android; port-shims/<Module>/<Module>.swift declares the
 # subset of their API that the retargeted interfaces reference.
-shim_modules=(UIKit QuartzCore CoreGraphics CoreText CoreFoundation CoreMedia CoreData DataDetection UniformTypeIdentifiers Accessibility Spatial simd Darwin OSLog os)
+shim_modules=(CoreGraphics CoreTransferable UIKit CoreFoundation QuartzCore CoreText CoreMedia CoreData DataDetection UniformTypeIdentifiers Accessibility Spatial simd Darwin OSLog os)
 
 retarget() {
     local module="$1"

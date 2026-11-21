@@ -29,23 +29,6 @@ public struct SceneContext {
     }
 }
 
-/// Platform-agnostic inset set (Android insets arrive through the bridge).
-public struct EdgeInsetsLike: Equatable {
-    public var top: CGFloat
-    public var bottom: CGFloat
-    public var leading: CGFloat
-    public var trailing: CGFloat
-
-    public init(top: CGFloat = 0, bottom: CGFloat = 0, leading: CGFloat = 0, trailing: CGFloat = 0) {
-        self.top = top
-        self.bottom = bottom
-        self.leading = leading
-        self.trailing = trailing
-    }
-
-    public static let zero = EdgeInsetsLike()
-}
-
 public protocol PortScene: AnyObject {
     func update(_ context: SceneContext)
     func draw(into displayList: inout DisplayList, context: SceneContext)
