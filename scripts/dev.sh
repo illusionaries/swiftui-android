@@ -35,22 +35,15 @@ while [ $# -gt 0 ]; do
     shift
 done
 
-# The official OSS toolchain is required: Xcode's Swift cannot target Android.
-SWIFT_TC="${SWIFT_TOOLCHAIN:?set SWIFT_TOOLCHAIN}"
-if [ -x "$SWIFT_TC/usr/bin/swift" ]; then
-    export PATH="$SWIFT_TC/usr/bin:$PATH"
-fi
-# Prefer the NDK r30 this project was set up against. The session may export an older
-# ANDROID_NDK_HOME (e.g. ndk-bundle 25.x), which SwiftPM rejects for the Android SDK.
-ndk_version() { [ -f "$1/source.properties" ] && grep -E '^Pkg.Revision' "$1/source.properties" | cut -d' ' -f3 | cut -d. -f1 || echo 0; }
-DEFAULT_NDK="${ANDROID_NDK_HOME:?set ANDROID_NDK_HOME}"
-if [ -z "${ANDROID_NDK_HOME:-}" ] || [ "$(ndk_version "$ANDROID_NDK_HOME")" -lt 27 ]; then
-    ANDROID_NDK_HOME="$DEFAULT_NDK"
-fi
-export ANDROID_NDK_HOME
-echo "▸ ndk: $ANDROID_NDK_HOME ($(ndk_version "$ANDROID_NDK_HOME"))"
+# Where the toolchain, the Swift SDK for Android, the Android SDK/NDK and the JDK live is
+# resolved in exactly one place: scripts/env.sh (environment -> scripts/local.env -> the
+# conventional install locations of each tool). Nothing machine-specific is committed.
+# shellcheck source=scripts/env.sh
+source "$ROOT/scripts/env.sh"
+port_env_need swift ndk
+echo "▸ ndk: $ANDROID_NDK_HOME (r$NDK_MAJOR)"
 
-echo "▸ swift: $(command -v swift) — $(swift --version 2>/dev/null | head -1)"
+echo "▸ swift: $SWIFT_BIN_PATH ($("$SWIFT_BIN_PATH" --version 2>/dev/null | head -1))"
 
 if [ "$DUMMY" = 0 ]; then
     echo "▸ building Swift runtime ($CONFIG, $TRIPLE)"

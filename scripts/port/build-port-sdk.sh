@@ -25,13 +25,12 @@ out="$ROOT/build/port-sdk"
 gen="$out/gen"
 shims="$out/shims"
 
-: "${APPLE_SDK:=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk}"
-: "${SWIFT_TOOLCHAIN:?set SWIFT_TOOLCHAIN}"
-: "${ANDROID_NDK_HOME:?set ANDROID_NDK_HOME}"
-: "${SWIFT_ANDROID_SDK:=$HOME/Library/org.swift.swiftpm/swift-sdks/swift-6.4.3-RELEASE_android.artifactbundle/swift-android}"
-: "${TARGET_TRIPLE:=aarch64-unknown-linux-android28}"
-
-export PATH="$SWIFT_TOOLCHAIN/usr/bin:$PATH"
+# Every outside path is resolved in scripts/env.sh — the OSS Swift toolchain, the Swift SDK for
+# Android, the NDK, and Xcode's public SDK interfaces. Nothing machine-specific is committed.
+# shellcheck source=scripts/env.sh
+source "$ROOT/scripts/env.sh"
+port_env_need swift sdk ndk xcode
+: "${TARGET_TRIPLE:=aarch64-unknown-linux-android}"
 
 # SwiftUI's `@State`/`@Preview` are *macros*: the interface declares
 # `#externalMacro(module: "SwiftUIMacros", type: "StateMacro")`, and the implementation is a
@@ -41,10 +40,9 @@ export PATH="$SWIFT_TOOLCHAIN/usr/bin:$PATH"
 # Android build. Look in the SDK first, then the platform directories.
 macro_plugin_dir=""
 for candidate in \
+    "$PORT_MACRO_PLUGIN_DIR" \
     "$APPLE_SDK/usr/lib/swift/host/plugins" \
-    "$(dirname "$(dirname "$(dirname "$APPLE_SDK")")")/usr/lib/swift/host/plugins" \
-    "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins" \
-    "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins"; do
+    "$(dirname "$(dirname "$(dirname "$APPLE_SDK")")")/usr/lib/swift/host/plugins"; do
     if [ -d "$candidate" ] && ls "$candidate"/*.dylib >/dev/null 2>&1; then
         macro_plugin_dir="$candidate"
         break

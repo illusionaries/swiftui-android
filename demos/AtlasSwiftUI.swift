@@ -1,10 +1,9 @@
-// AtlasSwiftUI.swift — the same app, written in *real SwiftUI syntax*.
+// AtlasSwiftUI.swift — the fidelity probe: a verbatim copy of Sources/DemoApp/AtlasApp.swift.
 //
-// This file is not part of the app target yet: it is compiled against Apple's own retargeted
-// `SwiftUI` interface for aarch64 Android (scripts/port/check-demo.sh), which proves the demo is
-// genuine SwiftUI source that type-checks for Android. Once the `_makeView` adapters and the
-// generated-module gate are finished, this file becomes the app (replacing the engine-level
-// scene) with no syntax changes.
+// scripts/port/check-demo.sh typechecks this file against Apple's own retargeted `SwiftUI`
+// interface for aarch64 Android and nothing else, so the demo's claim ("this is genuine SwiftUI
+// source") can be checked without trusting the port's build. Keep it identical to the app file;
+// the script also accepts any other SwiftUI file as an argument.
 import Combine
 import SwiftUI
 

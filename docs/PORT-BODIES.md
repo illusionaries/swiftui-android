@@ -445,8 +445,8 @@ Details:
 the Port SDK:
 
 ```sh
-export PATH=$SWIFT_TOOLCHAIN/usr/bin:$PATH
-scripts/port/generate.sh
+scripts/port/generate.sh     # resolves the toolchain and the Swift SDK via scripts/env.sh
+```
 ```
 
 The equivalent raw command (also what the acceptance gate uses, plus the engine seam):
@@ -456,8 +456,8 @@ swiftc -typecheck -parse-as-library \
   Sources/SwiftUI/Generated/SwiftUICore.swift Sources/SwiftUI/Generated/SwiftUI.swift \
   Sources/SwiftUI/Engine/PortRuntime.swift \
   -module-name SwiftUI -target aarch64-unknown-linux-android28 \
-  -resource-dir ~/Library/org.swift.swiftpm/swift-sdks/swift-6.4.3-RELEASE_android.artifactbundle/swift-android/swift-resources/usr/lib/swift-aarch64 \
-  -sdk ~/Library/org.swift.swiftpm/swift-sdks/swift-6.4.3-RELEASE_android.artifactbundle/swift-android/ndk-sysroot \
+  -resource-dir "$SWIFT_ANDROID_SDK/swift-resources/usr/lib/swift-aarch64" \
+  -sdk "$SWIFT_ANDROID_SDK/ndk-sysroot" \
   -I build/port-sdk/gen -I build/port-sdk/shims \
   -swift-version 5 -enable-experimental-feature AnyAppleOSAvailability \
   -package-name SwiftUI -module-cache-path build/port-sdk/.module-cache-bodies

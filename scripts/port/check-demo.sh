@@ -4,10 +4,12 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 PORT="$ROOT/build/port-sdk"
-: "${SWIFT_TOOLCHAIN:?set SWIFT_TOOLCHAIN}"
-export PATH="$SWIFT_TOOLCHAIN/usr/bin:$PATH"
-SDK="$HOME/Library/org.swift.swiftpm/swift-sdks/swift-6.4.3-RELEASE_android.artifactbundle/swift-android"
-PLUGIN_HOST="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins"
+# Toolchain, Swift SDK for Android and Xcode's macro plugin come from scripts/env.sh.
+# shellcheck source=scripts/env.sh
+source "$ROOT/scripts/env.sh"
+port_env_need swift sdk xcode
+SDK="$SWIFT_ANDROID_SDK"
+PLUGIN_HOST="$PORT_MACRO_PLUGIN_DIR"
 FILES=("$@")
 [ ${#FILES[@]} -eq 0 ] && FILES=("$ROOT/demos/AtlasSwiftUI.swift")
 swiftc -typecheck "${FILES[@]}" -module-name AtlasDemo \

@@ -26,7 +26,8 @@
 #
 # Env overrides: JAVA_HOME, ANDROID_HOME, ANDROID_NDK_HOME, ANDROID_PLATFORM,
 #                ANDROID_BUILD_TOOLS, SWIFT_SDK, MIN_SDK, DUMMY_SWIFT, VERBOSE,
-#                SWIFT_BIN / SWIFT_TOOLCHAIN (pick the Swift compiler explicitly),
+#                SWIFT_BIN / SWIFT_TOOLCHAIN (pick the Swift compiler explicitly); every
+#                toolchain path is resolved by scripts/env.sh — see scripts/local.env.example,
 #                SWIFT_LIB_SO (package a prebuilt product .so instead of running SwiftPM;
 #                              may contain {abi}, e.g. 'build/dev/{abi}/libswiftui_app.so'),
 #                SWIFT_STATIC_STDLIB=0 (do not pass --static-swift-stdlib),
@@ -171,52 +172,20 @@ abi_arch_fragment() {
 }
 
 # ── toolchain discovery ────────────────────────────────────────────────────────
-# The project standardises on JDK 21 (javac --release 11, d8, keytool, apksigner). Prefer the
-# Homebrew JDK 21 even when an older JAVA_HOME is already exported by the shell.
-detect_java() {
-  if [ -x /opt/homebrew/opt/openjdk@21/bin/javac ]; then
-    JAVA_HOME=/opt/homebrew/opt/openjdk@21
-  elif [ -n "${JAVA_HOME:-}" ] && [ -x "$JAVA_HOME/bin/javac" ]; then
-    :
-  elif [ -x /usr/libexec/java_home ] && J="$(/usr/libexec/java_home -v 21 2>/dev/null)"; then
-    JAVA_HOME="$J"
-  else
-    die "JDK 21 not found: set JAVA_HOME (e.g. /opt/homebrew/opt/openjdk@21)" 2
-  fi
-  export JAVA_HOME
-  export PATH="$JAVA_HOME/bin:$PATH"
-  [ -x "$JAVA_HOME/bin/javac" ] || die "no javac in JAVA_HOME=$JAVA_HOME" 2
-}
-detect_java
+# The JDK, Android SDK, NDK, Swift toolchain and Swift SDK for Android are all resolved in one
+# place — scripts/env.sh — from the environment, a gitignored scripts/local.env, or the
+# conventional install locations. No machine-specific path is committed.
+# shellcheck source=scripts/env.sh
+source "$SCRIPT_DIR/env.sh"
+port_env_need java android ndk
+export PATH="$JAVA_HOME/bin:$PATH"   # keytool, jarsigner and zip helpers
 
-if [ -z "${ANDROID_HOME:-}" ]; then
-  if [ -d "${ANDROID_HOME:?set ANDROID_HOME}" ]; then
-    ANDROID_HOME="${ANDROID_HOME:?set ANDROID_HOME}"
-  elif [ -n "${ANDROID_SDK_ROOT:-}" ]; then
-    ANDROID_HOME="$ANDROID_SDK_ROOT"
-  else
-    die "Android SDK not found: set ANDROID_HOME" 2
-  fi
-fi
 [ -d "$ANDROID_HOME" ] || die "ANDROID_HOME='$ANDROID_HOME' is not a directory" 2
+[ -d "$ANDROID_NDK_HOME" ] || die "ANDROID_NDK_HOME='$ANDROID_NDK_HOME' is not a directory" 2
 
-# NDK: the project pins r30 under $ANDROID_HOME/android-ndk-r30; fall back to an explicit
-# ANDROID_NDK_HOME and finally to the newest SDK-managed NDK.
-if [ -d "$ANDROID_HOME/android-ndk-r30" ]; then
-  ANDROID_NDK_HOME="$ANDROID_HOME/android-ndk-r30"
-elif [ -n "${ANDROID_NDK_HOME:-}" ] && [ -d "$ANDROID_NDK_HOME" ]; then
-  :
-else
-  ANDROID_NDK_HOME="$(ls -d "$ANDROID_HOME"/ndk/* 2>/dev/null | sort -V | tail -n 1 || true)"
-fi
-[ -n "${ANDROID_NDK_HOME:-}" ] && [ -d "$ANDROID_NDK_HOME" ] \
-  || die "Android NDK not found: set ANDROID_NDK_HOME (expected \$ANDROID_HOME/android-ndk-r30)" 2
-
-# SwiftPM and the Swift SDK for Android both look for the NDK through the environment. The
-# shell may export an older NDK (e.g. ndk-bundle 25.2), and the SDK requires >= 27, so publish
-# the resolved r30 NDK for the child processes.
-export ANDROID_NDK_HOME
-export ANDROID_NDK_ROOT="$ANDROID_NDK_HOME"
+# SwiftPM and the Swift SDK for Android both read the NDK from the environment; publish the
+# resolved r30 so the child processes agree with this script.
+export ANDROID_NDK_HOME ANDROID_NDK_ROOT="$ANDROID_NDK_HOME"
 
 NDK_HOST_TAG="$(ls -d "$ANDROID_NDK_HOME"/toolchains/llvm/prebuilt/* 2>/dev/null | head -n 1 || true)"
 [ -n "$NDK_HOST_TAG" ] || die "NDK has no toolchains/llvm/prebuilt/* directory" 2
@@ -248,77 +217,16 @@ command -v zip >/dev/null 2>&1 || die "the 'zip' command is required" 2
 command -v unzip >/dev/null 2>&1 || die "the 'unzip' command is required" 2
 command -v keytool >/dev/null 2>&1 || die "keytool not found (JAVA_HOME/bin)" 2
 
-# The Swift SDK for Android is built by the official Swift 6.4.3 OSS toolchain; building with a
-# different compiler fails deep inside Foundation with "compiled module was created by a
-# different version of the compiler". Resolution order (first hit wins):
-#
-#   1. SWIFT_BIN                      explicit compiler binary
-#   2. SWIFT_TOOLCHAIN                explicit .xctoolchain / toolchain root
-#   3. $SWIFT_TOOLCHAIN
-#                                     the unpacked OSS 6.4.3 .pkg used by this project
-#   4. /Library|~/Library/Developer/Toolchains/swift-6.4.3-RELEASE.xctoolchain
-#   5. ~/.swiftly/toolchains/swift-6.4.3-RELEASE
-#   6. xcrun --find swift  /  swift on PATH   (works only when it is also 6.4.3)
-resolve_swift() {
-  local cand dir
-  if [ -n "${SWIFT_BIN:-}" ] && [ -x "$SWIFT_BIN" ]; then
-    echo "$SWIFT_BIN"
-    return 0
-  fi
-  if [ -n "${SWIFT_TOOLCHAIN:-}" ] && [ -x "$SWIFT_TOOLCHAIN/usr/bin/swift" ]; then
-    echo "$SWIFT_TOOLCHAIN/usr/bin/swift"
-    return 0
-  fi
-
-  # Unpacked official .pkg ("swift sdk install" style toolchain), newest first.
-  for cand in "${SWIFT_TOOLCHAIN:?set SWIFT_TOOLCHAIN}"; do
-    if [ -x "$cand/usr/bin/swift" ]; then
-      echo "$cand/usr/bin/swift"
-      return 0
-    fi
-  done
-
-  for cand in \
-    /Library/Developer/Toolchains/swift-6.4.3-RELEASE.xctoolchain/usr/bin/swift \
-    "$HOME/Library/Developer/Toolchains/swift-6.4.3-RELEASE.xctoolchain/usr/bin/swift" \
-    "$HOME/.swiftly/toolchains/swift-6.4.3-RELEASE/usr/bin/swift" \
-    /usr/local/swift/usr/bin/swift /opt/swift/usr/bin/swift; do
-    if [ -x "$cand" ]; then
-      echo "$cand"
-      return 0
-    fi
-  done
-
-  # Any swiftly-installed release toolchain (pick 6.4.3 when present).
-  for dir in "$HOME"/.swiftly/toolchains/*; do
-    if [ -x "$dir/usr/bin/swift" ]; then
-      case "$dir" in
-        *6.4.3*) echo "$dir/usr/bin/swift"; return 0 ;;
-      esac
-    fi
-  done
-
-  if command -v xcrun >/dev/null 2>&1; then
-    cand="$(xcrun --find swift 2>/dev/null || true)"
-    if [ -n "$cand" ] && [ -x "$cand" ]; then
-      echo "$cand"
-      return 0
-    fi
-  fi
-  command -v swift 2>/dev/null || true
-}
-
+# The Swift compiler comes from scripts/env.sh too (SWIFT_BIN / SWIFT_TOOLCHAIN override the
+# discovery). SwiftPM's --swift-sdk resolves the SDK by id, so only the id is needed here; the
+# directories are for a second, independent lookup when a runtime library has to be bundled.
 SWIFT_SDKS_DIRS=()
-if [ -n "${SWIFT_SDKS_DIR:-}" ]; then
-  SWIFT_SDKS_DIRS+=("$SWIFT_SDKS_DIR")
-else
-  SWIFT_SDKS_DIRS+=("$HOME/.swiftpm/swift-sdks" "$HOME/Library/org.swift.swiftpm/swift-sdks")
-fi
+[ -n "${SWIFT_SDKS_DIR:-}" ] && SWIFT_SDKS_DIRS+=("$SWIFT_SDKS_DIR")
+[ -n "${SWIFT_ANDROID_SDK:-}" ] && SWIFT_SDKS_DIRS+=("$(dirname "$(dirname "$SWIFT_ANDROID_SDK")")")
 
 if [ "$DUMMY" != "1" ] && [ -z "${SWIFT_LIB_SO:-}" ]; then
-  SWIFT="$(resolve_swift)"
-  [ -n "$SWIFT" ] && [ -x "$SWIFT" ] \
-    || die "no Swift compiler found: install the Swift 6.4.3 OSS toolchain or set SWIFT_BIN" 2
+  port_env_need swift sdk
+  SWIFT="$SWIFT_BIN_PATH"
   SWIFT_VERSION="$("$SWIFT" --version 2>&1 | head -n 1)"
   if ! "$SWIFT" sdk list 2>/dev/null | grep -q "$SWIFT_SDK_ID"; then
     die "Swift SDK '$SWIFT_SDK_ID' is not installed (try: swift sdk install <url>)" 2
@@ -434,7 +342,7 @@ find_runtime_lib() {
   # Swift SDK for Android runtime libraries (libswiftCore.so, libdispatch.so, ...).
   # Layout: <sdk>.artifactbundle/swift-android/swift-resources/usr/lib/swift-<arch>/android/
   local sdk_dir
-  for sdk_dir in "${SWIFT_SDKS_DIRS[@]}"; do
+  for sdk_dir in ${SWIFT_SDKS_DIRS[@]+"${SWIFT_SDKS_DIRS[@]}"}; do
     [ -d "$sdk_dir" ] || continue
     found="$(find "$sdk_dir" -name "$name" -path "*$arch*" 2>/dev/null | head -n 1 || true)"
     if [ -n "$found" ]; then

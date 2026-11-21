@@ -172,15 +172,19 @@ swiftc -typecheck app.swift -module-name DemoApp \
   -swift-version 5
 ```
 
-Environment the script honours (all have defaults, override only if your checkout differs):
+Environment the script honours. Every one of these is resolved by `scripts/env.sh` — the
+exported value wins, then a gitignored `scripts/local.env`, then the conventional install
+location — so a checkout with a normal toolchain setup needs none of them set.
+`./scripts/env.sh --check` prints the resolved values.
 
-| Variable | Default |
+| Variable | Resolved to |
 |---|---|
-| `APPLE_SDK` | `/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk` |
-| `SWIFT_TOOLCHAIN` | `$SWIFT_TOOLCHAIN` |
-| `SWIFT_ANDROID_SDK` | `~/Library/org.swift.swiftpm/swift-sdks/swift-6.4.3-RELEASE_android.artifactbundle/swift-android` |
-| `ANDROID_NDK_HOME` | `$ANDROID_NDK_HOME` |
-| `TARGET_TRIPLE` | `aarch64-unknown-linux-android28` |
+| `APPLE_SDK` | the iOS simulator SDK inside the selected Xcode (`xcode-select -p`) |
+| `SWIFT_TOOLCHAIN` | an installed Swift 6.4.3 OSS toolchain (root, `.xctoolchain`, or unpacked `.pkg` `Payload`) |
+| `SWIFT_ANDROID_SDK` | `<swift-sdks>/swift-6.4.3-RELEASE_android.artifactbundle/swift-android` |
+| `ANDROID_NDK_HOME` | an NDK r27 or newer (the shipped SDK is built against r30) |
+| `PORT_MACRO_PLUGIN_DIR` | Xcode's `…/usr/lib/swift/host/plugins`, which contains `libSwiftUIMacros` |
+| `TARGET_TRIPLE` | `aarch64-unknown-linux-android` |
 
 `Package.swift` keeps the generated port opt-in with `SWIFTUI_PORT_GENERATED=1` because the
 engine (`Sources/SwiftUI/Engine`) and its adapters are still being written against these

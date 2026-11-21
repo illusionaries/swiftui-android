@@ -17,7 +17,7 @@
 #   scripts/emulator.sh create-avd [--force] (Re)create the AVD from the installed arm64 image.
 #
 # Environment overrides:
-#   ANDROID_HOME    default $ANDROID_HOME
+#   ANDROID_HOME    Android SDK (resolved by scripts/env.sh)
 #   AVD_NAME        default swiftui_test
 #   EMULATOR_PORT   default 5554        (serial becomes emulator-5554)
 #   BOOT_TIMEOUT    default 420 seconds per boot attempt
@@ -29,11 +29,12 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 
-export ANDROID_HOME="${ANDROID_HOME:?set ANDROID_HOME}"
-ADB="${ANDROID_HOME}/platform-tools/adb"
-EMULATOR="${ANDROID_HOME}/emulator/emulator"
-AVDMANAGER="${ANDROID_HOME}/cmdline-tools/latest/bin/avdmanager"
-SDKMANAGER="${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager"
+# The Android SDK location comes from scripts/env.sh (environment -> scripts/local.env ->
+# convention). It also puts a JDK 17+ on PATH, which avdmanager/sdkmanager require.
+# shellcheck source=scripts/env.sh
+source "${REPO_ROOT}/scripts/env.sh"
+port_env_need android
+EMULATOR="$EMULATOR_BIN"
 
 AVD_NAME="${AVD_NAME:-swiftui_test}"
 EMULATOR_PORT="${EMULATOR_PORT:-5554}"
@@ -113,17 +114,10 @@ our_emulator_alive() {
 # avdmanager/sdkmanager need JDK 17+; the machine default is JDK 11.
 ensure_java() {
   local version=""
-  local jdk21="/opt/homebrew/opt/openjdk@21"
   if [[ -n "${JAVA_HOME:-}" && -x "${JAVA_HOME}/bin/java" ]]; then
     version="$("${JAVA_HOME}/bin/java" -version 2>&1 | sed -n 's/.*version "\([0-9]*\).*/\1/p' | head -1)"
   fi
   if [[ -n "$version" ]] && ((version >= 17)); then
-    return 0
-  fi
-  if [[ -x "${jdk21}/bin/java" ]]; then
-    export JAVA_HOME="$jdk21"
-    export PATH="${jdk21}/bin:${PATH}"
-    log "using ${JAVA_HOME} for avdmanager (default java: ${version:-missing})"
     return 0
   fi
   log "warning: JDK 17+ not found; avdmanager may fail (JAVA_HOME=${JAVA_HOME:-<unset>})"

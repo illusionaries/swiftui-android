@@ -3,15 +3,11 @@
 # build → package → install → launch → report the first unimplemented entry point.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"; cd "$ROOT"
-: "${SWIFT_TOOLCHAIN:?set SWIFT_TOOLCHAIN}"
-export PATH="$SWIFT_TOOLCHAIN/usr/bin:$PATH"
-ndk_major() { [ -f "$1/source.properties" ] && grep -E '^Pkg.Revision' "$1/source.properties" | cut -d' ' -f3 | cut -d. -f1 || echo 0; }
-DEFAULT_NDK="${ANDROID_NDK_HOME:?set ANDROID_NDK_HOME}"
-if [ -z "${ANDROID_NDK_HOME:-}" ] || [ "$(ndk_major "$ANDROID_NDK_HOME")" -lt 27 ]; then
-    ANDROID_NDK_HOME="$DEFAULT_NDK"
-fi
-export ANDROID_NDK_HOME
-ADB="${ANDROID_HOME:?set ANDROID_HOME}/platform-tools/adb"
+# Toolchain, NDK and adb come from scripts/env.sh (environment -> scripts/local.env ->
+# conventional install locations); no machine-specific path is hard-coded here.
+# shellcheck source=scripts/env.sh
+source "$ROOT/scripts/env.sh"
+port_env_need swift ndk adb
 
 touch Package.swift   # manifest declares different targets per mode; force re-evaluation
 # shellcheck source=scripts/port/plugin-flags.sh

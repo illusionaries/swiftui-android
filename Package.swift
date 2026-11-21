@@ -18,21 +18,52 @@ let packageDirectory = URL(fileURLWithPath: #filePath).deletingLastPathComponent
 // path: the target below is itself named SwiftUI and already contains SwiftUICore's
 // declarations, so exposing the prebuilt interface modules makes every type ambiguous.
 
-// Property wrappers (`State`, `Binding`, `Environment`, …) are macros. Apple's own macro
-// plugin ships with the
-// iOS SDK toolchain, so the port uses Apple's implementation to expand them rather than
-// reimplementing the attribute semantics.
-let pluginHost = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins"
-let pluginServer = (ProcessInfo.processInfo.environment["SWIFT_TOOLCHAIN"]
-    ?? "")
-    + "/usr/bin/swift-plugin-server"
+// Property wrappers (`State`, `Binding`, `Environment`, …) are macros. Apple's own macro plugin
+// ships with the iOS SDK toolchain, so the port uses Apple's implementation to expand them
+// rather than reimplementing the attribute semantics. Its two halves — the plugin dylib and the
+// plugin server — belong to different installations and to no fixed path, so they are found the
+// way scripts/env.sh finds the rest of the toolchain: an exported variable, then the standard
+// location. The build scripts export both, so a normal build takes the cheap path.
+let environment = ProcessInfo.processInfo.environment
+
+func isDirectory(_ path: String) -> Bool {
+    guard !path.isEmpty else { return false }
+    var isDir: ObjCBool = false
+    return FileManager.default.fileExists(atPath: path, isDirectory: &isDir) && isDir.boolValue
+}
+
+/// A toolchain root is the grandparent of the `swift` binary SwiftPM runs, and that is where
+/// `swift-plugin-server` lives.
+func toolchainRoot(searchPath: String) -> String? {
+    for directory in searchPath.split(separator: ":") {
+        let candidate = String(directory) + "/swift"
+        guard FileManager.default.isExecutableFile(atPath: candidate) else { continue }
+        let root = URL(fileURLWithPath: candidate).deletingLastPathComponent()
+            .deletingLastPathComponent().path
+        if isDirectory(root + "/usr/bin") { return root }
+    }
+    return nil
+}
+
+let swiftToolchainRoot = environment["SWIFT_TOOLCHAIN"].flatMap { $0.isEmpty ? nil : $0 }
+    ?? toolchainRoot(searchPath: environment["PATH"] ?? "")
+
+// Xcode's own macro plugin (libSwiftUIMacros.dylib); the plugin server is the toolchain's.
+let pluginHost = [
+    environment["PORT_MACRO_PLUGIN_DIR"] ?? "",
+    environment["PORT_XCODE_DEVELOPER"].map {
+        $0 + "/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins"
+    } ?? "",
+    "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins",
+].first { isDirectory($0) } ?? ""
+let pluginServer = swiftToolchainRoot.map { $0 + "/usr/bin/swift-plugin-server" } ?? ""
 
 var portSDKFlags: [String] = [
     "-enable-experimental-feature", "AnyAppleOSAvailability",
     // Apple's declarations expect the vendored Combine module (see Sources/Combine/README.md).
     "-I", packageDirectory + "/Sources/COpenCombineHelpers/cmodule",
 ]
-if FileManager.default.fileExists(atPath: pluginHost) {
+if !pluginHost.isEmpty, FileManager.default.isExecutableFile(atPath: pluginServer) {
     portSDKFlags += ["-external-plugin-path", pluginHost + "#" + pluginServer]
 }
 

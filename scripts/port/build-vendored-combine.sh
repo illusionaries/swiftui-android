@@ -14,12 +14,14 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-: "${SWIFT_TOOLCHAIN:?set SWIFT_TOOLCHAIN}"
-export PATH="$SWIFT_TOOLCHAIN/usr/bin:$PATH"
-: "${ANDROID_NDK_HOME:?set ANDROID_NDK_HOME}"
-export ANDROID_NDK_HOME
-SDK="$HOME/Library/org.swift.swiftpm/swift-sdks/swift-6.4.3-RELEASE_android.artifactbundle/swift-android"
-TRIPLE="aarch64-unknown-linux-android28"
+# Toolchain, Swift SDK for Android and NDK come from scripts/env.sh (environment ->
+# scripts/local.env -> conventional install locations); no machine-specific path is committed.
+# shellcheck source=scripts/env.sh
+source "$ROOT/scripts/env.sh"
+port_env_need swift sdk ndk
+SDK="$SWIFT_ANDROID_SDK"
+TRIPLE="${TARGET_TRIPLE:-aarch64-unknown-linux-android}"
+NDK_HOST_TAG="$(ls -d "$ANDROID_NDK_HOME"/toolchains/llvm/prebuilt/* 2>/dev/null | head -n 1 || true)"
 OPENCOMBINE_REPO="https://github.com/OpenCombine/OpenCombine.git"
 OPENCOMBINE_COMMIT="1c6f02c7ed8140c0ba7a783aaddb6e0685a0037b"
 
@@ -51,7 +53,7 @@ for path in glob.glob(root + "/**/*.swift", recursive=True):
         open(path, "w").write(updated)
 PY
 
-CC="$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/darwin-x86_64/bin/aarch64-linux-android28-clang"
+CC="$NDK_HOST_TAG/bin/aarch64-linux-android28-clang"
 echo "→ compiling C helper layer"
 "$CC" -c "$ROOT/Sources/COpenCombineHelpers/COpenCombineHelpers.c" \
     -I "$ROOT/Sources/COpenCombineHelpers/include" \

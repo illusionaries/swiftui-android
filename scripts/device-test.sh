@@ -25,20 +25,23 @@
 #   0 pass · 2 usage/bad APK · 3 device not ready · 4 install failed ·
 #   5 launch failed · 6 process not alive · 7 crash/ANR detected · 1 screenshot failed
 #
-# Environment: ANDROID_HOME (default $ANDROID_HOME)
+# Environment: ANDROID_HOME and ANDROID_SERIAL (resolved by scripts/env.sh)
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
-export ANDROID_HOME="${ANDROID_HOME:?set ANDROID_HOME}"
-ADB="${ANDROID_HOME}/platform-tools/adb"
+# The Android SDK location comes from scripts/env.sh (environment -> scripts/local.env ->
+# convention), so no personal SDK path is committed.
+# shellcheck source=scripts/env.sh
+source "${REPO_ROOT}/scripts/env.sh"
+port_env_need adb
 
 TMP_BASE="${TMPDIR:-/tmp}/swiftui-android"
 mkdir -p "${TMP_BASE}" >/dev/null 2>&1 || true
 
 PKG="dev.swiftui.android"
 ACTIVITY=""
-SERIAL=""
+SERIAL="${ANDROID_SERIAL:-}"
 SETTLE=3
 SHOT=""
 DO_INSTALL=1

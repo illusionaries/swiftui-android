@@ -37,12 +37,12 @@ gen_dir="$port_sdk/gen"
 shims_dir="$port_sdk/shims"
 cache_dir="$port_sdk/.module-cache-bodies"
 
-: "${SWIFT_TOOLCHAIN:?set SWIFT_TOOLCHAIN}"
-: "${SWIFT_ANDROID_SDK:=$HOME/Library/org.swift.swiftpm/swift-sdks/swift-6.4.3-RELEASE_android.artifactbundle/swift-android}"
-: "${TARGET_TRIPLE:=aarch64-unknown-linux-android28}"
-: "${SWIFT_TARGET:=$TARGET_TRIPLE}"
-
-export PATH="$SWIFT_TOOLCHAIN/usr/bin:$PATH"
+# Toolchain and Swift SDK for Android come from scripts/env.sh (environment -> scripts/local.env
+# -> conventional install locations); no machine-specific path is committed.
+# shellcheck source=scripts/env.sh
+source "$ROOT/scripts/env.sh"
+port_env_need swift sdk
+: "${TARGET_TRIPLE:=aarch64-unknown-linux-android}"
 resource_dir="$SWIFT_ANDROID_SDK/swift-resources/usr/lib/swift-aarch64"
 ndk_sysroot="$SWIFT_ANDROID_SDK/ndk-sysroot"
 

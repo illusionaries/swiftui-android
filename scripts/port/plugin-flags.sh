@@ -4,8 +4,11 @@
 # manifest to Android target builds, so the build scripts pass it on the command line.
 #
 # Usage: source scripts/port/plugin-flags.sh; swift build … "${PORT_PLUGIN_FLAGS[@]}"
-: "${SWIFT_TOOLCHAIN:?set SWIFT_TOOLCHAIN}"
-PORT_MACRO_PLUGIN_DIR="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins"
+# The toolchain and Xcode's macro plugin are resolved in scripts/env.sh; this file only turns
+# them into the flags SwiftPM cannot forward to a cross-compiled target.
+PORT_SCRIPTS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+# shellcheck source=../env.sh
+[ -n "${PORT_ENV_LOADED:-}" ] || source "$PORT_SCRIPTS_DIR/env.sh"
 PORT_MACRO_PLUGIN_SERVER="$SWIFT_TOOLCHAIN/usr/bin/swift-plugin-server"
 PORT_PLUGIN_FLAGS=()
 if [ -d "$PORT_MACRO_PLUGIN_DIR" ] && [ -x "$PORT_MACRO_PLUGIN_SERVER" ]; then

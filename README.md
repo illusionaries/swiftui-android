@@ -110,20 +110,45 @@ that building a real app exposed.
 
 | Piece | State |
 |---|---|
-| OSS Swift 6.4.3 + official Swift SDK for Android + NDK r30 r30 toolchain | working, cross-compiles to real ELF |
-| Apple interfaces retargeted for Android (`SwiftUI`, `SwiftUICore`, `Symbols`, `Combine`) | retarget clean; shims for `UIKit`/`CoreGraphics` in progress |
-| Fidelity probe (`import SwiftUI` app source typechecked for Android) | converging (94 → 44 → …) |
-| C JNI bridge + Java host + APK pipeline | **done and validated on device** (10 entry points, 22 drawing primitives, signing, alignment, insets, back handling) |
-| Swift runtime + native canvas painter + frame loop | **cross-compiles and packages** (69 MB APK incl. Swift/Foundation dylibs) |
-| Emulator harness | **running** (API 35 arm64, 1080×2340 @420dpi, screenshots + logcat assertions) |
-| Generated port module (Apple declarations + bodies) + engine implementation | next |
+| OSS Swift 6.4.3 + Swift SDK for Android + NDK r30 toolchain | cross-compiles to real ELF |
+| Apple's `SwiftUI`/`SwiftUICore` declarations retargeted for Android | retargeted byte-for-byte; platform shims for `UIKit`/`CoreGraphics`/… supplied |
+| Fidelity probe (`import SwiftUI` app source typechecked for Android) | 0 errors |
+| Engine: layout, state, display list, canvas painter, frame loop | renders both demo apps on device |
+| Controls (Button, Toggle, Slider, Stepper, Picker, TextField, ProgressView, Label, Link) and their built-in styles | implemented; see [docs/GALLERY.md](docs/GALLERY.md) |
+| Text input | real platform IME behind a seam: Android's `EditText` owns the keyboard, SwiftUI state owns the text |
+| C JNI bridge + Java host + APK pipeline | validated on device (signing, alignment, insets, back handling) |
+| Emulator harness | headless API 35 arm64 (1080×2340 @420dpi), screenshots + logcat assertions |
+| Unit tests | 38 host tests over the engine (`scripts/test.sh`) |
 
 ## What remains
 
-The renderer adapters that bind Apple's declared types to the engine are specified in
-[docs/RENDERER.md](docs/RENDERER.md) (594 seams catalogued in
-`build/port-sdk/injected-bodies.json`). They live in `Sources/SwiftUI/Adapters/`, which is compiled
-only when `SWIFTUI_PORT_GENERATED=1`, so the repository stays green throughout.
+What is still missing is documented where it shows: custom `ButtonStyle`/`ToggleStyle` bodies,
+`.menu`/`.wheel` pickers, `ProgressViewStyle.circular`, and focus/IME edge cases
+([docs/GALLERY.md](docs/GALLERY.md)). The catalogue of every Apple declaration the port has to
+implement is `build/port-sdk/injected-bodies.json`, produced by `scripts/port/inject_bodies.py`.
+
+## Requirements
+
+Host-side, on macOS:
+
+| Piece | Version | Why |
+|---|---|---|
+| Xcode | any recent | only to read the iOS SDK's `.swiftinterface` files and run Apple's macros |
+| Swift toolchain | **6.4.3**, OSS release | the Swift SDK for Android was built with it; a different compiler breaks inside Foundation |
+| Swift SDK for Android | `swift-6.4.3-RELEASE_android` | `swift sdk install …`; provides the Android target, resource dir and sysroot |
+| Android SDK | platform 35 + build-tools 34 | `aapt2`, `d8`, `zipalign`, `apksigner` |
+| Android NDK | **r30** (r27 or newer) | clang, `llvm-readelf`, the sysroot |
+| JDK | 21 (17 works) | `javac`, `keytool`, `apksigner` |
+
+None of those paths are committed. `scripts/env.sh` resolves them, in this order: an exported
+variable (`SWIFT_TOOLCHAIN`, `SWIFT_ANDROID_SDK`, `ANDROID_HOME`, `ANDROID_NDK_HOME`,
+`JAVA_HOME`, `APPLE_SDK`), then a gitignored `scripts/local.env`, then the conventional install
+location of the tool. `scripts/env.sh --check` prints what it found and what is missing:
+
+```bash
+cp scripts/local.env.example scripts/local.env   # only needed if something is not found
+./scripts/env.sh --check
+```
 
 ## Run it
 
@@ -132,8 +157,6 @@ only when `SWIFTUI_PORT_GENERATED=1`, so the repository stays green throughout.
 ./scripts/port/build-port-sdk.sh
 
 # 2. Build the APK (Swift + C + Java)
-export PATH=$SWIFT_TOOLCHAIN/usr/bin:$PATH
-export ANDROID_NDK_HOME="${ANDROID_NDK_HOME:?set ANDROID_NDK_HOME}"
 ./scripts/build-apk.sh --abi arm64-v8a
 
 # 3. Emulator + acceptance test

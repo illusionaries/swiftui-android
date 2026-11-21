@@ -8,8 +8,10 @@
 # the module set without the ported half.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"; cd "$ROOT"
-: "${SWIFT_TOOLCHAIN:?set SWIFT_TOOLCHAIN}"
-export PATH="$SWIFT_TOOLCHAIN/usr/bin:$PATH"
+# The host suite only needs a Swift compiler: prefer the OSS toolchain when one is installed
+# (scripts/env.sh finds it and puts it on PATH), otherwise build with the `swift` on PATH.
+# shellcheck source=scripts/env.sh
+source "$ROOT/scripts/env.sh"
 export SWIFTUI_PORT_GENERATED=0
 touch Package.swift   # the manifest declares different targets per mode; force re-evaluation
 # The ported build leaves Android-only shim modules in the build tree under the same names as
