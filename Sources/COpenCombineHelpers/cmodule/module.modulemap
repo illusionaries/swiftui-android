@@ -1,0 +1,4 @@
+module COpenCombineHelpers {
+    header "../include/COpenCombineHelpers.h"
+    export *
+}

@@ -1,10 +1,8 @@
-// PortPrimitives.swift — `_makeView` implementations for the first slice of SwiftUI's primitives.
+// PortPrimitives.swift — how the port's engine renders SwiftUI's built-in views.
 //
-// Each implementation reads the view value Apple's interface exposes (their internal storage is
-// public in the interface) and produces the corresponding engine node. Nothing here re-declares
-// API: the declarations stay in Generated/, and this file only supplies the bodies that Apple's
-// binary would have provided.
-
+// Each conformance reads the value Apple's interface exposes (their internal storage is public in
+// the interface) and produces engine nodes. Nothing here re-declares API: the declarations stay in
+// Generated/, and this file supplies only the behaviour Apple's binary would have provided.
 #if canImport(CoreGraphics)
 import CoreGraphics
 #else
@@ -14,131 +12,113 @@ import FoundationShims
 
 // MARK: - Text
 
-extension Text {
-    public static func _makeView(view: _GraphValue<Text>, inputs: _ViewInputs) -> _ViewOutputs {
-        let context = PortGraphContext.shared
-        guard let text = context.current(Text.self) else {
-            return context.finish(LayoutNode(.empty))
-        }
-        return context.finish(PortAdapters.node(for: text, environment: context.environment))
+extension Text: _PortRenderable {
+    nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
+        [PortAdapters.node(for: self, environment: context.environment)]
     }
 }
 
 // MARK: - Leaf views
 
-extension EmptyView {
-    public static func _makeView(view: _GraphValue<EmptyView>, inputs: _ViewInputs) -> _ViewOutputs {
-        PortGraphContext.shared.finish(LayoutNode(.empty))
+extension EmptyView: _PortRenderable {
+    nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
+        [LayoutNode(.empty)]
     }
 }
 
-extension Spacer {
-    public static func _makeView(view: _GraphValue<Spacer>, inputs: _ViewInputs) -> _ViewOutputs {
-        let context = PortGraphContext.shared
-        let length = context.current(Spacer.self)?.minLength ?? 0
-        return context.finish(LayoutNode.spacer(minLength: length))
+extension Spacer: _PortRenderable {
+    nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
+        [LayoutNode.spacer(minLength: minLength ?? 0)]
+    }
+}
+
+// MARK: - Text initializers
+//
+// `Text("…")` funnels through these; Apple's bodies are in its binary. Both store an explicit
+// verbatim string, which is what Apple's own `init(verbatim:)` does inlinably.
+
+extension Text {
+    // `@_disfavoredOverload` is Apple's own ranking on this initializer: string literals prefer the
+    // LocalizedStringKey/LocalizedStringResource overloads, and generated @inlinable bodies rely on
+    // that ordering.
+    @_disfavoredOverload
+    public init<S>(_ content: S) where S: StringProtocol {
+        self.init(verbatim: String(content))
+    }
+
+    /// Generated `@inlinable` bodies call this overload, so the port supplies the body.
+    public init(_ resource: FoundationShims.LocalizedStringResource) {
+        self.init(verbatim: resource.key)
     }
 }
 
 // MARK: - Stacks
 
-extension VStack {
-    public static func _makeView(view: _GraphValue<VStack<Content>>, inputs: _ViewInputs) -> _ViewOutputs {
-        let context = PortGraphContext.shared
-        guard let stack = context.current(VStack<Content>.self) else {
-            return context.finish(LayoutNode(.empty))
-        }
-        let proposal = context.currentProposal
-        let children = context.makeNodes(stack._tree.content, proposal: proposal)
-        let spacing = stack._tree.root.spacing ?? PortAdapters.defaultStackSpacing
-        return context.finish(LayoutNode(.stack(axis: .vertical, spacing: spacing,
-                                                horizontalAlignment: PortAdapters.hMultiplier(stack._tree.root.alignment),
-                                                verticalAlignment: 0.5), children: children))
+extension VStack: _PortRenderable {
+    nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
+        let children = context.makeNodes(_tree.content, proposal: proposal)
+        let spacing = _tree.root.spacing ?? PortAdapters.defaultStackSpacing
+        return [LayoutNode(.stack(axis: .vertical, spacing: spacing,
+                                  horizontalAlignment: PortAdapters.hMultiplier(_tree.root.alignment),
+                                  verticalAlignment: 0.5), children: children)]
     }
 }
 
-extension HStack {
-    public static func _makeView(view: _GraphValue<HStack<Content>>, inputs: _ViewInputs) -> _ViewOutputs {
-        let context = PortGraphContext.shared
-        guard let stack = context.current(HStack<Content>.self) else {
-            return context.finish(LayoutNode(.empty))
-        }
-        let children = context.makeNodes(stack._tree.content, proposal: context.currentProposal)
-        let spacing = stack._tree.root.spacing ?? PortAdapters.defaultStackSpacing
-        return context.finish(LayoutNode(.stack(axis: .horizontal, spacing: spacing,
-                                                horizontalAlignment: 0.5,
-                                                verticalAlignment: PortAdapters.vMultiplier(stack._tree.root.alignment)),
-                                         children: children))
+extension HStack: _PortRenderable {
+    nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
+        let children = context.makeNodes(_tree.content, proposal: proposal)
+        let spacing = _tree.root.spacing ?? PortAdapters.defaultStackSpacing
+        return [LayoutNode(.stack(axis: .horizontal, spacing: spacing,
+                                  horizontalAlignment: 0.5,
+                                  verticalAlignment: PortAdapters.vMultiplier(_tree.root.alignment)),
+                           children: children)]
     }
 }
 
-extension ZStack {
-    public static func _makeView(view: _GraphValue<ZStack<Content>>, inputs: _ViewInputs) -> _ViewOutputs {
-        let context = PortGraphContext.shared
-        guard let stack = context.current(ZStack<Content>.self) else {
-            return context.finish(LayoutNode(.empty))
-        }
-        let children = context.makeNodes(stack._tree.content, proposal: context.currentProposal)
-        return context.finish(LayoutNode(.zstack(horizontalAlignment: PortAdapters.hMultiplier(stack._tree.root.alignment.horizontal),
-                                                verticalAlignment: PortAdapters.vMultiplier(stack._tree.root.alignment.vertical)),
-                                         children: children))
+extension ZStack: _PortRenderable {
+    nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
+        let children = context.makeNodes(_tree.content, proposal: proposal)
+        return [LayoutNode(.zstack(horizontalAlignment: PortAdapters.hMultiplier(_tree.root.alignment.horizontal),
+                                   verticalAlignment: PortAdapters.vMultiplier(_tree.root.alignment.vertical)),
+                           children: children)]
     }
 }
 
-// MARK: - Tuples, groups, conditionals
+// MARK: - Tuples, optionals, conditionals
 
-extension TupleView {
-    public static func _makeView(view: _GraphValue<TupleView<T>>, inputs: _ViewInputs) -> _ViewOutputs {
-        let context = PortGraphContext.shared
-        guard let tuple = context.current(TupleView<T>.self) else {
-            return context.finish([])
-        }
-        let proposal = context.currentProposal
+extension TupleView: _PortRenderable {
+    nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
         var nodes: [LayoutNode] = []
-        let mirror = Mirror(reflecting: tuple.value)
+        let mirror = Mirror(reflecting: value)
         for child in mirror.children {
             guard let anyView = child.value as? any View else { continue }
             nodes.append(contentsOf: PortAdapters.makeNodes(anyView, proposal: proposal))
         }
-        return context.finish(nodes)
+        return nodes
     }
 }
 
-extension Optional where Wrapped: View {
-    public static func _makeView(view: _GraphValue<Optional<Wrapped>>, inputs: _ViewInputs) -> _ViewOutputs {
-        let context = PortGraphContext.shared
-        guard let value = context.current(Optional<Wrapped>.self) else {
-            return context.finish(LayoutNode(.empty))
-        }
-        switch value {
-        case let .some(wrapped):
-            return context.finish(context.makeNodes(wrapped, proposal: context.currentProposal))
-        case .none:
-            return context.finish(LayoutNode(.empty))
+extension Optional: _PortRenderable where Wrapped: View {
+    nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
+        switch self {
+        case let .some(wrapped): return context.makeNodes(wrapped, proposal: proposal)
+        case .none: return []
         }
     }
 }
 
 // MARK: - Layout modifiers
 
-// One generic witness for every `ModifiedContent`, switching on the modifier's type at runtime.
-// Constrained extensions cannot witness a protocol requirement for the unconstrained type.
-extension ModifiedContent where Content: View, Modifier: ViewModifier {
-    public static func _makeView(view: _GraphValue<ModifiedContent<Content, Modifier>>,
-                                 inputs: _ViewInputs) -> _ViewOutputs {
-        let context = PortGraphContext.shared
-        guard let modified = context.current(ModifiedContent<Content, Modifier>.self) else {
-            return context.finish(LayoutNode(.empty))
-        }
-        let proposal = context.currentProposal
-        let modifier = modified.modifier
+extension ModifiedContent: _PortRenderable where Content: View, Modifier: ViewModifier {
+    nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
+        let modifier = self.modifier
 
         if let padding = modifier as? _PaddingLayout {
             let insets = PortAdapters.edgeInsets(padding)
-            let child = context.makeNode(modified.content,
-                                         proposal: ProposedSize(width: proposal.width.map { max(0, $0 - insets.leading - insets.trailing) },
-                                                                height: proposal.height.map { max(0, $0 - insets.top - insets.bottom) }))
-            return context.finish(LayoutNode.padding(insets, child))
+            let inner = ProposedSize(width: proposal.width.map { max(0, $0 - insets.leading - insets.trailing) },
+                                     height: proposal.height.map { max(0, $0 - insets.top - insets.bottom) })
+            let child = context.makeNode(content, proposal: inner)
+            return [LayoutNode.padding(insets, child)]
         }
 
         if let frame = modifier as? _FrameLayout {
@@ -146,14 +126,14 @@ extension ModifiedContent where Content: View, Modifier: ViewModifier {
                                  minHeight: frame.height, idealHeight: frame.height, maxHeight: frame.height,
                                  horizontalAlignment: PortAdapters.hMultiplier(frame.alignment.horizontal),
                                  verticalAlignment: PortAdapters.vMultiplier(frame.alignment.vertical))
-            let child = context.makeNode(modified.content, proposal: proposal)
-            return context.finish(LayoutNode.frame(spec, child))
+            let child = context.makeNode(content, proposal: proposal)
+            return [LayoutNode.frame(spec, child)]
         }
 
         // Unknown modifier for now: draw the content unchanged and record the symbol so the gap is
         // visible in PortDiagnostics rather than silently disappearing.
         context.noteUnimplemented("modifier \(String(reflecting: Modifier.self))")
-        return context.finish(context.makeNode(modified.content, proposal: proposal))
+        return context.makeNodes(content, proposal: proposal)
     }
 }
 
@@ -162,18 +142,13 @@ extension ModifiedContent where Content: View, Modifier: ViewModifier {
 enum PortAdapters {
     static let defaultStackSpacing: CGFloat = 8
 
-    /// Apple's alignment types are opaque; their identity is expressed by the static members
-    /// Apple declares (`.leading`, `.center`, `.trailing`, …), so map by equality.
+    /// Alignment identity comes from the port's registry (see PortAlignment.swift).
     static func hMultiplier(_ alignment: HorizontalAlignment) -> CGFloat {
-        if alignment == .leading { return 0 }
-        if alignment == .trailing { return 1 }
-        return 0.5
+        PortAlignmentRegistry.position(of: alignment)
     }
 
     static func vMultiplier(_ alignment: VerticalAlignment) -> CGFloat {
-        if alignment == .top { return 0 }
-        if alignment == .bottom { return 1 }
-        return 0.5
+        PortAlignmentRegistry.position(of: alignment)
     }
 
     static func makeNodes(_ view: any View, proposal: ProposedSize) -> [LayoutNode] {
@@ -187,7 +162,7 @@ enum PortAdapters {
     }
 
     /// `Text` → engine text node. Apple's `Font`/`Color` storage is opaque (`AnyFontBox`,
-    /// `AnyColorBox`), so the first slice renders with the environment's type scale; the
+    /// `AnyColorBox`), so the first slice renders in the environment's type scale; the
     /// modifier-aware path is the next step in docs/RENDERER.md.
     static func node(for text: Text, environment: PortEnvironment) -> LayoutNode {
         let string: String
@@ -217,24 +192,15 @@ enum PortAdapters {
     }
 }
 
-// MARK: - Text initializers
+// MARK: - Tuple content (SwiftUI's variadic builder product)
 //
-// `Text("…")` funnels through these; Apple's bodies are in its binary. Both simply store the
-// string in `Text.Storage.verbatim`, which is what Apple's `init(verbatim:)` does inlinably.
+// `VStack { … }` funnels its children into `TupleContent<each Content>`, a parameter pack. The
+// engine walks the pack with a `repeat` statement and materialises each element in order.
 
-extension Text {
-    // `@_disfavoredOverload` is Apple's own ranking on this initializer: string literals prefer
-    // the LocalizedStringKey/LocalizedStringResource overloads, and generated @inlinable bodies
-    // rely on that ordering.
-    @_disfavoredOverload
-    public init<S>(_ content: S) where S: StringProtocol {
-        self.init(verbatim: String(content))
-    }
-
-    /// Apple declares this overload in its SwiftUI interface; it is not present in the retargeted
-    /// one (the two interfaces split the `Text` initializers and R10 keeps a single witness per
-    /// spelling). Generated `@inlinable` bodies call it, so the port supplies it.
-    public init(_ resource: FoundationShims.LocalizedStringResource) {
-        self.init(verbatim: String(describing: resource))
+extension TupleContent: _PortRenderable where repeat each Content: View {
+    nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
+        var nodes: [LayoutNode] = []
+        repeat nodes.append(contentsOf: context.makeNodes(each content, proposal: proposal))
+        return nodes
     }
 }

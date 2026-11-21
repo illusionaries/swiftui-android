@@ -6,12 +6,55 @@
 # Engine implementations live in Sources/SwiftUI/Adapters/ (see docs/RENDERER.md).
 
 SwiftUICore.View._makeView(view:inputs:)
-SwiftUICore.Text._makeView(view:inputs:)
-SwiftUICore.EmptyView._makeView(view:inputs:)
-SwiftUICore.VStack._makeView(view:inputs:)
-SwiftUICore.HStack._makeView(view:inputs:)
-SwiftUICore.ZStack._makeView(view:inputs:)
-SwiftUICore.TupleView._makeView(view:inputs:)
-SwiftUICore.Optional._makeView(view:inputs:)
-SwiftUICore.ModifiedContent._makeView(view:inputs:)
 SwiftUICore.Text.init(_:)
+SwiftUICore._GraphValue.init()
+SwiftUICore._ViewInputs.init()
+SwiftUICore._ViewOutputs.init()
+SwiftUICore._ViewListInputs.init()
+SwiftUICore._ViewListOutputs.init()
+
+# Alignment engine types: the values behind these statics live in Apple's binary.
+SwiftUICore.HorizontalAlignment.leading
+SwiftUICore.HorizontalAlignment.center
+SwiftUICore.HorizontalAlignment.trailing
+SwiftUICore.HorizontalAlignment.init(_:)
+SwiftUICore.HorizontalAlignment.==(a:b:)
+SwiftUICore.VerticalAlignment.top
+SwiftUICore.VerticalAlignment.center
+SwiftUICore.VerticalAlignment.bottom
+SwiftUICore.VerticalAlignment.firstTextBaseline
+SwiftUICore.VerticalAlignment.lastTextBaseline
+SwiftUICore.VerticalAlignment.init(_:)
+SwiftUICore.VerticalAlignment.==(a:b:)
+SwiftUICore.Alignment.center
+SwiftUICore.Alignment.leading
+SwiftUICore.Alignment.trailing
+SwiftUICore.Alignment.top
+SwiftUICore.Alignment.bottom
+SwiftUICore.Alignment.topLeading
+SwiftUICore.Alignment.topTrailing
+SwiftUICore.Alignment.bottomLeading
+SwiftUICore.Alignment.bottomTrailing
+SwiftUICore.Alignment.==(a:b:)
+
+# Geometry constants Apple's binary stores as static values.
+SwiftUICore.Edge.Set.top
+SwiftUICore.Edge.Set.leading
+SwiftUICore.Edge.Set.bottom
+SwiftUICore.Edge.Set.trailing
+SwiftUICore.Edge.Set.horizontal
+SwiftUICore.Edge.Set.vertical
+SwiftUICore.Edge.Set.all
+SwiftUICore.HorizontalDirection.Set.init(_:)
+SwiftUICore.HorizontalDirection.Set.leading
+SwiftUICore.HorizontalDirection.Set.trailing
+SwiftUICore.HorizontalDirection.Set.all
+SwiftUICore.VerticalDirection.Set.init(_:)
+SwiftUICore.VerticalDirection.Set.up
+SwiftUICore.VerticalDirection.Set.down
+SwiftUICore.VerticalDirection.Set.all
+SwiftUICore.EdgeInsets.init(_all:)
+SwiftUICore.EdgeInsets.inset(by:edges:)
+
+# OptionSet raw-value initializers: omitting Apple's stub lets Swift synthesize the initializer
+# from the stored `rawValue` (which is what satisfies the RawRepresentable witness).

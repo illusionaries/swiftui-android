@@ -59,7 +59,3 @@ public final class SwiftUIHostScene: PortScene {
     public func handleDrag(_ gesture: PortDragGesture) -> Bool { false }
 }
 
-@_cdecl("swiftui_port_entry")
-public func swiftuiPortAppEntry() -> UnsafeMutableRawPointer? {
-    Unmanaged.passRetained(SwiftUIHostScene() as AnyObject).toOpaque()
-}

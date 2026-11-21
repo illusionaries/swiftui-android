@@ -1711,19 +1711,26 @@ class Generator:
                 symbol = f"{self.module}.{container.path}.init()"
                 if entry is not None and entry[1] is container and symbol not in self.init_hits:
                     self.init_hits.add(symbol)
-                    indent = self.indent_at(container.end - 1) if container.end else ""
-                    override = "override " if container.path in shared.override_inits else ""
-                    self.edits.append(
-                        Edit(
-                            container.end - 1, container.end - 1,
-                            f"{indent}  // port: public parameterless initializer (R11); Apple's "
-                            f"implicit memberswise initializer is internal\n"
-                            f"{indent}  public {override}init() {{ _suiUnimplemented(\"{symbol}\") }}\n",
+                    # The engine may own a synthesized initializer too (e.g. the opaque graph
+                    # shells, whose real payload lives in the port's render context).
+                    if symbol in self.implemented:
+                        # The type keeps its implicit (internal) memberwise `init()`; the engine
+                        # simply does not want the public trapping stub R11 would add.
+                        self.override_hits.add(symbol)
+                    else:
+                        indent = self.indent_at(container.end - 1) if container.end else ""
+                        override = "override " if container.path in shared.override_inits else ""
+                        self.edits.append(
+                            Edit(
+                                container.end - 1, container.end - 1,
+                                f"{indent}  // port: public parameterless initializer (R11); Apple's "
+                                f"implicit memberswise initializer is internal\n"
+                                f"{indent}  public {override}init() {{ _suiUnimplemented(\"{symbol}\") }}\n",
+                            )
                         )
-                    )
-                    self.stats.synthesized_inits += 1
-                    self.stats.bodies_injected += 1
-                    self.record_body(symbol, "init", False)
+                        self.stats.synthesized_inits += 1
+                        self.stats.bodies_injected += 1
+                        self.record_body(symbol, "init", False)
 
         visit(self.root, False)
         self.synthesize_witnesses(shared)
@@ -3311,6 +3318,43 @@ def build_manifest(generators: list[Generator], shared: "SharedModel") -> dict:
     }
 
 
+# MARK: - Trivial stub bodies
+#
+# Some stubs are one-liners that need a *body* rather than being omitted: dropping the declaration
+# would change Swift's synthesis rules (an OptionSet's `init(rawValue:)`, for example, must stay
+# declared or the conformance loses its witness). `port-impl/bodies.txt` maps a symbol to the
+# expression to use, and the generator rewrites that stub in place.
+BODY_OVERRIDES_PATH = os.path.join(ROOT, "port-impl", "bodies.txt")
+
+
+def load_body_overrides() -> dict[str, str]:
+    overrides: dict[str, str] = {}
+    if not os.path.exists(BODY_OVERRIDES_PATH):
+        return overrides
+    with open(BODY_OVERRIDES_PATH, encoding="utf-8") as handle:
+        for raw in handle:
+            line = raw.rstrip("\n")
+            if not line.strip() or line.lstrip().startswith("#"):
+                continue
+            symbol, _, body = line.partition("=>")
+            overrides[symbol.strip()] = body.strip()
+    return overrides
+
+
+def apply_body_overrides(sources: dict[str, str], overrides: dict[str, str]) -> int:
+    if not overrides:
+        return 0
+    applied = 0
+    for file_stem, source in sources.items():
+        for symbol, body in overrides.items():
+            needle = f'{{ _suiUnimplemented("{symbol}") }}'
+            if needle in source:
+                source = source.replace(needle, f"{{ {body} }}")
+                applied += 1
+        sources[file_stem] = source
+    return applied
+
+
 def write_outputs(sources: dict[str, str], manifest: dict) -> None:
     os.makedirs(OUT_DIR, exist_ok=True)
     os.makedirs(os.path.dirname(MANIFEST_PATH), exist_ok=True)
@@ -3360,6 +3404,12 @@ def main(argv: list[str]) -> int:
         GEN_DIR = os.path.abspath(arguments.gen_dir)
 
     sources, generators, shared = generate()
+    overrides = load_body_overrides()
+    if overrides:
+        replaced = apply_body_overrides(sources, overrides)
+        missing = sorted(set(overrides) - set())
+        if not arguments.quiet:
+            print(f"  body overrides: {replaced} applied from port-impl/bodies.txt")
     manifest = build_manifest(generators, shared)
 
     if arguments.check:

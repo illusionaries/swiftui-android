@@ -75,7 +75,7 @@ if [ "$clean" = 1 ]; then rm -rf "$gen" "$shims"; fi
 mkdir -p "$gen" "$shims"
 
 # Modules whose interface Apple actually ships; these are retargeted verbatim.
-real_modules=(SwiftUICore SwiftUI Symbols Combine DeveloperToolsSupport)
+real_modules=(SwiftUICore SwiftUI Symbols)
 # Imports that a Darwin interface only sees through its framework's ObjC umbrella
 # header (which does not exist on the port). `retarget_interface.py --imports` inserts
 # these after the module header; they add no declarations, only visibility.
@@ -85,7 +85,7 @@ declare -A umbrella_imports=(
 # Modules that do not exist on Android; port-shims/<Module>/<Module>.swift declares the
 # subset of their API that the retargeted interfaces reference.
 # Ordered by dependency: every shim is built after the shims it imports.
-shim_modules=(UniformTypeIdentifiers FoundationShims ObjectiveC UIUtilities CoreGraphics QuartzCore CoreText CoreTransferable Accessibility Spatial simd Darwin OSLog os DataDetection CoreMedia CoreData UIKit)
+shim_modules=(DeveloperToolsSupport UniformTypeIdentifiers FoundationShims ObjectiveC UIUtilities CoreGraphics QuartzCore CoreText CoreTransferable Accessibility Spatial simd Darwin OSLog os DataDetection CoreMedia CoreData UIKit)
 
 retarget() {
     local module="$1"
@@ -111,15 +111,15 @@ build_shim() {
     local module="$1"
     local src="$ROOT/port-shims/$module/$module.swift"
     [ -f "$src" ] || { echo "  ! no shim source for $module"; return 0; }
-    mkdir -p "$shims/$module.swiftmodule" "$out/shim-objects"
-    rm -f "$shims/$module.swiftmodule"/*.swiftmodule
+    mkdir -p "$shims/$module.swiftmodule" "$out/shim-objects" "$out/shim-interfaces/$module.swiftmodule"
+    rm -f "$shims/$module.swiftmodule"/*.swiftmodule "$out/shim-interfaces/$module.swiftmodule"/*
     local iface_tmp="$out/.tmp-$module.swiftinterface"
-    local binary_module="$shims/$module.swiftmodule/aarch64-unknown-linux-android28.swiftmodule"
+    local binary_module="$shims/$module.swiftmodule/aarch64-unknown-linux-android.swiftmodule"
     # Two artefacts: a *binary* module (so the app target can import it and the linker can
     # resolve its symbols) and its textual interface (for the probe).
     if ! swiftc -c "$src" -module-name "$module" -target "$TARGET_TRIPLE" \
         -resource-dir "$resource_dir" -sdk "$ndk_sysroot" -I "$shims" -I "$gen" -swift-version 5 \
-        -enable-library-evolution -parse-as-library \
+        -parse-as-library \
         -emit-module -emit-module-path "$binary_module" \
         -emit-module-interface-path "$iface_tmp" \
         -o "$out/shim-objects/$module.o" \
@@ -128,11 +128,31 @@ build_shim() {
         grep -E "error:" "$out/.shim-$module.log" | head -5 | sed 's/^/      /'
         return 1
     fi
+    # Textual interfaces imply library evolution, which makes clients call case allocators and
+    # other out-of-line entry points. The app must therefore see the *binary* (non-resilient)
+    # module; the probe gets the textual ones from a separate directory.
     for name in aarch64 aarch64-unknown-linux-android "$TARGET_TRIPLE"; do
-        cp "$iface_tmp" "$shims/$module.swiftmodule/$name.swiftinterface"
+        cp "$iface_tmp" "$out/shim-interfaces/$module.swiftmodule/$name.swiftinterface"
     done
     return 0
 }
+
+# One stable archive for everything the app must link (shims, object-only modules, vendored
+# Combine). A single fixed path is important: SwiftPM evaluates the manifest once and caches it,
+# so a manifest-time glob over object files would silently miss newly added ones.
+archive_shim_objects() {
+    rm -f "$out/libportshims.a"
+    if ls "$out"/shim-objects/*.o >/dev/null 2>&1; then
+        "$ANDROID_NDK_HOME/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-ar" rcs "$out/libportshims.a" "$out"/shim-objects/*.o
+        echo "  ✓ libportshims.a ($(ls "$out"/shim-objects/*.o | wc -l | tr -d ' ') objects)"
+    fi
+}
+
+# Combine has no Android implementation in Apple's SDK: build the vendored one (OpenCombine).
+if [ -x "$ROOT/scripts/port/build-vendored-combine.sh" ]; then
+    echo "→ vendored Combine"
+    "$ROOT/scripts/port/build-vendored-combine.sh" | sed 's/^/  /'
+fi
 
 echo "→ retargeting Apple interfaces to $TARGET_TRIPLE"
 for module in "${real_modules[@]}"; do
@@ -157,12 +177,29 @@ for module_dir in "$gen"/*.swiftmodule "$shims"/*.swiftmodule; do
     ln -sfn "$module_dir" "$deps/$name"
 done
 
+# Object-only implementations for retargeted modules whose declarations need code at link time.
+if [ -d "$ROOT/port-objects" ]; then
+    mkdir -p "$out/shim-objects"
+    for src in "$ROOT"/port-objects/*.swift; do
+        [ -f "$src" ] || continue
+        module="$(basename "$src" .swift)"
+        swiftc -c "$src" -module-name "$module" -target "$TARGET_TRIPLE" \
+            -resource-dir "$resource_dir" -sdk "$ndk_sysroot" -I "$shims" -I "$gen" \
+            -swift-version 5 -parse-as-library -enable-library-evolution \
+            -emit-module-path "$out/.object-only-$module.swiftmodule" \
+            -o "$out/shim-objects/$module.o" \
+            -module-cache-path "$out/.module-cache" 2>&1 | grep -E "error:" | head -3
+    done
+fi
+
+archive_shim_objects
+
 if [ "$probe" = 1 ]; then
     echo "→ probing: can a SwiftUI app compile for Android? (macro plugins: ${macro_plugin_dir:-none})"
     rm -rf "$out/.module-cache"
     set +e
     swiftc -typecheck "$port_dir/probe.swift" -module-name PortProbe -target "$TARGET_TRIPLE" \
-        -resource-dir "$resource_dir" -sdk "$ndk_sysroot" -I "$gen" -I "$shims" \
+        -resource-dir "$resource_dir" -sdk "$ndk_sysroot" -I "$gen" -I "$shims" -I "$out/shim-interfaces" \
         -module-cache-path "$out/.module-cache" -enable-experimental-feature AnyAppleOSAvailability \
         "${plugin_flags[@]}" \
         -swift-version 5 >"$out/probe.log" 2>&1

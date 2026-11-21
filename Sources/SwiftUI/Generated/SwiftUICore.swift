@@ -94,8 +94,6 @@ import simd
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 public struct _ViewInputs : ~Swift::Sendable {
-  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
-  public init() { _suiUnimplemented("SwiftUICore._ViewInputs.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -454,8 +452,7 @@ extension SwiftUI::View {
   @inlinable nonisolated public init(alignment: SwiftUI::Alignment = .center, @SwiftUI::ContentBuilder content: () -> Content) {
         _tree = .init(_ZStackLayout(alignment: alignment)) { content() }
     }
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
+  public static func _makeView(view: SwiftUI::_GraphValue<SwiftUI::ZStack<Content>>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.ZStack._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
   // port: synthesized witness for View (R7); Apple implements it with an internal member
@@ -959,14 +956,15 @@ extension SwiftUI::View {
   @frozen public struct Set : Swift::OptionSet, Swift::Equatable, Swift::Hashable {
     public typealias Element = SwiftUI::HorizontalDirection.Set
     public let rawValue: Swift::Int8
-    public init(rawValue: Swift::Int8) { _suiUnimplemented("SwiftUICore.HorizontalDirection.Set.init(rawValue:)") }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var leading: SwiftUI::HorizontalDirection.Set { get { _suiUnimplemented("SwiftUICore.HorizontalDirection.Set.leading") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var trailing: SwiftUI::HorizontalDirection.Set { get { _suiUnimplemented("SwiftUICore.HorizontalDirection.Set.trailing") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var all: SwiftUI::HorizontalDirection.Set { get { _suiUnimplemented("SwiftUICore.HorizontalDirection.Set.all") } }
-    public init(_ direction: SwiftUI::HorizontalDirection) { _suiUnimplemented("SwiftUICore.HorizontalDirection.Set.init(_:)") }
+    public init(rawValue: Swift::Int8) { self.rawValue = rawValue }
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
     @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
     public typealias ArrayLiteralElement = SwiftUI::HorizontalDirection.Set.Element
     @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -993,14 +991,15 @@ public static var all: SwiftUI::HorizontalDirection.Set { get { _suiUnimplemente
   @frozen public struct Set : Swift::OptionSet {
     public typealias Element = SwiftUI::VerticalDirection.Set
     public let rawValue: Swift::Int8
-    public init(rawValue: Swift::Int8) { _suiUnimplemented("SwiftUICore.VerticalDirection.Set.init(rawValue:)") }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var up: SwiftUI::VerticalDirection.Set { get { _suiUnimplemented("SwiftUICore.VerticalDirection.Set.up") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var down: SwiftUI::VerticalDirection.Set { get { _suiUnimplemented("SwiftUICore.VerticalDirection.Set.down") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var all: SwiftUI::VerticalDirection.Set { get { _suiUnimplemented("SwiftUICore.VerticalDirection.Set.all") } }
-    public init(_ direction: SwiftUI::VerticalDirection) { _suiUnimplemented("SwiftUICore.VerticalDirection.Set.init(_:)") }
+    public init(rawValue: Swift::Int8) { self.rawValue = rawValue }
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
     @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
     public typealias ArrayLiteralElement = SwiftUI::VerticalDirection.Set.Element
     @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -1463,8 +1462,7 @@ extension SwiftUI::SimultaneousGesture.Value : Swift::Hashable where First.Value
             content()
         }
     }
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
+  public static func _makeView(view: SwiftUI::_GraphValue<SwiftUI::VStack<Content>>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.VStack._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
   // port: synthesized witness for View (R7); Apple implements it with an internal member
@@ -1562,21 +1560,21 @@ extension SwiftUI::_VStackLayout : SwiftUI::Layout {
   @frozen public struct Set : Swift::OptionSet {
     public typealias Element = SwiftUI::Edge.Set
     public let rawValue: Swift::Int8
-    public init(rawValue: Swift::Int8) { _suiUnimplemented("SwiftUICore.Edge.Set.init(rawValue:)") }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var top: SwiftUI::Edge.Set { get { _suiUnimplemented("SwiftUICore.Edge.Set.top") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var leading: SwiftUI::Edge.Set { get { _suiUnimplemented("SwiftUICore.Edge.Set.leading") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bottom: SwiftUI::Edge.Set { get { _suiUnimplemented("SwiftUICore.Edge.Set.bottom") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var trailing: SwiftUI::Edge.Set { get { _suiUnimplemented("SwiftUICore.Edge.Set.trailing") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var all: SwiftUI::Edge.Set { get { _suiUnimplemented("SwiftUICore.Edge.Set.all") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var horizontal: SwiftUI::Edge.Set { get { _suiUnimplemented("SwiftUICore.Edge.Set.horizontal") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var vertical: SwiftUI::Edge.Set { get { _suiUnimplemented("SwiftUICore.Edge.Set.vertical") } }
+    public init(rawValue: Swift::Int8) { self.rawValue = rawValue }
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
     public init(_ e: SwiftUI::Edge) { _suiUnimplemented("SwiftUICore.Edge.Set.init(_:)") }
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias ArrayLiteralElement = SwiftUI::Edge.Set.Element
@@ -3319,8 +3317,8 @@ public struct DefaultGlassEffectShape : SwiftUI::Shape {
   }
 }
 extension SwiftUI::EdgeInsets {
-  @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public func inset(by corners: SwiftUI::RectangleCornerInsets, edges: SwiftUI::Edge.Set = .all) -> SwiftUI::EdgeInsets { _suiUnimplemented("SwiftUICore.EdgeInsets.inset(by:edges:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -3339,8 +3337,7 @@ extension SwiftUI::View {
 @frozen nonisolated public struct TupleView<T> : SwiftUI::View, ~Swift::Sendable {
   public var value: T
   @inlinable nonisolated public init(_ value: T) { self.value = value }
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
+  public static func _makeView(view: SwiftUI::_GraphValue<SwiftUI::TupleView<T>>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.TupleView._makeView(view:inputs:)") }
   public static func _makeViewList(view: SwiftUI::_GraphValue<SwiftUI::TupleView<T>>, inputs: SwiftUI::_ViewListInputs) -> SwiftUI::_ViewListOutputs { _suiUnimplemented("SwiftUICore.TupleView._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   public static func _viewListCount(inputs: SwiftUI::_ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.TupleView._viewListCount(inputs:)") }
@@ -7185,8 +7182,7 @@ extension SwiftUI::ViewDimensions3D : Swift::Equatable {
             content()
         }
     }
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
+  public static func _makeView(view: SwiftUI::_GraphValue<SwiftUI::HStack<Content>>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.HStack._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
   // port: synthesized witness for View (R7); Apple implements it with an internal member
@@ -7692,8 +7688,7 @@ public struct Glass : Swift::Equatable, Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::Text : SwiftUI::View {
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
+  nonisolated public static func _makeView(view: SwiftUI::_GraphValue<SwiftUI::Text>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.Text._makeView(view:inputs:)") }
   nonisolated public static func _makeViewList(view: SwiftUI::_GraphValue<SwiftUI::Text>, inputs: SwiftUI::_ViewListInputs) -> SwiftUI::_ViewListOutputs { _suiUnimplemented("SwiftUICore.Text._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   nonisolated public static func _viewListCount(inputs: SwiftUI::_ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.Text._viewListCount(inputs:)") }
@@ -7927,8 +7922,6 @@ public struct _GraphValue<Value> : Swift::Equatable, ~Swift::Sendable {
     get { _suiUnimplemented("SwiftUICore._GraphValue.subscript(keyPath:)") }
   }
   public static func == (a: SwiftUI::_GraphValue<Value>, b: SwiftUI::_GraphValue<Value>) -> Swift::Bool { _suiUnimplemented("SwiftUICore._GraphValue.==(a:b:)") }
-  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
-  public init() { _suiUnimplemented("SwiftUICore._GraphValue.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -11913,8 +11906,6 @@ extension CoreGraphics::CGFloat : SwiftUI::VectorArithmetic {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 public struct _ViewListInputs : ~Swift::Sendable {
-  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
-  public init() { _suiUnimplemented("SwiftUICore._ViewListInputs.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -11951,8 +11942,6 @@ public struct _ViewListCountInputs {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 public struct _ViewListOutputs : ~Swift::Sendable {
-  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
-  public init() { _suiUnimplemented("SwiftUICore._ViewListOutputs.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -13140,8 +13129,6 @@ extension SwiftUI::View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 public struct _ViewOutputs : ~Swift::Sendable {
-  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
-  public init() { _suiUnimplemented("SwiftUICore._ViewOutputs.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14418,8 +14405,8 @@ extension SwiftUI::EdgeInsets : SwiftUI::Animatable, SwiftUI::_VectorMath {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::EdgeInsets {
-  @usableFromInline
-  package init(_all: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.EdgeInsets.init(_all:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14797,9 +14784,11 @@ extension SwiftUI::AlignmentID {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @frozen public struct HorizontalAlignment : Swift::Equatable {
-  public init(_ id: any SwiftUI::AlignmentID.Type) { _suiUnimplemented("SwiftUICore.HorizontalAlignment.init(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @_documentation(visibility: private) public let key: SwiftUI::AlignmentKey
-  public static func == (a: SwiftUI::HorizontalAlignment, b: SwiftUI::HorizontalAlignment) -> Swift::Bool { _suiUnimplemented("SwiftUICore.HorizontalAlignment.==(a:b:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14815,9 +14804,11 @@ extension SwiftUI::HorizontalAlignment {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @frozen public struct VerticalAlignment : Swift::Equatable {
-  public init(_ id: any SwiftUI::AlignmentID.Type) { _suiUnimplemented("SwiftUICore.VerticalAlignment.init(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @_documentation(visibility: private) public let key: SwiftUI::AlignmentKey
-  public static func == (a: SwiftUI::VerticalAlignment, b: SwiftUI::VerticalAlignment) -> Swift::Bool { _suiUnimplemented("SwiftUICore.VerticalAlignment.==(a:b:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14839,7 +14830,8 @@ extension SwiftUI::VerticalAlignment {
         self.horizontal = horizontal
         self.vertical = vertical
     }
-  public static func == (a: SwiftUI::Alignment, b: SwiftUI::Alignment) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Alignment.==(a:b:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14847,12 +14839,12 @@ extension SwiftUI::VerticalAlignment {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::HorizontalAlignment {
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var leading: SwiftUI::HorizontalAlignment { get { _suiUnimplemented("SwiftUICore.HorizontalAlignment.leading") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var center: SwiftUI::HorizontalAlignment { get { _suiUnimplemented("SwiftUICore.HorizontalAlignment.center") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var trailing: SwiftUI::HorizontalAlignment { get { _suiUnimplemented("SwiftUICore.HorizontalAlignment.trailing") } }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 16.0, macOS 13.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.2)
@@ -14871,16 +14863,16 @@ public static var listRowSeparatorTrailing: SwiftUI::HorizontalAlignment { get {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::VerticalAlignment {
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var top: SwiftUI::VerticalAlignment { get { _suiUnimplemented("SwiftUICore.VerticalAlignment.top") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var center: SwiftUI::VerticalAlignment { get { _suiUnimplemented("SwiftUICore.VerticalAlignment.center") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bottom: SwiftUI::VerticalAlignment { get { _suiUnimplemented("SwiftUICore.VerticalAlignment.bottom") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var firstTextBaseline: SwiftUI::VerticalAlignment { get { _suiUnimplemented("SwiftUICore.VerticalAlignment.firstTextBaseline") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var lastTextBaseline: SwiftUI::VerticalAlignment { get { _suiUnimplemented("SwiftUICore.VerticalAlignment.lastTextBaseline") } }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14888,24 +14880,24 @@ public static var lastTextBaseline: SwiftUI::VerticalAlignment { get { _suiUnimp
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::Alignment {
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var center: SwiftUI::Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.center") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var leading: SwiftUI::Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.leading") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var trailing: SwiftUI::Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.trailing") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var top: SwiftUI::Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.top") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bottom: SwiftUI::Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.bottom") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var topLeading: SwiftUI::Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.topLeading") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var topTrailing: SwiftUI::Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.topTrailing") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bottomLeading: SwiftUI::Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.bottomLeading") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bottomTrailing: SwiftUI::Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.bottomTrailing") } }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -18597,8 +18589,7 @@ extension SwiftUI::ViewModifier where Self : SwiftUI::Animatable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @frozen nonisolated public struct EmptyView : SwiftUI::View {
   @inlinable nonisolated public init() {}
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
+  public static func _makeView(view: SwiftUI::_GraphValue<SwiftUI::EmptyView>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.EmptyView._makeView(view:inputs:)") }
   public static func _makeViewList(view: SwiftUI::_GraphValue<SwiftUI::EmptyView>, inputs: SwiftUI::_ViewListInputs) -> SwiftUI::_ViewListOutputs { _suiUnimplemented("SwiftUICore.EmptyView._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   public static func _viewListCount(inputs: SwiftUI::_ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.EmptyView._viewListCount(inputs:)") }
@@ -20185,8 +20176,7 @@ nonisolated public struct MeshGradient : SwiftUI::ShapeStyle, Swift::Equatable, 
 extension Swift::Optional : SwiftUI::View where Wrapped : SwiftUI::View {
     // port: omitted: a single-module port can only keep one witness per associated type (R10)
 
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
+  nonisolated public static func _makeView(view: SwiftUI::_GraphValue<Swift::Optional<Wrapped>>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.Optional._makeView(view:inputs:)") }
   nonisolated public static func _makeViewList(view: SwiftUI::_GraphValue<Swift::Optional<Wrapped>>, inputs: SwiftUI::_ViewListInputs) -> SwiftUI::_ViewListOutputs { _suiUnimplemented("SwiftUICore.Optional._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   nonisolated public static func _viewListCount(inputs: SwiftUI::_ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.Optional._viewListCount(inputs:)") }
@@ -20436,8 +20426,7 @@ extension SwiftUI::ModifiedContent : SwiftUI::Animatable where Content : SwiftUI
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::ModifiedContent : SwiftUI::View where Content : SwiftUI::View, Modifier : SwiftUI::ViewModifier {
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
+  nonisolated public static func _makeView(view: SwiftUI::_GraphValue<SwiftUI::ModifiedContent<Content, Modifier>>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.ModifiedContent._makeView(view:inputs:)") }
   nonisolated public static func _makeViewList(view: SwiftUI::_GraphValue<SwiftUI::ModifiedContent<Content, Modifier>>, inputs: SwiftUI::_ViewListInputs) -> SwiftUI::_ViewListOutputs { _suiUnimplemented("SwiftUICore.ModifiedContent._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   nonisolated public static func _viewListCount(inputs: SwiftUI::_ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.ModifiedContent._viewListCount(inputs:)") }

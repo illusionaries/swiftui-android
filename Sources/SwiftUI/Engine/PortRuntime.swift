@@ -10,6 +10,7 @@
 
 #if canImport(CoreGraphics)
 import CoreGraphics
+import Foundation
 #else
 import Foundation
 #endif
@@ -18,7 +19,9 @@ import Foundation
 @inline(never)
 public func _suiUnimplemented(_ symbol: String) -> Never {
     PortDiagnostics.reportUnimplemented(symbol)
-    fatalError("SwiftUI port: unimplemented entry point \(symbol). Add it to Sources/SwiftUI/Engine/.")
+    // Visible in `adb logcat` (stderr) so a trap names the entry point the port still owes.
+    FileHandle.standardError.write(Data("SwiftUI port: unimplemented entry point \(symbol)\n".utf8))
+    fatalError("SwiftUI port: unimplemented entry point \(symbol). Add it to Sources/SwiftUI/Adapters/.")
 }
 
 /// Diagnostics sink, also used by the harness to assert coverage of a rendered screen.
@@ -28,6 +31,24 @@ public enum PortDiagnostics {
 
     public static func reportUnimplemented(_ symbol: String) {
         unimplementedHits.append(symbol)
+    }
+
+    /// Verbose progress on stderr, which `adb logcat` captures — used while bringing up the
+    /// renderer to see which adapter a view actually dispatches to.
+    public static func log(_ message: String) {
+        guard verbose else { return }
+        let line = "SwiftUI port: \(message)\n"
+        FileHandle.standardError.write(Data(line.utf8))
+        // Android does not forward the app's stderr to logcat, so also append to a file that a
+        // debugger can pull with `adb shell run-as … cat cache/port.log`.
+        let url = FileManager.default.temporaryDirectory.appendingPathComponent("port.log")
+        if let handle = try? FileHandle(forWritingTo: url) {
+            handle.seekToEndOfFile()
+            handle.write(Data(line.utf8))
+            try? handle.close()
+        } else {
+            try? Data(line.utf8).write(to: url)
+        }
     }
 }
 

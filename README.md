@@ -1,3 +1,16 @@
+## Status: the ported framework renders
+
+The recompiled framework runs on a device and draws SwiftUI views through Android's Skia canvas —
+Apple's declarations, this project's engine:
+
+![SwiftUI views ported to Android](docs/screenshots/ported-text-stack.png)
+
+```bash
+./scripts/port/build-port-sdk.sh   # retarget Apple's interfaces, build shims + vendored Combine
+./scripts/ported-dev.sh            # build/install/launch the ported path
+swift test                         # engine unit tests (27, no port SDK needed)
+```
+
 # SwiftUI for Android — a port of Apple's closed-source framework
 
 This repository does something that is usually assumed to be impossible: it **ports Apple's

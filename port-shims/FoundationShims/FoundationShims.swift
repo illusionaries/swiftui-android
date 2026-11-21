@@ -144,10 +144,40 @@ public struct FoundationAttributes: AttributeScope {
 /// `CustomLocalizedStringResourceConvertible` does not exist in the Android Foundation,
 /// so that conformance is omitted (documented as a semantic gap).
 public struct LocalizedStringResource: Equatable, Hashable, Sendable {
-    public init(_ key: String, table: String? = nil, locale: Locale = .current,
-                bundle: Bundle? = nil, comment: StaticString? = nil) { fatalError() }
+    /// The port renders text through `Text(verbatim:)`, so the resource only needs to carry its
+    /// key; localisation itself is a semantic gap (no resource bundles on Android yet).
+    public var key: String
 
-    public init(stringLiteral value: String) { fatalError() }
+    public init(_ key: String, table: String? = nil, locale: Locale = .current,
+                bundle: Bundle? = nil, comment: StaticString? = nil) {
+        self.key = key
+    }
+
+    public init(stringLiteral value: String) {
+        self.key = value
+    }
+
+    public init(stringInterpolation: StringInterpolation) {
+        self.key = stringInterpolation.key
+    }
+
+    public struct StringInterpolation: StringInterpolationProtocol {
+        public var key: String = ""
+
+        public init(literalCapacity: Int, interpolationCount: Int) {}
+
+        public mutating func appendLiteral(_ literal: String) {
+            key += literal
+        }
+
+        public mutating func appendInterpolation(_ value: String) {
+            key += value
+        }
+
+        public mutating func appendInterpolation<T>(_ value: T) {
+            key += String(describing: value)
+        }
+    }
 }
 
 extension LocalizedStringResource: ExpressibleByStringLiteral {}

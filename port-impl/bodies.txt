@@ -1,0 +1,10 @@
+# Stub bodies the engine supplies in place (symbol => Swift expression).
+#
+# Omitted declarations live in port-impl/implemented.txt; this file is for stubs that must stay
+# declared and simply need a trivial body.
+
+# OptionSet structs store `rawValue`, so their raw-value initializer is a field assignment. The
+# declaration must stay (dropping it changes how Swift synthesises the RawRepresentable witness).
+SwiftUICore.Edge.Set.init(rawValue:) => self.rawValue = rawValue
+SwiftUICore.HorizontalDirection.Set.init(rawValue:) => self.rawValue = rawValue
+SwiftUICore.VerticalDirection.Set.init(rawValue:) => self.rawValue = rawValue

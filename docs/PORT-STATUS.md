@@ -2,6 +2,41 @@
 
 Living document. Updated as the port converges. Numbers are measured, not estimated.
 
+## The ported renderer draws (this round)
+
+The recompiled framework now *runs on a device*: the app links Apple's declarations, the graph
+context materialises a view tree, the engine measures/places/paints it, and Skia shows the result.
+
+![Text and a padded VStack drawn from Apple's declarations](screenshots/ported-text-stack.png)
+
+What made the difference, in order:
+
+1. **Platform modules became package targets.** `UIKit`, `CoreGraphics`, `Symbols`, `Combine`, …
+   are SwiftPM targets in the ported build instead of prebuilt interface modules linked by hand.
+   SwiftPM then links their object code itself, which removed the whole "which archive member
+   supplies this metadata?" class of failure.
+2. **A real Combine.** Apple ships none for Android, so `Sources/Combine` vendors OpenCombine
+   (MIT) at a pinned commit and compiles it under the module name `Combine`, with a pthread-based
+   C helper layer in `Sources/COpenCombineHelpers`.
+3. **`Symbols` and `DeveloperToolsSupport` became shims** transcribed from Apple's interfaces.
+   Their types are only referenced by SwiftUI's declarations, so identity is all that is needed.
+4. **The engine dispatches primitives existentially** (`_PortRenderable`) instead of relying on
+   `View._makeView` witness tables, whose storage lives in Apple's binary. Adding a primitive is
+   now a one-file change.
+5. **Stored constants got real values**: alignments (`PortAlignment.swift`), `Edge.Set`,
+   direction sets, `EdgeInsets`, and a body-override mechanism (`port-impl/bodies.txt`) for stubs
+   that must stay declared — e.g. an `OptionSet`'s `init(rawValue:)`.
+
+Run it:
+
+```bash
+./scripts/port/build-port-sdk.sh        # retarget interfaces + shims + vendored Combine
+./scripts/ported-dev.sh                 # build, package, install, launch, report the next gap
+```
+
+`SWIFTUI_PORT_GENERATED=1` stays opt-in: the default build is still the engine-level app, so the
+repository always has a product that builds without the port SDK.
+
 ## Bottom line
 
 **Apple's compiled SwiftUI cannot run on Android.** It is a Darwin Mach-O dylib bound to

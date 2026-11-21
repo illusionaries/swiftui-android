@@ -76,13 +76,20 @@ public final class PortGraphContext {
     }
 
     /// Materialises a view that expands to several nodes (`TupleView`, `Group`, conditionals).
+    ///
+    /// Primitives conform to `_PortRenderable`, which the engine dispatches to directly. Anything
+    /// else is an app-defined view, materialised by evaluating its `body` — the same contract
+    /// Apple's `View._makeView` has, without depending on a witness table entry.
     public func makeNodes<V: View>(_ view: V, proposal: ProposedSize) -> [LayoutNode] {
+        if let renderable = view as? any _PortRenderable {
+            return renderable._portMakeNodes(proposal: proposal, context: self)
+        }
         views.append(view)
         proposals.append(proposal)
-        _ = V._makeView(view: _GraphValue<V>(), inputs: _ViewInputs())
+        let nodes = makeNodes(view.body, proposal: proposal)
         views.removeLast()
         proposals.removeLast()
-        return results.popLast() ?? []
+        return nodes
     }
 
     // MARK: - Called from `_makeView` implementations
@@ -113,12 +120,23 @@ public final class PortGraphContext {
     }
 }
 
+// MARK: - Primitives the engine renders itself
+
+/// A view the port renders directly, instead of through `View._makeView`.
+///
+/// Existential dispatch keeps the engine independent of Apple's graph witness tables (whose
+/// storage is in their binary) and makes adding a primitive a one-file change.
+public protocol _PortRenderable {
+    nonisolated func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode]
+}
+
 // MARK: - `View._makeView` default: evaluate `body`
 
 // Generated stub is omitted via `port-impl/implemented.txt`; this is the port's implementation.
 // It covers every `View` that Apple describes in terms of `body`, i.e. all normal app views.
 extension View {
-    public static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs {
+    nonisolated public static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs {
+        if PortDiagnostics.verbose { PortDiagnostics.log("default _makeView for \(Self.self)") }
         let context = PortGraphContext.shared
         guard let value = context.current(Self.self) else {
             return context.finish(LayoutNode(.empty))
@@ -127,3 +145,7 @@ extension View {
         return context.finish(context.makeNodes(value.body, proposal: proposal))
     }
 }
+
+// The graph shells keep their implicit internal initializers: the port never stores anything in
+// them (the state lives in `PortGraphContext`), so R11 must not synthesize a trapping public
+// `init()`. Their symbols are listed in `port-impl/implemented.txt` for exactly that reason.
