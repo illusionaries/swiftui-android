@@ -1,0 +1,55 @@
+# NOTICE — what is MIT here, and what is not
+
+[`LICENSE`](LICENSE) is MIT and covers **this project's own code**. Two other kinds of material
+live in this tree and are not this project's to license; they are kept in their own directories so
+the boundary is visible.
+
+## 1. MIT — this project's own work
+
+Copyright (c) 2026 illusionaries, under the terms in [`LICENSE`](LICENSE).
+
+| Path | What it is |
+|---|---|
+| `Sources/SwiftUI/Engine/` | layout, state, display list, drawing |
+| `Sources/SwiftUI/Adapters/` | binds Apple's declared types to that engine |
+| `Sources/SwiftUIExport/` | the module that makes `import SwiftUI` work |
+| `Sources/SwiftUIAndroid/`, `Sources/AndroidBridge/` | JNI entry points, Canvas/Paint/Typeface bridge |
+| `Sources/DemoApp/`, `demos/` | Atlas and the control gallery |
+| `app/` | Java host: Activity, View, IME overlay |
+| `port-impl/`, `scripts/` | the generator's inputs and every build script |
+| `docs/` | the write-up |
+
+## 2. Not MIT — Apple's declarations
+
+Two things here are Apple's: the generated modules, and the API re-declarations that stand in for
+frameworks Android does not have. Both exist only so that SwiftUI source compiles against Apple's
+API; neither is a reimplementation of Apple's engine, and no Apple object code is redistributed,
+decompiled or executed.
+
+**`Sources/SwiftUI/Generated/`** — `SwiftUI.swift` and `SwiftUICore.swift` are the textual module
+interfaces (`.swiftinterface`) that ship inside the iOS SDK, retargeted for
+`aarch64-unknown-linux-android` by `scripts/port/retarget_interface.py` and expanded with
+placeholder bodies by `scripts/port/inject_bodies.py`. Copyright Apple Inc.
+
+**`port-shims/`** — Swift re-declarations of the public API (names, signatures, conformances) of
+the Apple frameworks SwiftUI's declarations import: `UIKit`, `CoreGraphics`, `QuartzCore`,
+`CoreText`, `Symbols`, `Spatial`, `os`, `simd`, `Accessibility`, … Transcribed from the interfaces
+and headers Apple publishes, because with no Clang importer and no UIKit there is nothing to
+retarget: the types have to exist as source. The *declarations* follow Apple's; the bodies,
+comments and Android-side behaviour in those files are this project's and are MIT. Treat the
+declared API surface as Apple's and the rest as ours.
+
+## 3. Not MIT — OpenCombine (vendored, MIT of its own)
+
+`Sources/Combine/` is [OpenCombine](https://github.com/OpenCombine/OpenCombine), pinned at commit
+`1c6f02c7ed8140c0ba7a783aaddb6e0685a0037b` and compiled under the module name `Combine` so Apple's
+declarations resolve unchanged. Its licence is MIT, **copyright (c) 2019 Sergej Jaskiewicz**; the
+text is [`Sources/Combine/LICENSE.txt`](Sources/Combine/LICENSE.txt) and that file — not the
+repository's `LICENSE` — governs that directory. The only transformation applied to the checked-in
+copy is the mechanical `OpenCombine.` → `Combine.` module-qualifier rewrite described in
+[`Sources/Combine/README.md`](Sources/Combine/README.md).
+
+`Sources/COpenCombineHelpers/` implements the small C layer OpenCombine expects (unfair lock,
+identifier, debugger hook) on top of pthreads, because Android has no `os_unfair_lock`. Its API
+follows OpenCombine's, so it carries the same attribution; the implementation is this project's
+and is MIT under section 1.

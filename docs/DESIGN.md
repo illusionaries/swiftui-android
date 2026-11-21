@@ -118,9 +118,12 @@ floats, `uint32_t` ARGB and UTF-8 byte buffers.
 
 ## 5. Provenance and licensing
 
-The port's code is original. The declarations under `Sources/SwiftUI/Generated/` are Apple's,
-mechanically extracted from the publicly shipped SDK interface files — the same metadata a linker
-stub or framework header carries. No Apple binaries are redistributed or executed.
+The port's code is MIT ([LICENSE](../LICENSE)). The declarations under
+`Sources/SwiftUI/Generated/` and the API re-declarations under `port-shims/` are Apple's,
+mechanically extracted or transcribed from the publicly shipped SDK interfaces and headers — the
+same metadata a linker stub or framework header carries. No Apple binaries are redistributed or
+executed. [NOTICE](../NOTICE) separates that material, and the vendored OpenCombine under
+`Sources/Combine/`, from the MIT-licensed work.
 
 ## 6. Deliberate limits
 

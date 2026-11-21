@@ -238,6 +238,15 @@ let portShimTargets: [Target] = includeGeneratedPort ? [
             name: "Combine",
             dependencies: ["COpenCombineHelpers"],
             path: "Sources/Combine",
+            // Attribution and the GYB templates are not Swift sources; without this, SwiftPM
+            // reports each of them as an unhandled file on every build.
+            exclude: [
+                "LICENSE.txt", "README.md", "RootProtocols.swift.gyb",
+                "Concurrency/Publisher+Concurrency.swift.gyb",
+                "Publishers/Publishers.Catch.swift.gyb",
+                "Publishers/Publishers.Encode.swift.gyb",
+                "Publishers/Publishers.MapKeyPath.swift.gyb",
+            ],
             swiftSettings: swift5Mode
         ),
 ] : []
@@ -272,7 +281,8 @@ let package = Package(
             path: "Sources/SwiftUI",
             // `Adapters` binds Apple's declared types to the engine, so it only compiles when the
             // generated declarations are in the target. See docs/RENDERER.md.
-            exclude: includeGeneratedPort ? [] : ["Generated", "Adapters"],
+            // README.md in Generated/ marks whose declarations those are, not a source file.
+            exclude: includeGeneratedPort ? ["Generated/README.md"] : ["Generated", "Adapters"],
             swiftSettings: portSettings
         ),
         .target(

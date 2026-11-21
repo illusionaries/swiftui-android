@@ -178,6 +178,16 @@ shipped `.swiftinterface`/`.tbd` metadata; no Apple binaries are redistributed.
 
 ## License / provenance
 
-The port's own code is original work. The declarations under `Sources/SwiftUI/Generated/` are
-Apple's, extracted from the shipped SDK interfaces; they are included as interface metadata the
-same way a linker stub or header is, and are not relicensed here.
+The port's own code is MIT — see [LICENSE](LICENSE). Two things in this tree are not the
+project's to license, and [NOTICE](NOTICE) draws the boundary:
+
+- **`Sources/SwiftUI/Generated/`** and **`port-shims/`** hold Apple's declarations: the
+  `SwiftUI`/`SwiftUICore` interfaces shipped in the iOS SDK, retargeted for Android, plus Swift
+  re-declarations of the Apple frameworks those interfaces import (`UIKit`, `CoreGraphics`, …)
+  that Android does not have. They stay Apple's, and are included as compile-time interface
+  metadata the way a framework header or a linker stub is. No Apple binary is redistributed,
+  decompiled or executed — the engine that runs underneath those declarations is this project's
+  code.
+- **`Sources/Combine/`** is vendored OpenCombine (MIT — its own
+  [LICENSE.txt](Sources/Combine/LICENSE.txt)), compiled under the module name `Combine` so Apple's
+  declarations resolve unchanged.
