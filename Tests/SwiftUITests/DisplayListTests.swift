@@ -49,16 +49,19 @@ final class DisplayListTests: XCTestCase {
         let rect = CGRect(x: 0, y: 0, width: 40, height: 20)
         let path = PathData.roundedRect(rect, cornerRadius: 100)
         // Radius clamps to 10, so the curves never leave the rect.
+        // CGRect.contains is half-open, so points exactly on the edge are "outside";
+        // the geometry contract is that nothing may exceed the rect, tolerance inclusive.
+        let tolerance = rect.insetBy(dx: -0.001, dy: -0.001)
         for element in path.elements {
             switch element {
             case let .move(point), let .line(point):
-                XCTAssertTrue(rect.contains(point))
+                XCTAssertTrue(tolerance.contains(point))
             case let .quad(control, point):
-                XCTAssertTrue(rect.insetBy(dx: -0.001, dy: -0.001).contains(control))
-                XCTAssertTrue(rect.insetBy(dx: -0.001, dy: -0.001).contains(point))
+                XCTAssertTrue(tolerance.contains(control))
+                XCTAssertTrue(tolerance.contains(point))
             case let .cubic(c1, c2, point):
                 for p in [c1, c2, point] {
-                    XCTAssertTrue(rect.insetBy(dx: -0.001, dy: -0.001).contains(p))
+                    XCTAssertTrue(tolerance.contains(p))
                 }
             case .close:
                 break

@@ -11,6 +11,11 @@ import AndroidBridge
 import Foundation
 import SwiftUI
 
+// The runtime is Android-only: it exports JNI entry points and talks to the NDK-backed
+// bridge. On host builds (swift test) the file compiles to nothing so the package's
+// dynamic product still links.
+#if os(Android)
+
 // MARK: - Scene resolution
 
 private typealias SceneEntryPoint = @convention(c) () -> UnsafeMutableRawPointer?
@@ -290,3 +295,5 @@ public func swiftuiAndroidLifecycle(_ runtime: OpaquePointer?, _ event: Int32) {
 public func swiftuiAndroidLowMemory(_ runtime: OpaquePointer?) {
     // Nothing cached yet beyond the per-frame painters; reserved for image caches.
 }
+
+#endif  // os(Android)
