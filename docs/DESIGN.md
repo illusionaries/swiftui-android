@@ -1,105 +1,131 @@
-# SwiftUI for Android — Architecture
+# Design — porting the closed-source SwiftUI to Android
 
-## The constraint (read this first)
+## 1. The problem, stated precisely
 
-Apple's `SwiftUI` framework is **closed source**. There is no source tree to port, so a
-literal "port" is impossible. What *is* official is:
+Apple's `SwiftUI` is closed source and Darwin-only. Its binary (`SwiftUI.framework/SwiftUI`,
+plus the `SwiftUICore` split introduced in iOS 18) is a Mach-O dylib whose engine binds to:
 
-* the official Swift toolchain (swift.org), and
-* the official **Swift SDK for Android** (`swift sdk install`, swift.org, shipped since 2025).
+* **UIKitCore** for view hosting, gestures, text input, and traits
+* **QuartzCore / CA::Render** for compositing, animation, and layer trees
+* **Metal / IOSurface** for rasterisation
+* **CoreText / CoreGraphics** for text shaping and metrics
+* plus `Combine`, `CoreFoundation`, `Observation`, `Symbols`, `Spatial`, `os`, `simd`
 
-So this project does the only faithful thing available: it **reimplements the SwiftUI
-programming model in Swift** — the same API names, the same result builders, the same
-property-wrapper state model, the same measure/place/paint layout discipline — compiled by
-the official toolchain with the official Android SDK, and rendered through **Android's own
-native renderer** (hardware-accelerated `android.graphics.Canvas`, i.e. real Skia, real
-system fonts, real touch pipeline) over JNI.
+`SwiftUI.tbd` confirms the reexports (`SwiftUICore`, `UIKit`, `CoreTransferable`,
+`DeveloperToolsSupport`). Loaded on Android, the binary would need every one of those
+frameworks supplied at binary level — that is porting iOS's userland, and the Metal dependency
+cannot be satisfied at all.
 
-What this is **not**:
+**So there is no configuration in which Apple's compiled SwiftUI executes on Android.** Anyone
+claiming otherwise is either streaming a Mac/simulator (remote rendering) or reimplementing.
 
-* not a transpiler to Jetpack Compose (no Compose runtime, no Kotlin UI, no code generation)
-* not a web view / Flutter-style embed
-* not a Kotlin reimplementation
+## 2. What *is* portable, and what this port therefore does
 
-SwiftUI code written against this module compiles *as Swift* for Android and draws through
-the platform's native canvas stack — the same layer UIKit/CoreGraphics occupy on iOS.
+Apple publishes the framework's complete API as textual module interfaces inside the iOS SDK.
+Those files are not documentation: they are the compiler's authoritative view of the module.
+The Swift frontend recompiles them for the current target; only the embedded `-target` header
+pins them to Apple.
 
-## Layering
+| Artifact | Size | Declarations | `@inlinable` bodies |
+|---|---|---|---|
+| `SwiftUI.swiftinterface` | 1.9 MB / 33,818 lines | 6,239 | 273 |
+| `SwiftUICore.swiftinterface` | 1.4 MB / 27,839 lines | 2,533 | 749 |
+| `Symbols.swiftinterface` | 637 lines | — | — |
+| `Combine.swiftinterface` | 2,590 lines | — | — |
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│ DemoApp (Swift)            @State, VStack, Text, Button ... │  ← unmodified SwiftUI style source
-├──────────────────────────────────────────────────────────────┤
-│ SwiftUI (Swift, portable)  ViewGraph · State · Layout ·      │
-│                            DisplayList                       │
-├──────────────────────────────────────────────────────────────┤
-│ SwiftUIAndroid (Swift)     App runtime, renderer, hit-test,  │
-│                            animation clock, JNI glue         │
-├──────────────────────────────────────────────────────────────┤
-│ AndroidBridge (C)          JNI entry points, cached method   │
-│                            IDs, Canvas/Paint/Typeface        │
-├──────────────────────────────────────────────────────────────┤
-│ Android platform           android.graphics.Canvas (Skia),   │
-│                            Paint text shaping, View, MotionEvent │
-└──────────────────────────────────────────────────────────────┘
-```
+The port consumes those files, so **the API surface an app compiles against is Apple's,
+byte-for-byte** — types, generic signatures, availability, result builders, property-wrapper
+contracts, SPI. `@inlinable` bodies are real Apple code and are preserved verbatim; they then
+execute natively on Android, compiled by the official Swift SDK for Android.
 
-The portable `SwiftUI` target contains **no** platform calls, so the same layout/state code
-also builds and unit-tests on macOS (`swift test`), which is how we validate the engine
-without a device.
+Everything else — the 1,900 bodyless functions and the bodyless properties/inits in SwiftUI
+alone — is the part a port must implement: the engine, in Swift, on top of Android's native
+canvas.
 
-## Rendering model (3 passes, like SwiftUI)
+### Retargeting rules (all mechanical, all documented)
 
-1. **Resolve** — walk the view tree, evaluate `body`, install dynamic properties
-   (`@State`, `@Binding`, `@StateObject`, `@Environment`), produce an `Element` tree.
-   Composite views recurse through `body`; primitive views produce leaf elements.
-2. **Layout** — `sizeThatFits(ProposedViewSize)` top-down, `place(in:)` assigning absolute
-   frames in *points (dp)*, bottom-up size caching. Stacks negotiate along their axis,
-   `Spacer` takes the flexible remainder, `padding`/`frame` wrap.
-3. **Paint** — walk the placed tree and emit a flat `[DrawCommand]` display list in
-   absolute dp coordinates. The Android renderer replays it into `Canvas` via the C bridge.
+`scripts/port/retarget_interface.py` rewrites only the module header and ObjC-only metadata:
 
-State mutation marks the graph dirty and schedules exactly one `invalidate()` for the next
-vsync; the display list is rebuilt on the UI thread inside `onDraw`.
+| Rule | Why |
+|---|---|
+| `-target arm64-apple-ios*` → `-target aarch64-unknown-linux-android28` | the interface is recompiled for the port's target |
+| drop `-enable-objc-interop`, strip `@objc`/`@nonobjc` attributes | no ObjC runtime on Android; attributes carry no Swift ABI meaning there |
+| rewrite `// swift-compiler-version` and drop `-interface-compiler-version` | the SDK's compiler stamp is 6.4.2, the OSS toolchain is 6.4.3; the check is metadata-only |
+| drop self `@_exported import <Self>` / `import <Self>.<Sub>` | they resolve the ObjC "underlying module", which does not exist off-Darwin |
 
-Coordinate system: top-left origin, +y down, unit = dp. The Java host scales the canvas by
-`density` once, so the entire Swift/SwiftUI layer works in dp and never sees pixels.
-Text: `Paint.textSize` is set in dp for the same reason, so `measureText` also returns dp.
+Nothing else is touched. Declaration text stays identical; a `git diff` of
+`build/port-sdk/gen` against Apple's files shows only those header lines.
 
-## Threading
+### Shims (declarations only)
 
-* All of SwiftUI state mutation and rendering happens on the Android **UI thread**
-  (`postInvalidate()` is the only cross-thread call, and it is thread-safe).
-* `JNI_OnLoad` caches the `JavaVM`; the bridge caches `jmethodID`s per thread.
-* `invalidate` is posted back through the host `View`; no Java calls from arbitrary threads.
+Modules that have no Android counterpart get shims under `port-shims/`: `UIKit`,
+`CoreGraphics`, `CoreFoundation`, `QuartzCore`, `CoreText`, `CoreData`, `CoreMedia`,
+`DataDetection`, `UniformTypeIdentifiers`, `Accessibility`, `Spatial`, `simd`, `Darwin`, `OSLog`,
+`os`, `CoreTransferable`, `DeveloperToolsSupport`. Each shim declares exactly the subset the
+retargeted Apple interfaces reference, with signatures copied from Apple's own interface/headers
+and `fatalError()` bodies; behaviour is supplied by the port's runtime. `docs/PORT-SDK.md`
+tracks coverage and semantic gaps.
 
-## Target SDK / ABI
+## 3. Runtime architecture
 
-* `minSdk 28`, `targetSdk 35`, `compileSdk 35`
-* Swift triple: `aarch64-unknown-linux-android28` (plus `x86_64-unknown-linux-android28`
-  for emulators when needed)
-* Official Swift SDK for Android `swift-6.4.3-RELEASE_android`, NDK r30 LTS
+Apple's interfaces expose the engine seam itself — `View` is not just `body`:
 
-## Directory layout
-
-```
-Package.swift
-Sources/
-  AndroidBridge/        C shim: JNI entry points + Canvas drawing API   (target AndroidBridge)
-    include/AndroidBridge.h
-  SwiftUI/              portable framework core                          (target SwiftUI)
-  SwiftUIAndroid/       Android runtime + renderer + JNI glue            (target SwiftUIAndroid)
-  DemoApp/              the demo app written in SwiftUI style            (target DemoApp)
-app/                    Java host (Activity, View), manifest, resources
-scripts/                build-apk.sh, run-emulator.sh
-Tests/SwiftUITests/     host-side layout/state tests
+```swift
+public protocol View {
+  nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs
+  nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs
+  nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Int?
+  associatedtype Body: View
+  @ContentBuilder var body: Body { get }
+}
 ```
 
-## Milestones
+`_GraphValue`, `_ViewInputs`, `_ViewOutputs`, `_ViewListInputs`, `_ViewListOutputs` are opaque
+in the interface (all their storage is internal), which is exactly what a port needs: the port
+gives them real contents and implements `_makeView` for each primitive.
 
-* **M1** toolchain: OSS Swift 6.4.3 + Android SDK + NDK r30, cross-compiles `main.swift`.
-* **M2** bridge + host app: APK builds, native lib loads, canvas draws a solid frame.
-* **M3** engine: `View`/`ViewBuilder`/`@State`, stacks, text, shapes, modifiers, layout.
-* **M4** demo app on emulator, screenshots verified pixel-by-pixel through `adb`.
-* **M5** polish: animations, ScrollView/List, gestures, dark mode, hit-testing.
+Pipeline per frame:
+
 ```
+root View ──_makeView────▶ value graph (_GraphValue/_ViewInputs) ──▶ node tree
+                                                                    │
+                                          layout: propose → sizeThatFits → place
+                                                                    │
+                                          paint:  node tree → [DisplayCommand] (dp, absolute)
+                                                                    ▼
+                             SwiftUIAndroid.AndroidCanvasPainter ──▶ ab_* (C) ──▶ Canvas (Skia)
+```
+
+* **State**: `@State`/`@Binding`/`@StateObject`/`@Environment` are implemented as property
+  wrappers keyed by structural identity; mutation marks the graph dirty and posts one
+  `invalidate()` for the next vsync (thread-safe via `View.postInvalidate()`).
+* **Geometry**: everything in dp. The Java host applies `canvas.scale(density)` once, so the
+  Swift layer never sees pixels; text sizes are set in dp so `measureText` also returns dp.
+* **Display list**: `Sources/SwiftUI/Engine/DisplayList.swift` — a platform-free command list
+  (rects, rounded rects, ovals, paths, text, gradients, shadows, clip/opacity) that the Android
+  painter replays. It is the testable heart of the port and the boundary a future backend
+  (Vulkan/Skia-NDK) would implement.
+* **Platform**: `Sources/SwiftUIAndroid/AndroidRuntime.swift` exports the seven C-linkage JNI
+  entry points, owns the frame loop, and converts commands into `ab_*` calls.
+  `Sources/AndroidBridge/AndroidBridge.c` owns all `JNIEnv` handling, caches `Paint`/`Path`/
+  `Typeface`, and never lets Java objects cross into Swift.
+
+## 4. Threading
+
+Every entry point runs on the Android UI thread. `ab_invalidate` is the only cross-thread call
+and is thread-safe (`postInvalidate`). No Java object reference escapes the C layer; Swift sees
+floats, `uint32_t` ARGB and UTF-8 byte buffers.
+
+## 5. Provenance and licensing
+
+The port's code is original. The declarations under `Sources/SwiftUI/Generated/` are Apple's,
+mechanically extracted from the publicly shipped SDK interface files — the same metadata a linker
+stub or framework header carries. No Apple binaries are redistributed or executed.
+
+## 6. Deliberate limits
+
+* No Metal backend: the port targets `android.graphics.Canvas`, which is hardware accelerated in
+  the same way CoreGraphics/UIKit drawing is on iOS.
+* No ObjC interop: UIKit-dependent API (e.g. `UIViewRepresentable` bridging to a real `UIView`)
+  can only be declarative on Android until a UIView-equivalent bridge exists.
+* Accessibility, text input (IME), and image decoding are staged after the core engine.

@@ -28,6 +28,14 @@
  * Coordinate system: top-left origin, +y down, unit = dp. The Java View already applied
  * canvas.scale(density, density), so every float that crosses this boundary is dp.
  */
+#if !defined(__ANDROID__)
+/*
+ * The bridge is Android-only: the jni.h and android platform headers come from the NDK
+ * sysroot and do not exist on the host. `swift test` / `swift build` on macOS builds every target in the
+ * package, so this translation unit deliberately compiles to nothing off-Android.
+ */
+#else
+
 #include "AndroidBridge.h"
 
 #include <jni.h>
@@ -77,6 +85,15 @@ typedef struct ABClasses {
     jclass system_clock;
     jclass context;
 
+    /* Nested enum/enum-like classes. Their constants live on the *nested* class, not on the
+     * outer one: Paint$Style.FILL, Paint$Cap.ROUND, Paint$Join.MITER, Shader$TileMode.CLAMP,
+     * Path$Direction.CW. Looking them up on Paint/Shader/Path raises NoSuchFieldError. */
+    jclass paint_style;
+    jclass paint_cap;
+    jclass paint_join;
+    jclass shader_tile_mode;
+    jclass path_direction;
+
     jobject paint_style_fill;
     jobject paint_style_stroke;
     jobject paint_cap_butt;
@@ -103,6 +120,7 @@ static pthread_mutex_t g_cls_mutex = PTHREAD_MUTEX_INITIALIZER;
  * ────────────────────────────────────────────────────────────────────────────── */
 typedef struct ABIds {
     JNIEnv *env;
+    int ready; /* 1 when every drawing-critical id was resolved */
 
     /* Paint */
     jmethodID paint_set_color;
@@ -251,30 +269,61 @@ static JNIEnv *ab_env(void) {
 
 /* ──────────────────────────────────────────────────────────────────────────────
  * 5. Class / id cache construction.
+ *
+ * Everything here is best-effort and *exception safe*. ART aborts the process when a JNI
+ * function is entered with a pending Java exception ("No pending exception expected"), and
+ * every failed FindClass / GetFieldID / GetMethodID leaves one pending, so:
+ *
+ *   • every lookup is followed by an ExceptionCheck + ExceptionClear on failure,
+ *   • a missing member is logged once and degrades one feature (never aborts),
+ *   • the enum singletons are resolved on their *nested* classes (Paint$Style.FILL, ...),
+ *   • a partially resolved id cache is retried lazily instead of being fatal.
  * ────────────────────────────────────────────────────────────────────────────── */
+static void ab_clear_quiet(JNIEnv *env) {
+    if ((*env)->ExceptionCheck(env)) {
+        (*env)->ExceptionClear(env);
+    }
+}
+
 static jclass ab_global_class(JNIEnv *env, const char *name) {
     jclass local = (*env)->FindClass(env, name);
     if (!local) {
         AB_LOGE("FindClass(%s) failed", name);
+        ab_clear_quiet(env);
         return NULL;
     }
     jclass global = (jclass)(*env)->NewGlobalRef(env, local);
     (*env)->DeleteLocalRef(env, local);
+    if (!global) {
+        AB_LOGE("NewGlobalRef(%s) failed", name);
+        ab_clear_quiet(env);
+    }
     return global;
 }
 
-static jobject ab_static_object(JNIEnv *env, jclass cls, const char *name, const char *sig) {
+/* Read a static object field from `cls` and return a global ref (or NULL).
+ * `cls_name` is only for diagnostics. Failure clears the exception and never aborts. */
+static jobject ab_static_object(JNIEnv *env, jclass cls, const char *cls_name, const char *name,
+                                const char *sig) {
+    if (!cls) {
+        AB_LOGE("static field %s.%s unavailable: class missing", cls_name, name);
+        return NULL;
+    }
     jfieldID field = (*env)->GetStaticFieldID(env, cls, name, sig);
     if (!field) {
-        AB_LOGE("GetStaticFieldID(%s) failed", name);
+        AB_LOGE("GetStaticFieldID(%s.%s%s) failed", cls_name, name, sig);
+        ab_clear_quiet(env);
         return NULL;
     }
     jobject local = (*env)->GetStaticObjectField(env, cls, field);
     if (!local) {
+        AB_LOGE("GetStaticObjectField(%s.%s) returned null", cls_name, name);
+        ab_clear_quiet(env);
         return NULL;
     }
     jobject global = (*env)->NewGlobalRef(env, local);
     (*env)->DeleteLocalRef(env, local);
+    ab_clear_quiet(env);
     return global;
 }
 
@@ -288,7 +337,6 @@ static int ab_classes_init(JNIEnv *env) {
         return 1;
     }
 
-    int ok = 1;
     g_cls.paint = ab_global_class(env, "android/graphics/Paint");
     g_cls.canvas = ab_global_class(env, "android/graphics/Canvas");
     g_cls.path = ab_global_class(env, "android/graphics/Path");
@@ -303,44 +351,88 @@ static int ab_classes_init(JNIEnv *env) {
     g_cls.display_metrics = ab_global_class(env, "android/util/DisplayMetrics");
     g_cls.system_clock = ab_global_class(env, "android/os/SystemClock");
 
-    ok = ok && g_cls.paint && g_cls.canvas && g_cls.path && g_cls.rectf && g_cls.typeface &&
-         g_cls.font_metrics && g_cls.linear_gradient && g_cls.view && g_cls.resources &&
-         g_cls.configuration && g_cls.display_metrics && g_cls.system_clock;
+    /* Nested enum classes — resolved explicitly; the enum constants live here, not on Paint. */
+    g_cls.paint_style = ab_global_class(env, "android/graphics/Paint$Style");
+    g_cls.paint_cap = ab_global_class(env, "android/graphics/Paint$Cap");
+    g_cls.paint_join = ab_global_class(env, "android/graphics/Paint$Join");
+    g_cls.shader_tile_mode = ab_global_class(env, "android/graphics/Shader$TileMode");
+    g_cls.path_direction = ab_global_class(env, "android/graphics/Path$Direction");
 
-    if (ok) {
-        g_cls.paint_style_fill = ab_static_object(env, g_cls.paint, "FILL", "Landroid/graphics/Paint$Style;");
-        g_cls.paint_style_stroke = ab_static_object(env, g_cls.paint, "STROKE", "Landroid/graphics/Paint$Style;");
-        g_cls.paint_cap_butt = ab_static_object(env, g_cls.paint, "BUTT", "Landroid/graphics/Paint$Cap;");
-        g_cls.paint_cap_round = ab_static_object(env, g_cls.paint, "ROUND", "Landroid/graphics/Paint$Cap;");
-        g_cls.paint_cap_square = ab_static_object(env, g_cls.paint, "SQUARE", "Landroid/graphics/Paint$Cap;");
-        g_cls.paint_join_miter = ab_static_object(env, g_cls.paint, "MITER", "Landroid/graphics/Paint$Join;");
-        g_cls.paint_join_round = ab_static_object(env, g_cls.paint, "ROUND", "Landroid/graphics/Paint$Join;");
-        g_cls.paint_join_bevel = ab_static_object(env, g_cls.paint, "BEVEL", "Landroid/graphics/Paint$Join;");
-        g_cls.shader_tile_clamp =
-            ab_static_object(env, ab_global_class(env, "android/graphics/Shader$TileMode"), "CLAMP",
-                             "Landroid/graphics/Shader$TileMode;");
-        g_cls.path_direction_cw =
-            ab_static_object(env, ab_global_class(env, "android/graphics/Path$Direction"), "CW",
-                             "Landroid/graphics/Path$Direction;");
-        ok = g_cls.paint_style_fill && g_cls.paint_style_stroke && g_cls.paint_cap_butt &&
-             g_cls.paint_cap_round && g_cls.paint_cap_square && g_cls.paint_join_miter &&
-             g_cls.paint_join_round && g_cls.paint_join_bevel && g_cls.shader_tile_clamp &&
-             g_cls.path_direction_cw;
+    /* Classes without which nothing can be drawn. */
+    const int core = g_cls.paint && g_cls.canvas && g_cls.path && g_cls.rectf && g_cls.typeface &&
+                     g_cls.font_metrics && g_cls.linear_gradient && g_cls.view;
+    if (!core) {
+        AB_LOGE("core android.graphics classes missing; the bridge cannot render");
+    }
+    if (!g_cls.resources || !g_cls.configuration || !g_cls.display_metrics || !g_cls.system_clock) {
+        AB_LOGE("optional platform classes missing; density/dark-mode/clock use fallbacks");
     }
 
-    if (ok) {
+    if (core) {
+        g_cls.paint_style_fill = ab_static_object(env, g_cls.paint_style,
+                                                  "android.graphics.Paint$Style", "FILL",
+                                                  "Landroid/graphics/Paint$Style;");
+        g_cls.paint_style_stroke = ab_static_object(env, g_cls.paint_style,
+                                                    "android.graphics.Paint$Style", "STROKE",
+                                                    "Landroid/graphics/Paint$Style;");
+        g_cls.paint_cap_butt = ab_static_object(env, g_cls.paint_cap, "android.graphics.Paint$Cap",
+                                                "BUTT", "Landroid/graphics/Paint$Cap;");
+        g_cls.paint_cap_round = ab_static_object(env, g_cls.paint_cap, "android.graphics.Paint$Cap",
+                                                 "ROUND", "Landroid/graphics/Paint$Cap;");
+        g_cls.paint_cap_square = ab_static_object(env, g_cls.paint_cap,
+                                                  "android.graphics.Paint$Cap", "SQUARE",
+                                                  "Landroid/graphics/Paint$Cap;");
+        g_cls.paint_join_miter = ab_static_object(env, g_cls.paint_join,
+                                                  "android.graphics.Paint$Join", "MITER",
+                                                  "Landroid/graphics/Paint$Join;");
+        g_cls.paint_join_round = ab_static_object(env, g_cls.paint_join,
+                                                  "android.graphics.Paint$Join", "ROUND",
+                                                  "Landroid/graphics/Paint$Join;");
+        g_cls.paint_join_bevel = ab_static_object(env, g_cls.paint_join,
+                                                  "android.graphics.Paint$Join", "BEVEL",
+                                                  "Landroid/graphics/Paint$Join;");
+        g_cls.shader_tile_clamp = ab_static_object(env, g_cls.shader_tile_mode,
+                                                   "android.graphics.Shader$TileMode", "CLAMP",
+                                                   "Landroid/graphics/Shader$TileMode;");
+        g_cls.path_direction_cw = ab_static_object(env, g_cls.path_direction,
+                                                   "android.graphics.Path$Direction", "CW",
+                                                   "Landroid/graphics/Path$Direction;");
+
+        /* Degraded-but-alive: each missing optional constant disables exactly one feature. */
+        if (!g_cls.paint_style_fill || !g_cls.paint_style_stroke) {
+            AB_LOGE("Paint$Style.FILL/STROKE unavailable; Paint.setStyle() calls are skipped");
+        }
+        if (!g_cls.paint_cap_butt && !g_cls.paint_cap_round && !g_cls.paint_cap_square) {
+            AB_LOGE("Paint$Cap constants unavailable; line caps use the default");
+        }
+        if (!g_cls.paint_join_miter && !g_cls.paint_join_round && !g_cls.paint_join_bevel) {
+            AB_LOGE("Paint$Join constants unavailable; stroke joins use the default");
+        }
+        if (!g_cls.shader_tile_clamp) {
+            AB_LOGE("Shader$TileMode.CLAMP unavailable; gradients fall back to a solid colour");
+        }
+        if (!g_cls.path_direction_cw) {
+            AB_LOGE("Path$Direction.CW unavailable; rounded clips fall back to rectangle clips");
+        }
+    }
+
+    ab_clear_quiet(env);
+    if (core) {
         g_cls.ready = 1;
     }
     (void)pthread_mutex_unlock(&g_cls_mutex);
-    return ok;
+    return core;
 }
 
 #define AB_MID(ids, cls, name, sig, field)                                              \
     do {                                                                                \
         (ids)->field = (*env)->GetMethodID(env, (cls), (name), (sig));                  \
         if (!(ids)->field) {                                                            \
-            AB_LOGE("GetMethodID %s%s failed", (name), (sig));                          \
-            ok = 0;                                                                     \
+            ab_clear_quiet(env);                                                        \
+            if (!first_fail) {                                                          \
+                first_fail = (name);                                                    \
+            }                                                                           \
+            failed++;                                                                   \
         }                                                                               \
     } while (0)
 
@@ -348,19 +440,42 @@ static int ab_classes_init(JNIEnv *env) {
     do {                                                                                \
         (ids)->field = (*env)->GetStaticMethodID(env, (cls), (name), (sig));            \
         if (!(ids)->field) {                                                            \
-            AB_LOGE("GetStaticMethodID %s%s failed", (name), (sig));                    \
-            ok = 0;                                                                     \
+            ab_clear_quiet(env);                                                        \
+            if (!first_fail) {                                                          \
+                first_fail = (name);                                                    \
+            }                                                                           \
+            failed++;                                                                   \
         }                                                                               \
     } while (0)
 
+/* The ids without which the drawing API cannot work at all. */
+static int ab_ids_core_ok(const ABIds *ids) {
+    return ids->paint_set_color && ids->paint_set_style && ids->paint_set_stroke_width &&
+           ids->paint_set_anti_alias && ids->paint_set_text_size && ids->paint_set_typeface &&
+           ids->paint_set_letter_spacing && ids->paint_measure_text &&
+           ids->paint_get_font_metrics && ids->font_metrics_ascent && ids->font_metrics_descent &&
+           ids->font_metrics_leading && ids->canvas_draw_rect && ids->canvas_draw_round_rect &&
+           ids->canvas_draw_oval && ids->canvas_draw_path && ids->canvas_draw_text &&
+           ids->canvas_draw_line && ids->canvas_save && ids->canvas_restore &&
+           ids->canvas_clip_rect && ids->canvas_clip_path && ids->path_ctor && ids->path_rewind &&
+           ids->path_move_to && ids->path_line_to && ids->path_quad_to && ids->path_cubic_to &&
+           ids->path_close && ids->path_add_round_rect && ids->rectf_ctor &&
+           ids->typeface_create && ids->linear_gradient_ctor && ids->font_metrics_ctor;
+}
+
+static int g_ids_warn_budget = 3;
+
 static int ab_ids_init(JNIEnv *env, ABIds *ids) {
-    if (ids->env == env) {
+    if (ids->env == env && ids->ready) {
         return 1;
     }
-    memset(ids, 0, sizeof(*ids));
-    ids->env = env;
+    if (ids->env != env) {
+        memset(ids, 0, sizeof(*ids));
+        ids->env = env;
+    }
 
-    int ok = 1;
+    const char *first_fail = NULL;
+    int failed = 0;
     jclass c = g_cls.paint;
     AB_MID(ids, c, "setColor", "(I)V", paint_set_color);
     AB_MID(ids, c, "setStyle", "(Landroid/graphics/Paint$Style;)V", paint_set_style);
@@ -387,8 +502,11 @@ static int ab_ids_init(JNIEnv *env, ABIds *ids) {
     ids->font_metrics_descent = (*env)->GetFieldID(env, c, "descent", "F");
     ids->font_metrics_leading = (*env)->GetFieldID(env, c, "leading", "F");
     if (!ids->font_metrics_ascent || !ids->font_metrics_descent || !ids->font_metrics_leading) {
-        AB_LOGE("Paint$FontMetrics fields missing");
-        ok = 0;
+        ab_clear_quiet(env);
+        if (!first_fail) {
+            first_fail = "Paint$FontMetrics.ascent";
+        }
+        failed++;
     }
 
     c = g_cls.canvas;
@@ -436,19 +554,32 @@ static int ab_ids_init(JNIEnv *env, ABIds *ids) {
     AB_MID(ids, c, "getConfiguration", "()Landroid/content/res/Configuration;", resources_get_configuration);
     AB_MID(ids, c, "getDisplayMetrics", "()Landroid/util/DisplayMetrics;", resources_get_display_metrics);
 
-    ids->configuration_ui_mode = (*env)->GetFieldID(env, g_cls.configuration, "uiMode", "I");
-    ids->display_metrics_density = (*env)->GetFieldID(env, g_cls.display_metrics, "density", "F");
+    ids->configuration_ui_mode = g_cls.configuration
+                                     ? (*env)->GetFieldID(env, g_cls.configuration, "uiMode", "I")
+                                     : NULL;
+    ids->display_metrics_density = g_cls.display_metrics
+                                       ? (*env)->GetFieldID(env, g_cls.display_metrics, "density", "F")
+                                       : NULL;
     if (!ids->configuration_ui_mode || !ids->display_metrics_density) {
-        AB_LOGE("Configuration.uiMode / DisplayMetrics.density field missing");
-        ok = 0;
+        ab_clear_quiet(env);
+        if (!first_fail) {
+            first_fail = "Configuration.uiMode/DisplayMetrics.density";
+        }
+        failed++;
     }
 
-    AB_SMID(ids, g_cls.system_clock, "uptimeMillis", "()J", system_clock_uptime_millis);
-
-    if (!ok) {
-        ids->env = NULL;
+    if (g_cls.system_clock) {
+        AB_SMID(ids, g_cls.system_clock, "uptimeMillis", "()J", system_clock_uptime_millis);
     }
-    return ok;
+
+    ab_clear_quiet(env);
+    ids->ready = ab_ids_core_ok(ids);
+    if (failed > 0 && g_ids_warn_budget > 0) {
+        g_ids_warn_budget--;
+        AB_LOGE("%d JNI member lookups failed (first: %s); rendering is %s", failed,
+                first_fail ? first_fail : "?", ids->ready ? "degraded" : "disabled");
+    }
+    return ids->ready;
 }
 
 #undef AB_MID
@@ -516,6 +647,7 @@ static int ab_scratch_init(JNIEnv *env, ABIds *ids, ABScratch *s) {
     jmethodID paint_ctor = (*env)->GetMethodID(env, g_cls.paint, "<init>", "()V");
     if (!paint_ctor) {
         AB_LOGE("Paint.<init> missing");
+        ab_clear_quiet(env);
         s->env = NULL;
         return 0;
     }
@@ -531,24 +663,45 @@ static int ab_scratch_init(JNIEnv *env, ABIds *ids, ABScratch *s) {
     }
 
     /* Paints that are configured once and only get a colour (and text metrics) changed. */
+    /* Null-checked: a missing enum singleton is skipped instead of being passed to a
+     * setter as NULL (Java would throw NPE, which aborts the process on the next JNI call). */
     (*env)->CallVoidMethod(env, s->fill_paint, ids->paint_set_anti_alias, JNI_TRUE);
-    (*env)->CallVoidMethod(env, s->fill_paint, ids->paint_set_style, g_cls.paint_style_fill);
-    (*env)->CallVoidMethod(env, s->fill_paint, ids->paint_set_dither, JNI_TRUE);
+    if (g_cls.paint_style_fill) {
+        (*env)->CallVoidMethod(env, s->fill_paint, ids->paint_set_style, g_cls.paint_style_fill);
+    }
+    if (ids->paint_set_dither) {
+        (*env)->CallVoidMethod(env, s->fill_paint, ids->paint_set_dither, JNI_TRUE);
+    }
 
     (*env)->CallVoidMethod(env, s->stroke_paint, ids->paint_set_anti_alias, JNI_TRUE);
-    (*env)->CallVoidMethod(env, s->stroke_paint, ids->paint_set_style, g_cls.paint_style_stroke);
-    (*env)->CallVoidMethod(env, s->stroke_paint, ids->paint_set_stroke_cap, g_cls.paint_cap_butt);
-    (*env)->CallVoidMethod(env, s->stroke_paint, ids->paint_set_stroke_join, g_cls.paint_join_miter);
+    if (g_cls.paint_style_stroke) {
+        (*env)->CallVoidMethod(env, s->stroke_paint, ids->paint_set_style, g_cls.paint_style_stroke);
+    }
+    if (g_cls.paint_cap_butt) {
+        (*env)->CallVoidMethod(env, s->stroke_paint, ids->paint_set_stroke_cap, g_cls.paint_cap_butt);
+    }
+    if (g_cls.paint_join_miter) {
+        (*env)->CallVoidMethod(env, s->stroke_paint, ids->paint_set_stroke_join, g_cls.paint_join_miter);
+    }
 
     (*env)->CallVoidMethod(env, s->text_paint, ids->paint_set_anti_alias, JNI_TRUE);
-    (*env)->CallVoidMethod(env, s->text_paint, ids->paint_set_subpixel_text, JNI_TRUE);
-    (*env)->CallVoidMethod(env, s->text_paint, ids->paint_set_dither, JNI_TRUE);
+    if (ids->paint_set_subpixel_text) {
+        (*env)->CallVoidMethod(env, s->text_paint, ids->paint_set_subpixel_text, JNI_TRUE);
+    }
+    if (ids->paint_set_dither) {
+        (*env)->CallVoidMethod(env, s->text_paint, ids->paint_set_dither, JNI_TRUE);
+    }
 
     (*env)->CallVoidMethod(env, s->gradient_paint, ids->paint_set_anti_alias, JNI_TRUE);
-    (*env)->CallVoidMethod(env, s->gradient_paint, ids->paint_set_style, g_cls.paint_style_fill);
+    if (g_cls.paint_style_fill) {
+        (*env)->CallVoidMethod(env, s->gradient_paint, ids->paint_set_style, g_cls.paint_style_fill);
+    }
 
     (*env)->CallVoidMethod(env, s->shadow_paint, ids->paint_set_anti_alias, JNI_TRUE);
-    (*env)->CallVoidMethod(env, s->shadow_paint, ids->paint_set_style, g_cls.paint_style_fill);
+    if (g_cls.paint_style_fill) {
+        (*env)->CallVoidMethod(env, s->shadow_paint, ids->paint_set_style, g_cls.paint_style_fill);
+    }
+    ab_clear_quiet(env);
 
     s->path = (*env)->NewObject(env, g_cls.path, ids->path_ctor);
     if (s->path) {
@@ -570,9 +723,12 @@ static int ab_scratch_init(JNIEnv *env, ABIds *ids, ABScratch *s) {
     }
 
     if (!s->path || !s->rectf || !s->font_metrics) {
+        AB_LOGE("scratch object allocation failed (Path/RectF/FontMetrics)");
+        ab_clear_quiet(env);
         s->env = NULL;
         return 0;
     }
+    ab_clear_quiet(env);
     return 1;
 }
 
@@ -602,7 +758,31 @@ struct ABCanvas {
     ABIds *ids;
     ABScratch *scratch;
     float density;
+    /* Set when a Java exception escaped during this frame. The exception is cleared
+     * immediately (a pending exception would abort the process on the next JNI call) and
+     * the remaining draw calls of the frame are skipped instead of cascading failures. */
+    int faulted;
 };
+
+/* True when the canvas can be used for the next drawing call. Clears (and reports once) any
+ * exception left pending by a previous call, poisoning the rest of the frame. */
+static int ab_canvas_ready(ABCanvas *c) {
+    if (!c) {
+        return 0;
+    }
+    if (c->faulted) {
+        return 0;
+    }
+    JNIEnv *env = c->env;
+    if (env && (*env)->ExceptionCheck(env)) {
+        (*env)->ExceptionDescribe(env);
+        (*env)->ExceptionClear(env);
+        c->faulted = 1;
+        AB_LOGE("Java exception during render; frame aborted");
+        return 0;
+    }
+    return c->ids && c->ids->ready;
+}
 
 /* ──────────────────────────────────────────────────────────────────────────────
  * 8. JNI_OnLoad / JNI_OnUnload.
@@ -615,12 +795,17 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *reserved) {
     if ((*vm)->GetEnv(vm, (void **)&env, JNI_VERSION_1_6) != JNI_OK || !env) {
         return JNI_ERR;
     }
-    if (!ab_classes_init(env)) {
-        AB_LOGE("class cache init failed");
-        return JNI_ERR;
-    }
+    /* Best-effort: only a missing *core* class (Paint/Canvas/Path/Typeface/...) disables the
+     * bridge. Missing enum constants / methods degrade one feature and are retried lazily in
+     * nativeDraw(); a failed lookup must never leave a pending exception, because ART aborts
+     * the process when the next JNI call is entered with one. */
+    int core = ab_classes_init(env);
     if (!ab_ids_init(env, &t_ids)) {
-        AB_LOGE("method id cache init failed");
+        AB_LOGE("method id cache incomplete at load time; will retry per frame");
+    }
+    ab_clear_quiet(env);
+    if (!core) {
+        AB_LOGE("JNI_OnLoad: core classes unavailable, native rendering disabled");
         return JNI_ERR;
     }
     return JNI_VERSION_1_6;
@@ -724,6 +909,10 @@ static jstring ab_new_string(JNIEnv *env, const char *s, int32_t len) {
     if (buf != stackbuf) {
         free(buf);
     }
+    if (!result) {
+        /* NewStringUTF/NewString can throw OutOfMemoryError; never leave it pending. */
+        ab_clear_quiet(env);
+    }
     return result;
 }
 
@@ -786,6 +975,7 @@ static jobject ab_text_paint(JNIEnv *env, ABCanvas *c, float size, int32_t weigh
         if (previous) {
             (*env)->DeleteLocalRef(env, previous);
         }
+        ab_clear_quiet(env);
     }
     (*env)->CallVoidMethod(env, paint, ids->paint_set_letter_spacing, (jfloat)letter_spacing);
     ab_clear_exception(env);
@@ -804,24 +994,32 @@ static float ab_letter_spacing_em(float letter_spacing_dp, float size_dp) {
  * 10. JNI entry points called by dev.swiftui.android.SwiftUIHostView.
  * ────────────────────────────────────────────────────────────────────────────── */
 static void ab_runtime_refresh_configuration(JNIEnv *env, ABRuntime *rt) {
+    if (!rt->view || !rt->view_get_resources) {
+        return;
+    }
     jobject resources = (*env)->CallObjectMethod(env, rt->view, rt->view_get_resources);
     if (!resources || ab_clear_exception(env)) {
         return;
     }
-    jobject metrics =
-        (*env)->CallObjectMethod(env, resources, rt->resources_get_display_metrics);
-    if (metrics) {
-        jfloat density = (*env)->GetFloatField(env, metrics, rt->display_metrics_density);
-        if (density > 0.0f) {
-            rt->density = (float)density;
+    if (rt->resources_get_display_metrics && rt->display_metrics_density) {
+        jobject metrics =
+            (*env)->CallObjectMethod(env, resources, rt->resources_get_display_metrics);
+        if (metrics) {
+            jfloat density = (*env)->GetFloatField(env, metrics, rt->display_metrics_density);
+            if (density > 0.0f) {
+                rt->density = (float)density;
+            }
+            (*env)->DeleteLocalRef(env, metrics);
         }
-        (*env)->DeleteLocalRef(env, metrics);
+        ab_clear_exception(env);
     }
-    jobject config = (*env)->CallObjectMethod(env, resources, rt->resources_get_configuration);
-    if (config) {
-        jint ui_mode = (*env)->GetIntField(env, config, rt->configuration_ui_mode);
-        rt->dark = ((ui_mode & 0x30 /* UI_MODE_NIGHT_MASK */) == 0x20 /* NIGHT_YES */);
-        (*env)->DeleteLocalRef(env, config);
+    if (rt->resources_get_configuration && rt->configuration_ui_mode) {
+        jobject config = (*env)->CallObjectMethod(env, resources, rt->resources_get_configuration);
+        if (config) {
+            jint ui_mode = (*env)->GetIntField(env, config, rt->configuration_ui_mode);
+            rt->dark = ((ui_mode & 0x30 /* UI_MODE_NIGHT_MASK */) == 0x20 /* NIGHT_YES */);
+            (*env)->DeleteLocalRef(env, config);
+        }
     }
     (*env)->DeleteLocalRef(env, resources);
     ab_clear_exception(env);
@@ -845,10 +1043,17 @@ Java_dev_swiftui_android_SwiftUIHostView_nativeCreate(JNIEnv *env, jclass clazz,
         AB_LOGE("nativeCreate: no JavaVM");
         return 0;
     }
-    if (!ab_classes_init(env) || !ab_ids_init(env, &t_ids)) {
-        AB_LOGE("nativeCreate: JNI caches unavailable");
+    ab_clear_quiet(env);
+    if (!ab_classes_init(env)) {
+        AB_LOGE("nativeCreate: core classes unavailable");
+        ab_clear_quiet(env);
         return 0;
     }
+    if (!ab_ids_init(env, &t_ids)) {
+        /* Not fatal: nativeDraw retries and simply draws nothing until it succeeds. */
+        AB_LOGE("nativeCreate: id cache incomplete, rendering degraded");
+    }
+    ab_clear_quiet(env);
 
     ABRuntime *rt = (ABRuntime *)calloc(1, sizeof(ABRuntime));
     if (!rt) {
@@ -887,6 +1092,7 @@ JNIEXPORT void JNICALL Java_dev_swiftui_android_SwiftUIHostView_nativeResize(
     JNIEnv *env, jclass clazz, jlong handle, jint width_px, jint height_px, jfloat density,
     jfloat safe_top, jfloat safe_bottom, jfloat safe_left, jfloat safe_right) {
     (void)clazz;
+    ab_clear_quiet(env); /* tolerate a pending exception from the caller */
     ABRuntime *rt = ab_runtime(handle);
     if (!rt) {
         return;
@@ -912,6 +1118,7 @@ JNIEXPORT void JNICALL Java_dev_swiftui_android_SwiftUIHostView_nativeResize(
 JNIEXPORT void JNICALL Java_dev_swiftui_android_SwiftUIHostView_nativeConfiguration(
     JNIEnv *env, jclass clazz, jlong handle) {
     (void)clazz;
+    ab_clear_quiet(env); /* tolerate a pending exception from the caller */
     ABRuntime *rt = ab_runtime(handle);
     if (!rt) {
         return;
@@ -931,15 +1138,19 @@ JNIEXPORT void JNICALL Java_dev_swiftui_android_SwiftUIHostView_nativeDraw(
     if (!rt || !canvas) {
         return;
     }
+    ab_clear_quiet(env); /* never start a frame with an exception pending */
     ABIds *ids = &t_ids;
     if (!ab_ids_init(env, ids)) {
+        ab_clear_quiet(env);
         return;
     }
     ABScratch *scratch = &t_scratch;
     if (!ab_scratch_init(env, ids, scratch)) {
+        ab_clear_quiet(env);
         return;
     }
-    if ((*env)->PushLocalFrame(env, 32) != 0) {
+    if ((*env)->PushLocalFrame(env, 32) < 0) {
+        ab_clear_quiet(env);
         return;
     }
 
@@ -960,6 +1171,7 @@ JNIEXPORT jboolean JNICALL
 Java_dev_swiftui_android_SwiftUIHostView_nativeTouch(JNIEnv *env, jclass clazz, jlong handle,
                                                     jint phase, jfloat x_dp, jfloat y_dp) {
     (void)clazz;
+    ab_clear_quiet(env); /* tolerate a pending exception from the caller */
     ABRuntime *rt = ab_runtime(handle);
     if (!rt) {
         return JNI_FALSE;
@@ -968,7 +1180,7 @@ Java_dev_swiftui_android_SwiftUIHostView_nativeTouch(JNIEnv *env, jclass clazz, 
      * that divide by dt, so force strict monotonicity for same-millisecond events. */
     static int64_t last_ms = 0;
     int64_t now_ms = 0;
-    if (ab_ids_init(env, &t_ids)) {
+    if (ab_ids_init(env, &t_ids) && g_cls.system_clock && t_ids.system_clock_uptime_millis) {
         jlong up = (*env)->CallStaticLongMethod(env, g_cls.system_clock,
                                                t_ids.system_clock_uptime_millis);
         if (!ab_clear_exception(env)) {
@@ -991,6 +1203,7 @@ Java_dev_swiftui_android_SwiftUIHostView_nativeTouch(JNIEnv *env, jclass clazz, 
 JNIEXPORT jboolean JNICALL Java_dev_swiftui_android_SwiftUIHostView_nativeKey(
     JNIEnv *env, jclass clazz, jlong handle, jint action, jint key_code) {
     (void)clazz;
+    ab_clear_quiet(env); /* tolerate a pending exception from the caller */
     ABRuntime *rt = ab_runtime(handle);
     if (!rt) {
         return JNI_FALSE;
@@ -1003,6 +1216,7 @@ JNIEXPORT jboolean JNICALL Java_dev_swiftui_android_SwiftUIHostView_nativeKey(
 JNIEXPORT void JNICALL Java_dev_swiftui_android_SwiftUIHostView_nativeLifecycle(
     JNIEnv *env, jclass clazz, jlong handle, jint event) {
     (void)clazz;
+    ab_clear_quiet(env); /* tolerate a pending exception from the caller */
     ABRuntime *rt = ab_runtime(handle);
     if (!rt) {
         return;
@@ -1014,6 +1228,7 @@ JNIEXPORT void JNICALL Java_dev_swiftui_android_SwiftUIHostView_nativeLifecycle(
 JNIEXPORT void JNICALL Java_dev_swiftui_android_SwiftUIHostView_nativeLowMemory(
     JNIEnv *env, jclass clazz, jlong handle) {
     (void)clazz;
+    ab_clear_quiet(env); /* tolerate a pending exception from the caller */
     ABRuntime *rt = ab_runtime(handle);
     if (!rt) {
         return;
@@ -1025,6 +1240,7 @@ JNIEXPORT void JNICALL Java_dev_swiftui_android_SwiftUIHostView_nativeLowMemory(
 JNIEXPORT void JNICALL
 Java_dev_swiftui_android_SwiftUIHostView_nativeDestroy(JNIEnv *env, jclass clazz, jlong handle) {
     (void)clazz;
+    ab_clear_quiet(env); /* tolerate a pending exception from the caller */
     ABRuntime *rt = ab_runtime(handle);
     if (!rt) {
         return;
@@ -1046,32 +1262,37 @@ static void ab_paint_color(JNIEnv *env, jobject paint, ABIds *ids, uint32_t argb
 }
 
 void ab_save(ABCanvas *c) {
-    if (!c) {
+    if (!ab_canvas_ready(c)) {
         return;
     }
     (*c->env)->CallIntMethod(c->env, c->canvas, c->ids->canvas_save);
 }
 
 void ab_restore(ABCanvas *c) {
-    if (!c) {
+    if (!ab_canvas_ready(c)) {
         return;
     }
     (*c->env)->CallVoidMethod(c->env, c->canvas, c->ids->canvas_restore);
 }
 
 void ab_clip_rect(ABCanvas *c, float l, float t, float r, float b) {
-    if (!c) {
+    if (!ab_canvas_ready(c)) {
         return;
     }
     (*c->env)->CallBooleanMethod(c->env, c->canvas, c->ids->canvas_clip_rect, l, t, r, b);
 }
 
 void ab_clip_round_rect(ABCanvas *c, float l, float t, float r, float b, float radius) {
-    if (!c) {
+    if (!ab_canvas_ready(c)) {
         return;
     }
     JNIEnv *env = c->env;
     ABIds *ids = c->ids;
+    if (!g_cls.path_direction_cw) {
+        /* Degraded: clip to the bounding rectangle instead of the rounded one. */
+        (*env)->CallBooleanMethod(env, c->canvas, ids->canvas_clip_rect, l, t, r, b);
+        return;
+    }
     jobject path = c->scratch->path;
     (*env)->CallVoidMethod(env, path, ids->path_rewind);
     (*env)->CallVoidMethod(env, path, ids->path_add_round_rect, l, t, r, b, radius, radius,
@@ -1080,7 +1301,7 @@ void ab_clip_round_rect(ABCanvas *c, float l, float t, float r, float b, float r
 }
 
 void ab_fill_rect(ABCanvas *c, float l, float t, float r, float b, uint32_t argb) {
-    if (!c) {
+    if (!ab_canvas_ready(c)) {
         return;
     }
     JNIEnv *env = c->env;
@@ -1091,7 +1312,7 @@ void ab_fill_rect(ABCanvas *c, float l, float t, float r, float b, uint32_t argb
 
 void ab_fill_round_rect(ABCanvas *c, float l, float t, float r, float b, float radius,
                         uint32_t argb) {
-    if (!c) {
+    if (!ab_canvas_ready(c)) {
         return;
     }
     JNIEnv *env = c->env;
@@ -1102,7 +1323,7 @@ void ab_fill_round_rect(ABCanvas *c, float l, float t, float r, float b, float r
 }
 
 void ab_fill_oval(ABCanvas *c, float l, float t, float r, float b, uint32_t argb) {
-    if (!c) {
+    if (!ab_canvas_ready(c)) {
         return;
     }
     JNIEnv *env = c->env;
@@ -1123,7 +1344,9 @@ static jobject ab_stroke_paint(JNIEnv *env, ABCanvas *c, float width, int32_t ca
     } else if (cap == 2) {
         cap_obj = g_cls.paint_cap_square;
     }
-    (*env)->CallVoidMethod(env, paint, ids->paint_set_stroke_cap, cap_obj);
+    if (cap_obj) {
+        (*env)->CallVoidMethod(env, paint, ids->paint_set_stroke_cap, cap_obj);
+    }
     if (join >= 0) {
         jobject join_obj = g_cls.paint_join_miter;
         if (join == 1) {
@@ -1131,13 +1354,15 @@ static jobject ab_stroke_paint(JNIEnv *env, ABCanvas *c, float width, int32_t ca
         } else if (join == 2) {
             join_obj = g_cls.paint_join_bevel;
         }
-        (*env)->CallVoidMethod(env, paint, ids->paint_set_stroke_join, join_obj);
+        if (join_obj) {
+            (*env)->CallVoidMethod(env, paint, ids->paint_set_stroke_join, join_obj);
+        }
     }
     return paint;
 }
 
 void ab_stroke_rect(ABCanvas *c, float l, float t, float r, float b, float width, uint32_t argb) {
-    if (!c) {
+    if (!ab_canvas_ready(c)) {
         return;
     }
     JNIEnv *env = c->env;
@@ -1147,7 +1372,7 @@ void ab_stroke_rect(ABCanvas *c, float l, float t, float r, float b, float width
 
 void ab_stroke_round_rect(ABCanvas *c, float l, float t, float r, float b, float radius,
                           float width, uint32_t argb) {
-    if (!c) {
+    if (!ab_canvas_ready(c)) {
         return;
     }
     JNIEnv *env = c->env;
@@ -1158,7 +1383,7 @@ void ab_stroke_round_rect(ABCanvas *c, float l, float t, float r, float b, float
 
 void ab_stroke_line(ABCanvas *c, float x1, float y1, float x2, float y2, float width,
                     int32_t cap, uint32_t argb) {
-    if (!c) {
+    if (!ab_canvas_ready(c)) {
         return;
     }
     JNIEnv *env = c->env;
@@ -1222,7 +1447,7 @@ static jobject ab_build_path(JNIEnv *env, ABCanvas *c, const float *cmds, int32_
 }
 
 void ab_fill_path(ABCanvas *c, const float *cmds, int32_t count, uint32_t argb) {
-    if (!c) {
+    if (!ab_canvas_ready(c)) {
         return;
     }
     JNIEnv *env = c->env;
@@ -1237,7 +1462,7 @@ void ab_fill_path(ABCanvas *c, const float *cmds, int32_t count, uint32_t argb) 
 
 void ab_stroke_path(ABCanvas *c, const float *cmds, int32_t count, float width, int32_t cap,
                     int32_t join, uint32_t argb) {
-    if (!c) {
+    if (!ab_canvas_ready(c)) {
         return;
     }
     JNIEnv *env = c->env;
@@ -1260,7 +1485,7 @@ void ab_stroke_path(ABCanvas *c, const float *cmds, int32_t count, float width, 
  */
 void ab_draw_shadow_round_rect(ABCanvas *c, float l, float t, float r, float b, float radius,
                                float dx, float dy, float blur, uint32_t argb) {
-    if (!c) {
+    if (!ab_canvas_ready(c)) {
         return;
     }
     float alpha = (float)((argb >> 24) & 0xFFu) / 255.0f;
@@ -1353,7 +1578,7 @@ static jfloatArray ab_gradient_stops(JNIEnv *env, ABScratch *s, const float *sto
 
 static jobject ab_linear_gradient(JNIEnv *env, ABCanvas *c, float x0, float y0, float x1, float y1,
                                   const uint32_t *colors, const float *stops, int32_t count) {
-    if (!colors || count < 2) {
+    if (!colors || count < 2 || !c->ids->paint_set_shader || !g_cls.shader_tile_clamp) {
         return NULL;
     }
     jintArray jcolors = ab_gradient_colors(env, c->scratch, colors, count);
@@ -1363,8 +1588,12 @@ static jobject ab_linear_gradient(JNIEnv *env, ABCanvas *c, float x0, float y0, 
     }
     /* Local ref: the caller draws immediately, then drops it. Living inside nativeDraw's
      * PushLocalFrame keeps this allocation-free across frames. */
-    return (*env)->NewObject(env, g_cls.linear_gradient, c->ids->linear_gradient_ctor, x0, y0, x1,
-                             y1, jcolors, jstops, g_cls.shader_tile_clamp);
+    jobject shader = (*env)->NewObject(env, g_cls.linear_gradient, c->ids->linear_gradient_ctor, x0,
+                                       y0, x1, y1, jcolors, jstops, g_cls.shader_tile_clamp);
+    if (!shader) {
+        ab_clear_quiet(env);
+    }
+    return shader;
 }
 
 static void ab_fill_gradient(ABCanvas *c, jobject paint, float l, float t, float r, float b,
@@ -1385,12 +1614,13 @@ static void ab_fill_gradient(ABCanvas *c, jobject paint, float l, float t, float
         (*env)->DeleteLocalRef(env, previous_shader);
     }
     (*env)->DeleteLocalRef(env, shader);
+    ab_clear_exception(env);
 }
 
 void ab_fill_linear_gradient_rect(ABCanvas *c, float l, float t, float r, float b, float x0,
                                   float y0, float x1, float y1, const uint32_t *colors,
                                   const float *stops, int32_t count) {
-    if (!c) {
+    if (!ab_canvas_ready(c)) {
         return;
     }
     JNIEnv *env = c->env;
@@ -1407,7 +1637,7 @@ void ab_fill_linear_gradient_rect(ABCanvas *c, float l, float t, float r, float 
 void ab_fill_linear_gradient_round_rect(ABCanvas *c, float l, float t, float r, float b,
                                         float radius, float x0, float y0, float x1, float y1,
                                         const uint32_t *colors, const float *stops, int32_t count) {
-    if (!c) {
+    if (!ab_canvas_ready(c)) {
         return;
     }
     JNIEnv *env = c->env;
@@ -1423,7 +1653,7 @@ void ab_fill_linear_gradient_round_rect(ABCanvas *c, float l, float t, float r, 
 
 void ab_draw_text(ABCanvas *c, const char *utf8, int32_t len, float x, float baseline_y, float size,
                   int32_t weight, int32_t italic, uint32_t color, float letter_spacing) {
-    if (!c || !utf8 || len == 0 || size <= 0.0f) {
+    if (!ab_canvas_ready(c) || !utf8 || len == 0 || size <= 0.0f) {
         return;
     }
     JNIEnv *env = c->env;
@@ -1436,11 +1666,12 @@ void ab_draw_text(ABCanvas *c, const char *utf8, int32_t len, float x, float bas
     }
     (*env)->CallVoidMethod(env, c->canvas, c->ids->canvas_draw_text, text, x, baseline_y, paint);
     (*env)->DeleteLocalRef(env, text);
+    ab_clear_exception(env);
 }
 
 float ab_measure_text(ABCanvas *c, const char *utf8, int32_t len, float size, int32_t weight,
                       int32_t italic, float letter_spacing) {
-    if (!c || !utf8 || len == 0 || size <= 0.0f) {
+    if (!ab_canvas_ready(c) || !utf8 || len == 0 || size <= 0.0f) {
         return 0.0f;
     }
     JNIEnv *env = c->env;
@@ -1469,7 +1700,7 @@ void ab_font_metrics(ABCanvas *c, float size, int32_t weight, int32_t italic, fl
     if (leading) {
         *leading = 0.0f;
     }
-    if (!c || size <= 0.0f) {
+    if (!ab_canvas_ready(c) || size <= 0.0f) {
         return;
     }
     JNIEnv *env = c->env;
@@ -1535,7 +1766,8 @@ bool ab_is_dark_mode(ABRuntime *rt) {
         return false;
     }
     JNIEnv *env = ab_env();
-    if (env && rt->view_get_resources && rt->resources_get_configuration) {
+    if (env && rt->view_get_resources && rt->resources_get_configuration &&
+        rt->configuration_ui_mode) {
         jobject resources = (*env)->CallObjectMethod(env, rt->view, rt->view_get_resources);
         if (resources && !ab_clear_exception(env)) {
             jobject config =
@@ -1551,3 +1783,5 @@ bool ab_is_dark_mode(ABRuntime *rt) {
     }
     return rt->dark;
 }
+
+#endif /* __ANDROID__ */

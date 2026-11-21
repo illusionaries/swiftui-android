@@ -54,6 +54,12 @@ mkdir -p "$gen" "$shims"
 
 # Modules whose interface Apple actually ships; these are retargeted verbatim.
 real_modules=(SwiftUICore SwiftUI Symbols Combine CoreTransferable DeveloperToolsSupport)
+# Imports that a Darwin interface only sees through its framework's ObjC umbrella
+# header (which does not exist on the port). `retarget_interface.py --imports` inserts
+# these after the module header; they add no declarations, only visibility.
+declare -A umbrella_imports=(
+    [CoreTransferable]="public import Foundation"
+)
 # Modules that do not exist on Android; port-shims/<Module>/<Module>.swift declares the
 # subset of their API that the retargeted interfaces reference.
 shim_modules=(UIKit QuartzCore CoreGraphics CoreText CoreFoundation CoreMedia CoreData DataDetection UniformTypeIdentifiers Accessibility Spatial simd Darwin OSLog os)
@@ -65,11 +71,15 @@ retarget() {
         echo "  ! no interface for $module (skipping retarget)"
         return 1
     fi
+    local extra=""
+    if [ -n "${umbrella_imports[$module]:-}" ]; then
+        extra="--imports=${umbrella_imports[$module]}"
+    fi
     mkdir -p "$gen/$module.swiftmodule"
-    rm -f "$gen/$module.swiftmodule"/*.swiftmodule
+    rm -f "$gen/$module.swiftmodule"/*.swiftinterface
     # The loader looks for the interface under several target-derived names; provide all.
     for name in aarch64 aarch64-unknown-linux-android "$TARGET_TRIPLE"; do
-        python3 "$port_dir/retarget_interface.py" "$iface" "$gen/$module.swiftmodule/$name.swiftinterface" "$module"
+        python3 "$port_dir/retarget_interface.py" "$iface" "$gen/$module.swiftmodule/$name.swiftinterface" "$module" ${extra:+"$extra"}
     done
     return 0
 }

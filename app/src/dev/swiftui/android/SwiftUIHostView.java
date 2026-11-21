@@ -26,6 +26,7 @@ import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.DisplayCutout;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -88,6 +89,15 @@ public class SwiftUIHostView extends View {
     private int safeRightPx;
     /** True once onApplyWindowInsets delivered real values. */
     private boolean hasInsets;
+
+    /** Logcat tag shared with scripts/device-test.sh and the C bridge diagnostics. */
+    private static final String LOG_TAG = "SwiftUIBridge";
+    /** Last safe-area values handed to nativeResize, so we log each change once. */
+    private int loggedTopPx = -1;
+    private int loggedBottomPx = -1;
+    private int loggedLeftPx = -1;
+    private int loggedRightPx = -1;
+    private boolean loggedFirstFrame;
 
     public SwiftUIHostView(Context context) {
         this(context, null);
@@ -214,8 +224,29 @@ public class SwiftUIHostView extends View {
             d = 1.0f;
         }
         density = d;
-        nativeResize(h, wPx, hPx, d, safeTopPx / d, safeBottomPx / d, safeLeftPx / d,
-                safeRightPx / d);
+        float topDp = safeTopPx / d;
+        float bottomDp = safeBottomPx / d;
+        float leftDp = safeLeftPx / d;
+        float rightDp = safeRightPx / d;
+
+        // Visible in `adb logcat -s SwiftUIBridge`; confirms that gesture-navigation AVDs still
+        // report non-zero system-bar insets and that a rotation/inset change re-pushes them.
+        if (!loggedFirstFrame || safeTopPx != loggedTopPx || safeBottomPx != loggedBottomPx
+                || safeLeftPx != loggedLeftPx || safeRightPx != loggedRightPx) {
+            loggedFirstFrame = true;
+            loggedTopPx = safeTopPx;
+            loggedBottomPx = safeBottomPx;
+            loggedLeftPx = safeLeftPx;
+            loggedRightPx = safeRightPx;
+            Log.i(LOG_TAG, "nativeResize " + wPx + "x" + hPx + "px density=" + d
+                    + " -> " + (wPx / d) + "x" + (hPx / d) + "dp"
+                    + " safeArea(px)=[" + safeTopPx + "," + safeBottomPx + ","
+                    + safeLeftPx + "," + safeRightPx + "]"
+                    + " safeArea(dp)=[" + topDp + "," + bottomDp + "," + leftDp + ","
+                    + rightDp + "]");
+        }
+
+        nativeResize(h, wPx, hPx, d, topDp, bottomDp, leftDp, rightDp);
     }
 
     /* ──────────────────────────────────────────────────────────────────────────
