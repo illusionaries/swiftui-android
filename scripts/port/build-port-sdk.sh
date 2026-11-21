@@ -139,6 +139,19 @@ for module in "${shim_modules[@]}"; do
     build_shim "$module" || true
 done
 
+# Consumers compile a module *named* SwiftUI that already contains SwiftUICore's declarations,
+# so the prebuilt SwiftUI/SwiftUICore interface modules must not be on the include path (two
+# copies of every type → hundreds of ambiguity errors). `deps/` exposes everything else.
+deps="$out/deps"
+rm -rf "$deps" && mkdir -p "$deps"
+for module_dir in "$gen"/*.swiftmodule "$shims"/*.swiftmodule; do
+    name="$(basename "$module_dir")"
+    case "$name" in
+        SwiftUI.swiftmodule|SwiftUICore.swiftmodule) continue ;;
+    esac
+    ln -sfn "$module_dir" "$deps/$name"
+done
+
 if [ "$probe" = 1 ]; then
     echo "→ probing: can a SwiftUI app compile for Android? (macro plugins: ${macro_plugin_dir:-none})"
     rm -rf "$out/.module-cache"

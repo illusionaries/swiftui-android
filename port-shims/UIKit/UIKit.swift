@@ -54,7 +54,6 @@ public import Foundation
 public import ObjectiveC
 public import CoreGraphics
 public import QuartzCore
-public import SwiftUICore
 public import UIUtilities
 public import FoundationShims
 
@@ -262,7 +261,13 @@ public protocol UIMutableTraits {
 
 /// `UITraitBridgedEnvironmentKey` — overlay interface line 2773:
 /// `public protocol UITraitBridgedEnvironmentKey : SwiftUICore.EnvironmentKey`.
-public protocol UITraitBridgedEnvironmentKey: SwiftUICore.EnvironmentKey {
+///
+/// Port deviation: the shim compiles *before* the port module exists, so it cannot inherit
+/// `SwiftUICore.EnvironmentKey`. It declares the same associated type and requirements, which
+/// is all SwiftUI's interface needs to constrain against.
+public protocol UITraitBridgedEnvironmentKey {
+    associatedtype Value
+
     static func read(from traitCollection: UITraitCollection) -> Self.Value
 
     static func write(to mutableTraits: inout any UIMutableTraits, value: Self.Value)
