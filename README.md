@@ -123,7 +123,7 @@ that building a real app exposed.
 | Apple's `SwiftUI`/`SwiftUICore` declarations retargeted for Android | retargeted byte-for-byte; platform shims for `UIKit`/`CoreGraphics`/… supplied |
 | Fidelity probe (`import SwiftUI` app source typechecked for Android) | 0 errors |
 | Engine: layout, state, display list, canvas painter, frame loop | renders both demo apps on device |
-| Controls (Button, Toggle, Slider, Stepper, Picker, TextField, ProgressView, Label, Link) and their built-in styles | implemented; see [docs/GALLERY.md](docs/GALLERY.md) |
+| Controls (Button, Toggle, Slider, Stepper, Picker, TextField, ProgressView, Label, Link, Divider) and their built-in styles | implemented; see [docs/GALLERY.md](docs/GALLERY.md) |
 | Text input | real platform IME behind a seam: Android's `EditText` owns the keyboard, SwiftUI state owns the text |
 | C JNI bridge + Java host + APK pipeline | validated on device (signing, alignment, insets, back handling) |
 | Emulator harness | headless API 35 arm64 (1080×2340 @420dpi), screenshots + logcat assertions |
@@ -133,8 +133,10 @@ that building a real app exposed.
 
 What is still missing is documented where it shows: custom `ButtonStyle`/`ToggleStyle` bodies,
 `.menu`/`.wheel` pickers, `ProgressViewStyle.circular`, and focus/IME edge cases
-([docs/GALLERY.md](docs/GALLERY.md)). The catalogue of every Apple declaration the port has to
-implement is `build/port-sdk/injected-bodies.json`, produced by `scripts/port/inject_bodies.py`.
+([docs/GALLERY.md](docs/GALLERY.md)); beyond the controls, there is no animation and none of Apple's
+container views (`List`, `Form`, `NavigationStack`, `TabView`), which is why the demos navigate with
+state. The catalogue of every Apple declaration the port has to implement is
+`build/port-sdk/injected-bodies.json`, produced by `scripts/port/inject_bodies.py`.
 
 ## Requirements
 

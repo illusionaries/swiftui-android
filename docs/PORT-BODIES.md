@@ -447,7 +447,6 @@ the Port SDK:
 ```sh
 scripts/port/generate.sh     # resolves the toolchain and the Swift SDK via scripts/env.sh
 ```
-```
 
 The equivalent raw command (also what the acceptance gate uses, plus the engine seam):
 
@@ -480,15 +479,18 @@ The generator prints counts; `--check`/`generate.sh` keeps them honest. A repres
 generation of the pinned toolchain:
 
 * 11,197 declarations reproduced, 4,018 types;
-* 8,102 stub bodies injected (functions, initializers, subscripts, accessors, deinit);
-* 1,797 bodies kept as printed, of which 704 are Apple's `@inlinable` bodies (never modified);
-* 108 opaque-result rewrites (R3), 669 static-storage rewrites (R2), 384 synthesised
-  witnesses (R7), 35 duplicate-witness omissions (R10), 646 synthesised initializers (R11),
-  25,437 module requalifications (R1), 3 omitted conformance clauses (R14);
+* 7,945 stub bodies injected (functions, initializers, subscripts, accessors, deinit);
+* 1,793 bodies kept as printed, of which 703 are Apple's `@inlinable` bodies (never modified);
+* 108 opaque-result rewrites (R3), 587 static-storage rewrites (R2), 384 synthesised
+  witnesses (R7), 35 duplicate-witness omissions (R10), 641 synthesised initializers (R11),
+  25,229 module requalifications (R1), 3 omitted conformance clauses (R14);
 * engine seams: 178 `_makeView(view:inputs:)`, 87 `_makeViewList(view:inputs:)`,
-  42 `_viewListCount(inputs:)`, 304 `body` (611 total; the manifest lists them all);
+  42 `_viewListCount(inputs:)`, 301 `body` (608 total; the manifest lists them all);
 * **the package gate is green**: `SWIFTUI_PORT_GENERATED=1 swift build -c release
   --product SwiftUIAndroidApp --swift-sdk swift-6.4.3-RELEASE_android` succeeds with 0 errors.
+
+These are the counts of the current generator run — they move as adapters and `port-impl/` lists
+change, and `build/port-sdk/injected-bodies.json` always has the exact ones.
 
 ## 10. Known gaps outside this generator (report, do not work around)
 

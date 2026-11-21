@@ -2,6 +2,13 @@
 
 Living document. Updated as the port converges. Numbers are measured, not estimated.
 
+**Where it stands.** Both demo apps — Atlas (`./scripts/dev.sh`) and the control gallery
+(`./scripts/gallery.sh`) — are ordinary SwiftUI source, render on the emulator, and pass the device
+gate. Apple's declarations retarget cleanly, a real SwiftUI app typechecks for Android against them
+with 0 errors, and 38 host tests cover the engine ([`test.sh`](../scripts/test.sh)). What is still
+missing is enumerated in [`GALLERY.md`](GALLERY.md) and in *Known semantic gaps* below. The rest of
+this file is the log of how it got here.
+
 ### Resolved: the build assumed one particular machine
 
 Every script used to carry the paths of the checkout it was written in: an Android SDK under a
@@ -12,7 +19,6 @@ order — an exported variable, a gitignored `scripts/local.env`, and the conven
 location of each tool. It also refuses an NDK older than r27 up front, instead of letting SwiftPM
 fail somewhere inside Foundation, and `./scripts/env.sh --check` prints what it resolved. The
 history of this repository was rewritten for the same reason: no commit names a home directory.
-
 
 ### Resolved: the layout defects found by reading screenshots
 
@@ -41,25 +47,22 @@ line at the layout's baseline. Compare the two directly (log `ascent`/`descent` 
 `ab_font_metrics` next to the painted origin) before changing any layout code — a line-height floor
 was tried and correctly rejected by the existing metrics tests.
 
-### Next: putting the full Atlas app on the ported path
+### Resolved: the full Atlas app on the ported path
 
-`demos/AtlasSwiftUI.swift` (521 lines, four screens) compiles for Android but does not yet run:
-its `@Binding` / `@ObservedObject` attributes fail with *"generic struct 'Binding' cannot be used
-as an attribute"*. Two changes must land together, because each alone leaves the build broken:
+`demos/AtlasSwiftUI.swift` (521 lines, four screens) used to compile for Android without running:
+`@Binding`/`@ObservedObject` failed with *"generic struct 'Binding' cannot be used as an attribute"*.
+Both halves of the fix landed, and had to land together:
 
-1. **Restore `@propertyWrapper` on the wrapper types.** The generator rebuilds type declarations
-   and drops that spelling; `restore_property_wrapper_attributes()` in
-   `scripts/port/inject_bodies.py` implements it and is currently gated behind `if False:`.
-2. **Keep the `wrappedValue` declarations in the generated file.** The attribute machinery
-   requires the property to be declared on the type, but the engine currently omits those
-   declarations (`port-impl/implemented.txt`) and supplies extensions instead — which it rejects.
-   The fix is to stop omitting them and give the accessors bodies via `port-impl/bodies.txt`
-   occurrence selectors (`Symbol#1` = getter, `Symbol#2` = setter), the mechanism already used for
-   `LocalizedStringKey.StringInterpolation`.
+1. `restore_property_wrapper_attributes()` in `scripts/port/inject_bodies.py` puts the
+   `@propertyWrapper` spelling back on the type declarations the generator rebuilds, and is no
+   longer gated behind `if False:`.
+2. The `wrappedValue` declarations stay in the generated file, with bodies supplied through
+   `port-impl/bodies.txt` occurrence selectors (`Symbol#1` getter, `Symbol#2` setter) — the mechanism
+   first used for `LocalizedStringKey.StringInterpolation`.
 
-Affected symbols: `Binding.wrappedValue`/`projectedValue`, `State.wrappedValue`/`projectedValue`,
-`LazyState.wrappedValue`/`projectedValue`, `StateObject.wrappedValue`/`projectedValue`,
-`ObservedObject.projectedValue`.
+Atlas now runs from that source (`Sources/DemoApp/AtlasApp.swift`) on the default build, and the
+engine-level Atlas scene remains available behind `SWIFTUI_PORT_GENERATED=0` as the renderer
+reference.
 
 ## The control gallery (second demo app)
 
@@ -136,10 +139,13 @@ screenshot is `docs/screenshots/ported-list.png`.
 | Interaction | `Button` (all title inits, `action:label:`), taps through the engine's hit test, `@State`, `Binding`, `LazyState` (what Apple's macro emits), string interpolation in `LocalizedStringKey` |
 | Lists | `ForEach`, `ScrollView` with drag scrolling, `Axis.Set` |
 
-Known gaps/rough edges: no `LazyVGrid`/`Image`/`Divider`/animations yet, no `@ObservedObject`
-(the vendored Combine makes it feasible), `@State` slots are keyed by wrapper creation order (a
-conditional that changes wrapper count shifts later slots), and one cosmetic text-drawing overlap
-in the two-line stat cards.
+Known gaps/rough edges: no animation; none of Apple's container views (`List`, `Form`,
+`NavigationStack`, `NavigationView`, `TabView`) yet — the demos navigate with state instead; `@State`
+slots are keyed by wrapper creation order, so a conditional that changes wrapper count shifts later
+slots; and device text baselines still differ slightly from the host's metrics (see *Historical: text
+rows overlapping* above). Control-level gaps — custom style bodies, `.menu`/`.wheel` pickers,
+circular progress, SF Symbols drawn as text glyphs, no image decoding — are listed once, in
+[`GALLERY.md`](GALLERY.md).
 
 ## The ported renderer draws (this round)
 
@@ -170,7 +176,9 @@ Run it:
 
 ```bash
 ./scripts/port/build-port-sdk.sh        # retarget interfaces + shims + vendored Combine
-./scripts/ported-dev.sh                 # build, package, install, launch, report the next gap
+./scripts/dev.sh                        # Atlas: build, package, install, launch, screenshot
+./scripts/gallery.sh                    # control gallery: the same, as its own app
+./scripts/test.sh                       # 38 host tests over the engine
 ```
 
 The ported path is now the **default** build: `import SwiftUI` resolves to Apple's retargeted
@@ -197,21 +205,21 @@ What this repository does instead is a genuine port of the framework's *publisha
 
 | Area | State | Evidence |
 |---|---|---|
-| OSS Swift 6.4.3 toolchain, official Swift SDK for Android, NDK r30 | working | `swift build --swift-sdk swift-6.4.3-RELEASE_android --triple aarch64-unknown-linux-android28` → ELF aarch64 |
+| OSS Swift 6.4.3 toolchain, official Swift SDK for Android, NDK r30 | working; every path resolved by `scripts/env.sh` | `./scripts/env.sh --check`, `swift build --swift-sdk swift-6.4.3-RELEASE_android --triple aarch64-unknown-linux-android28` → ELF aarch64 |
 | Apple interface retargeting (`build-port-sdk.sh`) | `SwiftUICore`, `SwiftUI`, `Symbols`, `Combine` retarget clean | `build/port-sdk/gen/**` |
-| Fidelity probe (`scripts/port/probe.swift`, real SwiftUI source) | 108 errors, all first-wave `SwiftUICore` (`FoundationShims`, `Spatial.Size3D`, `CoreText.LineHeight`, `ObjectiveC.NSObject`, `Accessibility.AXChartDescriptor`) | `build/port-sdk/probe.log` |
-| Platform shims | `CoreGraphics` (incl. `CGBlendMode`), `CoreTransferable`, `os`/`OSLog` done; `FoundationShims`, `ObjectiveC`, `QuartzCore`, `CoreText`, `Accessibility`, `Spatial`, `UIKit` in progress | `port-shims/**` |
-| Apple declarations → compilable source | 11,197 declarations, 4,018 types, 8,102 bodies injected, 1,797 printed bodies kept (704 `@inlinable` ones verbatim) | `Sources/SwiftUI/Generated/`, `build/port-sdk/injected-bodies.json` |
-| Generated port in the app target | **opt-in** (`SWIFTUI_PORT_GENERATED=1`), until the shims close | `Package.swift` |
+| Fidelity: a real SwiftUI app typechecks for Android | **0 errors** | `scripts/port/check-demo.sh`, `build/port-sdk/probe.log` |
+| Platform shims | every module the interfaces need (`UIKit`, `CoreGraphics`, `QuartzCore`, `CoreText`, `Symbols`, `Spatial`, `os`/`OSLog`, `simd`, `Accessibility`, `FoundationShims`, …) | `port-shims/**` |
+| Apple declarations → compilable source | 11,197 declarations, 4,018 types, 7,945 bodies injected, 1,793 printed bodies kept (703 `@inlinable` ones verbatim) | `Sources/SwiftUI/Generated/`, `build/port-sdk/injected-bodies.json` |
+| Generated port in the app target | **default**; `SWIFTUI_PORT_GENERATED=0` selects the engine-only build | `Package.swift` |
+| View-graph seams | 608 catalogued (`body` 301, `_makeView` 178, `_makeViewList` 87, `_viewListCount` 42); everything both demos touch is implemented | `Sources/SwiftUI/Adapters/**` |
 | C JNI bridge (`AndroidBridge.c`) | complete: 10 JNI entry points, 22 drawing primitives, cached paints/typefaces, exception-safe | compiles for arm64 + x86_64 with `-Wall -Wextra` |
-| Java host (`MainActivity`, `SwiftUIHostView`) | complete: edge-to-edge, insets, gestures, back, config survival | APK validated with `apksigner`/`zipalign` |
-| APK pipeline (`build-apk.sh`) | complete: aapt2 → javac → d8 → zip → zipalign → sign, bundles Swift runtime dylibs from `llvm-readelf` NEEDED | `build/SwiftUI-Android.apk` |
-| Emulator harness (`emulator.sh`, `device-test.sh`) | complete: headless API 35 arm64, install→launch→screenshot→crash assertions | `build/screenshots/**` |
-| Engine: display list, painter, frame loop | complete for the proof path | 8 host tests green (`swift test`) |
-| Engine: layout/scroll/hit-test/display list | complete, exercised by the Atlas demo | `Sources/SwiftUI/Engine/**`, `docs/DEMO.md` |
-| Demo app (Atlas: home / discover / detail / profile, tabs, scrolling, toggles) | running on the emulator | `Sources/DemoApp/**`, `build/screenshots` |
-| Apple declarations generated (11,197 decls, 8,102 bodies, 704 inlinable preserved) | committed, opt-in, **0 errors** in the package gate | `Sources/SwiftUI/Generated/**`, `docs/PORT-BODIES.md` |
-| Engine: view graph adapters (`_makeView` for Text/stacks/modifiers) | next — the generated gate is green, engine work can start | 611 seams listed in `build/port-sdk/injected-bodies.json` |
+| Java host (`MainActivity`, `SwiftUIHostView`) | complete: edge-to-edge, insets, gestures, back, config survival, transparent IME overlay | APK validated with `apksigner`/`zipalign` |
+| APK pipeline (`build-apk.sh`) | complete: aapt2 → javac → d8 → zip → zipalign → sign, bundles the Swift runtime dylibs `llvm-readelf` reports as NEEDED | `build/SwiftUI-Android.apk` (~31 MB) |
+| Emulator harness (`emulator.sh`, `device-test.sh`) | complete: headless API 35 arm64, install → launch → screenshot → crash/ANR assertions | `build/screenshots/**` |
+| Engine: layout, scroll, hit test, display list, painter | complete, exercised by both demos | `Sources/SwiftUI/Engine/**`, `docs/DEMO.md` |
+| Host tests | 38, green | `./scripts/test.sh` |
+| Demo apps | Atlas (`dev.swiftui.android`) and the control gallery (`dev.swiftui.android.gallery`) both run on the emulator | `scripts/dev.sh`, `scripts/gallery.sh`, `docs/screenshots/**` |
+| Controls, styles, text input, links | implemented; remaining gaps listed in `docs/GALLERY.md` | `Adapters/PortControls.swift`, `PortStyles.swift`, `PortTextInput.swift`, `PortLinkOpener.swift` |
 
 ## What the interfaces actually expose (and why that matters)
 

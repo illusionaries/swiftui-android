@@ -186,9 +186,11 @@ location — so a checkout with a normal toolchain setup needs none of them set.
 | `PORT_MACRO_PLUGIN_DIR` | Xcode's `…/usr/lib/swift/host/plugins`, which contains `libSwiftUIMacros` |
 | `TARGET_TRIPLE` | `aarch64-unknown-linux-android` |
 
-`Package.swift` keeps the generated port opt-in with `SWIFTUI_PORT_GENERATED=1` because the
-engine (`Sources/SwiftUI/Engine`) and its adapters are still being written against these
-declarations; the Port SDK probe itself (this document's contract) is green.
+The generated port is what `Package.swift` builds by default: Apple's declarations
+(`Sources/SwiftUI/Generated/`), this project's engine and its renderer adapters all compile into the
+`SwiftUI` module, and `SWIFTUI_PORT_GENERATED=0` selects the engine-only build instead. The Port SDK
+probe (this document's contract) is green, and so is a real app typechecked against it —
+`scripts/port/check-demo.sh`.
 
 ## What the runtime implementer must provide
 

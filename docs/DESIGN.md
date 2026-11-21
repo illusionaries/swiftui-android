@@ -131,4 +131,7 @@ executed. [NOTICE](../NOTICE) separates that material, and the vendored OpenComb
   the same way CoreGraphics/UIKit drawing is on iOS.
 * No ObjC interop: UIKit-dependent API (e.g. `UIViewRepresentable` bridging to a real `UIView`)
   can only be declarative on Android until a UIView-equivalent bridge exists.
-* Accessibility, text input (IME), and image decoding are staged after the core engine.
+* Accessibility is not implemented, and there is no image decoding: `Image(systemName:)` maps the
+  symbol name onto the closest text glyph, so symbol-heavy layouts are approximations.
+* Text input *is* implemented, through a platform seam: an invisible Android `EditText` owns the IME
+  while SwiftUI keeps the styling and the binding ([GALLERY.md](GALLERY.md)).

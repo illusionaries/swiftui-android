@@ -1,7 +1,7 @@
 # Atlas — the demo application
 
 A multi-screen product UI running on the port, on a real Android device. Not a renderer test:
-it has navigation, scrolling, tabs, toggles, a grid, a detail feed and its own design system.
+it has navigation, scrolling, tabs, toggles, a grid, a detail feed and a colour/type ramp of its own.
 
 | | |
 |---|---|
@@ -15,21 +15,24 @@ it has navigation, scrolling, tabs, toggles, a grid, a detail feed and its own d
 
 ## How it is put together
 
+`Sources/DemoApp/AtlasApp.swift` is the app — ordinary SwiftUI, nothing else:
+
 ```
-AtlasScene  (Sources/DemoApp/AtlasScene.swift)
-   state      Tab · detail id · liked/saved sets · toggles · scroll offset
-   build()    state → LayoutNode tree (stacks, frames, fills, shapes, scroll, zstack)
-   draw()     measure → place → paint → DisplayList
-   input      hitTest(point) → node.action();  drag → ScrollModel
-Theme       (DemoTheme.swift)  colours, gradients, type ramp, dark-mode derivation
-Components  (AtlasScene.swift) cards, chips, badges, metric tiles, switch rows, tab bar
+AtlasModel      ObservableObject: selected tab, pushed detail id, liked/saved sets, toggles
+AtlasRootView   @StateObject; switches on that state, overlays the tab bar
+HomeScreen · DiscoverScreen · DetailScreen · ProfileScreen      plain Views
+Components      SectionHeader, CategoryPill, FeedRow, GridCard, MetricTile, SwitchRow, TabBar
 ```
 
-Every screen is a pure function of state — `build()` is re-run when state changes, exactly the
-model the SwiftUI adapters will drive. The node vocabulary (`vstack`/`hstack`/`zstack`/`spacer`/
-`padding`/`frame`/`background`/`overlay`/`cornerRadius`/`shadow`/`scroll`) maps one-to-one onto
-the SwiftUI modifiers of the same name, so the demo is the fixture the ported `View` adapters
-will be validated against.
+Navigation is state, not `NavigationStack`: a non-nil `model.detail` shows `DetailScreen` in place
+of the tab content while the tab bar stays on top. The port does not implement Apple's navigation
+and tab *containers* yet, so the demo uses the pattern apps used before them — which keeps it
+honest about what actually works.
+
+The engine-level Atlas (`AtlasScene.swift`, `DemoTheme.swift`, `NodeBuilders.swift`) builds the same
+screens directly as `LayoutNode`s — `measure → place → paint → DisplayList`, `hitTest` for input. It
+predates the adapters and is built only in the engine-only configuration
+(`SWIFTUI_PORT_GENERATED=0`), as the reference for the engine on its own.
 
 ## What the demo exercised (and fixed) in the engine
 
@@ -48,23 +51,20 @@ Building a real app shook out six bugs that a one-page test never would:
    it was statically dispatched and scrolling silently never reached the scene. It is a real
    protocol requirement now.
 
-## The same app in real SwiftUI syntax
+## Fidelity: the app source is ordinary SwiftUI
 
-`demos/AtlasSwiftUI.swift` is the identical product UI written as **genuine SwiftUI source** —
-`ObservableObject` + `@Published` + `@StateObject`, `ScrollView`, `LazyVGrid`, `ForEach`,
-`Toggle`, `Button`, `LinearGradient`, `.clipShape`, `.overlay`, `Image(systemName:)`,
-`@ViewBuilder` helpers — and it **type-checks for `aarch64-unknown-linux-android28` with zero errors** against
-Apple's own retargeted `SwiftUI` interface:
+`demos/AtlasSwiftUI.swift` is a verbatim copy of that app file. `scripts/port/check-demo.sh`
+typechecks it against Apple's retargeted `SwiftUI` interface **alone** — none of this engine is on
+the include path — so "this is genuine SwiftUI source" is checkable without trusting the build:
 
 ```bash
 ./scripts/port/check-demo.sh          # demo typecheck: OK (AtlasSwiftUI.swift)
 ```
 
-That is the port's fidelity claim made concrete: an application written as ordinary SwiftUI for
-iOS compiles unmodified for Android, because the `SwiftUI` module it compiles against is Apple's
-declaration set, not a lookalike. What remains is the renderer half — the `_makeView` adapters
-listed in `build/port-sdk/injected-bodies.json` (594 seams) turn those declarations into the same
-layout nodes the engine-level Atlas already renders today.
+The same source also ships: it compiles into the APK against those declarations plus the renderer
+([docs/RENDERER.md](RENDERER.md)). Of the 608 view-graph entry points Apple's interface declares,
+the ones this app touches are implemented; anything else traps through `_suiUnimplemented` and
+names itself, so the boundary is visible rather than approximate.
 
 ## Interaction proof
 
