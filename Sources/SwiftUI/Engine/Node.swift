@@ -592,11 +592,20 @@ public final class LayoutNode {
             var height = childSize.height
             if let explicit = spec.maxWidth, spec.minWidth == explicit, explicit.isFinite { width = explicit }
             if let explicit = spec.maxHeight, spec.minHeight == explicit, explicit.isFinite { height = explicit }
+            // An explicitly infinite maximum fills the space it was given (that is what
+            // `.frame(maxWidth: .infinity)` means), while its content stays centred inside.
+            if spec.maxWidth == .infinity { width = rect.width }
+            if spec.maxHeight == .infinity { height = rect.height }
+            // The frame owns the box; the child keeps its natural size inside it and is positioned
+            // by the frame's alignment. Placing the child at the frame's full size put an avatar's
+            // initial in the top-left corner instead of its centre.
+            let contentWidth = min(childSize.width, width)
+            let contentHeight = min(childSize.height, height)
             let origin = CGPoint(
-                x: rect.minX + (rect.width - width) * spec.horizontalAlignment,
-                y: rect.minY + (rect.height - height) * spec.verticalAlignment
+                x: rect.minX + (width - contentWidth) * spec.horizontalAlignment,
+                y: rect.minY + (height - contentHeight) * spec.verticalAlignment
             )
-            child.place(in: CGRect(origin: origin, size: CGSize(width: width, height: height)))
+            child.place(in: CGRect(origin: origin, size: CGSize(width: contentWidth, height: contentHeight)))
         case .background, .overlay:
             children.first?.place(in: rect)
             children.last?.place(in: rect)

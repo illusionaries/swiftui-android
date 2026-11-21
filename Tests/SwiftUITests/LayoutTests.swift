@@ -136,11 +136,29 @@ final class LayoutTests: XCTestCase {
     }
 
     func testFixedFrameOverridesChildSizeAndCentersIt() {
+        // The frame owns the box; the child keeps its natural size and is centred inside it.
+        // (This assertion used to require the child to fill the frame, which put an avatar's
+        // initial in the corner instead of its centre.)
         let node = LayoutNode.frame(FrameSpec.width(100), .text("aa", style: body17))
         let size = node.measure(.unspecified)
         XCTAssertEqual(size.width, 100, accuracy: 0.001)
         node.place(in: CGRect(origin: .zero, size: size))
-        XCTAssertEqual(node.children[0].frame.width, 100, accuracy: 0.001)
+        XCTAssertEqual(node.children[0].frame.width, 20, accuracy: 0.001)
+        XCTAssertEqual(node.children[0].frame.minX, 40, accuracy: 0.001)
+    }
+
+    func testFixedFrameCentresChildOnBothAxes() {
+        // The avatar case: `.frame(width: 40, height: 40)` around a one-line text — the frame is
+        // 40x40 and the glyphs are centred inside it.
+        let spec = FrameSpec(minWidth: 40, idealWidth: 40, maxWidth: 40,
+                             minHeight: 40, idealHeight: 40, maxHeight: 40)
+        let node = LayoutNode.frame(spec, .text("L", style: body17))
+        let size = node.measure(.unspecified)
+        XCTAssertEqual(size, CGSize(width: 40, height: 40))
+        node.place(in: CGRect(origin: .zero, size: size))
+        let child = node.children[0].frame
+        XCTAssertEqual(child.height, 17, accuracy: 0.001)
+        XCTAssertEqual(child.minY, (40 - 17) / 2, accuracy: 0.001)
     }
 
     func testFrameMaxWidthClampsToProposal() {

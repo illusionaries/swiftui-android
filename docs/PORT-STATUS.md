@@ -3,7 +3,24 @@
 Living document. Updated as the port converges. Numbers are measured, not estimated.
 
 
-### Open issue: text rows overlap on device
+### Resolved: the layout defects found by reading screenshots
+
+- **Frame placement.** A fixed frame placed its child at the frame's *full size*, so an avatar's
+  initial sat in the corner. It now keeps the child's natural size and aligns it inside the box,
+  while a `.infinity` maximum fills the slot it was given (that is what tab items need).
+- **Flexibility propagation.** Decorating wrappers (`clip`, `shadow`, `opacity`, `offset`) now
+  follow their content, and `background`/`overlay` follow their *content* rather than their
+  backdrop — a flexible shape behind a pill was stretching the pill.
+- **`.lineLimit`** is honoured; ignoring it made single-line labels wrap and overflow.
+- **Safe area.** The root view is clamped to the inset box and the host's inset union includes the
+  gesture area, so the tab bar clears the system gesture pill.
+- **Stack cross-axis sizing.** A `Spacer()` made its row flexible in *both* axes, collapsing
+  highlight rows to zero height; flexible children now keep their cross-axis size.
+
+`HighlightRowTests`, `TabBarLayoutTests`, `FrameFlexibilityTests` and the frame-placement
+assertions in `LayoutTests` pin all of the above.
+
+### Historical: text rows overlapping on device
 
 Host geometry for a `HStack { dot; Text }.padding(.vertical, 2)` row inside a `VStack(spacing: 6)`
 is exact (pinned by `HighlightRowTests`), yet on the emulator the Detail screen's highlight rows
