@@ -2,6 +2,25 @@
 
 Living document. Updated as the port converges. Numbers are measured, not estimated.
 
+## Ported path: what renders today
+
+Every row below is Apple's API, recompiled for Android and executed by the port's engine; the
+screenshot is `docs/screenshots/ported-list.png`.
+
+| Area | Implemented |
+|---|---|
+| Layout | `VStack`/`HStack`/`ZStack` (variadic `TupleContent`), `Spacer`, `padding`, `frame` (fixed + flexible), alignments, `EdgeInsets`, `Edge.Set` |
+| Shapes | `Rectangle`, `RoundedRectangle`, `Circle`, `Capsule`, `_ShapeView` with `Color` / `LinearGradient` fills |
+| Colour & type | `Color` (statics, `init(red:green:blue:)`, `opacity`), `Font` (+`Font.Weight`), `.font`, `.fontWeight`, `.foregroundColor`, `.foregroundStyle` — `Text` styling composes on the value itself |
+| Effects | `.background`, `.overlay`, `.clipShape`, `.shadow`, `.opacity`, `.cornerRadius` (via clip) |
+| Interaction | `Button` (all title inits, `action:label:`), taps through the engine's hit test, `@State`, `Binding`, `LazyState` (what Apple's macro emits), string interpolation in `LocalizedStringKey` |
+| Lists | `ForEach`, `ScrollView` with drag scrolling, `Axis.Set` |
+
+Known gaps/rough edges: no `LazyVGrid`/`Image`/`Divider`/animations yet, no `@ObservedObject`
+(the vendored Combine makes it feasible), `@State` slots are keyed by wrapper creation order (a
+conditional that changes wrapper count shifts later slots), and one cosmetic text-drawing overlap
+in the two-line stat cards.
+
 ## The ported renderer draws (this round)
 
 The recompiled framework now *runs on a device*: the app links Apple's declarations, the graph
