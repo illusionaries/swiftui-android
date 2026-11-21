@@ -128,3 +128,10 @@ extension Data: Transferable {
 
     public static var transferRepresentation: Representation { fatalError() }
 }
+
+// `Never` must also satisfy `TransferRepresentation`: Apple declares `some TransferRepresentation`
+// for `Color`, `Image` and `AttributedTextFormatting.Transferable`, and those opaque results
+// become `Never` when the interface is recompiled from text (port rule R3).
+extension Never: TransferRepresentation {
+    public typealias Item = Never
+}
