@@ -21,11 +21,23 @@ let depsPath = packageDirectory + "/build/port-sdk/deps"
 let portModulesPath = FileManager.default.fileExists(atPath: depsPath)
     ? depsPath
     : packageDirectory + "/build/port-sdk/gen"
-let portSDKFlags: [String] = [
+// Property wrappers (`State`, `Binding`, `Environment`, …) are macros. Apple's own macro
+// plugin ships with the
+// iOS SDK toolchain, so the port uses Apple's implementation to expand them rather than
+// reimplementing the attribute semantics.
+let pluginHost = "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins"
+let pluginServer = (ProcessInfo.processInfo.environment["SWIFT_TOOLCHAIN"]
+    ?? "")
+    + "/usr/bin/swift-plugin-server"
+
+var portSDKFlags: [String] = [
     "-I", portModulesPath,
     "-I", packageDirectory + "/build/port-sdk/shims",
     "-enable-experimental-feature", "AnyAppleOSAvailability",
 ]
+if FileManager.default.fileExists(atPath: pluginHost) {
+    portSDKFlags += ["-external-plugin-path", pluginHost + "#" + pluginServer]
+}
 
 let swift5Mode: [SwiftSetting] = [.swiftLanguageMode(.v5)]
 
