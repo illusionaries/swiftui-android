@@ -32,6 +32,28 @@ shims="$out/shims"
 : "${TARGET_TRIPLE:=aarch64-unknown-linux-android28}"
 
 export PATH="$SWIFT_TOOLCHAIN/usr/bin:$PATH"
+
+# SwiftUI's `@State`/`@Preview` are *macros*: the interface declares
+# `#externalMacro(module: "SwiftUIMacros", type: "StateMacro")`, and the implementation is a
+# host-side compiler plugin (a macOS dylib) that emits Swift source — it never runs on the
+# target. Xcode ships it in the platform's `usr/lib/swift/host/plugins`, and the plugin
+# server is part of the OSS toolchain, so macro expansion works for a cross-compiled
+# Android build. Look in the SDK first, then the platform directories.
+macro_plugin_dir=""
+for candidate in \
+    "$APPLE_SDK/usr/lib/swift/host/plugins" \
+    "$(dirname "$(dirname "$(dirname "$APPLE_SDK")")")/usr/lib/swift/host/plugins" \
+    "/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/usr/lib/swift/host/plugins" \
+    "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/usr/lib/swift/host/plugins"; do
+    if [ -d "$candidate" ] && ls "$candidate"/*.dylib >/dev/null 2>&1; then
+        macro_plugin_dir="$candidate"
+        break
+    fi
+done
+plugin_flags=()
+if [ -n "$macro_plugin_dir" ] && [ -x "$SWIFT_TOOLCHAIN/usr/bin/swift-plugin-server" ]; then
+    plugin_flags=(-external-plugin-path "$macro_plugin_dir#$SWIFT_TOOLCHAIN/usr/bin/swift-plugin-server")
+fi
 resource_dir="$SWIFT_ANDROID_SDK/swift-resources/usr/lib/swift-aarch64"
 ndk_sysroot="$SWIFT_ANDROID_SDK/ndk-sysroot"
 
@@ -62,7 +84,8 @@ declare -A umbrella_imports=(
 )
 # Modules that do not exist on Android; port-shims/<Module>/<Module>.swift declares the
 # subset of their API that the retargeted interfaces reference.
-shim_modules=(FoundationShims ObjectiveC CoreGraphics CoreTransferable UIKit CoreFoundation QuartzCore CoreText CoreMedia CoreData DataDetection UniformTypeIdentifiers Accessibility Spatial simd Darwin OSLog os)
+# Ordered by dependency: every shim is built after the shims it imports.
+shim_modules=(UniformTypeIdentifiers FoundationShims ObjectiveC UIUtilities CoreGraphics QuartzCore CoreText CoreTransferable Accessibility Spatial simd Darwin OSLog os DataDetection CoreMedia CoreData UIKit)
 
 retarget() {
     local module="$1"
@@ -117,12 +140,13 @@ for module in "${shim_modules[@]}"; do
 done
 
 if [ "$probe" = 1 ]; then
-    echo "→ probing: can a SwiftUI app compile for Android?"
+    echo "→ probing: can a SwiftUI app compile for Android? (macro plugins: ${macro_plugin_dir:-none})"
     rm -rf "$out/.module-cache"
     set +e
     swiftc -typecheck "$port_dir/probe.swift" -module-name PortProbe -target "$TARGET_TRIPLE" \
         -resource-dir "$resource_dir" -sdk "$ndk_sysroot" -I "$gen" -I "$shims" \
         -module-cache-path "$out/.module-cache" -enable-experimental-feature AnyAppleOSAvailability \
+        "${plugin_flags[@]}" \
         -swift-version 5 >"$out/probe.log" 2>&1
     status=$?
     set -e

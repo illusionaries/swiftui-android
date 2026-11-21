@@ -199,3 +199,13 @@ public struct NSKeyValueChangeKey: Hashable, Sendable, RawRepresentable {
 
     public init(rawValue: String) { self.rawValue = rawValue }
 }
+
+// MARK: - String.StandardComparator.localizedStandard  (Foundation.swiftinterface)
+//
+// `String.StandardComparator.localizedStandard` is Apple's localized string ordering.
+// The Swift SDK for Android's Foundation ships `String.StandardComparator` but not the
+// static member, so it is added here (R10). SwiftUI uses it as the default comparator of
+// `Table`/`Section` sorting.
+extension String.StandardComparator {
+    public static var localizedStandard: String.StandardComparator { fatalError() }
+}

@@ -109,6 +109,10 @@ public final class LayoutNode {
         case empty
         case text(TextSpec)
         case stack(axis: StackAxis, spacing: CGFloat, horizontalAlignment: CGFloat, verticalAlignment: CGFloat)
+        case zstack(horizontalAlignment: CGFloat, verticalAlignment: CGFloat)
+        /// Vertical scroll container. Content is laid out once at the viewport width and
+        /// shifted by `offset`; painting is clipped to the viewport. Maps to `ScrollView`.
+        case scroll(offset: CGFloat)
         case spacer(minLength: CGFloat)
         case fill(FillStyle)
         case shape(ShapeKind, fill: FillStyle?, stroke: (width: CGFloat, color: RGBAColor)?)
@@ -121,13 +125,17 @@ public final class LayoutNode {
         case opacity(CGFloat)
         case offset(CGFloat, CGFloat)
         case clip(cornerRadius: CGFloat)
-        case shadow(dx: CGFloat, dy: CGFloat, blur: CGFloat, color: RGBAColor)
+        case shadow(dx: CGFloat, dy: CGFloat, blur: CGFloat, color: RGBAColor, cornerRadius: CGFloat = 0)
         case tap(() -> Void)
         case group
     }
 
     public var kind: Kind
     public var children: [LayoutNode]
+    /// Tap handler attached by the `.onTapGesture` equivalent.
+    public var action: (() -> Void)?
+    /// Opaque payload the app can use to identify the tapped node (e.g. a row index).
+    public var tag: Int?
     /// Assigned during the place pass, in the coordinate space of the nearest ancestor that
     /// established a coordinate system (the root frame for now).
     public var frame: CGRect = .zero
@@ -142,6 +150,38 @@ public final class LayoutNode {
 
     public convenience init(_ kind: Kind, _ child: LayoutNode) {
         self.init(kind, children: [child])
+    }
+
+    // MARK: hit testing
+
+    /// Deepest node whose frame contains `point` and that carries an action or tag.
+    /// Frames are absolute, and children are searched back-to-front to match paint order.
+    public func hitTest(_ point: CGPoint) -> LayoutNode? {
+        guard frame.contains(point) || (frame.width == 0 && frame.height == 0) else { return nil }
+        for child in children.reversed() {
+            if let hit = child.hitTest(point) { return hit }
+        }
+        return (action != nil || tag != nil) ? self : nil
+    }
+
+    /// All nodes carrying a tag, in paint order (used by list tests and debugging).
+    public func taggedNodes() -> [LayoutNode] {
+        var result: [LayoutNode] = []
+        if tag != nil { result.append(self) }
+        for child in children { result.append(contentsOf: child.taggedNodes()) }
+        return result
+    }
+
+    @discardableResult
+    public func onTap(_ body: @escaping () -> Void) -> LayoutNode {
+        action = body
+        return self
+    }
+
+    @discardableResult
+    public func tagged(_ value: Int) -> LayoutNode {
+        tag = value
+        return self
     }
 
     // MARK: convenience constructors
@@ -174,9 +214,12 @@ public final class LayoutNode {
     public static func zstack(horizontalAlignment: CGFloat = 0.5,
                               verticalAlignment: CGFloat = 0.5,
                               _ children: [LayoutNode]) -> LayoutNode {
-        LayoutNode(.stack(axis: .vertical, spacing: 0,
-                          horizontalAlignment: horizontalAlignment,
-                          verticalAlignment: verticalAlignment), children: children)
+        LayoutNode(.zstack(horizontalAlignment: horizontalAlignment,
+                           verticalAlignment: verticalAlignment), children: children)
+    }
+
+    public static func scroll(offset: CGFloat = 0, _ content: LayoutNode) -> LayoutNode {
+        LayoutNode(.scroll(offset: offset), content)
     }
 
     public static func spacer(minLength: CGFloat = 0) -> LayoutNode {
@@ -267,6 +310,22 @@ public final class LayoutNode {
         case let .stack(axis, spacing, _, _):
             return measureStack(axis: axis, spacing: spacing, proposal: proposal)
 
+        case .scroll:
+            // The viewport takes the proposal; the content decides its own height.
+            let contentSize = children.first?.measure(ProposedSize(width: proposal.width, height: nil)) ?? .zero
+            return CGSize(width: proposal.width ?? contentSize.width,
+                          height: proposal.height ?? contentSize.height)
+
+        case .zstack:
+            var width: CGFloat = 0
+            var height: CGFloat = 0
+            for child in children {
+                let size = child.measure(proposal)
+                width = max(width, size.width)
+                height = max(height, size.height)
+            }
+            return CGSize(width: proposal.width ?? width, height: proposal.height ?? height)
+
         case let .spacer(minLength):
             return CGSize(width: proposal.width ?? minLength,
                           height: proposal.height ?? minLength)
@@ -302,17 +361,17 @@ public final class LayoutNode {
             _ = alpha
             return children.first?.measure(proposal) ?? .zero
 
-        case let .offset(x, y):
-            let size = children.first?.measure(proposal) ?? .zero
-            return CGSize(width: size.width + abs(x), height: size.height + abs(y))
+        case .offset:
+            // Offsetting moves the painted output; the reported size is unchanged.
+            return children.first?.measure(proposal) ?? .zero
 
         case let .clip(radius):
             _ = radius
             return children.first?.measure(proposal) ?? .zero
 
-        case let .shadow(_, _, blur, _):
-            let size = children.first?.measure(proposal) ?? .zero
-            return CGSize(width: size.width + blur * 2, height: size.height + blur * 2)
+        case .shadow:
+            // A shadow is drawn outside the layout box, so it must not grow the box.
+            return children.first?.measure(proposal) ?? .zero
 
         case .group:
             return children.reduce(CGSize.zero) { partial, child in
@@ -465,6 +524,19 @@ public final class LayoutNode {
     public func place(in rect: CGRect) {
         frame = rect
         switch kind {
+        case let .scroll(offset):
+            let contentSize = children.first?.measure(ProposedSize(width: rect.width, height: nil)) ?? .zero
+            children.first?.place(in: CGRect(x: rect.minX,
+                                             y: rect.minY - offset,
+                                             width: rect.width,
+                                             height: contentSize.height))
+        case let .zstack(horizontalAlignment, verticalAlignment):
+            for child in children {
+                let size = child.measure(ProposedSize(width: rect.width, height: rect.height))
+                let origin = CGPoint(x: rect.minX + (rect.width - size.width) * horizontalAlignment,
+                                     y: rect.minY + (rect.height - size.height) * verticalAlignment)
+                child.place(in: CGRect(origin: origin, size: size))
+            }
         case let .stack(axis, spacing, horizontalAlignment, verticalAlignment):
             placeStack(axis: axis, spacing: spacing,
                        horizontalAlignment: horizontalAlignment,
@@ -578,8 +650,14 @@ public final class LayoutNode {
                 list.append(.text(line.text, origin: origin, style: spec.style))
             }
 
-        case .stack:
+        case .stack, .zstack:
             for child in children { child.paint(into: &list) }
+
+        case .scroll:
+            list.append(.save)
+            list.append(.clip(frame, cornerRadius: 0))
+            children.first?.paint(into: &list)
+            list.append(.restore)
 
         case let .fill(style):
             switch style {
@@ -596,13 +674,17 @@ public final class LayoutNode {
 
         case let .shape(shapeKind, fill, stroke):
             let path: PathData
+            let cornerRadius: CGFloat
             switch shapeKind {
             case .rectangle:
+                cornerRadius = 0
                 path = PathData.roundedRect(frame, cornerRadius: 0)
             case let .roundedRectangle(radius):
+                cornerRadius = radius
                 path = PathData.roundedRect(frame, cornerRadius: radius)
             case .circle, .capsule:
-                path = PathData.roundedRect(frame, cornerRadius: min(frame.width, frame.height) / 2)
+                cornerRadius = min(frame.width, frame.height) / 2
+                path = PathData.roundedRect(frame, cornerRadius: cornerRadius)
             }
             if let fill {
                 switch fill {
@@ -613,8 +695,11 @@ public final class LayoutNode {
                                                 y: frame.minY + start.y * frame.height)
                     let resolvedEnd = CGPoint(x: frame.minX + end.x * frame.width,
                                               y: frame.minY + end.y * frame.height)
-                    list.append(.linearGradient(frame, cornerRadius: 0,
-                                                start: resolvedStart, end: resolvedEnd, stops: stops))
+                    // The gradient fill must honour the shape's corner radius, otherwise
+                    // rounded cards and circular avatars paint as squares.
+                    list.append(.linearGradient(frame, cornerRadius: cornerRadius,
+                                                start: resolvedStart, end: resolvedEnd,
+                                                stops: stops))
                 }
             }
             if let stroke {
@@ -660,8 +745,8 @@ public final class LayoutNode {
             children.first?.paint(into: &list)
             list.append(.restore)
 
-        case let .shadow(dx, dy, blur, color):
-            list.append(.shadowRoundRect(frame, cornerRadius: 0, dx: dx, dy: dy, blur: blur, color))
+        case let .shadow(dx, dy, blur, color, cornerRadius):
+            list.append(.shadowRoundRect(frame, cornerRadius: cornerRadius, dx: dx, dy: dy, blur: blur, color))
             children.first?.paint(into: &list)
 
         case let .tap(action):
@@ -691,6 +776,10 @@ public struct ProposedSize: Equatable {
 }
 
 extension CGRect {
+    func sContains(_ point: CGPoint) -> Bool {
+        point.x >= minX && point.x <= maxX && point.y >= minY && point.y <= maxY
+    }
+
     func translated(byX dx: CGFloat, y dy: CGFloat) -> CGRect {
         CGRect(x: minX + dx, y: minY + dy, width: width, height: height)
     }

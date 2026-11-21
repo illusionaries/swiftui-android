@@ -39,6 +39,10 @@ public protocol PortScene: AnyObject {
     func draw(into displayList: inout DisplayList, context: SceneContext)
     /// Returns true when the scene consumed the tap.
     func handleTap(at point: CGPoint) -> Bool
+    /// Returns true when the scene consumed the drag (e.g. it scrolled). Declared as a
+    /// requirement so scenes that implement it are dispatched dynamically — an extension-only
+    /// method would be statically dispatched and never reach the scene.
+    func handleDrag(_ gesture: DragGesture) -> Bool
     /// True while the scene wants continuous frames (animations).
     var isAnimating: Bool { get }
 }

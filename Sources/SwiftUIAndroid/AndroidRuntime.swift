@@ -41,6 +41,8 @@ private final class AndroidRuntime {
     var isDark = false
     var started = false
     var lastFrameTime: Double = 0
+    var touchStart: CGPoint = .zero
+    var touchConsumed = false
 
     func makeContext(measurer: TextMeasurer) -> SceneContext {
         SceneContext(size: size, safeArea: safeArea, isDark: isDark,
@@ -270,14 +272,26 @@ public func swiftuiAndroidTouch(_ runtime: OpaquePointer?, _ phase: Int32, _ x: 
     let point = CGPoint(x: CGFloat(x), y: CGFloat(y))
     switch phase {
     case 0:   // down
-        _ = scene.handleTap(at: point)
-        state.invalidate()
-    case 1:   // move
-        break
-    case 2:   // up
+        state.touchStart = point
+        state.touchConsumed = false
+    case 1:   // move: hand to the scene as a drag (scroll views consume it)
+        let translation = hypot(point.x - state.touchStart.x, point.y - state.touchStart.y)
+        if translation > 4 {
+            let gesture = DragGesture(phase: state.touchConsumed ? .changed : .began,
+                                      start: state.touchStart, location: point)
+            if scene.handleDrag(gesture) {
+                state.touchConsumed = true
+                state.invalidate()
+            }
+        }
+    case 2:   // up: a tap only when the pointer never really moved
+        let travel = hypot(point.x - state.touchStart.x, point.y - state.touchStart.y)
+        if !state.touchConsumed && travel <= 8 {
+            _ = scene.handleTap(at: point)
+        }
         state.invalidate()
     default:  // cancel
-        break
+        state.touchConsumed = false
     }
 }
 

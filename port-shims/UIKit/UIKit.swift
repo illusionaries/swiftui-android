@@ -5,9 +5,9 @@
 // UIKit is an Objective-C framework. Apple ships a 7,125-line Swift *overlay*
 // (`UIKit.framework/Modules/UIKit.swiftmodule/arm64-apple-ios-simulator.swiftinterface`),
 // but every declaration in it is either an extension on an ObjC class from
-// `UIKit.framework/Headers/*.h` or a Swift-only helper (like `UITraitBridgedEnvironmentKey`)
-// that names those classes. With no Clang importer on Android there is nothing to extend,
-// so the framework cannot be retargeted: the types have to exist as Swift source.
+// `UIKit.framework/Headers/*.h` or a Swift-only helper that names those classes. With no
+// Clang importer on Android there is nothing to extend, so the framework cannot be
+// retargeted: the types have to exist as Swift source.
 //
 // SCOPE
 // -----
@@ -18,25 +18,32 @@
 // `UIViewControllerRepresentable`, ... are declared by SwiftUI itself and are deliberately
 // absent here.
 //
+// Class members are exactly those SwiftUI's `_UIHostingView: UIView` and
+// `_UIHostingController: UIViewController` overrides (the compiler lists them: `frame`,
+// `bounds`, `transform`, `transform3D`, `clipsToBounds`, `safeAreaInsets`,
+// `preferredFocusEnvironments`, `viewWillAppear(_:)`, `preferredStatusBarStyle`,
+// `hitTest(_:with:)`, ...) plus what the protocols in the overlay require.
+//
 // PROVENANCE
 // ----------
 // Signatures are copied from Apple's shipped artifacts:
 //   * value types (UIEdgeInsets, NSUnderlineStyle, UIUserInterfaceStyle, ...) from
-//     `UIKit.framework/Headers/*.h` (`NS_ENUM`, `NS_OPTIONS`, `NS_STRUCT` declarations);
-//   * protocols (UIContentView, UIContentConfiguration, UITraitBridgedEnvironmentKey, ...)
-//     from the overlay interface: UIContentView at line 1199, UIContentConfiguration at
-//     line 1207, UITraitBridgedEnvironmentKey at line 2773;
-//   * classes only from headers, with the superclass relationships of the headers
+//     `UIKit.framework/Headers/*.h` (`NS_ENUM` / `NS_OPTIONS` declarations);
+//   * protocols UIContentView (overlay line 1199), UIContentConfiguration (line 1207),
+//     UITraitBridgedEnvironmentKey (line 2773);
+//   * classes and their superclass chain from the headers
 //     (`UIView : UIResponder : NSObject`, `UIViewController : UIResponder`, ...).
 //
 // SEMANTIC GAPS (see docs/PORT-SDK.md)
 // ------------------------------------
-// * ObjC classes become ordinary Swift classes; `NSObject` is the real corelibs
-//   Foundation root class (aliased through the `ObjectiveC` shim).
-// * `@MainActor` isolation is not modelled on the shim types: there is one UI thread on
-//   Android and the engine owns it. SwiftUI's own `@MainActor` API is unaffected.
-// * `UIColor`/`UIImage`/`UIFont` are declaration-faithful but not pixel-faithful: the
-//   runtime maps them to `android.graphics.Color`/`Bitmap`/`Typeface`.
+// * ObjC classes become ordinary Swift classes; `NSObject` is corelibs Foundation's real
+//   root class, aliased through the `ObjectiveC` shim.
+// * `@MainActor` is modelled on the view/controller hierarchy (as UIKit's
+//   `NS_SWIFT_UI_ACTOR` does) but *not* on the leaf value-ish classes
+//   (`UIColor`, `UIImage`, `UITraitCollection`), whose isolation is irrelevant on a
+//   single-UI-thread platform.
+// * `UIColor`/`UIImage` are declaration-faithful but not pixel-faithful: the runtime maps
+//   them to `android.graphics.Color` / `Bitmap`.
 //
 // FATALERROR POLICY
 // -----------------
@@ -48,6 +55,8 @@ public import ObjectiveC
 public import CoreGraphics
 public import QuartzCore
 public import SwiftUICore
+public import UIUtilities
+public import FoundationShims
 
 // MARK: - Geometry and option values  (UIKit/UIEdgeInsets.h, UIGeometry.h)
 
@@ -77,9 +86,9 @@ public struct NSDirectionalEdgeInsets: Hashable, Sendable {
     public static let zero = NSDirectionalEdgeInsets()
 }
 
-// `NSUnderlineStyle` is declared in Foundation's NSAttributedString.h; SwiftUI spells it
-// `UIKit.NSUnderlineStyle` because UIKit re-exports Foundation. Declared here for the
-// spelling the interface uses.
+// `NSUnderlineStyle` is `NS_OPTIONS` in Foundation's NSAttributedString.h; SwiftUI spells it
+// `UIKit.NSUnderlineStyle` because UIKit re-exports Foundation. Declared here for that
+// spelling.
 public struct NSUnderlineStyle: OptionSet, Sendable {
     public let rawValue: Int
 
@@ -202,7 +211,7 @@ public struct UIContentSizeCategory: Hashable, RawRepresentable, Comparable, Sen
 
 // MARK: - Protocols  (overlay interface lines 1199-1215, 2773; UIKit headers)
 
-public protocol UIConfigurationState: NSObjectProtocol {
+@MainActor public protocol UIConfigurationState: NSObjectProtocol {
 }
 
 public protocol UIContentConfiguration {
@@ -211,38 +220,41 @@ public protocol UIContentConfiguration {
     func updated(for state: any UIConfigurationState) -> Self
 }
 
-public protocol UIContentView: NSObjectProtocol {
-    @MainActor var configuration: any UIContentConfiguration { get set }
+@MainActor public protocol UIContentView: NSObjectProtocol {
+    var configuration: any UIContentConfiguration { get set }
 
-    @MainActor func supports(_ configuration: any UIContentConfiguration) -> Bool
+    func supports(_ configuration: any UIContentConfiguration) -> Bool
 }
 
 extension UIContentView {
     @MainActor public func supports(_ configuration: any UIContentConfiguration) -> Bool { fatalError() }
 }
 
-public protocol UIContentContainer: NSObjectProtocol {
+@MainActor public protocol UIContentContainer: NSObjectProtocol {
 }
 
-public protocol UIFocusEnvironment: NSObjectProtocol {
+@MainActor public protocol UIFocusEnvironment: NSObjectProtocol {
+    var preferredFocusEnvironments: [any UIFocusEnvironment] { get }
+
+    func didUpdateFocus(in context: UIFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator)
 }
 
-public protocol UIFocusItem: UIFocusEnvironment {
+@MainActor public protocol UIFocusItem: UIFocusEnvironment {
 }
 
-public protocol UIDragSession: NSObjectProtocol {
+@MainActor public protocol UIDragSession: NSObjectProtocol {
 }
 
-public protocol UIDropSession: UIDragSession {
+@MainActor public protocol UIDropSession: UIDragSession {
 }
 
-public protocol UIApplicationDelegate: NSObjectProtocol {
+@MainActor public protocol UIApplicationDelegate: NSObjectProtocol {
 }
 
-public protocol UISceneDelegate: NSObjectProtocol {
+@MainActor public protocol UISceneDelegate: NSObjectProtocol {
 }
 
-public protocol UIViewControllerTransitionCoordinator: NSObjectProtocol {
+@MainActor public protocol UIViewControllerTransitionCoordinator: NSObjectProtocol {
 }
 
 public protocol UIMutableTraits {
@@ -256,26 +268,120 @@ public protocol UITraitBridgedEnvironmentKey: SwiftUICore.EnvironmentKey {
     static func write(to mutableTraits: inout any UIMutableTraits, value: Self.Value)
 }
 
-// MARK: - Classes  (UIKit headers; superclasses as declared there)
+// MARK: - Classes  (UIKit headers; superclass chain as declared there)
 
-open class UIResponder: NSObject {
+@MainActor open class UIResponder: NSObject {
     public override init() { fatalError() }
 
     public required init?(coder: NSCoder) { fatalError() }
+
+    open var canBecomeFirstResponder: Bool { fatalError() }
+
+    open var isFirstResponder: Bool { fatalError() }
+
+    open var next: UIResponder? { fatalError() }
+
+    open var keyCommands: [UIKeyCommand]? { fatalError() }
+
+    open func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool { fatalError() }
+
+    open func target(forAction action: Selector, withSender sender: Any?) -> Any? { fatalError() }
+
+    open var undoManager: FoundationShims.UndoManager? { fatalError() }
+
+    open var accessibilityElements: [Any]? { fatalError() }
+
+    open var automationElements: [Any]? { fatalError() }
+
+    open func accessibilityElementCount() -> Int { fatalError() }
+
+    open func observeValue(forKeyPath keyPath: String?, of object: Any?,
+                           change: [FoundationShims.NSKeyValueChangeKey: Any]?,
+                           context: UnsafeMutableRawPointer?) { fatalError() }
 }
 
-open class UIView: UIResponder {
-    public var frame: CGRect
-    public var bounds: CGRect
-    public var backgroundColor: UIColor?
-    public var layer: CALayer
-    public var isUserInteractionEnabled: Bool
+@MainActor open class UIView: UIResponder {
+    open var frame: CGRect {
+        get { fatalError() }
+        set { fatalError() }
+    }
+
+    open var bounds: CGRect {
+        get { fatalError() }
+        set { fatalError() }
+    }
+
+    open var contentScaleFactor: CGFloat {
+        get { fatalError() }
+        set { fatalError() }
+    }
+
+    open var backgroundColor: UIColor? {
+        get { fatalError() }
+        set { fatalError() }
+    }
+
+    open var layer: CALayer { fatalError() }
+
+    open var isUserInteractionEnabled: Bool {
+        get { fatalError() }
+        set { fatalError() }
+    }
+
+    open var isHidden: Bool {
+        get { fatalError() }
+        set { fatalError() }
+    }
+
+    open var alpha: CGFloat {
+        get { fatalError() }
+        set { fatalError() }
+    }
+
+    open var transform: CGAffineTransform {
+        get { fatalError() }
+        set { fatalError() }
+    }
+
+    open var transform3D: CATransform3D {
+        get { fatalError() }
+        set { fatalError() }
+    }
+
+    open var clipsToBounds: Bool {
+        get { fatalError() }
+        set { fatalError() }
+    }
+
+    open var safeAreaInsets: UIEdgeInsets { fatalError() }
+
+    open var preferredFocusEnvironments: [any UIFocusEnvironment] { fatalError() }
 
     public override init() { fatalError() }
 
     public init(frame: CGRect) { fatalError() }
 
     public required init?(coder: NSCoder) { fatalError() }
+
+    open func didMoveToWindow() { fatalError() }
+
+    open func layoutSubviews() { fatalError() }
+
+    open func tintColorDidChange() { fatalError() }
+
+    open func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) { fatalError() }
+
+    open func safeAreaInsetsDidChange() { fatalError() }
+
+    open func didAddSubview(_ subview: UIView) { fatalError() }
+
+    open func willRemoveSubview(_ subview: UIView) { fatalError() }
+
+    open func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? { fatalError() }
+
+    open func focusItems(in rect: CGRect) -> [any UIFocusItem] { fatalError() }
+
+    open func didUpdateFocus(in context: UIFocusUpdateContext, with coordinator: UIFocusAnimationCoordinator) { fatalError() }
 
     open func addSubview(_ view: UIView) { fatalError() }
 
@@ -288,8 +394,38 @@ open class UIView: UIResponder {
     open func sizeThatFits(_ size: CGSize) -> CGSize { fatalError() }
 }
 
-open class UIViewController: UIResponder {
-    public var view: UIView
+@MainActor open class UIViewController: UIResponder {
+    open var view: UIView { fatalError() }
+
+    open var parent: UIViewController? { fatalError() }
+
+    open var isModalInPresentation: Bool {
+        get { fatalError() }
+        set { fatalError() }
+    }
+
+    open var preferredContentSize: CGSize {
+        get { fatalError() }
+        set { fatalError() }
+    }
+
+    open var preferredStatusBarStyle: UIStatusBarStyle { fatalError() }
+
+    open var prefersStatusBarHidden: Bool { fatalError() }
+
+    open var preferredStatusBarUpdateAnimation: UIStatusBarAnimation { fatalError() }
+
+    open var childForStatusBarStyle: UIViewController? { fatalError() }
+
+    open var childForStatusBarHidden: UIViewController? { fatalError() }
+
+    open var preferredScreenEdgesDeferringSystemGestures: UIRectEdge { fatalError() }
+
+    open var childForScreenEdgesDeferringSystemGestures: UIViewController? { fatalError() }
+
+    open var prefersHomeIndicatorAutoHidden: Bool { fatalError() }
+
+    open var childForHomeIndicatorAutoHidden: UIViewController? { fatalError() }
 
     public init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) { fatalError() }
 
@@ -298,6 +434,26 @@ open class UIViewController: UIResponder {
     open func loadView() { fatalError() }
 
     open func viewDidLoad() { fatalError() }
+
+    open func viewWillAppear(_ animated: Bool) { fatalError() }
+
+    open func viewDidAppear(_ animated: Bool) { fatalError() }
+
+    open func viewWillDisappear(_ animated: Bool) { fatalError() }
+
+    open func viewDidDisappear(_ animated: Bool) { fatalError() }
+
+    open func viewWillLayoutSubviews() { fatalError() }
+
+    open func viewDidLayoutSubviews() { fatalError() }
+
+    open func viewWillTransition(to size: CGSize, with coordinator: any UIViewControllerTransitionCoordinator) { fatalError() }
+
+    open func willMove(toParent parent: UIViewController?) { fatalError() }
+
+    open func didMove(toParent parent: UIViewController?) { fatalError() }
+
+    open func preferredContentSizeDidChange(forChildContentContainer container: any UIContentContainer) { fatalError() }
 
     open func present(_ viewControllerToPresent: UIViewController, animated flag: Bool,
                       completion: (() -> Void)? = nil) { fatalError() }

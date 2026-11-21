@@ -69,6 +69,13 @@ Apple-only modules (UIKit, CoreGraphics, …)  ──shim──▶    │
 * `scripts/emulator.sh` / `scripts/device-test.sh` — headless emulator lifecycle and the
   install→launch→screenshot→logcat acceptance harness.
 
+## The demo app
+
+`Sources/DemoApp/` contains **Atlas**, a multi-screen app (home feed, discover grid, pushed
+detail, profile with live settings) built on the port and running on the emulator. See
+[docs/DEMO.md](docs/DEMO.md) for the screen breakdown, the architecture, and the six engine bugs
+that building a real app exposed.
+
 ## Status
 
 | Piece | State |

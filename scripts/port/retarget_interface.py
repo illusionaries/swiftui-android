@@ -70,6 +70,16 @@ R12 Drop `typealias X = @_opaqueReturnTypeOf("<mangled>", 0) __` declarations.  
     inferred from the `some`-typed witness in the same extension — exactly the mechanism
     ordinary SwiftUI code uses with `var body: some View`.  Declaration text is otherwise
     untouched.
+R14 Mark initializers in *cross-module class extensions* `convenience`.  Swift forbids adding a
+    designated initializer to a class declared in another module unless that class is
+    `@objc` ("designated initializer cannot be declared in an extension of 'X'; did you mean
+    this to be a convenience initializer?").  On Darwin this is legal because UIKit's
+    classes are ObjC classes.  The only place the ported interfaces do it is SwiftUI's
+    `extension UIKit.UISceneSessionActivationRequest { public init?(hostingDelegateClass: …) }`,
+    so exactly those initializers are marked `convenience`.  For a caller the API is
+    identical (`UISceneSessionActivationRequest(hostingDelegateClass:)`); only the
+    designated/convenience distinction — an implementation detail — differs.
+
 R11 Supplement: a module whose Swift interface is pure Swift but which also references
     types Apple only ships in a Clang header (CoreText's `CTFont`, Accessibility's
     `AXChartDescriptor`) gets a declaration-only supplement appended to the interface
@@ -99,35 +109,22 @@ def compiler_version_stamp() -> str:
     return "Apple Swift version 6.4.3 (retargeted)"
 
 
-def compiler_version_stamp() -> str:
-    """`Apple Swift version X.Y.Z (retargeted)` for the toolchain on PATH."""
-    import re
-    import subprocess
-    try:
-        raw = subprocess.run(["swift", "--version"], capture_output=True, text=True, timeout=60).stdout
-        match = re.search(r"Swift version ([0-9][0-9.]*)", raw)
-        if match:
-            return f"Apple Swift version {match.group(1)} (retargeted)"
-    except Exception:  # noqa: BLE001 - fall back to a best-effort stamp
-        pass
-    return "Apple Swift version 6.4.3 (retargeted)"
-
 # ---- R5 ------------------------------------------------------------------
-# Modules the Port SDK provides (retargeted or shimmed). A qualified reference such as
-# `QuartzCore::CALayer` makes the corresponding module importable in Swift, but the
-# module must also be imported for the name to be visible while the interface is
-# recompiled, so references to these are turned into imports.
-# The Swift SDK for Android's C-library overlay module. It is the platform's equivalent
-# of `Darwin`/`Glibc` and supplies the C globals Apple's interfaces call unqualified
-# (`exp2`, ...). Added to every retargeted interface (R5b).
+# The Swift SDK for Android's C-library overlay module. It is the platform's equivalent of
+# `Darwin`/`Glibc` and supplies the C globals Apple's interfaces call unqualified
+# (`exp2`, ...). Added to every retargeted interface (R5).
 PLATFORM_MODULE = "Android"
 
+# Modules the Port SDK provides (retargeted or shimmed). A qualified reference such as
+# `QuartzCore::CALayer` makes the corresponding module importable in Swift, but the module
+# must also be imported for the name to be visible while the interface is recompiled, so
+# references to these are turned into imports.
 PROVIDED_MODULES = (
     "Accessibility", "Combine", "CoreData", "CoreGraphics", "CoreFoundation",
     "CoreMedia", "CoreText", "CoreTransferable", "DeveloperToolsSupport", "Dispatch",
     "FoundationNetworking", "FoundationShims", "ObjectiveC", "Observation", "OSLog",
     "QuartzCore", "Spatial", "SwiftUI", "SwiftUICore", "Symbols",
-    "UniformTypeIdentifiers", "UIKit", "os", "simd",
+    "UniformTypeIdentifiers", "UIKit", "UIUtilities", "os", "simd",
 )
 
 # ---- R6 ------------------------------------------------------------------
@@ -167,7 +164,9 @@ FOUNDATION_REQUALIFY = [
     ("Foundation::Date.Foundation::RelativeFormatStyle",
      "FoundationShims.RelativeFormatStyle"),
     ("Foundation::Locale.Foundation::Language", "FoundationShims.Language"),
+    ("Foundation.URLSession", "FoundationNetworking.URLSession"),
     ("Foundation.URLRequest", "FoundationNetworking.URLRequest"),
+    ("Foundation::URLSession", "FoundationNetworking.URLSession"),
     ("Foundation::URLRequest", "FoundationNetworking.URLRequest"),
     ("Foundation.LocalizedStringResource", "FoundationShims.LocalizedStringResource"),
     ("Foundation::LocalizedStringResource", "FoundationShims.LocalizedStringResource"),
@@ -179,22 +178,49 @@ FOUNDATION_REQUALIFY = [
     ("Foundation.UndoManager", "FoundationShims.UndoManager"),
 ]
 
+# ---- R14 -----------------------------------------------------------------
+# Cross-module class extensions whose initializers SwiftUI declares as designated.
+# Swift only allows that for `@objc` classes; the port has no ObjC runtime.
+CONVENIENCE_INIT_IN_EXTENSION = ("UIKit.UISceneSessionActivationRequest",)
+
 # ---- R7 ------------------------------------------------------------------
 OBJC_ATTR = re.compile(r"@objc(?![A-Za-z0-9_])(?:\([^)]*\))?\s*|@nonobjc\s*")
 
 # ---- R9 ------------------------------------------------------------------
-BITWISE_COPYABLE_RE = re.compile(r"\s*,\s*BitwiseCopyable\b|\bBitwiseCopyable\s*,\s*|\bBitwiseCopyable\b")
-
-
-# A line that consists solely of attributes (and nothing else): `@available(...)`,
-# `@_originallyDefinedIn(...)`, possibly several of them.
-ATTRIBUTE_ONLY_LINE = re.compile(
-    r"^[ \t]*(?:@[A-Za-z_][\w.]*(?:\(.*\))?[ \t]*)+$"
-)
-
 
 def _is_attribute_only(line: str) -> bool:
-    return bool(ATTRIBUTE_ONLY_LINE.match(line.rstrip("\n")))
+    """True for a line that consists solely of attributes (`@available(...)`, ...).
+
+    Consumes attribute names and *balanced* parenthesised arguments one after another, and
+    requires the line to end there. A line such as
+    `@_semantics("swiftui.init_with_localization") public init(_ key: …)` is a declaration,
+    not an attribute run, and must be preserved.
+    """
+    remaining = line.strip()
+    while remaining:
+        if not remaining.startswith("@"):
+            return False
+        name = re.match(r"@[A-Za-z_][\w.]*", remaining)
+        if name is None:
+            return False
+        remaining = remaining[name.end():]
+        if remaining.startswith("("):
+            depth = 0
+            index = 0
+            while index < len(remaining):
+                char = remaining[index]
+                if char == "(":
+                    depth += 1
+                elif char == ")":
+                    depth -= 1
+                    if depth == 0:
+                        break
+                index += 1
+            if depth != 0:
+                return False
+            remaining = remaining[index + 1:]
+        remaining = remaining.lstrip()
+    return True
 
 
 def drop_dangling_attributes(text: str) -> str:
@@ -314,7 +340,7 @@ def main() -> int:
     # ---- R9: BitwiseCopyable conformance clauses ---------------------------
     # A conformance-only extension (`extension X : BitwiseCopyable {}`) is dropped whole;
     # a clause inside a conformance list is removed from that list.
-    mod = r"(?:[A-Za-z_]\w*(?:::|\\.))*"
+    mod = r"(?:[A-Za-z_]\w*(?:::|\.))*"
     text = re.sub(
         r"^[ \t]*extension [^\n{]*:\s*" + mod + r"BitwiseCopyable\s*\{\s*\}[ \t]*$\n?",
         "",
@@ -336,6 +362,26 @@ def main() -> int:
     # R9 and R12 delete a declaration; the `@available` / `@_originallyDefinedIn` lines
     # that used to qualify it are now dangling before a `}` / `#else` / `#endif` / EOF.
     text = drop_dangling_attributes(text)
+
+    # ---- R14: convenience initializers in cross-module class extensions ----
+    def convenience_extensions(text: str) -> str:
+        out = []
+        inside = False
+        for line in text.splitlines(keepends=True):
+            stripped = line.strip()
+            if not inside and stripped.startswith("extension "):
+                head = stripped[len("extension "):].split("{")[0].strip()
+                if head in CONVENIENCE_INIT_IN_EXTENSION:
+                    inside = True
+            elif inside and stripped == "}":
+                inside = False
+            elif inside:
+                line = re.sub(r"\bpublic init\b", "public convenience init", line)
+                line = re.sub(r"\bpublic init\?", "public convenience init?", line)
+            out.append(line)
+        return "".join(out)
+
+    text = convenience_extensions(text)
 
     # ---- R13: `[Type]()` default arguments ---------------------------------
     # With `MemberImportVisibility` the empty-array construction written as `[CGFloat]()`
