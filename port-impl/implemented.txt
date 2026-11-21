@@ -136,3 +136,16 @@ SwiftUICore.Text.tracking(_:)
 SwiftUI.Button.init(action:label:)
 SwiftUI.Button.init(_:action:)
 SwiftUICore.Text.init(_:tableName:bundle:comment:)
+
+# Dynamic properties: the engine owns their storage (see Sources/SwiftUI/Adapters/PortState.swift).
+SwiftUICore.State.init(wrappedValue:)
+SwiftUICore.State.wrappedValue
+SwiftUICore.State.projectedValue
+SwiftUICore.Binding.init(get:set:)
+SwiftUICore.Binding.constant(_:)
+SwiftUICore.Binding.wrappedValue
+SwiftUICore.Binding.projectedValue
+
+SwiftUICore.LazyState.init(initialValue:)
+SwiftUICore.LazyState.wrappedValue
+SwiftUICore.LazyState.projectedValue

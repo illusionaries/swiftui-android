@@ -3437,6 +3437,29 @@ def apply_storage_injections(sources: dict[str, str], entries: dict[str, str]) -
     return applied
 
 
+# MARK: - Module qualification
+#
+# Both Apple interfaces are compiled into one module named `SwiftUICore` (that is where Apple's
+# property-wrapper macros expect `State`, `Binding`, … to live). The interface text qualifies
+# SwiftUI's declarations as `SwiftUI::X`; those must follow the module, so the qualifier is
+# rewritten rather than dropped — dropping it would let a generic parameter (`Document`) shadow
+# the type of the same name that the qualifier disambiguates.
+SELF_MODULE = "SwiftUICore"
+REQUALIFY = (("SwiftUI::", SELF_MODULE + "::"), ("SwiftUI.", SELF_MODULE + "."))
+
+
+def strip_self_qualifiers(sources: dict[str, str]) -> int:
+    rewritten = 0
+    for file_stem, source in sources.items():
+        updated = source
+        for old, new in REQUALIFY:
+            if old in updated:
+                rewritten += updated.count(old)
+                updated = updated.replace(old, new)
+        sources[file_stem] = updated
+    return rewritten
+
+
 def write_outputs(sources: dict[str, str], manifest: dict) -> None:
     os.makedirs(OUT_DIR, exist_ok=True)
     os.makedirs(os.path.dirname(MANIFEST_PATH), exist_ok=True)
@@ -3492,6 +3515,9 @@ def main(argv: list[str]) -> int:
         missing = sorted(set(overrides) - set())
         if not arguments.quiet:
             print(f"  body overrides: {replaced} applied from port-impl/bodies.txt")
+    stripped = strip_self_qualifiers(sources)
+    if not arguments.quiet:
+        print(f"  self-qualifiers removed: {stripped}")
     storage = load_storage_injections()
     if storage:
         injected = apply_storage_injections(sources, storage)

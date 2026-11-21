@@ -8,6 +8,8 @@ import SwiftUI
 
 /// A first screen written in genuine SwiftUI syntax and rendered through Apple's declarations.
 struct PortDemoView: View {
+    @State private var taps = 0
+
     var body: some View {
         VStack(spacing: 16) {
             header
@@ -36,11 +38,11 @@ struct PortDemoView: View {
             }
 
             VStack(spacing: 12) {
-                Text("Taps: \(PortDemoCounter.count)")
+                Text("Taps: \(taps)")
                     .font(.headline)
                 HStack(spacing: 12) {
-                    Button("Tap me") { PortDemoCounter.count += 1 }
-                    Button("Reset") { PortDemoCounter.count = 0 }
+                    Button("Tap me") { taps += 1 }
+                    Button("Reset") { taps = 0 }
                 }
             }
             .padding(16)
@@ -85,12 +87,6 @@ struct PortDemoView: View {
                 .fill(tint)
         )
     }
-}
-
-/// Stand-in for `@State` while dynamic properties are still stubbed: the host rebuilds the view
-/// tree on every frame, so a plain global reads back the value the buttons changed.
-enum PortDemoCounter {
-    nonisolated(unsafe) static var count = 0
 }
 
 public final class SwiftUIHostScene: PortScene {

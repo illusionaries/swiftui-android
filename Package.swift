@@ -220,6 +220,12 @@ let package = Package(
         ),
         .target(
             name: "SwiftUI",
+            dependencies: ["SwiftUICore"],
+            path: "Sources/SwiftUIExport",
+            swiftSettings: swift5Mode
+        ),
+        .target(
+            name: "SwiftUICore",
             dependencies: includeGeneratedPort ? ["Combine", "Symbols", "UIKit", "CoreGraphics",
                            "FoundationShims", "ObjectiveC", "QuartzCore", "CoreText",
                            "CoreTransferable", "Accessibility", "Spatial", "simd", "Darwin",
@@ -233,7 +239,7 @@ let package = Package(
         ),
         .target(
             name: "SwiftUIAndroid",
-            dependencies: ["SwiftUI", "AndroidBridge"],
+            dependencies: ["SwiftUICore", "AndroidBridge"],
             path: "Sources/SwiftUIAndroid",
             swiftSettings: swift5Mode
         ),
@@ -247,7 +253,7 @@ let package = Package(
         ),
         .testTarget(
             name: "SwiftUITests",
-            dependencies: ["SwiftUI"],
+            dependencies: ["SwiftUICore"],
             path: "Tests/SwiftUITests",
             swiftSettings: swift5Mode
         ),

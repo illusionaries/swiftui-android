@@ -14,7 +14,9 @@ export ANDROID_NDK_HOME
 ADB="${ANDROID_HOME:?set ANDROID_HOME}/platform-tools/adb"
 
 touch Package.swift   # manifest declares different targets per mode; force re-evaluation
-SWIFTUI_PORT_GENERATED=1 swift build -c release --product SwiftUIAndroidApp \
+# shellcheck source=scripts/port/plugin-flags.sh
+source "$ROOT/scripts/port/plugin-flags.sh"
+SWIFTUI_PORT_GENERATED=1 swift build "${PORT_PLUGIN_FLAGS[@]}" -c release --product SwiftUIAndroidApp \
     --swift-sdk swift-6.4.3-RELEASE_android --triple aarch64-unknown-linux-android28 2>&1 \
     | grep -E "error:|Build complete" | tail -3
 SO=$(find .build/out -name "libSwiftUIAndroidApp.so" | head -1)
