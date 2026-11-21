@@ -49,3 +49,19 @@ SwiftUICore.GridItem.init(_:spacing:alignment:) => self.size = size; self.spacin
 
 # ObservedObject keeps its object in the stored `wrappedValue` field; only the seed needs setting.
 SwiftUICore.ObservedObject.init(wrappedValue:) => self.wrappedValue = wrappedValue; self._seed = 0
+
+# Property-wrapper accessors stay declared (Swift requires `wrappedValue` on the type before the
+# type can be used as an attribute), so their bodies are supplied here: #1 is the getter, #2 the
+# setter, in declaration order.
+SwiftUICore.Binding.wrappedValue#1 => (location as? any PortLocationBox<Value>)?.value ?? _value
+SwiftUICore.Binding.wrappedValue#2 => (location as? any PortLocationBox<Value>)?.value = newValue; PortStateStore.markDirty()
+SwiftUICore.Binding.projectedValue => self
+SwiftUICore.State.wrappedValue#1 => (_location as? any PortLocationBox<Value>)?.value ?? _value
+SwiftUICore.State.wrappedValue#2 => (_location as? any PortLocationBox<Value>)?.value = newValue; PortStateStore.markDirty()
+SwiftUICore.State.projectedValue => Binding(get: { self.wrappedValue }, set: { self.wrappedValue = $0 })
+SwiftUICore.LazyState.wrappedValue#1 => (_location as? any PortLocationBox<Value>)?.value ?? { switch _storage { case let .value(value): return value; case let .thunk(thunk): return thunk() } }()
+SwiftUICore.LazyState.wrappedValue#2 => (_location as? any PortLocationBox<Value>)?.value = newValue; PortStateStore.markDirty()
+SwiftUICore.LazyState.projectedValue => Binding(get: { self.wrappedValue }, set: { self.wrappedValue = $0 })
+SwiftUICore.StateObject.wrappedValue => { switch storage { case let .object(observed): return observed.wrappedValue; case let .initially(thunk): return PortObjectStore.stateObject(thunk) } }()
+SwiftUICore.StateObject.projectedValue => ObservedObject(wrappedValue: wrappedValue).projectedValue
+SwiftUICore.ObservedObject.projectedValue => Wrapper(root: wrappedValue)

@@ -79,17 +79,6 @@ extension State {
         self._location = PortStateStore.nextLocation(initial: value)
     }
 
-    public var wrappedValue: Value {
-        get { (_location as? any PortLocationBox<Value>)?.value ?? _value }
-        nonmutating set {
-            (_location as? any PortLocationBox<Value>)?.value = newValue
-            PortStateStore.markDirty()
-        }
-    }
-
-    public var projectedValue: Binding<Value> {
-        Binding(get: { self.wrappedValue }, set: { self.wrappedValue = $0 })
-    }
 }
 
 // MARK: - Binding
@@ -105,15 +94,6 @@ extension Binding {
         Binding(get: { value }, set: { _ in })
     }
 
-    public var wrappedValue: Value {
-        get { (location as? any PortLocationBox<Value>)?.value ?? _value }
-        nonmutating set {
-            (location as? any PortLocationBox<Value>)?.value = newValue
-            PortStateStore.markDirty()
-        }
-    }
-
-    public var projectedValue: Binding<Value> { self }
 }
 
 // MARK: - LazyState
@@ -128,21 +108,4 @@ extension LazyState {
         self._location = PortStateStore.nextLocation(initial: thunk())
     }
 
-    public var wrappedValue: Value {
-        get {
-            if let box = _location as? any PortLocationBox<Value> { return box.value }
-            switch _storage {
-            case let .value(value): return value
-            case let .thunk(thunk): return thunk()
-            }
-        }
-        nonmutating set {
-            (_location as? any PortLocationBox<Value>)?.value = newValue
-            PortStateStore.markDirty()
-        }
-    }
-
-    public var projectedValue: Binding<Value> {
-        Binding(get: { self.wrappedValue }, set: { self.wrappedValue = $0 })
-    }
 }

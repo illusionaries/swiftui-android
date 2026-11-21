@@ -278,8 +278,11 @@ public final class LayoutNode {
             }
         case .padding:
             result = children.first?.isFlexible(along: axis) ?? false
-        case .background, .overlay, .tap:
-            result = children.first?.isFlexible(along: axis) ?? false
+        case .background, .overlay, .tap, .stack, .zstack, .scroll:
+            // A container absorbs space exactly when one of its children does: that is how a
+            // `.frame(maxWidth: .infinity)` card inside a VStack can still stretch inside an
+            // enclosing HStack.
+            result = children.contains { $0.isFlexible(along: axis) }
         case .group:
             result = children.contains { $0.isFlexible(along: axis) }
         default:

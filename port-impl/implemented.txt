@@ -139,16 +139,10 @@ SwiftUICore.Text.init(_:tableName:bundle:comment:)
 
 # Dynamic properties: the engine owns their storage (see Sources/SwiftUI/Adapters/PortState.swift).
 SwiftUICore.State.init(wrappedValue:)
-SwiftUICore.State.wrappedValue
-SwiftUICore.State.projectedValue
 SwiftUICore.Binding.init(get:set:)
 SwiftUICore.Binding.constant(_:)
-SwiftUICore.Binding.wrappedValue
-SwiftUICore.Binding.projectedValue
 
 SwiftUICore.LazyState.init(initialValue:)
-SwiftUICore.LazyState.wrappedValue
-SwiftUICore.LazyState.projectedValue
 
 # Lists and scrolling.
 SwiftUICore.Axis.Set.horizontal
@@ -159,7 +153,14 @@ SwiftUICore.Image.init(systemName:)
 SwiftUICore.Toggle.init(isOn:label:)
 SwiftUICore.View.onTapGesture(count:perform:)
 SwiftUICore.Color.accentColor
-SwiftUICore.StateObject.wrappedValue
-SwiftUICore.StateObject.projectedValue
-SwiftUICore.ObservedObject.projectedValue
 SwiftUICore.ObservedObject.Wrapper.subscript(dynamicMember:)
+SwiftUICore.UnitPoint.zero
+SwiftUICore.UnitPoint.center
+SwiftUICore.UnitPoint.top
+SwiftUICore.UnitPoint.bottom
+SwiftUICore.UnitPoint.leading
+SwiftUICore.UnitPoint.trailing
+SwiftUICore.UnitPoint.topLeading
+SwiftUICore.UnitPoint.topTrailing
+SwiftUICore.UnitPoint.bottomLeading
+SwiftUICore.UnitPoint.bottomTrailing

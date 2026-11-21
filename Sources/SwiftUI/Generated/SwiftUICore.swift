@@ -2608,7 +2608,7 @@ extension SwiftUICore::EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-@frozen  public struct Namespace : SwiftUICore::DynamicProperty, Swift::Sendable {
+@propertyWrapper @frozen  public struct Namespace : SwiftUICore::DynamicProperty, Swift::Sendable {
   @usableFromInline
   internal var id: Swift::Int
   @inlinable public init() { id = 0 }
@@ -6082,7 +6082,7 @@ extension SwiftUICore::ViewBuilder {
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-@frozen  @preconcurrency @_Concurrency::MainActor public struct EnvironmentObject<ObjectType> : SwiftUICore::DynamicProperty where ObjectType : Combine::ObservableObject {
+@propertyWrapper @frozen  @preconcurrency @_Concurrency::MainActor public struct EnvironmentObject<ObjectType> : SwiftUICore::DynamicProperty where ObjectType : Combine::ObservableObject {
   @dynamicMemberLookup @frozen @preconcurrency @_Concurrency::MainActor public struct Wrapper {
     @_Concurrency::MainActor @preconcurrency internal let root: ObjectType
     @_Concurrency::MainActor @preconcurrency public subscript<Subject>(dynamicMember keyPath: Swift::ReferenceWritableKeyPath<ObjectType, Subject>) -> SwiftUICore::Binding<Subject> {
@@ -10771,7 +10771,7 @@ extension SwiftUICore::Transaction {
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
- @preconcurrency @_Concurrency::MainActor @frozen public struct ObservedObject<ObjectType> : SwiftUICore::DynamicProperty where ObjectType : Combine::ObservableObject {
+ @propertyWrapper @preconcurrency @_Concurrency::MainActor @frozen public struct ObservedObject<ObjectType> : SwiftUICore::DynamicProperty where ObjectType : Combine::ObservableObject {
   @dynamicMemberLookup @preconcurrency @_Concurrency::MainActor @frozen public struct Wrapper {
     @_Concurrency::MainActor @preconcurrency internal let root: ObjectType
         // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
@@ -10784,8 +10784,9 @@ extension SwiftUICore::Transaction {
     }
   @_Concurrency::MainActor @preconcurrency public init(wrappedValue: ObjectType) { self.wrappedValue = wrappedValue; self._seed = 0 }
   @_Concurrency::MainActor @preconcurrency public var wrappedValue: ObjectType
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
+  @_Concurrency::MainActor @preconcurrency public var projectedValue: SwiftUICore::ObservedObject<ObjectType>.Wrapper {
+    get { Wrapper(root: wrappedValue) }
+  }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -13035,26 +13036,26 @@ extension SwiftUICore::AnyLocation : Swift::Equatable {
         self.x = x
         self.y = y
     }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var zero: SwiftUICore::UnitPoint { get { _suiUnimplemented("SwiftUICore.UnitPoint.zero") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var center: SwiftUICore::UnitPoint { get { _suiUnimplemented("SwiftUICore.UnitPoint.center") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var leading: SwiftUICore::UnitPoint { get { _suiUnimplemented("SwiftUICore.UnitPoint.leading") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var trailing: SwiftUICore::UnitPoint { get { _suiUnimplemented("SwiftUICore.UnitPoint.trailing") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var top: SwiftUICore::UnitPoint { get { _suiUnimplemented("SwiftUICore.UnitPoint.top") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bottom: SwiftUICore::UnitPoint { get { _suiUnimplemented("SwiftUICore.UnitPoint.bottom") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var topLeading: SwiftUICore::UnitPoint { get { _suiUnimplemented("SwiftUICore.UnitPoint.topLeading") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var topTrailing: SwiftUICore::UnitPoint { get { _suiUnimplemented("SwiftUICore.UnitPoint.topTrailing") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bottomLeading: SwiftUICore::UnitPoint { get { _suiUnimplemented("SwiftUICore.UnitPoint.bottomLeading") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bottomTrailing: SwiftUICore::UnitPoint { get { _suiUnimplemented("SwiftUICore.UnitPoint.bottomTrailing") } }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   public static func == (a: SwiftUICore::UnitPoint, b: SwiftUICore::UnitPoint) -> Swift::Bool { _suiUnimplemented("SwiftUICore.UnitPoint.==(a:b:)") }
   public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.UnitPoint.hash(into:)") }
   public var hashValue: Swift::Int {
@@ -14952,7 +14953,7 @@ public func __previewThunksHaveFinishedLoading() { _suiUnimplemented("SwiftUICor
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-@frozen  public struct Environment<Value> : SwiftUICore::DynamicProperty {
+@propertyWrapper @frozen  public struct Environment<Value> : SwiftUICore::DynamicProperty {
   @usableFromInline
   @frozen internal enum Content : @unchecked Swift::Sendable {
     case keyPath(Swift::KeyPath<SwiftUICore::EnvironmentValues, Value>)
@@ -15050,7 +15051,7 @@ nonisolated public struct PushTransition : SwiftUICore::Transition {
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-@frozen  @dynamicMemberLookup public struct Binding<Value> {
+@propertyWrapper @frozen  @dynamicMemberLookup public struct Binding<Value> {
   public var transaction: SwiftUICore::Transaction
   package var location: SwiftUICore::AnyLocation<Value>
   package var _value: Value
@@ -15060,10 +15061,13 @@ nonisolated public struct PushTransition : SwiftUICore::Transition {
 
     // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
 
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
+  public var wrappedValue: Value {
+    get { (location as? any PortLocationBox<Value>)?.value ?? _value }
+    nonmutating set { _suiUnimplemented("SwiftUICore.Binding.wrappedValue") }
+  }
+  public var projectedValue: SwiftUICore::Binding<Value> {
+    get { self }
+  }
   @export(implementation) public init(projectedValue: SwiftUICore::Binding<Value>) {
         self = projectedValue
     }
@@ -15722,7 +15726,7 @@ extension SwiftUICore::Shape {
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
- public struct ScaledMetric<Value> : SwiftUICore::DynamicProperty where Value : Swift::BinaryFloatingPoint {
+ @propertyWrapper public struct ScaledMetric<Value> : SwiftUICore::DynamicProperty where Value : Swift::BinaryFloatingPoint {
   public init(wrappedValue: Value, relativeTo textStyle: SwiftUICore::Font.TextStyle) { _suiUnimplemented("SwiftUICore.ScaledMetric.init(wrappedValue:relativeTo:)") }
   public init(wrappedValue: Value) { _suiUnimplemented("SwiftUICore.ScaledMetric.init(wrappedValue:)") }
   public var wrappedValue: Value {
@@ -16480,7 +16484,7 @@ extension SwiftUICore::View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 26.0)
-@_documentation(visibility: internal) @frozen public struct LazyState<Value> : SwiftUICore::DynamicProperty {
+@propertyWrapper @_documentation(visibility: internal) @frozen public struct LazyState<Value> : SwiftUICore::DynamicProperty {
   public enum Storage : @unchecked Swift::Sendable {
     case thunk(() -> Value)
     case value(Value)
@@ -16497,10 +16501,13 @@ extension SwiftUICore::View {
             to: LazyState<Value>.self
         )
     }
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
+  public var wrappedValue: Value {
+    get { (_location as? any PortLocationBox<Value>)?.value ?? { switch _storage { case let .value(value): return value; case let .thunk(thunk): return thunk() } }() }
+    nonmutating set { _suiUnimplemented("SwiftUICore.LazyState.wrappedValue") }
+  }
+  public var projectedValue: SwiftUICore::Binding<Value> {
+    get { Binding(get: { self.wrappedValue }, set: { self.wrappedValue = $0 }) }
+  }
   public static func _makeProperty<V>(in buffer: inout SwiftUICore::_DynamicPropertyBuffer, container: SwiftUICore::_GraphValue<V>, fieldOffset: Swift::Int, inputs: inout SwiftUICore::_GraphInputs) { _suiUnimplemented("SwiftUICore.LazyState._makeProperty(in:container:fieldOffset:inputs:)") }
   @available(iOS 27.0, macOS 27.0, tvOS 27.0, watchOS 27.0, visionOS 27.0, *)
   public static var _propertyStorageSize: Swift::Int? {
@@ -19284,7 +19291,7 @@ extension SwiftUICore::KeyframeTrackContentBuilder {
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-@frozen  @preconcurrency @_Concurrency::MainActor public struct StateObject<ObjectType> : SwiftUICore::DynamicProperty where ObjectType : Combine::ObservableObject {
+@propertyWrapper @frozen  @preconcurrency @_Concurrency::MainActor public struct StateObject<ObjectType> : SwiftUICore::DynamicProperty where ObjectType : Combine::ObservableObject {
   @usableFromInline
   @preconcurrency @_Concurrency::MainActor @frozen internal enum Storage {
     case initially(() -> ObjectType)
@@ -19297,10 +19304,12 @@ extension SwiftUICore::KeyframeTrackContentBuilder {
   @inlinable nonisolated public init(wrappedValue thunk: @autoclosure @escaping () -> ObjectType) {
         storage = .initially(thunk)
     }
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
+  @_Concurrency::MainActor @preconcurrency public var wrappedValue: ObjectType {
+    get { { switch storage { case let .object(observed): return observed.wrappedValue; case let .initially(thunk): return PortObjectStore.stateObject(thunk) } }() }
+  }
+  @_Concurrency::MainActor @preconcurrency public var projectedValue: SwiftUICore::ObservedObject<ObjectType>.Wrapper {
+    get { ObservedObject(wrappedValue: wrappedValue).projectedValue }
+  }
   nonisolated public static func _makeProperty<V>(in buffer: inout SwiftUICore::_DynamicPropertyBuffer, container: SwiftUICore::_GraphValue<V>, fieldOffset: Swift::Int, inputs: inout SwiftUICore::_GraphInputs) { _suiUnimplemented("SwiftUICore.StateObject._makeProperty(in:container:fieldOffset:inputs:)") }
   @available(iOS 27.0, macOS 27.0, tvOS 27.0, watchOS 27.0, visionOS 27.0, *)
   nonisolated public static var _propertyStorageSize: Swift::Int? {
@@ -20970,7 +20979,7 @@ public typealias EmptyContent = SwiftUICore::EmptyView
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-@frozen  public struct State<Value> : SwiftUICore::DynamicProperty {
+@propertyWrapper @frozen  public struct State<Value> : SwiftUICore::DynamicProperty {
   @usableFromInline
   internal var _value: Value
   @usableFromInline
@@ -20982,10 +20991,13 @@ public typealias EmptyContent = SwiftUICore::EmptyView
   @export(implementation) public init(initialValue value: Value) {
         _value = value
     }
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
-    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
-
+  public var wrappedValue: Value {
+    get { (_location as? any PortLocationBox<Value>)?.value ?? _value }
+    nonmutating set { _suiUnimplemented("SwiftUICore.State.wrappedValue") }
+  }
+  public var projectedValue: SwiftUICore::Binding<Value> {
+    get { Binding(get: { self.wrappedValue }, set: { self.wrappedValue = $0 }) }
+  }
   public static func _makeProperty<V>(in buffer: inout SwiftUICore::_DynamicPropertyBuffer, container: SwiftUICore::_GraphValue<V>, fieldOffset: Swift::Int, inputs: inout SwiftUICore::_GraphInputs) { _suiUnimplemented("SwiftUICore.State._makeProperty(in:container:fieldOffset:inputs:)") }
   @available(iOS 27.0, macOS 27.0, tvOS 27.0, watchOS 27.0, visionOS 27.0, *)
   public static var _propertyStorageSize: Swift::Int? {

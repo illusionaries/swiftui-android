@@ -150,7 +150,7 @@ public final class SwiftUIHostScene: PortScene {
         graph.beginFrame(environment: PortEnvironment(isDark: isDark,
                                                       accentColor: RGBAColor(hex: 0x0A84FF),
                                                       displayScale: context.displayScale))
-        let root = graph.makeNode(PortDemoView(), proposal: ProposedSize(width: width, height: height))
+        let root = graph.makeNode(AtlasRootView(), proposal: ProposedSize(width: width, height: height))
         graph.endFrame()
 
         let size = root.measure(ProposedSize(width: width, height: height))

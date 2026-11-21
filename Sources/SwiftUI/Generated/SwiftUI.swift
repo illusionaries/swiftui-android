@@ -4777,7 +4777,7 @@ extension Observation.Observable {
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
- @frozen public struct GestureState<Value> : SwiftUICore.DynamicProperty {
+ @propertyWrapper @frozen public struct GestureState<Value> : SwiftUICore.DynamicProperty {
   fileprivate var state: SwiftUICore.State<Value>
   fileprivate let reset: (SwiftUICore.Binding<Value>) -> Swift.Void
   public init(wrappedValue: Value) { _suiUnimplemented("SwiftUICore.GestureState.init(wrappedValue:)") }
@@ -8673,7 +8673,7 @@ public struct FileDialogBrowserOptions : Swift.OptionSet {
 }
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@frozen  public struct SceneStorage<Value> : SwiftUICore.DynamicProperty {
+@propertyWrapper @frozen  public struct SceneStorage<Value> : SwiftUICore.DynamicProperty {
   @usableFromInline
   internal var _key: Swift.String
   @usableFromInline
@@ -9119,7 +9119,7 @@ extension SwiftUICore.View {
   @_Concurrency.MainActor @preconcurrency public func _cover<Content>(isPresented: SwiftUICore.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, @SwiftUICore.ContentBuilder content: @escaping () -> Content) -> some SwiftUICore.View where Content : SwiftUICore.View { _suiUnimplemented("SwiftUICore.View._cover(isPresented:onDismiss:content:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@frozen  public struct AppStorage<Value> : SwiftUICore.DynamicProperty {
+@propertyWrapper @frozen  public struct AppStorage<Value> : SwiftUICore.DynamicProperty {
   @usableFromInline
   internal var location: SwiftUICore.UserDefaultLocation<Value>
   public var wrappedValue: Value {
@@ -10580,8 +10580,8 @@ public static var all: SwiftUICore.FrameResizeDirection.Set { get { _suiUnimplem
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@frozen  public struct FocusState<Value> : SwiftUICore.DynamicProperty, ~Swift.Sendable where Value : Swift.Hashable {
-  @frozen  public struct Binding : ~Swift.Sendable {
+@propertyWrapper @frozen  public struct FocusState<Value> : SwiftUICore.DynamicProperty, ~Swift.Sendable where Value : Swift.Hashable {
+  @propertyWrapper @frozen  public struct Binding : ~Swift.Sendable {
     private var _binding: SwiftUICore.Binding<Value>
     public var wrappedValue: Value {
       get { _suiUnimplemented("SwiftUICore.FocusState.Binding.wrappedValue") }
@@ -10611,8 +10611,8 @@ public static var all: SwiftUICore.FrameResizeDirection.Set { get { _suiUnimplem
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@frozen  public struct FocusState<Value> : SwiftUICore.DynamicProperty where Value : Swift.Hashable {
-  @frozen  public struct Binding {
+@propertyWrapper @frozen  public struct FocusState<Value> : SwiftUICore.DynamicProperty where Value : Swift.Hashable {
+  @propertyWrapper @frozen  public struct Binding {
     private var _binding: SwiftUICore.Binding<Value>
     public var wrappedValue: Value {
       get
@@ -25436,7 +25436,7 @@ extension SwiftUICore.View {
   public init() { _suiUnimplemented("SwiftUICore.FetchedResults.init()") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
- @preconcurrency @_Concurrency.MainActor public struct FetchRequest<Result> where Result : CoreData.NSFetchRequestResult {
+ @propertyWrapper @preconcurrency @_Concurrency.MainActor public struct FetchRequest<Result> where Result : CoreData.NSFetchRequestResult {
   @_Concurrency.MainActor @preconcurrency public var wrappedValue: SwiftUICore.FetchedResults<Result> {
     get { _suiUnimplemented("SwiftUICore.FetchRequest.wrappedValue") }
   }
@@ -26288,7 +26288,7 @@ public struct PageIndexViewStyle : SwiftUICore.IndexViewStyle {
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
  @frozen public struct AccessibilityFocusState<Value> : SwiftUICore.DynamicProperty where Value : Swift.Hashable {
   #if compiler(>=5.3) && $TildeSendable
-   @frozen public struct Binding : ~Swift.Sendable {
+   @propertyWrapper @frozen public struct Binding : ~Swift.Sendable {
     private var _binding: SwiftUICore.Binding<Value>
     public var wrappedValue: Value {
       get { _suiUnimplemented("SwiftUICore.AccessibilityFocusState.Binding.wrappedValue") }
@@ -26299,7 +26299,7 @@ public struct PageIndexViewStyle : SwiftUICore.IndexViewStyle {
     }
   }
   #else
-   @frozen public struct Binding {
+   @propertyWrapper @frozen public struct Binding {
     private var _binding: SwiftUICore.Binding<Value>
     public var wrappedValue: Value {
       get
@@ -29016,7 +29016,7 @@ extension SwiftUICore.View {
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
- @_Concurrency.MainActor @preconcurrency public struct SectionedFetchRequest<SectionIdentifier, Result> : ~Swift.Sendable where SectionIdentifier : Swift.Hashable, Result : CoreData.NSFetchRequestResult {
+ @propertyWrapper @_Concurrency.MainActor @preconcurrency public struct SectionedFetchRequest<SectionIdentifier, Result> : ~Swift.Sendable where SectionIdentifier : Swift.Hashable, Result : CoreData.NSFetchRequestResult {
   @_Concurrency.MainActor @preconcurrency public var wrappedValue: SwiftUICore.SectionedFetchResults<SectionIdentifier, Result> {
     get { _suiUnimplemented("SwiftUICore.SectionedFetchRequest.wrappedValue") }
   }
@@ -29033,7 +29033,7 @@ extension SwiftUICore.View {
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
- @_Concurrency.MainActor @preconcurrency public struct SectionedFetchRequest<SectionIdentifier, Result> where SectionIdentifier : Swift.Hashable, Result : CoreData.NSFetchRequestResult {
+ @propertyWrapper @_Concurrency.MainActor @preconcurrency public struct SectionedFetchRequest<SectionIdentifier, Result> where SectionIdentifier : Swift.Hashable, Result : CoreData.NSFetchRequestResult {
   @_Concurrency.MainActor @preconcurrency public var wrappedValue: SwiftUICore.SectionedFetchResults<SectionIdentifier, Result> {
     get
   }

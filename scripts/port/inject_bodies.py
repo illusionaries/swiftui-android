@@ -3487,7 +3487,7 @@ def strip_self_qualifiers(sources: dict[str, str]) -> int:
 PROPERTY_WRAPPER_TYPES = {
     "Binding", "ObservedObject", "StateObject", "State", "LazyState", "Environment",
     "EnvironmentObject", "Namespace", "FocusState", "AppStorage", "SceneStorage", "GestureState",
-    "FetchRequest", "SectionedFetchRequest", "ScaledMetric", "EnvironmentValues",
+    "FetchRequest", "SectionedFetchRequest", "ScaledMetric",
 }
 
 
@@ -3573,10 +3573,9 @@ def main(argv: list[str]) -> int:
     # stay in the generated file (the engine currently omits them and supplies extensions, which
     # the attribute machinery does not accept). That pair of changes is the next step for running
     # the full Atlas app on the ported path; disabled until both halves land together.
-    if False:
-        wrappers = restore_property_wrapper_attributes(sources)
-        if not arguments.quiet:
-            print(f"  property-wrapper declarations: {wrappers}")
+    wrappers = restore_property_wrapper_attributes(sources)
+    if not arguments.quiet:
+        print(f"  property-wrapper declarations: {wrappers}")
     stripped = strip_self_qualifiers(sources)
     if not arguments.quiet:
         print(f"  self-qualifiers removed: {stripped}")

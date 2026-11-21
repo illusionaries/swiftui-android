@@ -172,29 +172,6 @@ public enum PortObjectStore {
     }
 }
 
-extension StateObject {
-    public var wrappedValue: ObjectType {
-        switch storage {
-        case let .object(observed):
-            return observed.wrappedValue
-        case let .initially(thunk):
-            return PortObjectStore.stateObject(thunk)
-        }
-    }
-
-    public var projectedValue: ObservedObject<ObjectType> {
-        ObservedObject(wrappedValue: wrappedValue)
-    }
-}
-
-extension ObservedObject {
-    // `wrappedValue` is *stored* in Apple's interface, so only the initialiser and the projection
-    // are supplied (the initialiser as a body override, since it must assign that field).
-    public var projectedValue: Wrapper {
-        get { Wrapper(root: wrappedValue) }
-    }
-}
-
 extension ObservedObject.Wrapper {
     public subscript<Subject>(dynamicMember keyPath: ReferenceWritableKeyPath<ObjectType, Subject>) -> Binding<Subject> {
         Binding(get: { self.root[keyPath: keyPath] },

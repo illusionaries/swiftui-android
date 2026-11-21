@@ -78,3 +78,20 @@ extension EdgeInsets {
         return result
     }
 }
+
+// MARK: - UnitPoint
+//
+// `UnitPoint` stores normalized x/y, so its statics are simply those coordinates.
+
+extension UnitPoint {
+    public static var zero: UnitPoint { UnitPoint(x: 0, y: 0) }
+    public static var center: UnitPoint { UnitPoint(x: 0.5, y: 0.5) }
+    public static var top: UnitPoint { UnitPoint(x: 0.5, y: 0) }
+    public static var bottom: UnitPoint { UnitPoint(x: 0.5, y: 1) }
+    public static var leading: UnitPoint { UnitPoint(x: 0, y: 0.5) }
+    public static var trailing: UnitPoint { UnitPoint(x: 1, y: 0.5) }
+    public static var topLeading: UnitPoint { UnitPoint(x: 0, y: 0) }
+    public static var topTrailing: UnitPoint { UnitPoint(x: 1, y: 0) }
+    public static var bottomLeading: UnitPoint { UnitPoint(x: 0, y: 1) }
+    public static var bottomTrailing: UnitPoint { UnitPoint(x: 1, y: 1) }
+}
