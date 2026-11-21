@@ -2,6 +2,27 @@
 
 Living document. Updated as the port converges. Numbers are measured, not estimated.
 
+
+### Next: putting the full Atlas app on the ported path
+
+`demos/AtlasSwiftUI.swift` (521 lines, four screens) compiles for Android but does not yet run:
+its `@Binding` / `@ObservedObject` attributes fail with *"generic struct 'Binding' cannot be used
+as an attribute"*. Two changes must land together, because each alone leaves the build broken:
+
+1. **Restore `@propertyWrapper` on the wrapper types.** The generator rebuilds type declarations
+   and drops that spelling; `restore_property_wrapper_attributes()` in
+   `scripts/port/inject_bodies.py` implements it and is currently gated behind `if False:`.
+2. **Keep the `wrappedValue` declarations in the generated file.** The attribute machinery
+   requires the property to be declared on the type, but the engine currently omits those
+   declarations (`port-impl/implemented.txt`) and supplies extensions instead — which it rejects.
+   The fix is to stop omitting them and give the accessors bodies via `port-impl/bodies.txt`
+   occurrence selectors (`Symbol#1` = getter, `Symbol#2` = setter), the mechanism already used for
+   `LocalizedStringKey.StringInterpolation`.
+
+Affected symbols: `Binding.wrappedValue`/`projectedValue`, `State.wrappedValue`/`projectedValue`,
+`LazyState.wrappedValue`/`projectedValue`, `StateObject.wrappedValue`/`projectedValue`,
+`ObservedObject.projectedValue`.
+
 ## Ported path: what renders today
 
 Every row below is Apple's API, recompiled for Android and executed by the port's engine; the
