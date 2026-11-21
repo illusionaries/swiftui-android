@@ -180,6 +180,17 @@ extension ModifiedContent: _PortRenderable where Content: View, Modifier: ViewMo
             return [LayoutNode.background(backdrop, front)]
         }
 
+        // `.background(_ style: some ShapeStyle)` and `.overlay(_ style:)` use a *different*
+        // modifier type from the view-taking overloads: `_BackgroundStyleModifier` /
+        // `_OverlayStyleModifier` store the style under `style`. Colour/gradient styles are also
+        // Views, so they render through the same path.
+        if let style = PortAdapters.child(of: modifier, named: "style", as: (any View).self) {
+            let isOverlay = String(describing: Modifier.self).contains("Overlay")
+            let other = context.makeNode(style, proposal: proposal)
+            let base = context.makeNode(content, proposal: proposal)
+            return [isOverlay ? LayoutNode.overlay(other, base) : LayoutNode.background(other, base)]
+        }
+
         if let overlay = PortAdapters.child(of: modifier, named: "overlay", as: (any View).self) {
             let layer = context.makeNode(overlay, proposal: proposal)
             let base = context.makeNode(content, proposal: proposal)

@@ -88,3 +88,14 @@ extension PortStyleRegistry {
         gradient.stops.compactMap { rgba(of: $0.color) }
     }
 }
+
+// A gradient is also a `View` (that is what `.background(gradient)` renders), so it needs the
+// same treatment as a colour-as-view.
+extension LinearGradient: _PortRenderable {
+    nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
+        let stops = PortStyleRegistry.stops(of: gradient)
+        return [LayoutNode.gradient(stops.isEmpty ? [context.environment.foreground, context.environment.foreground] : stops,
+                                    start: CGPoint(x: startPoint.x, y: startPoint.y),
+                                    end: CGPoint(x: endPoint.x, y: endPoint.y))]
+    }
+}

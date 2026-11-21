@@ -480,15 +480,36 @@ public final class LayoutNode {
 
         let childSize = children.first?.measure(ProposedSize(width: proposedWidth, height: proposedHeight)) ?? .zero
 
-        var width = segment(proposed: proposedWidth, min: spec.minWidth, ideal: spec.idealWidth,
-                            max: spec.maxWidth, childLength: childSize.width, proposal: proposal.width)
-        var height = segment(proposed: proposedHeight, min: spec.minHeight, ideal: spec.idealHeight,
-                             max: spec.maxHeight, childLength: childSize.height, proposal: proposal.height)
+        var width = frameLength(child: childSize.width, min: spec.minWidth, ideal: spec.idealWidth,
+                                max: spec.maxWidth, proposal: proposal.width)
+        var height = frameLength(child: childSize.height, min: spec.minHeight, ideal: spec.idealHeight,
+                                 max: spec.maxHeight, proposal: proposal.height)
 
         if let explicit = spec.maxWidth, spec.minWidth == explicit, explicit.isFinite { width = explicit }
         if let explicit = spec.maxHeight, spec.minHeight == explicit, explicit.isFinite { height = explicit }
 
         return CGSize(width: max(0, width), height: max(0, height))
+    }
+
+    /// The length a frame reports along one axis.
+    ///
+    /// A frame *proposes* the parent's size to its child (so a child that wants to fill can), but
+    /// it only *reports* the proposal when its own maximum is an explicit `.infinity`. With no
+    /// maximum the frame wraps the child — reporting the proposal instead made
+    /// `.frame(maxWidth: .infinity)` cards and tab bars as tall as the screen.
+    private func frameLength(child: CGFloat, min lower: CGFloat?, ideal: CGFloat?,
+                             max upper: CGFloat?, proposal: CGFloat?) -> CGFloat {
+        var value = child
+        if let ideal, ideal > value { value = ideal }
+        if let upper {
+            if upper.isFinite {
+                value = Swift.min(value, upper)
+            } else if let proposal {
+                value = proposal
+            }
+        }
+        if let lower { value = Swift.max(value, lower) }
+        return value
     }
 
     private func segment(proposed: CGFloat?, min lower: CGFloat?, ideal: CGFloat?,
