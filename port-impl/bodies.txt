@@ -148,3 +148,19 @@ SwiftUICore.Link.init(_:destination:)#1 => self.init(destination: destination) {
 
 # Divider is stateless: Apple's `init()` is a no-op that the declaration still needs.
 SwiftUICore.Divider.init() => do {}
+
+# ── Control styles ───────────────────────────────────────────────────────────
+# The built-in style types are stateless shorthands (`.bordered`, `.switch`, `.segmented`, …):
+# Apple's `static var bordered` is `get { .init() }`, so the type needs a usable `init()` before the
+# style can even be constructed. Their *drawing* is Apple's `makeBody`, which the port supplies in
+# Adapters/PortStyles.swift by recognising the style type.
+SwiftUICore.PlainButtonStyle.init() => do {}
+SwiftUICore.BorderlessButtonStyle.init() => do {}
+SwiftUICore.BorderedButtonStyle.init() => do {}
+SwiftUICore.BorderedProminentButtonStyle.init() => do {}
+SwiftUICore.SwitchToggleStyle.init() => do {}
+SwiftUICore.ButtonToggleStyle.init() => do {}
+SwiftUICore.SegmentedPickerStyle.init() => do {}
+SwiftUICore.InlinePickerStyle.init() => do {}
+SwiftUICore.PlainTextFieldStyle.init() => do {}
+SwiftUICore.RoundedBorderTextFieldStyle.init() => do {}

@@ -174,3 +174,12 @@ SwiftUICore.View.labelsHidden()
 # `_trait(...)`/`TagValueTraitKey`, whose storage is private. The port's version keeps the tag in
 # `_PortTagged`, which is what `Picker` reads to find each option's selection value.
 SwiftUICore.View.tag(_:includeOptional:)
+
+# Control styles: Apple's modifiers write an environment value and its style types draw; the style
+# types ship bodyless, so the port keeps the modifiers (PortStyles.swift) and renders the built-in
+# styles itself.
+SwiftUICore.View.buttonStyle(_:)
+SwiftUICore.View.toggleStyle(_:)
+SwiftUICore.View.pickerStyle(_:)
+SwiftUICore.View.textFieldStyle(_:)
+SwiftUICore.View.progressViewStyle(_:)

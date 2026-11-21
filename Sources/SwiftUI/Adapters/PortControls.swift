@@ -224,6 +224,10 @@ extension Picker: _PortRenderable where Label: View, Content: View {
         }
         let current = AnyHashable(selection.wrappedValue)
 
+        if environment.pickerStyle == .inline {
+            return [inlinePicker(content: content, selection: selection, proposal: proposal, context: context)]
+        }
+
         var segments: [LayoutNode] = []
         for option in PortTaggedFlattening.options(of: content) {
             let isSelected = option.tag.map { $0 == current } ?? false
@@ -271,6 +275,33 @@ extension Picker: _PortRenderable where Label: View, Content: View {
     }
 }
 
+extension Picker {
+    /// `.pickerStyle(.inline)`: one row per option with a check mark on the selected one.
+    nonisolated func inlinePicker(content: Content, selection: Binding<SelectionValue>,
+                                  proposal: ProposedSize, context: PortGraphContext) -> LayoutNode {
+        let environment = context.environment
+        let current = AnyHashable(selection.wrappedValue)
+        var rows: [LayoutNode] = []
+        for option in PortTaggedFlattening.options(of: content) {
+            let isSelected = option.tag.map { $0 == current } ?? false
+            let label = context.makeNode(option.view, proposal: proposal)
+            let check = PortControlStyle.label(isSelected ? "\u{2713}" : "",
+                                               environment: environment,
+                                               size: 14, weight: .semibold,
+                                               color: environment.accentColor)
+            let row = LayoutNode.hstack(spacing: 8, horizontalAlignment: 0.5, verticalAlignment: 0.5,
+                                        [label, LayoutNode.spacer(), check])
+            let padded = LayoutNode.padding(EdgeInsetsLike(top: 8, bottom: 8, leading: 2, trailing: 2), row)
+            if let tag = option.tag, let value = tag.base as? SelectionValue {
+                rows.append(padded.onTap { PortControlStyle.write { selection.wrappedValue = value } })
+            } else {
+                rows.append(padded)
+            }
+        }
+        return LayoutNode.vstack(spacing: 2, horizontalAlignment: 0, rows)
+    }
+}
+
 // MARK: - ProgressView
 
 extension ProgressView: _PortRenderable where Label: View, CurrentValueLabel: View {
@@ -314,17 +345,19 @@ extension Label: _PortRenderable where Title: View, Icon: View {
 
 // MARK: - Link
 //
-// A link is text in the accent colour. Following it needs an Android `Intent`, which the port does
-// not surface yet; the destination is kept so the gap is a missing action, not missing state.
+// A link is text in the accent colour, and tapping it asks the platform to open the destination
+// (`PortLinkOpener`, implemented by the Android runtime with an ACTION_VIEW Intent).
 
 extension Link: _PortRenderable where Label: View {
     nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
         let environment = context.environment
-        return context.withEnvironment({ environment in
+        let nodes = context.withEnvironment({ environment in
             environment.foreground = environment.accentColor
         }, body: {
             _portLabel.map { [context.makeNode($0, proposal: proposal)] } ?? []
         })
+        guard let destination = _portDestination else { return nodes }
+        return nodes.map { $0.onTap { PortLinkOpener.open(destination) } }
     }
 }
 
@@ -378,7 +411,9 @@ extension TextField: _PortRenderable where Label: View {
         }
 
         // The platform editor is an invisible native widget: the field has to draw the caret.
-        var row: [LayoutNode] = [content]
+        // With no text yet the caret belongs *before* the placeholder (the insertion point is the
+        // start of the field), not after it.
+        var row: [LayoutNode] = text.isEmpty ? [] : [content]
         if isFocused {
             let caretHeight = (environment.font?.size ?? environment.defaultFontSize) + 3
             row.append(LayoutNode.frame(FrameSpec(minWidth: 2, idealWidth: 2, maxWidth: 2,
@@ -387,21 +422,33 @@ extension TextField: _PortRenderable where Label: View {
                                                 maxHeight: caretHeight),
                                         LayoutNode.color(environment.accentColor)))
         }
+        if text.isEmpty {
+            row.append(content)
+        }
         let contentRow = LayoutNode.frame(FrameSpec(maxWidth: .infinity, horizontalAlignment: 0),
                                           LayoutNode.hstack(spacing: 1, verticalAlignment: 0.5, row))
 
-        let padded = LayoutNode.padding(EdgeInsetsLike(top: 9, bottom: 9, leading: 11, trailing: 11), contentRow)
-        // A field with no binding cannot receive text; painting its outline red makes that a
-        // visible port defect instead of a tap that silently does nothing.
-        let strokeColor = binding == nil ? RGBAColor(hex: 0xFF3B30)
-                       : isFocused ? environment.accentColor
-                       : PortControlStyle.divider(environment)
-        let plate = LayoutNode(.shape(.roundedRectangle(cornerRadius: 9),
-                                      fill: .color(PortControlStyle.fill(environment)),
-                                      stroke: (width: isFocused ? 2 : 1, color: strokeColor)))
-        // Apple's text field is horizontally flexible: it takes the row's width, not its text's.
-        let node = LayoutNode.frame(FrameSpec(maxWidth: .infinity, horizontalAlignment: 0),
+        // `.textFieldStyle(.plain)` is the variant with no plate and no outline.
+        let node: LayoutNode
+        if environment.textFieldStyle == .plain {
+            let body = LayoutNode.padding(EdgeInsetsLike(top: 6, bottom: 6, leading: 0, trailing: 0),
+                                          contentRow)
+            node = LayoutNode.frame(FrameSpec(maxWidth: .infinity, horizontalAlignment: 0), body)
+        } else {
+            let padded = LayoutNode.padding(EdgeInsetsLike(top: 9, bottom: 9, leading: 11, trailing: 11),
+                                            contentRow)
+            // A field with no binding cannot receive text; painting its outline red makes that a
+            // visible port defect instead of a tap that silently does nothing.
+            let strokeColor = binding == nil ? RGBAColor(hex: 0xFF3B30)
+                           : isFocused ? environment.accentColor
+                           : PortControlStyle.divider(environment)
+            let plate = LayoutNode(.shape(.roundedRectangle(cornerRadius: 9),
+                                          fill: .color(PortControlStyle.fill(environment)),
+                                          stroke: (width: isFocused ? 2 : 1, color: strokeColor)))
+            // Apple's text field is horizontally flexible: it takes the row's width, not its text's.
+            node = LayoutNode.frame(FrameSpec(maxWidth: .infinity, horizontalAlignment: 0),
                                     LayoutNode.background(plate, padded))
+        }
 
         // The tap is attached even when the field has no binding: a field that cannot accept
         // text is a rendering problem to see, not a touch target to silently lose.

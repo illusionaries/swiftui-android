@@ -34,6 +34,14 @@ public struct PortEnvironment: Equatable {
     /// Set by `.labelsHidden()`: controls drop their label text and keep only their control body,
     /// which is what the modifier means in Apple's environment.
     public var labelsHidden: Bool
+    /// Set by `.buttonStyle(_:)` / `.toggleStyle(_:)` / `.pickerStyle(_:)` /
+    /// `.textFieldStyle(_:)` / `.progressViewStyle(_:)`. Apple's styles are bodyless in the
+    /// interface, so the port recognises the built-in style types and renders them itself.
+    public var buttonStyle: PortButtonStyleKind = .automatic
+    public var toggleStyle: PortToggleStyleKind = .automatic
+    public var pickerStyle: PortPickerStyleKind = .automatic
+    public var textFieldStyle: PortTextFieldStyleKind = .automatic
+    public var progressViewStyle: PortProgressViewStyleKind = .automatic
 
     public init(isDark: Bool = false,
                 accentColor: RGBAColor = RGBAColor(hex: 0x0A84FF),

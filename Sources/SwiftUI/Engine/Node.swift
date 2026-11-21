@@ -139,6 +139,14 @@ public final class LayoutNode {
     public var children: [LayoutNode]
     /// Tap handler attached by the `.onTapGesture` equivalent.
     public var action: (() -> Void)?
+    /// Called once per layout pass, after this node has been placed, with its final frame.
+    ///
+    /// A view is built from a *proposal*, but the frame it actually gets can be smaller (safe-area
+    /// clamping, a parent frame, the root viewport). A scroll view needs that real height to know
+    /// how far its content can travel; without the hook it used the proposal and 54 dp of the
+    /// gallery's page were unreachable.
+    public var layoutHook: ((CGRect) -> Void)?
+
     /// Continuous drag handler for controls (sliders). Receives the touch point in the same
     /// coordinate space as `frame`, plus the node's own frame, so the control can map the position
     /// onto its track. Taps on such a node are routed here too (a tap on a slider jumps the value).
@@ -699,6 +707,7 @@ public final class LayoutNode {
         default:
             break
         }
+        layoutHook?(frame)
     }
 
     private func placeStack(axis: StackAxis, spacing: CGFloat,

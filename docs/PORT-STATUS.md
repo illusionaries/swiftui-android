@@ -87,6 +87,30 @@ Javac gives those a synthetic `this$0`. The fix is to declare listeners as `stat
 that take the owner explicitly (`SwiftUIHostView.TextChangeRelay`). `scripts/build-apk.sh` now
 explains that in its d8 failure path, because the error message names a class file and nothing else.
 
+## Round: styles, scroll physics, and the platform seams
+
+Three device-reported defects and one feature gap, all closed and re-verified on the emulator:
+
+- **Scrolling followed the wrong distance.** `PortDragGesture.translation` is measured from
+  touch-down and grows on every move event; the store added it to the *current* offset each time,
+  so the page accelerated away from the finger. `ScrollModel.track(_:)` now fixes a base offset on
+  `.began` and re-derives the offset from it.
+- **The end of the page was unreachable.** The scroll store treated the height the parent
+  *proposed* as the viewport, but the root view is placed inside the safe area (835 dp, not 891).
+  `LayoutNode.layoutHook` (invoked after every placement) hands the placed frame back, the store
+  adopts it as the viewport, and the offset is clamped against the real one. On device:
+  `content=2013 viewport=835 max=1177 offset=1177` at the bottom, padding included.
+- **A focused empty `TextField` drew its caret after the placeholder.** The insertion point of an
+  empty field is the start of the field, so the caret now precedes the placeholder.
+- **Styles are environment values now.** `.buttonStyle` / `.toggleStyle` / `.pickerStyle` /
+  `.textFieldStyle` used to be unused stubs; they write `PortEnvironment` fields and the adapters
+  draw the built-in variants (`.borderedProminent` / `.bordered` / `.plain` buttons, `.button`
+  toggles, `.inline` pickers, `.plain` fields). Apple's style *types* are bodyless, so they are
+  recognised by type; a custom `makeBody` stays unimplemented and documented.
+- **`Link` opens its URL.** `PortLinkOpener` is a platform seam like `PortTextInput`;
+  `SwiftUIAndroid` installs a handler, the host view pulls it and starts `Intent.ACTION_VIEW`.
+  Verified: tapping `swift.org` logged `link open https://swift.org` and Chrome foregrounded.
+
 ## Ported path: what renders today
 
 Every row below is Apple's API, recompiled for Android and executed by the port's engine; the

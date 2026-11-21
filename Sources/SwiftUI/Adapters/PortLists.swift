@@ -47,15 +47,38 @@ public enum PortScrollStore {
         cursor = 0
     }
 
-    static func nextModel(contentHeight: CGFloat, viewportHeight: CGFloat) -> ScrollModel {
+    static func nextModel(contentHeight: CGFloat, viewportHeight: CGFloat) -> (slot: Int, model: ScrollModel) {
         let index = cursor
         cursor += 1
         var model = models[index] ?? ScrollModel()
         model.contentHeight = contentHeight
-        model.viewportHeight = viewportHeight
+        // Only a *seed*: the proposal is what the parent offered, not the height this view was
+        // placed with, and `updateViewport` replaces it during the layout pass that follows.
+        // Overwriting it every frame instead re-clamped the offset to the (larger) proposal
+        // viewport each build, so the content's last 56 dp could never be reached — the scroll
+        // position oscillated between the two maxima.
+        if model.viewportHeight <= 0 {
+            model.viewportHeight = viewportHeight
+        }
         model.clamp()
         models[index] = model
-        return model
+        noteDiagnostics(model)
+        return (index, model)
+    }
+
+    /// The scroll view was placed with `height`: that is the viewport it really scrolls in.
+    static func updateViewport(slot: Int, height: CGFloat) {
+        guard var model = models[slot], abs(model.viewportHeight - height) > 0.5 else { return }
+        model.viewportHeight = height
+        model.clamp()
+        models[slot] = model
+        noteDiagnostics(model)
+    }
+
+    private static func noteDiagnostics(_ model: ScrollModel) {
+        PortDiagnostics.scrollModel = "content=\(Int(model.contentHeight))"
+            + " viewport=\(Int(model.viewportHeight)) max=\(Int(model.maxOffset))"
+            + " offset=\(Int(model.offset))"
     }
 
     /// Applies a drag to the scroll view that owns `point`, returning whether it consumed it.
@@ -64,8 +87,7 @@ public enum PortScrollStore {
         // Single scroll view: the model with a positive scrollable range takes the gesture.
         for (index, model) in models.sorted(by: { $0.key < $1.key }) where model.maxOffset > 0 {
             var updated = model
-            updated.offset = model.offset - drag.translation.y
-            updated.clamp()
+            updated.track(drag)
             models[index] = updated
             return true
         }
@@ -78,8 +100,13 @@ extension ScrollView: _PortRenderable where Content: View {
         let viewport = proposal.height ?? 0
         let content = context.makeNode(content, proposal: ProposedSize(width: proposal.width, height: nil))
         let contentHeight = content.measure(ProposedSize(width: proposal.width, height: nil)).height
-        let model = PortScrollStore.nextModel(contentHeight: contentHeight, viewportHeight: viewport)
-        return [LayoutNode.scroll(offset: model.offset, content)]
+        let (slot, model) = PortScrollStore.nextModel(contentHeight: contentHeight,
+                                                      viewportHeight: viewport)
+        let node = LayoutNode.scroll(offset: model.offset, content)
+        node.layoutHook = { rect in
+            PortScrollStore.updateViewport(slot: slot, height: rect.height)
+        }
+        return [node]
     }
 }
 

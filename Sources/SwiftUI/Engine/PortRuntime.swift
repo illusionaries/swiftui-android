@@ -33,6 +33,8 @@ public enum PortDiagnostics {
     /// the cheapest way to answer "did the touch arrive, and where is the control?".
     nonisolated(unsafe) public static var lastTap: CGPoint?
     nonisolated(unsafe) public static var lastTapPath: [String] = []
+    /// The scroll model the last frame laid out, as text (content/viewport/max/offset).
+    nonisolated(unsafe) public static var scrollModel: String?
 
     public static func reportUnimplemented(_ symbol: String) {
         unimplementedHits.append(symbol)

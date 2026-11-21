@@ -38,6 +38,7 @@ so a screenshot after an interaction is evidence that the model changed, not jus
 | Text field | `TextField(_:text:)` | placeholder at rest, focused field with caret + system IME |
 | Progress | `ProgressView(value:)`, `ProgressView(value:label:currentValueLabel:)` | plain bar, labelled bar |
 | Label / Link / Divider | `Label(_:systemImage:)`, `.labelsHidden()`, `Link(_:destination:)`, `Divider()` | icon + title, icon only, accent-coloured link, rule |
+| Styles | `.buttonStyle(_:)`, `.toggleStyle(_:)`, `.pickerStyle(_:)`, `.textFieldStyle(_:)` | `.borderedProminent` / `.bordered` / `.plain` buttons, `.button` toggle, `.inline` picker, `.plain` field |
 | Modifiers | `.padding`, `.background`, `.frame`, `.shadow`, `.overlay`, gradients, `.foregroundColor`, `.font` | rounded swatches at three radii, shadow, gradient, clipped capsule |
 
 ![Control gallery, lower half](screenshots/gallery-bottom.png)
@@ -62,18 +63,60 @@ at startup, so the framework module never depends on the platform. Typing also a
 
 ![Typing into a ported TextField](screenshots/gallery-text-field.png)
 
+An empty but focused field draws the caret *before* the placeholder, because the insertion point is
+the start of the field — the placeholder is not text:
+
+![Caret before the placeholder](screenshots/gallery-caret.png)
+
+## Styles are real environment values
+
+`.buttonStyle(.borderedProminent)` and friends are not decoration here: the modifier writes
+`PortEnvironment.buttonStyle` (Apple writes `\.buttonStyle`), and the control's adapter reads it —
+the same shape Apple's own modifiers have. The *style types* ship bodyless, so the port recognises
+the built-in ones by type and draws equivalents (`Adapters/PortStyles.swift`):
+
+| Modifier | Recognised styles | Result |
+|---|---|---|
+| `.buttonStyle(_:)` | `.borderedProminent`, `.bordered`, `.plain`/`.borderless` | filled accent capsule, outlined capsule, plain accent label |
+| `.toggleStyle(_:)` | `.switch`, `.button` | iOS switch, or a capsule button reflecting `isOn` |
+| `.pickerStyle(_:)` | `.segmented` (and the default), `.inline` | segmented control, or a list with a check mark |
+| `.textFieldStyle(_:)` | `.roundedBorder` (and the default), `.plain` | outlined plate, or bare text |
+
+**A user-defined style cannot work this way**: its drawing lives in `makeBody`, which the interface
+only declares. That is a recorded gap, not a silent one.
+
+## Scrolling follows the finger
+
+Two defects fixed here, both visible only on device:
+
+- **Cumulative translation.** A drag reports its translation from touch-down, and the store added it
+  to the *current* offset on every move event, so the page accelerated away from the finger.
+  `ScrollModel.track(_:)` now fixes a base offset at `.began` and re-derives `base - translation`.
+- **Unreachable bottom.** The store used the height the parent *proposed* (891 dp) as the viewport,
+  but the root is placed inside the safe area (835 dp), so the page's last 56 dp could never be
+  scrolled into view. `LayoutNode.layoutHook` reports the frame a node was actually placed with,
+  and the scroll store adopts it as the viewport. Measured on device: `content=2013 viewport=835
+  max=1177 offset=1177` at the bottom, with the card padding visible.
+
+## `Link` opens its destination
+
+Tapping a link asks the platform through `PortLinkOpener` (the same seam pattern as text input);
+`SwiftUIAndroid` installs a handler that the host view pulls once per frame, and the Java side
+starts `Intent.ACTION_VIEW` with `Uri.parse(url)`. Verified on the emulator: tapping `swift.org`
+logged `link open https://swift.org` and Chrome came to the front. A device without a browser logs
+one warning instead of crashing.
+
 ## What is still missing (visible on purpose)
 
-- **One style per control.** `ButtonStyle` / `ToggleStyle` / `PickerStyle` /
-  `TextFieldStyle` are declared by Apple but their `_makeView`/`makeBody` members are still
-  stubs, so `.pickerStyle(.segmented)` does not change anything: each control has exactly the one
-  rendering the adapter chooses. Variants in the demo therefore come from composition with
-  modifiers, not from style types.
-- **`Link` paints but does not open.** Following a URL needs an Android `Intent`, which the
-  bridge does not expose yet; the destination is kept, the action is missing.
+- **Custom styles.** See above: only Apple's built-in styles are drawn, because a custom
+  `makeBody` is Apple's binary.
+- **`.menu` and `.wheel` pickers.** They fall back to the segmented rendering (recognised as
+  `.inline`), so a menu does not pop up.
+- **`ProgressViewStyle` / `.circular`.** Only the linear bar is drawn; a ring needs arc strokes the
+  engine does not have.
 - **SF Symbols are text glyphs.** `Image(systemName:)` maps a name onto the closest character
   (`★`, `♥`, `⌕`, …), so symbol-heavy layouts are approximations.
-- **`Divider` orientation, `ProgressView()` (indeterminate) and `SecureField`** are not
-  implemented yet; `Divider()` and the determinate progress forms are.
+- **`Divider` orientation, indeterminate `ProgressView()` and `SecureField`** are not implemented
+  yet; `Divider()` and the determinate progress forms are.
 - **Focus does not always end with the IME.** Pressing BACK closes the keyboard but the session
   stays live (the field keeps its accent ring and caret) until another field is tapped.

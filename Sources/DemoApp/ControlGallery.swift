@@ -48,6 +48,21 @@ struct ControlGallery: View {
                                 .background(RoundedRectangle(cornerRadius: 10).fill(Color.gray.opacity(0.18)))
                         }
 
+                        Text("buttonStyle")
+                            .font(.system(size: 11))
+                            .foregroundColor(.secondary)
+                        HStack(spacing: 10) {
+                            Button("Prominent") {}
+                                .font(.system(size: 14, weight: .medium))
+                                .buttonStyle(.borderedProminent)
+                            Button("Bordered") {}
+                                .font(.system(size: 14, weight: .medium))
+                                .buttonStyle(.bordered)
+                            Button("Plain") {}
+                                .font(.system(size: 14))
+                                .buttonStyle(.plain)
+                        }
+
                         // The action-and-label form, with a composed label.
                         Button {
                             volume = 0.5
@@ -74,6 +89,12 @@ struct ControlGallery: View {
                         // a different modifier.
                         Toggle("Hidden label", isOn: $sharp)
                             .labelsHidden()
+                        // `.toggleStyle(.button)`: the state shows through the fill instead of a switch.
+                        Toggle(isOn: $enabled) {
+                            Text("Button style")
+                                .font(.system(size: 14))
+                        }
+                        .toggleStyle(.button)
                     }
                 }
 
@@ -124,6 +145,13 @@ struct ControlGallery: View {
                             Text("Medium").tag("Medium")
                             Text("Large").tag("Large")
                         }
+                        // `.pickerStyle(.inline)`: one row per option, check mark on the selection.
+                        Picker("Inline", selection: $size) {
+                            Text("Small").tag("Small")
+                            Text("Medium").tag("Medium")
+                            Text("Large").tag("Large")
+                        }
+                        .pickerStyle(.inline)
                     }
                 }
 
@@ -134,6 +162,10 @@ struct ControlGallery: View {
                             .font(.system(size: 15))
                         TextField("Notes", text: $notes)
                             .font(.system(size: 15))
+                        // `.textFieldStyle(.plain)`: no plate, no outline.
+                        TextField("Plain style", text: $notes)
+                            .font(.system(size: 15))
+                            .textFieldStyle(.plain)
                     }
                 }
 
@@ -204,6 +236,13 @@ struct ControlGallery: View {
                         }
                     }
                 }
+                #if PORT_UI_DEBUG
+                // At the end of the content on purpose: the header scrolls away, so the numbers a
+                // scroll bug needs are only readable when they are down here too.
+                Text(PortDiagnostics.scrollModel ?? "scroll=-")
+                    .font(.system(size: 10))
+                    .foregroundColor(.secondary)
+                #endif
             }
             .padding(20)
         }
@@ -237,7 +276,7 @@ struct ControlGallery: View {
             .map { "tap=(\(Int($0.x)),\(Int($0.y)))" } ?? "tap=-"
         let path = PortDiagnostics.lastTapPath
         let nodes = path.isEmpty ? "node=-" : "n=\(path.count) " + path.suffix(3).joined(separator: " | ")
-        return tap + " " + nodes
+        return tap + " " + nodes + " " + (PortDiagnostics.scrollModel ?? "scroll=-")
     }
 
     func labelled<Content: View>(_ title: String, value: String,

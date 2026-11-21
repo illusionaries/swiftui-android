@@ -1561,7 +1561,7 @@ extension SwiftUICore.ToggleStyle where Self == SwiftUICore.ButtonToggleStyle {
 @available(iOS 15.0, macOS 12.0, watchOS 9.0, *)
 @available(tvOS, unavailable)
 nonisolated public struct ButtonToggleStyle : SwiftUICore.ToggleStyle, ~Swift.Sendable {
-  nonisolated public init() { _suiUnimplemented("SwiftUICore.ButtonToggleStyle.init()") }
+  nonisolated public init() { do {} }
   nonisolated public func makeBody(configuration: SwiftUICore.ButtonToggleStyle.Configuration) -> some SwiftUICore.View { _suiUnimplemented("SwiftUICore.ButtonToggleStyle.makeBody(configuration:)") }
 }
 #else
@@ -1974,7 +1974,7 @@ extension SwiftUICore.PrimitiveButtonStyle where Self == SwiftUICore.BorderlessB
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 17.0, watchOS 8.0, *)
 nonisolated public struct BorderlessButtonStyle : SwiftUICore.PrimitiveButtonStyle, ~Swift.Sendable {
-  nonisolated public init() { _suiUnimplemented("SwiftUICore.BorderlessButtonStyle.init()") }
+  nonisolated public init() { do {} }
   nonisolated public func makeBody(configuration: SwiftUICore.BorderlessButtonStyle.Configuration) -> some SwiftUICore.View { _suiUnimplemented("SwiftUICore.BorderlessButtonStyle.makeBody(configuration:)") }
 }
 #else
@@ -4134,7 +4134,8 @@ public struct ToggleStyleConfiguration {
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUICore.View {
-  nonisolated public func toggleStyle<S>(_ style: S) -> some SwiftUICore.View where S : SwiftUICore.ToggleStyle { _suiUnimplemented("SwiftUICore.View.toggleStyle(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUICore._ScrollableContentProvider {
@@ -8910,7 +8911,7 @@ extension SwiftUICore.PickerStyle where Self == SwiftUICore.InlinePickerStyle {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct InlinePickerStyle : SwiftUICore.PickerStyle, ~Swift.Sendable {
-  public init() { _suiUnimplemented("SwiftUICore.InlinePickerStyle.init()") }
+  public init() { do {} }
   public static func _makeView<SelectionValue>(value: SwiftUICore._GraphValue<SwiftUICore._PickerValue<SwiftUICore.InlinePickerStyle, SelectionValue>>, inputs: SwiftUICore._ViewInputs) -> SwiftUICore._ViewOutputs where SelectionValue : Swift.Hashable { _suiUnimplemented("SwiftUICore.InlinePickerStyle._makeView(value:inputs:)") }
   public static func _makeViewList<SelectionValue>(value: SwiftUICore._GraphValue<SwiftUICore._PickerValue<SwiftUICore.InlinePickerStyle, SelectionValue>>, inputs: SwiftUICore._ViewListInputs) -> SwiftUICore._ViewListOutputs where SelectionValue : Swift.Hashable { _suiUnimplemented("SwiftUICore.InlinePickerStyle._makeViewList(value:inputs:)") }
 }
@@ -9473,7 +9474,7 @@ extension SwiftUICore.TextFieldStyle where Self == SwiftUICore.RoundedBorderText
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 public struct RoundedBorderTextFieldStyle : SwiftUICore.TextFieldStyle, ~Swift.Sendable {
-  public init() { _suiUnimplemented("SwiftUICore.RoundedBorderTextFieldStyle.init()") }
+  public init() { do {} }
   public func _body(configuration: SwiftUICore.TextField<SwiftUICore.RoundedBorderTextFieldStyle._Label>) -> some SwiftUICore.View { _suiUnimplemented("SwiftUICore.RoundedBorderTextFieldStyle._body(configuration:)") }
 }
 #else
@@ -10403,7 +10404,8 @@ public struct PrimitiveButtonStyleConfiguration {
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUICore.View {
-  nonisolated public func buttonStyle<S>(_ style: S) -> some SwiftUICore.View where S : SwiftUICore.PrimitiveButtonStyle { _suiUnimplemented("SwiftUICore.View.buttonStyle(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(macOS 26.0, visionOS 26.0, *)
 @available(tvOS, unavailable)
@@ -10851,7 +10853,7 @@ extension SwiftUICore.PrimitiveButtonStyle where Self == SwiftUICore.PlainButton
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 nonisolated public struct PlainButtonStyle : SwiftUICore.PrimitiveButtonStyle, ~Swift.Sendable {
-  nonisolated public init() { _suiUnimplemented("SwiftUICore.PlainButtonStyle.init()") }
+  nonisolated public init() { do {} }
   nonisolated public func makeBody(configuration: SwiftUICore.PlainButtonStyle.Configuration) -> some SwiftUICore.View { _suiUnimplemented("SwiftUICore.PlainButtonStyle.makeBody(configuration:)") }
 }
 #else
@@ -12881,7 +12883,8 @@ public struct ButtonStyleConfiguration {
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUICore.View {
-  nonisolated public func buttonStyle<S>(_ style: S) -> some SwiftUICore.View where S : SwiftUICore.ButtonStyle { _suiUnimplemented("SwiftUICore.View.buttonStyle(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(watchOS 7.0, *)
 @available(tvOS, unavailable)
@@ -12937,7 +12940,8 @@ nonisolated public struct _TextFieldStyleLabel : SwiftUICore.View {
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUICore.View {
-  nonisolated public func textFieldStyle<S>(_ style: S) -> some SwiftUICore.View where S : SwiftUICore.TextFieldStyle { _suiUnimplemented("SwiftUICore.View.textFieldStyle(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, tvOS 16.0, *)
@@ -14441,7 +14445,8 @@ public struct ProgressViewStyleConfiguration {
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUICore.View {
-  nonisolated public func progressViewStyle<S>(_ style: S) -> some SwiftUICore.View where S : SwiftUICore.ProgressViewStyle { _suiUnimplemented("SwiftUICore.View.progressViewStyle(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 extension SwiftUICore.View {
   @available(iOS 16.0, macOS 13.0, *)
@@ -15790,7 +15795,8 @@ public struct _PickerValue<Style, SelectionValue> where Style : SwiftUICore.Pick
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUICore.View {
-  nonisolated public func pickerStyle<S>(_ style: S) -> some SwiftUICore.View where S : SwiftUICore.PickerStyle { _suiUnimplemented("SwiftUICore.View.pickerStyle(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, *)
 @available(watchOS, unavailable)
@@ -15803,7 +15809,7 @@ extension SwiftUICore.PickerStyle where Self == SwiftUICore.SegmentedPickerStyle
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, *)
 @available(watchOS, unavailable)
 public struct SegmentedPickerStyle : SwiftUICore.PickerStyle, ~Swift.Sendable {
-  public init() { _suiUnimplemented("SwiftUICore.SegmentedPickerStyle.init()") }
+  public init() { do {} }
   public static func _makeView<SelectionValue>(value: SwiftUICore._GraphValue<SwiftUICore._PickerValue<SwiftUICore.SegmentedPickerStyle, SelectionValue>>, inputs: SwiftUICore._ViewInputs) -> SwiftUICore._ViewOutputs where SelectionValue : Swift.Hashable { _suiUnimplemented("SwiftUICore.SegmentedPickerStyle._makeView(value:inputs:)") }
   public static func _makeViewList<SelectionValue>(value: SwiftUICore._GraphValue<SwiftUICore._PickerValue<SwiftUICore.SegmentedPickerStyle, SelectionValue>>, inputs: SwiftUICore._ViewListInputs) -> SwiftUICore._ViewListOutputs where SelectionValue : Swift.Hashable { _suiUnimplemented("SwiftUICore.SegmentedPickerStyle._makeViewList(value:inputs:)") }
 }
@@ -21152,7 +21158,7 @@ extension SwiftUICore.TextFieldStyle where Self == SwiftUICore.PlainTextFieldSty
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 public struct PlainTextFieldStyle : SwiftUICore.TextFieldStyle, ~Swift.Sendable {
-  public init() { _suiUnimplemented("SwiftUICore.PlainTextFieldStyle.init()") }
+  public init() { do {} }
   public func _body(configuration: SwiftUICore.TextField<SwiftUICore.PlainTextFieldStyle._Label>) -> some SwiftUICore.View { _suiUnimplemented("SwiftUICore.PlainTextFieldStyle._body(configuration:)") }
 }
 #else
@@ -21201,7 +21207,7 @@ extension SwiftUICore.PrimitiveButtonStyle where Self == SwiftUICore.BorderedBut
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
 nonisolated public struct BorderedButtonStyle : SwiftUICore.PrimitiveButtonStyle, ~Swift.Sendable {
-  nonisolated public init() { _suiUnimplemented("SwiftUICore.BorderedButtonStyle.init()") }
+  nonisolated public init() { do {} }
       @available(tvOS, unavailable)
   @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "Use ``View/tint(_)`` instead.")
   @available(visionOS, unavailable)
@@ -26519,7 +26525,7 @@ extension SwiftUICore.PrimitiveButtonStyle where Self == SwiftUICore.BorderedPro
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 nonisolated public struct BorderedProminentButtonStyle : SwiftUICore.PrimitiveButtonStyle, ~Swift.Sendable {
-  nonisolated public init() { _suiUnimplemented("SwiftUICore.BorderedProminentButtonStyle.init()") }
+  nonisolated public init() { do {} }
   nonisolated public func makeBody(configuration: SwiftUICore.BorderedProminentButtonStyle.Configuration) -> some SwiftUICore.View { _suiUnimplemented("SwiftUICore.BorderedProminentButtonStyle.makeBody(configuration:)") }
 }
 #else
@@ -29832,7 +29838,7 @@ extension SwiftUICore.ToggleStyle where Self == SwiftUICore.SwitchToggleStyle {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 18.0, watchOS 6.0, *)
 nonisolated public struct SwitchToggleStyle : SwiftUICore.ToggleStyle, ~Swift.Sendable {
-  nonisolated public init() { _suiUnimplemented("SwiftUICore.SwitchToggleStyle.init()") }
+  nonisolated public init() { do {} }
   @available(iOS, introduced: 14.0, deprecated: 100000.0, message: "Use ``View/tint(_)`` instead.")
   @available(macOS, introduced: 11.0, deprecated: 100000.0, message: "Use ``View/tint(_)`` instead.")
   @available(tvOS, unavailable)

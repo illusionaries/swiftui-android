@@ -198,6 +198,21 @@ final class AndroidCanvasPainter: DisplayListPainter, TextMeasurer {
 
 // MARK: - Text input
 
+/// Four UTF-16 code units packed into one `jlong`: unit `i` lives in bits `16*i .. 16*i+15`, lowest
+/// unit first, and a final chunk whose string does not fill it is zero-padded (the receiver trims
+/// it with the length it was told). Shared by both pull protocols in this file — the initial text
+/// of a text field and the URL of a link — because one bit layout means one place to get the
+/// arithmetic wrong, and the View already has the matching reader.
+private func packedUTF16Chunk(_ units: [UInt16], at index: Int) -> Int64 {
+    var packed: UInt64 = 0
+    var offset = 0
+    while offset < 4, index + offset < units.count {
+        packed |= UInt64(units[index + offset]) << (16 * UInt64(offset))
+        offset += 1
+    }
+    return Int64(bitPattern: packed)
+}
+
 /// Bridges `PortTextInput` to the host View's text editor.
 ///
 /// The direction here is the unusual one for this file: everything else runs *because* Android
@@ -289,16 +304,9 @@ private final class AndroidTextInput {
         }
     }
 
-    /// Four UTF-16 code units per jlong. The last chunk of a string whose length is not a
-    /// multiple of four carries zero padding; the consumer trims it with the length it was given.
+    /// Four UTF-16 code units per jlong, lowest unit first (see `packedUTF16Chunk`).
     func packedChunk(at index: Int) -> Int64 {
-        var packed: UInt64 = 0
-        var offset = 0
-        while offset < 4, index + offset < textUnits.count {
-            packed |= UInt64(textUnits[index + offset]) << (16 * UInt64(offset))
-            offset += 1
-        }
-        return Int64(bitPattern: packed)
+        packedUTF16Chunk(textUnits, at: index)
     }
 
     // MARK: reverse direction (the View reports what the user typed)
@@ -332,6 +340,66 @@ private final class AndroidTextInput {
     }
 }
 
+// MARK: - Link opening
+
+/// Bridges `PortLinkOpener` to the host View's `Intent.ACTION_VIEW`.
+///
+/// The direction is the same unusual one as the text editor above, and for the same reason:
+/// starting an activity is a Java API, and this half of the process holds no JNIEnv — the C bridge
+/// owns every Java object by design and has no "open a URL" entry point. So the host View polls
+/// `nativeLinkCommand`, pulls the URL out of the getters below, acknowledges it, and only then
+/// starts the Intent. Acknowledging before the launch is what makes the request single-shot: an
+/// Intent that opens a chooser or pauses the activity re-enters the frame loop, and a request that
+/// was still marked pending would be opened a second time by the next poll.
+///
+/// The URL travels as UTF-16 code units packed four to a `jlong`, the same encoding as text input
+/// (`packedUTF16Chunk`). A URL is usually pure ASCII, so four characters per `jlong` is overhead;
+/// it buys one transport and one reader in the View instead of a second decoder to get right.
+private final class AndroidLinkOpener {
+    static let shared = AndroidLinkOpener()
+
+    enum Command: Int32 {
+        case none = 0
+        case open = 1
+    }
+
+    /// The request the View is about to pull. Only one can be pending: two taps before the poll
+    /// leave the second URL, which is the one the user meant. The View drains and acknowledges in
+    /// one call, on the same (UI) thread.
+    var command = Command.none
+
+    /// `url.absoluteString` in UTF-16 code units, cached when the request is raised so the poll
+    /// does no encoding work in the middle of a frame.
+    var urlUnits: [UInt16] = []
+
+    /// Install the host when the native runtime starts, next to the text-input host: the seam
+    /// belongs to the window, not to a scene, and a `Link` on the very first frame already finds
+    /// it. An app that never shows a `Link` pays only a nil check per tap.
+    func install() {
+        PortLinkOpener.host = { url in
+            self.command = .open
+            self.urlUnits = Array(url.absoluteString.utf16)
+            // A URL can be requested from a place that no tap invalidated (a programmatic open),
+            // and the demos draw `PortLinkOpener.lastRequested` as diagnostics; ask for the frame
+            // that shows it. Inside a tap this idempotently coalesces with the touch's own
+            // invalidate.
+            AndroidRuntime.shared.invalidate()
+        }
+    }
+
+    /// Drop a pending request on teardown: the View and its window are going away, so no URL may
+    /// be opened later on behalf of a dead handle.
+    func teardown() {
+        command = .none
+        urlUnits = []
+    }
+
+    /// Four UTF-16 code units per jlong, lowest unit first (see `packedUTF16Chunk`).
+    func packedChunk(at index: Int) -> Int64 {
+        packedUTF16Chunk(urlUnits, at: index)
+    }
+}
+
 // MARK: - C entry points
 
 @_cdecl("swiftui_android_start")
@@ -344,6 +412,9 @@ public func swiftuiAndroidStart(_ runtime: OpaquePointer?, _ appScene: UnsafeMut
     // rather than from the text adapter: an app that never shows a TextField pays nothing, and a
     // control that appears on the first frame already finds the host in place.
     AndroidTextInput.shared.install()
+    // Same for link opening: the host View starts the ACTION_VIEW Intent, so the seam is
+    // installed with the window rather than when the first Link is tapped.
+    AndroidLinkOpener.shared.install()
 }
 
 @_cdecl("swiftui_android_resize")
@@ -449,6 +520,9 @@ public func swiftuiAndroidLifecycle(_ runtime: OpaquePointer?, _ event: Int32) {
         state.invalidate()
     case 3:  // destroy
         AndroidTextInput.shared.teardown()
+        // A URL that was requested but never polled dies with the window: the View that would
+        // have started the Intent is being destroyed.
+        AndroidLinkOpener.shared.teardown()
         state.scene = nil
         state.canvas = nil
         state.runtime = nil
@@ -552,6 +626,46 @@ public func jniTextEnded(_ env: UnsafeMutableRawPointer?, _ clazz: UnsafeRawPoin
     // The caret and the focus ring are drawn by SwiftUI, so the end of a platform-initiated
     // session needs a frame of its own.
     AndroidRuntime.shared.invalidate()
+}
+
+// MARK: - Link opening JNI
+//
+// The same unregistered-native trick as the text-input functions above: the host View declares
+// these as `native`, ART resolves each to its mangled `@_cdecl` name, and no JNI object is ever
+// touched here. The host View polls, reads and acknowledges; see `AndroidLinkOpener`.
+//
+// The Java declarations, in this order (app/src/dev/swiftui/android/SwiftUIHostView.java):
+//
+//   nativeLinkCommand(long) -> int            0 none, 1 open a URL
+//   nativeLinkUrlLength(long) -> int          UTF-16 code units of the pending URL
+//   nativeLinkUrlChunk(long, int) -> long     4 code units starting at that unit offset
+//   nativeLinkAck(long) -> void               the pending request has been consumed
+
+@_cdecl("Java_dev_swiftui_android_SwiftUIHostView_nativeLinkCommand")
+public func jniLinkCommand(_ env: UnsafeMutableRawPointer?, _ clazz: UnsafeRawPointer?,
+                           _ handle: Int64) -> Int32 {
+    AndroidLinkOpener.shared.command.rawValue
+}
+
+@_cdecl("Java_dev_swiftui_android_SwiftUIHostView_nativeLinkUrlLength")
+public func jniLinkUrlLength(_ env: UnsafeMutableRawPointer?, _ clazz: UnsafeRawPointer?,
+                             _ handle: Int64) -> Int32 {
+    Int32(AndroidLinkOpener.shared.urlUnits.count)
+}
+
+@_cdecl("Java_dev_swiftui_android_SwiftUIHostView_nativeLinkUrlChunk")
+public func jniLinkUrlChunk(_ env: UnsafeMutableRawPointer?, _ clazz: UnsafeRawPointer?,
+                            _ handle: Int64, _ index: Int32) -> Int64 {
+    AndroidLinkOpener.shared.packedChunk(at: max(0, Int(index)))
+}
+
+@_cdecl("Java_dev_swiftui_android_SwiftUIHostView_nativeLinkAck")
+public func jniLinkAck(_ env: UnsafeMutableRawPointer?, _ clazz: UnsafeRawPointer?,
+                       _ handle: Int64) {
+    // The URL is dropped together with the flag, so a second acknowledgment (or a later poll that
+    // somehow still saw `open`) has nothing left to read: a consumed request can never be
+    // replayed into a second Intent.
+    AndroidLinkOpener.shared.teardown()
 }
 
 #endif  // os(Android)

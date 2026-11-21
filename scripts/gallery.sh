@@ -22,6 +22,13 @@ cd "$ROOT"
 # so SwiftUIHostScene hosts ControlGallery() instead of the Atlas app.
 export SWIFTUI_DEMO_GALLERY=1
 
+# SWIFTUI_UI_DEBUG=1 compiles the demo's on-screen diagnostics (last tap, node path under it, scroll
+# model). They answer "why did that tap do nothing?" on a build that cannot be debugged.
+UI_DEBUG=0
+if [ "${SWIFTUI_UI_DEBUG:-0}" = "1" ]; then
+    UI_DEBUG=1
+fi
+
 CONFIG=release
 ABI=arm64-v8a
 TRIPLE=aarch64-unknown-linux-android28
@@ -66,7 +73,11 @@ if [ "$DO_BUILD" = 1 ]; then
     LOG=build/tmp/gallery-swift-build.log
     # Check the compiler's exit status, not grep's: a piped filter hides the failure and the
     # packaging step then quietly ships the previous (Atlas) library.
-    if ! swift build "${PORT_PLUGIN_FLAGS[@]}" -c "$CONFIG" --product SwiftUIAndroidApp \
+    EXTRA_FLAGS=()
+    if [ "$UI_DEBUG" = "1" ]; then
+        EXTRA_FLAGS=(-Xswiftc -DPORT_UI_DEBUG)
+    fi
+    if ! swift build "${PORT_PLUGIN_FLAGS[@]}" "${EXTRA_FLAGS[@]}" -c "$CONFIG" --product SwiftUIAndroidApp \
             --swift-sdk swift-6.4.3-RELEASE_android --triple "$TRIPLE" >"$LOG" 2>&1; then
         grep -E "error:" "$LOG" | head -20 >&2 || tail -30 "$LOG" >&2
         echo "✗ swift build failed — full log: $LOG" >&2

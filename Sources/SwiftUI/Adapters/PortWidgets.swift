@@ -153,6 +153,28 @@ extension Toggle: _PortRenderable where Label: View {
                                               idealHeight: PortSwitchMetrics.knobDiameter,
                                               maxHeight: PortSwitchMetrics.knobDiameter),
                                     knobShadow)
+        // `.toggleStyle(.button)`: the whole control becomes a tappable button that shows its
+        // state through its fill, which is what ButtonToggleStyle draws.
+        if environment.toggleStyle == .buttonStyle {
+            let text = context.withEnvironment({ environment in
+                environment.foreground = isOn ? RGBAColor(hex: 0xFFFFFF) : environment.foreground
+            }, body: {
+                [label]
+            })
+            let fill = isOn ? environment.accentColor
+                            : (environment.isDark ? RGBAColor(hex: 0x2C2C2E) : RGBAColor(hex: 0xE9E9EE))
+            let padded = LayoutNode.padding(EdgeInsetsLike(top: 8, bottom: 8, leading: 14, trailing: 14),
+                                            text.first ?? LayoutNode(.empty))
+            let plate = LayoutNode(.shape(.capsule, fill: .color(fill), stroke: nil))
+            let button = LayoutNode.background(plate, padded)
+            return [_portIsOn.map { binding in
+                button.onTap {
+                    binding.wrappedValue.toggle()
+                    PortStateStore.markDirty()
+                }
+            } ?? button]
+        }
+
         let switchBody = LayoutNode(.zstack(horizontalAlignment: isOn ? PortSwitchMetrics.onAlignment
                                                                      : PortSwitchMetrics.offAlignment,
                                             verticalAlignment: 0.5),

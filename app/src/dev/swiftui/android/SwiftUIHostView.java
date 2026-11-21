@@ -32,12 +32,23 @@
  *   nativeTextChangedChunk(h, packed)           one chunk of it
  *   nativeTextChangedCommit(h)                  snapshot complete
  *   nativeTextEnded(h, reason)                  the editor closed on its own
+ *
+ * Link opening uses the same pull protocol, with its own four natives (also implemented in Swift):
+ *
+ *   nativeLinkCommand(h) -> int                 0 none 1 open a URL
+ *   nativeLinkUrlLength(h) -> int               UTF-16 code units
+ *   nativeLinkUrlChunk(h, unitOffset) -> long   4 code units packed per long
+ *   nativeLinkAck(h)                            the pending request has been consumed
  */
 package dev.swiftui.android;
 
+import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
+import android.net.Uri;
 import android.os.Build;
 import android.text.Editable;
 import android.text.InputType;
@@ -93,6 +104,10 @@ public class SwiftUIHostView extends FrameLayout {
     public static final int TEXT_INPUT_FOCUS_LOST = 2;
     public static final int TEXT_INPUT_DESTROYED = 3;
 
+    /* Link request kinds, returned by nativeLinkCommand (see AndroidLinkOpener in the runtime). */
+    public static final int LINK_COMMAND_NONE = 0;
+    public static final int LINK_COMMAND_OPEN = 1;
+
     static {
         // The native runtime lives in the Swift product's shared object, which the packaging
         // script installs as libswiftui_app.so.
@@ -140,6 +155,15 @@ public class SwiftUIHostView extends FrameLayout {
 
     private static native void nativeTextEnded(long handle, int reason);
 
+    /* Link opening. Implemented in Swift, see the JNI section of AndroidRuntime.swift. */
+    private static native int nativeLinkCommand(long handle);
+
+    private static native int nativeLinkUrlLength(long handle);
+
+    private static native long nativeLinkUrlChunk(long handle, int unitOffset);
+
+    private static native void nativeLinkAck(long handle);
+
     /** Native runtime handle; 0 means "no runtime" (create failed or already destroyed). */
     private long handle;
     /** Set by destroyNativeHandle(); after this no native call is ever made again. */
@@ -170,6 +194,11 @@ public class SwiftUIHostView extends FrameLayout {
     private float textInputTopDp;
     private float textInputWidthDp;
     private float textInputHeightDp;
+    /**
+     * Set once a link native failed to resolve. Link taps then do nothing instead of throwing on
+     * every poll; the rest of the port keeps working.
+     */
+    private boolean linkUnavailable;
 
     /** Logcat tag shared with scripts/device-test.sh and the C bridge diagnostics. */
     private static final String LOG_TAG = "SwiftUIBridge";
@@ -346,6 +375,10 @@ public class SwiftUIHostView extends FrameLayout {
         // Requests raised while rendering the previous frame are acted on before this one paints,
         // so an editor that appears or disappears does so in step with the drawing.
         syncTextInput();
+        // A link tap is normally consumed at the end of onTouchEvent; polling here too keeps a
+        // request raised outside a tap (a programmatic open, or one that raced a render) from
+        // sitting unacknowledged until the next touch.
+        syncLinkOpen();
         float d = density;
         if (d <= 0.0f) {
             return;
@@ -404,6 +437,9 @@ public class SwiftUIHostView extends FrameLayout {
         // A tap on a text control begins or ends editing inside nativeTouch; poll now so the
         // keyboard follows the tap in the same event rather than a frame later.
         syncTextInput();
+        // The same event opens a tapped Link: the adapter calls PortLinkOpener.open inside
+        // nativeTouch, so the ACTION_VIEW Intent starts now instead of on the next frame.
+        syncLinkOpen();
         // Keep receiving the rest of the gesture: a DOWN that nobody "consumed" yet still
         // belongs to this view (hit testing happens inside SwiftUI).
         return consumed || phase == TOUCH_DOWN || phase == TOUCH_MOVE;
@@ -728,6 +764,102 @@ public class SwiftUIHostView extends FrameLayout {
         return context == null
                 ? null
                 : (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+    }
+
+    /* ──────────────────────────────────────────────────────────────────────────
+     * Link opening (ACTION_VIEW)
+     * ──────────────────────────────────────────────────────────────────────────
+     *
+     * The same pull protocol as the text editor above, for the same reason: starting an activity
+     * is a Java API and the Swift half of this process holds no JNIEnv, so SwiftUI records the URL
+     * a tap asked for and this View starts the Intent. The URL crosses as UTF-16 code units packed
+     * four to a long — the transport the text editor already uses, so there is one encoding in the
+     * file rather than two.
+     */
+
+    /**
+     * Pull one pending link request out of the SwiftUI runtime and open it.
+     *
+     * Polled where text input is polled: at the start of onDraw and at the end of onTouchEvent,
+     * which is where a tapped Link raises the request. Like the text-input poll, this runs on the
+     * UI thread and drains the request in one pass, so two polls can never both act on it.
+     */
+    private void syncLinkOpen() {
+        long h = handle;
+        if (h == 0 || destroyed || linkUnavailable) {
+            return;
+        }
+        try {
+            if (nativeLinkCommand(h) != LINK_COMMAND_OPEN) {
+                return;
+            }
+            String url = readPendingLinkUrl(h);
+            // Acknowledge before launching: reading is complete, so the request is consumed, and
+            // an Intent that pauses the activity (a browser, a chooser) cannot cause the next poll
+            // to open the same URL a second time.
+            nativeLinkAck(h);
+            openLinkUrl(url);
+        } catch (UnsatisfiedLinkError e) {
+            // A missing symbol must not take the app down: drawing and typing keep working, taps
+            // on links just do nothing, and one log line says exactly what happened.
+            linkUnavailable = true;
+            Log.w(LOG_TAG, "link opening unavailable (" + e.getMessage()
+                    + "); taps on links do nothing, everything else is unaffected");
+        }
+    }
+
+    /** Read a pending URL out of the runtime: whole snapshot, then trimmed to its declared length. */
+    private String readPendingLinkUrl(long h) {
+        int length = Math.max(0, nativeLinkUrlLength(h));
+        StringBuilder url = new StringBuilder(length);
+        for (int unit = 0; unit < length; unit += 4) {
+            long packed = nativeLinkUrlChunk(h, unit);
+            for (int i = 0; i < 4; i++) {
+                url.append((char) ((packed >>> (16 * i)) & 0xFFFFL));
+            }
+        }
+        // The last chunk is zero-padded to a multiple of four; the declared length is the truth.
+        url.setLength(length);
+        return url.toString();
+    }
+
+    /**
+     * Start {@code ACTION_VIEW} for {@code url}.
+     *
+     * Every failure is logged once and swallowed. A device with no browser (a bare emulator image,
+     * a build with the browser disabled) must not crash and must not hang for a tap whose only
+     * effect is that nothing opens — the same contract SwiftUI has on iOS when no app handles a
+     * URL scheme.
+     */
+    private void openLinkUrl(String url) {
+        if (url.isEmpty()) {
+            Log.w(LOG_TAG, "link open skipped: the runtime reported an empty URL");
+            return;
+        }
+        Context context = getContext();
+        if (context == null) {
+            Log.w(LOG_TAG, "link open skipped, no context: " + url);
+            return;
+        }
+        try {
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+            if (!(context instanceof Activity)) {
+                // A non-Activity context (a theme wrapper, an application context) cannot start an
+                // activity without its own task. MainActivity passes itself, so this is the
+                // defensive branch, and NEW_TASK is a no-op-style flag for the usual one.
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            }
+            context.startActivity(intent);
+            Log.i(LOG_TAG, "link open " + url);
+        } catch (ActivityNotFoundException e) {
+            // No handler for the scheme: the tap is a no-op, not a crash. This is the "device
+            // without a browser" case the port has to survive.
+            Log.w(LOG_TAG, "link open failed, no activity for " + url + ": " + e.getMessage());
+        } catch (Exception e) {
+            // SecurityException, a target disabled by the OEM, a malformed resolver result: none
+            // of it may take the app down for a tap.
+            Log.w(LOG_TAG, "link open failed for " + url + ": " + e);
+        }
     }
 
     /* ──────────────────────────────────────────────────────────────────────────
