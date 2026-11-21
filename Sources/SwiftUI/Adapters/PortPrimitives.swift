@@ -164,6 +164,14 @@ extension ModifiedContent: _PortRenderable where Content: View, Modifier: ViewMo
             }
         }
 
+        if let limit = modifier as? _EnvironmentKeyWritingModifier<Int?> {
+            return context.withEnvironment { environment in
+                environment.lineLimit = limit.value
+            } body: {
+                context.makeNodes(content, proposal: proposal)
+            }
+        }
+
         if let weight = modifier as? _EnvironmentKeyWritingModifier<Font.Weight?> {
             return context.withEnvironment { environment in
                 if let weight = weight.value { environment.fontWeight = PortAdapters.textWeight(weight) }
@@ -265,7 +273,7 @@ enum PortAdapters {
         let style = TextStyleDescriptor(size: port?.font?.size ?? environment.font?.size ?? environment.defaultFontSize,
                                         weight: port?.weight ?? port?.font.map { textWeight($0.weight) } ?? environment.fontWeight,
                                         color: port?.color ?? environment.foreground)
-        return LayoutNode.text(string, style: style)
+        return LayoutNode.text(string, style: style, lineLimit: environment.lineLimit)
     }
 
     /// Apple's `Font.Weight` is an opaque struct; its standard members are the identity we need.

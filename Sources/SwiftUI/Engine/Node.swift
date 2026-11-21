@@ -283,7 +283,12 @@ public final class LayoutNode {
             // A `Spacer()` inside an HStack makes the row flexible horizontally, not vertically —
             // treating it as flexible in both axes collapsed every highlight row to zero height.
             result = stackAxis == axis && children.contains { $0.isFlexible(along: axis) }
-        case .background, .overlay, .tap, .zstack, .scroll:
+        case .background, .overlay, .tap, .clip, .shadow, .opacity, .offset:
+            // Decorating wrappers follow their *content* (first child). The backdrop of a
+            // `background`/`overlay` must not count: a flexible shape behind a pill would stretch
+            // the pill instead of letting it hug its text.
+            result = children.first?.isFlexible(along: axis) ?? false
+        case .zstack, .scroll:
             result = children.contains { $0.isFlexible(along: axis) }
         case .group:
             result = children.contains { $0.isFlexible(along: axis) }

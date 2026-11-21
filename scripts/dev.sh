@@ -55,7 +55,9 @@ echo "▸ swift: $(command -v swift) — $(swift --version 2>/dev/null | head -1
 if [ "$DUMMY" = 0 ]; then
     echo "▸ building Swift runtime ($CONFIG, $TRIPLE)"
     touch Package.swift   # manifest declares different targets per mode; force re-evaluation
-swift build -c "$CONFIG" --product SwiftUIAndroidApp \
+# shellcheck source=scripts/port/plugin-flags.sh
+source "$ROOT/scripts/port/plugin-flags.sh"
+swift build "${PORT_PLUGIN_FLAGS[@]}" -c "$CONFIG" --product SwiftUIAndroidApp \
         --swift-sdk swift-6.4.3-RELEASE_android --triple "$TRIPLE" 2>&1 \
         | grep -E "error:|warning: unre|Build complete|Compiling|Linking" | tail -8
     SO=$(find .build/out -name "libSwiftUIAndroidApp.so" -newer Package.swift 2>/dev/null | head -1)

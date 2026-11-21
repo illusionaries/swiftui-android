@@ -449,8 +449,12 @@ public class SwiftUIHostView extends View {
      */
     private static final class Insets30 {
         static int[] systemBarsAndCutout(WindowInsets insets) {
+            // Include the gesture area: with gesture navigation `systemBars()` reports no bottom
+            // inset, so a bottom-anchored bar (a tab bar) would sit under the gesture pill.
             android.graphics.Insets bars = insets.getInsets(
-                    WindowInsets.Type.systemBars() | WindowInsets.Type.displayCutout());
+                    WindowInsets.Type.systemBars()
+                            | WindowInsets.Type.displayCutout()
+                            | WindowInsets.Type.systemGestures());
             return new int[] {bars.top, bars.bottom, bars.left, bars.right};
         }
     }

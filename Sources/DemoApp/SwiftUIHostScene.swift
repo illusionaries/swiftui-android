@@ -154,10 +154,13 @@ public final class SwiftUIHostScene: PortScene {
         graph.endFrame()
 
         let size = root.measure(ProposedSize(width: width, height: height))
+        // The root view owns the safe area; it must not be placed taller than it, or a
+        // bottom-anchored bar (the tab bar) slides under the system gesture area.
         let topInset = max(safeArea.top, 0)
         let bottomInset = max(safeArea.bottom, 0)
+        let availableHeight = max(0, height - topInset - bottomInset)
         root.place(in: CGRect(x: 0, y: topInset, width: width,
-                              height: max(size.height, height - topInset - bottomInset)))
+                              height: min(max(size.height, 0), availableHeight)))
         tree = root
         root.paint(into: &list)
 

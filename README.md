@@ -7,9 +7,13 @@ Apple's declarations, this project's engine:
 
 ```bash
 ./scripts/port/build-port-sdk.sh   # retarget Apple's interfaces, build shims + vendored Combine
-./scripts/ported-dev.sh            # build/install/launch the ported path
-swift test                         # engine unit tests (27, no port SDK needed)
+./scripts/dev.sh                   # build, install and launch the app (ported path is the default)
+./scripts/test.sh                  # engine unit tests (host, engine-only module set)
+SWIFTUI_PORT_GENERATED=0 ./scripts/dev.sh   # the older engine-level demo, for reference
 ```
+
+`import SwiftUI` in an Android app resolves to Apple's retargeted declarations plus this project's
+engine — no flags, no opt-in.
 
 # SwiftUI for Android — a port of Apple's closed-source framework
 

@@ -84,8 +84,9 @@ Run it:
 ./scripts/ported-dev.sh                 # build, package, install, launch, report the next gap
 ```
 
-`SWIFTUI_PORT_GENERATED=1` stays opt-in: the default build is still the engine-level app, so the
-repository always has a product that builds without the port SDK.
+The ported path is now the **default** build: `import SwiftUI` resolves to Apple's retargeted
+declarations plus this project's engine. `SWIFTUI_PORT_GENERATED=0` builds the older engine-level
+demo instead, which remains useful as a reference for the engine on its own.
 
 ## Bottom line
 

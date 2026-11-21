@@ -25,6 +25,8 @@ public struct PortEnvironment: Equatable {
     public var defaultFontSize: CGFloat = 17
     /// Set by `.font(...)`; nil means "the default type scale".
     public var font: PortFontSpec?
+    /// Set by `.lineLimit(...)`; nil means "as many lines as it takes".
+    public var lineLimit: Int?
     /// Set by `.foregroundStyle(...)` / `.foregroundColor(...)`.
     public var foreground: RGBAColor
     /// Default text weight, raised by `.bold()` / `.fontWeight(...)`.
@@ -35,6 +37,7 @@ public struct PortEnvironment: Equatable {
                 displayScale: CGFloat = 1,
                 defaultFontSize: CGFloat = 17,
                 font: PortFontSpec? = nil,
+                lineLimit: Int? = nil,
                 foreground: RGBAColor? = nil,
                 fontWeight: TextStyleDescriptor.Weight = .regular) {
         self.isDark = isDark
@@ -42,6 +45,7 @@ public struct PortEnvironment: Equatable {
         self.displayScale = displayScale
         self.defaultFontSize = defaultFontSize
         self.font = font
+        self.lineLimit = lineLimit
         self.foreground = foreground ?? (isDark ? RGBAColor(hex: 0xF2F2F7) : RGBAColor(hex: 0x111114))
         self.fontWeight = fontWeight
     }

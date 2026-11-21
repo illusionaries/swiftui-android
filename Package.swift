@@ -60,7 +60,10 @@ let swift5Mode: [SwiftSetting] = [.swiftLanguageMode(.v5)]
 // them, but the app still needs the Port SDK shims' object code resolved at link before the ported
 // path can ship. Until then it is opt-in:
 //   SWIFTUI_PORT_GENERATED=1 swift build --product SwiftUIAndroidApp …
-let includeGeneratedPort = ProcessInfo.processInfo.environment["SWIFTUI_PORT_GENERATED"] == "1"
+// Apple's declarations are the default: `import SwiftUI` in an Android app resolves to their
+// retargeted interfaces plus this project's engine. Set SWIFTUI_PORT_GENERATED=0 to build the
+// older engine-level demo instead (kept as a reference implementation of the engine alone).
+let includeGeneratedPort = ProcessInfo.processInfo.environment["SWIFTUI_PORT_GENERATED"] != "0"
 let portSettings: [SwiftSetting] = [
     .swiftLanguageMode(.v5),
     .unsafeFlags(portSDKFlags),
