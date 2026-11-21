@@ -1,12 +1,16 @@
 // swift-tools-version: 6.0
 import PackageDescription
 
+// Swift 5 language mode is deliberate: Apple's own interfaces are `-language-mode 5`, and the
+// port must match their isolation semantics rather than invent stricter ones.
+let swift5Mode: [SwiftSetting] = [.swiftLanguageMode(.v5)]
+
 let package = Package(
     name: "SwiftUI",
     products: [
-        // The SwiftUI-compatible framework (portable, no platform calls).
+        // The ported framework. Module name is `SwiftUI` so applications write `import SwiftUI`.
         .library(name: "SwiftUI", targets: ["SwiftUI"]),
-        // The Android app: SwiftUIAndroid runtime + the demo app, linked into one .so.
+        // The Android app: runtime (JNI + canvas backend) + the app's scenes, one .so.
         .library(name: "SwiftUIAndroidApp", type: .dynamic, targets: ["SwiftUIAndroid", "DemoApp"]),
     ],
     targets: [
@@ -17,22 +21,26 @@ let package = Package(
         ),
         .target(
             name: "SwiftUI",
-            path: "Sources/SwiftUI"
+            path: "Sources/SwiftUI",
+            swiftSettings: swift5Mode
         ),
         .target(
             name: "SwiftUIAndroid",
             dependencies: ["SwiftUI", "AndroidBridge"],
-            path: "Sources/SwiftUIAndroid"
+            path: "Sources/SwiftUIAndroid",
+            swiftSettings: swift5Mode
         ),
         .target(
             name: "DemoApp",
             dependencies: ["SwiftUI"],
-            path: "Sources/DemoApp"
+            path: "Sources/DemoApp",
+            swiftSettings: swift5Mode
         ),
         .testTarget(
             name: "SwiftUITests",
             dependencies: ["SwiftUI"],
-            path: "Tests/SwiftUITests"
+            path: "Tests/SwiftUITests",
+            swiftSettings: swift5Mode
         ),
     ]
 )

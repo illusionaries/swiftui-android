@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  SwiftUI for Android — host app manifest.
+
+  One launcher activity that hosts the SwiftUI tree in a single View. There is no
+  AndroidX/AppCompat dependency: everything here is plain framework API.
+
+  android:configChanges keeps the process (and therefore the Swift/SwiftUI runtime and all of
+  its @State) alive across rotation, density changes and light/dark switches; MainActivity
+  forwards onConfigurationChanged to SwiftUIHostView, which re-pushes density and safe-area
+  insets to native code.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="dev.swiftui.android"
+    android:versionCode="1"
+    android:versionName="1.0">
+
+    <uses-sdk
+        android:minSdkVersion="28"
+        android:targetSdkVersion="35" />
+
+    <application
+        android:allowBackup="false"
+        android:enableOnBackInvokedCallback="true"
+        android:extractNativeLibs="true"
+        android:icon="@android:drawable/sym_def_app_icon"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SwiftUIAndroid">
+
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|uiMode|density|keyboardHidden|keyboard|navigation"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:theme="@style/Theme.SwiftUIAndroid"
+            android:windowSoftInputMode="adjustResize">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

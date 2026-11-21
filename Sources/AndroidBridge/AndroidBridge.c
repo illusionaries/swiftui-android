@@ -242,7 +242,7 @@ static JNIEnv *ab_env(void) {
     }
     pthread_once(&g_tls_once, ab_tls_init);
     env = NULL;
-    if ((*g_vm)->AttachCurrentThreadAsDaemon(g_vm, (void **)&env, NULL) != JNI_OK) {
+    if ((*g_vm)->AttachCurrentThreadAsDaemon(g_vm, (JNIEnv **)&env, NULL) != JNI_OK) {
         return NULL;
     }
     (void)pthread_setspecific(g_tls_key, (void *)1);
@@ -780,7 +780,12 @@ static jobject ab_text_paint(JNIEnv *env, ABCanvas *c, float size, int32_t weigh
     (*env)->CallVoidMethod(env, paint, ids->paint_set_text_size, (jfloat)size);
     jobject typeface = ab_typeface(env, ids, s, weight, italic);
     if (typeface) {
-        (*env)->CallObjectMethod(env, paint, ids->paint_set_typeface, typeface);
+        /* setTypeface returns the *previous* typeface; drop that local ref immediately so a
+         * frame with hundreds of text runs cannot grow the local reference table. */
+        jobject previous = (*env)->CallObjectMethod(env, paint, ids->paint_set_typeface, typeface);
+        if (previous) {
+            (*env)->DeleteLocalRef(env, previous);
+        }
     }
     (*env)->CallVoidMethod(env, paint, ids->paint_set_letter_spacing, (jfloat)letter_spacing);
     ab_clear_exception(env);
@@ -1365,14 +1370,20 @@ static jobject ab_linear_gradient(JNIEnv *env, ABCanvas *c, float x0, float y0, 
 static void ab_fill_gradient(ABCanvas *c, jobject paint, float l, float t, float r, float b,
                              float radius, jobject shader) {
     JNIEnv *env = c->env;
-    (*env)->CallObjectMethod(env, paint, c->ids->paint_set_shader, shader);
+    jobject previous_shader = (*env)->CallObjectMethod(env, paint, c->ids->paint_set_shader, shader);
+    if (previous_shader) {
+        (*env)->DeleteLocalRef(env, previous_shader);
+    }
     if (radius > 0.0f) {
         (*env)->CallVoidMethod(env, c->canvas, c->ids->canvas_draw_round_rect, l, t, r, b, radius,
                                radius, paint);
     } else {
         (*env)->CallVoidMethod(env, c->canvas, c->ids->canvas_draw_rect, l, t, r, b, paint);
     }
-    (*env)->CallObjectMethod(env, paint, c->ids->paint_set_shader, NULL);
+    previous_shader = (*env)->CallObjectMethod(env, paint, c->ids->paint_set_shader, NULL);
+    if (previous_shader) {
+        (*env)->DeleteLocalRef(env, previous_shader);
+    }
     (*env)->DeleteLocalRef(env, shader);
 }
 

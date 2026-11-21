@@ -2,3 +2,9 @@
 build/
 .DS_Store
 *.pkg
+build/
+.DS_Store
+*.swiftmodule
+*.swiftdoc
+*.swiftsourceinfo
+.port-tmp/
