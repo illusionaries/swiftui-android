@@ -103,8 +103,8 @@ public enum LayoutDirection : Swift::Hashable, Swift::CaseIterable, Swift::Senda
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var layoutDirection: LayoutDirection {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.layoutDirection") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.layoutDirection") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.layoutDirection") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.layoutDirection") }
   }
 }
 extension CoreGraphics::CGPoint {
@@ -235,8 +235,8 @@ extension CoreGraphics::CGPoint : Animatable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var isEnabled: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.isEnabled") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.isEnabled") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.isEnabled") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.isEnabled") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -309,12 +309,12 @@ public struct ScrollGeometry : Swift::Equatable, Swift::Sendable {
 }
 extension ScrollGeometry {
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public init(contentOffset: CoreGraphics::CGPoint, contentSize: CoreGraphics::CGSize, contentInsets: EdgeInsets, containerSize: CoreGraphics::CGSize) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(contentOffset:contentSize:contentInsets:containerSize:)") }
+  public init(contentOffset: CoreGraphics::CGPoint, contentSize: CoreGraphics::CGSize, contentInsets: EdgeInsets, containerSize: CoreGraphics::CGSize) { _suiUnimplemented("SwiftUICore.ScrollGeometry.init(contentOffset:contentSize:contentInsets:containerSize:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension ScrollGeometry : Swift::CustomDebugStringConvertible {
   public var debugDescription: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.debugDescription") }
+    get { _suiUnimplemented("SwiftUICore.ScrollGeometry.debugDescription") }
   }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -353,13 +353,13 @@ extension Image {
   public enum ResizingMode : Swift::Sendable {
     case tile
     case stretch
-    public static func == (a: Image.ResizingMode, b: Image.ResizingMode) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.ResizingMode.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.ResizingMode.hash(into:)") }
+    public static func == (a: Image.ResizingMode, b: Image.ResizingMode) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Image.ResizingMode.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Image.ResizingMode.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.ResizingMode.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Image.ResizingMode.hashValue") }
     }
   }
-  public func resizable(capInsets: EdgeInsets = EdgeInsets(), resizingMode: Image.ResizingMode = .stretch) -> Image { _suiUnimplemented("SwiftUICore.SwiftUICore.resizable(capInsets:resizingMode:)") }
+  public func resizable(capInsets: EdgeInsets = EdgeInsets(), resizingMode: Image.ResizingMode = .stretch) -> Image { _suiUnimplemented("SwiftUICore.Image.resizable(capInsets:resizingMode:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -387,15 +387,15 @@ nonisolated public struct _CALayerView<LayerType> : View where LayerType : Quart
 @_originallyDefinedIn(module: "SwiftUI", macOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 extension _CALayerView {
-  nonisolated public init(type: LayerType.Type, onUpdate update: @escaping (LayerType) -> Swift::Void) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(type:onUpdate:)") }
-  nonisolated public static func _makeView(view: _GraphValue<_CALayerView<LayerType>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(view:inputs:)") }
+  nonisolated public init(type: LayerType.Type, onUpdate update: @escaping (LayerType) -> Swift::Void) { _suiUnimplemented("SwiftUICore._CALayerView.init(type:onUpdate:)") }
+  nonisolated public static func _makeView(view: _GraphValue<_CALayerView<LayerType>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._CALayerView._makeView(view:inputs:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 extension _CALayerView where LayerType == QuartzCore::CALayer {
-  nonisolated public init(onUpdate update: @escaping (LayerType) -> Swift::Void) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(onUpdate:)") }
+  nonisolated public init(onUpdate update: @escaping (LayerType) -> Swift::Void) { _suiUnimplemented("SwiftUICore._CALayerView.init(onUpdate:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -405,10 +405,10 @@ extension _CALayerView where LayerType == QuartzCore::CALayer {
 @available(anyAppleOS, deprecated: 27.2, obsoleted: 27.2)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency::MainActor @preconcurrency public func _ignoresAutomaticPadding(_ ignoresPadding: Swift::Bool) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore._ignoresAutomaticPadding(_:)") }
+@_Concurrency::MainActor @preconcurrency public func _ignoresAutomaticPadding(_ ignoresPadding: Swift::Bool) -> Swift.Never { _suiUnimplemented("SwiftUICore.View._ignoresAutomaticPadding(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency::MainActor @preconcurrency public func _automaticPadding(_ edgeInsets: EdgeInsets? = nil) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore._automaticPadding(_:)") }
+@_Concurrency::MainActor @preconcurrency public func _automaticPadding(_ edgeInsets: EdgeInsets? = nil) -> Swift.Never { _suiUnimplemented("SwiftUICore.View._automaticPadding(_:)") }
   
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -467,11 +467,11 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _ZStackLayout : Layout {
   public static var layoutProperties: LayoutProperties {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.layoutProperties") }
+    get { _suiUnimplemented("SwiftUICore._ZStackLayout.layoutProperties") }
   }
-  nonisolated public func placeSubviews(in bounds: CoreGraphics::CGRect, proposal: ProposedViewSize, subviews: _ZStackLayout.Subviews, cache: inout Swift::Void) { _suiUnimplemented("SwiftUICore.SwiftUICore.placeSubviews(in:proposal:subviews:cache:)") }
-  nonisolated public func spacing(subviews: _ZStackLayout.Subviews, cache: inout Swift::Void) -> ViewSpacing { _suiUnimplemented("SwiftUICore.SwiftUICore.spacing(subviews:cache:)") }
-  nonisolated public func sizeThatFits(proposal: ProposedViewSize, subviews: _ZStackLayout.Subviews, cache: inout Swift::Void) -> CoreGraphics::CGSize { _suiUnimplemented("SwiftUICore.SwiftUICore.sizeThatFits(proposal:subviews:cache:)") }
+  nonisolated public func placeSubviews(in bounds: CoreGraphics::CGRect, proposal: ProposedViewSize, subviews: _ZStackLayout.Subviews, cache: inout Swift::Void) { _suiUnimplemented("SwiftUICore._ZStackLayout.placeSubviews(in:proposal:subviews:cache:)") }
+  nonisolated public func spacing(subviews: _ZStackLayout.Subviews, cache: inout Swift::Void) -> ViewSpacing { _suiUnimplemented("SwiftUICore._ZStackLayout.spacing(subviews:cache:)") }
+  nonisolated public func sizeThatFits(proposal: ProposedViewSize, subviews: _ZStackLayout.Subviews, cache: inout Swift::Void) -> CoreGraphics::CGSize { _suiUnimplemented("SwiftUICore._ZStackLayout.sizeThatFits(proposal:subviews:cache:)") }
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Cache = Swift::Void
 }
@@ -707,8 +707,8 @@ extension ShapeStyle where Self == AngularGradient {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View where Self : Animatable {
-  nonisolated public static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(view:inputs:)") }
-  nonisolated public static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(view:inputs:)") }
+  nonisolated public static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.View._makeView(view:inputs:)") }
+  nonisolated public static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.View._makeViewList(view:inputs:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -737,42 +737,42 @@ extension View where Self : Animatable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ScrollPhase : Swift::CustomDebugStringConvertible {
   public var debugDescription: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.debugDescription") }
+    get { _suiUnimplemented("SwiftUICore.ScrollPhase.debugDescription") }
   }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension Foundation::FormatStyle where Self == SystemFormatStyle.DateReference {
-  public static func reference(to date: Foundation::Date, allowedFields: Swift::Set<FoundationShims.RelativeFormatStyleField> = [.year, .month, .day, .hour, .minute], maxFieldCount: Swift::Int = 2, thresholdField: FoundationShims.RelativeFormatStyleField = .day) -> SystemFormatStyle.DateReference { _suiUnimplemented("SwiftUICore.Foundation.reference(to:allowedFields:maxFieldCount:thresholdField:)") }
+  public static func reference(to date: Foundation::Date, allowedFields: Swift::Set<FoundationShims.RelativeFormatStyleField> = [.year, .month, .day, .hour, .minute], maxFieldCount: Swift::Int = 2, thresholdField: FoundationShims.RelativeFormatStyleField = .day) -> SystemFormatStyle.DateReference { _suiUnimplemented("SwiftUICore.FormatStyle.reference(to:allowedFields:maxFieldCount:thresholdField:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SystemFormatStyle {
   public struct DateReference : Swift::Sendable {
-    public init(to date: Foundation::Date, allowedFields: Swift::Set<FoundationShims.RelativeFormatStyleField> = [.year, .month, .day, .hour, .minute], maxFieldCount: Swift::Int = 2, thresholdField: FoundationShims.RelativeFormatStyleField = .day) { _suiUnimplemented("SwiftUICore.SwiftUICore.DateReference.init(to:allowedFields:maxFieldCount:thresholdField:)") }
-    public func calendar(_ calendar: Foundation::Calendar) -> SystemFormatStyle.DateReference { _suiUnimplemented("SwiftUICore.SwiftUICore.DateReference.calendar(_:)") }
+    public init(to date: Foundation::Date, allowedFields: Swift::Set<FoundationShims.RelativeFormatStyleField> = [.year, .month, .day, .hour, .minute], maxFieldCount: Swift::Int = 2, thresholdField: FoundationShims.RelativeFormatStyleField = .day) { _suiUnimplemented("SwiftUICore.SystemFormatStyle.DateReference.init(to:allowedFields:maxFieldCount:thresholdField:)") }
+    public func calendar(_ calendar: Foundation::Calendar) -> SystemFormatStyle.DateReference { _suiUnimplemented("SwiftUICore.SystemFormatStyle.DateReference.calendar(_:)") }
   }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SystemFormatStyle.DateReference : Foundation::FormatStyle {
-  public func format(_ referenceDate: Foundation::Date) -> Foundation::AttributedString { _suiUnimplemented("SwiftUICore.SwiftUICore.format(_:)") }
-  public func locale(_ locale: Foundation::Locale) -> SystemFormatStyle.DateReference { _suiUnimplemented("SwiftUICore.SwiftUICore.locale(_:)") }
-  public static func == (a: SystemFormatStyle.DateReference, b: SystemFormatStyle.DateReference) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public func format(_ referenceDate: Foundation::Date) -> Foundation::AttributedString { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateReference.format(_:)") }
+  public func locale(_ locale: Foundation::Locale) -> SystemFormatStyle.DateReference { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateReference.locale(_:)") }
+  public static func == (a: SystemFormatStyle.DateReference, b: SystemFormatStyle.DateReference) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateReference.==(a:b:)") }
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias FormatInput = Foundation::Date
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias FormatOutput = Foundation::AttributedString
-  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.encode(to:)") }
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.hash(into:)") }
+  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateReference.encode(to:)") }
+  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateReference.hash(into:)") }
   public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.hashValue") }
+    get { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateReference.hashValue") }
   }
-  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.init(from:)") }
+  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateReference.init(from:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SystemFormatStyle.DateReference : Foundation::DiscreteFormatStyle {
-  public func discreteInput(before referenceDate: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SwiftUICore.discreteInput(before:)") }
-  public func discreteInput(after referenceDate: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SwiftUICore.discreteInput(after:)") }
-  public func input(before referenceDate: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SwiftUICore.input(before:)") }
-  public func input(after referenceDate: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SwiftUICore.input(after:)") }
+  public func discreteInput(before referenceDate: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateReference.discreteInput(before:)") }
+  public func discreteInput(after referenceDate: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateReference.discreteInput(after:)") }
+  public func input(before referenceDate: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateReference.input(before:)") }
+  public func input(after referenceDate: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateReference.input(after:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -790,19 +790,19 @@ public struct ScrollPosition : Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.0)
 extension ScrollPosition {
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public init(id: some Hashable & Sendable, anchor: UnitPoint? = nil) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(id:anchor:)") }
+  public init(id: some Hashable & Sendable, anchor: UnitPoint? = nil) { _suiUnimplemented("SwiftUICore.ScrollPosition.init(id:anchor:)") }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public init(idType: (some Hashable & Sendable).Type = Never.self) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(idType:)") }
+  public init(idType: (some Hashable & Sendable).Type = Never.self) { _suiUnimplemented("SwiftUICore.ScrollPosition.init(idType:)") }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public init(idType: (some Hashable & Sendable).Type = Never.self, edge: Edge) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(idType:edge:)") }
+  public init(idType: (some Hashable & Sendable).Type = Never.self, edge: Edge) { _suiUnimplemented("SwiftUICore.ScrollPosition.init(idType:edge:)") }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public init(idType: (some Hashable & Sendable).Type = Never.self, point: CoreGraphics::CGPoint) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(idType:point:)") }
+  public init(idType: (some Hashable & Sendable).Type = Never.self, point: CoreGraphics::CGPoint) { _suiUnimplemented("SwiftUICore.ScrollPosition.init(idType:point:)") }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public init(idType: (some Hashable & Sendable).Type = Never.self, x: CoreGraphics::CGFloat, y: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(idType:x:y:)") }
+  public init(idType: (some Hashable & Sendable).Type = Never.self, x: CoreGraphics::CGFloat, y: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.ScrollPosition.init(idType:x:y:)") }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public init(idType: (some Hashable & Sendable).Type = Never.self, x: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(idType:x:)") }
+  public init(idType: (some Hashable & Sendable).Type = Never.self, x: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.ScrollPosition.init(idType:x:)") }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public init(idType: (some Hashable & Sendable).Type = Never.self, y: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(idType:y:)") }
+  public init(idType: (some Hashable & Sendable).Type = Never.self, y: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.ScrollPosition.init(idType:y:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -812,17 +812,17 @@ extension ScrollPosition {
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.0)
 extension ScrollPosition {
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public mutating func scrollTo(id: some Hashable & Sendable, anchor: UnitPoint? = nil) { _suiUnimplemented("SwiftUICore.SwiftUICore.scrollTo(id:anchor:)") }
+  public mutating func scrollTo(id: some Hashable & Sendable, anchor: UnitPoint? = nil) { _suiUnimplemented("SwiftUICore.ScrollPosition.scrollTo(id:anchor:)") }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public mutating func scrollTo(edge: Edge) { _suiUnimplemented("SwiftUICore.SwiftUICore.scrollTo(edge:)") }
+  public mutating func scrollTo(edge: Edge) { _suiUnimplemented("SwiftUICore.ScrollPosition.scrollTo(edge:)") }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public mutating func scrollTo(point: CoreGraphics::CGPoint) { _suiUnimplemented("SwiftUICore.SwiftUICore.scrollTo(point:)") }
+  public mutating func scrollTo(point: CoreGraphics::CGPoint) { _suiUnimplemented("SwiftUICore.ScrollPosition.scrollTo(point:)") }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public mutating func scrollTo(x: CoreGraphics::CGFloat, y: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.SwiftUICore.scrollTo(x:y:)") }
+  public mutating func scrollTo(x: CoreGraphics::CGFloat, y: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.ScrollPosition.scrollTo(x:y:)") }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public mutating func scrollTo(x: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.SwiftUICore.scrollTo(x:)") }
+  public mutating func scrollTo(x: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.ScrollPosition.scrollTo(x:)") }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public mutating func scrollTo(y: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.SwiftUICore.scrollTo(y:)") }
+  public mutating func scrollTo(y: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.ScrollPosition.scrollTo(y:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -833,31 +833,31 @@ extension ScrollPosition {
 extension ScrollPosition {
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public var isPositionedByUser: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.isPositionedByUser") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.isPositionedByUser") }
+    get { _suiUnimplemented("SwiftUICore.ScrollPosition.isPositionedByUser") }
+    set { _suiUnimplemented("SwiftUICore.ScrollPosition.isPositionedByUser") }
   }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public var edge: Edge? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.edge") }
+    get { _suiUnimplemented("SwiftUICore.ScrollPosition.edge") }
   }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public var point: CoreGraphics::CGPoint? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.point") }
+    get { _suiUnimplemented("SwiftUICore.ScrollPosition.point") }
   }
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public var x: CoreGraphics::CGFloat? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.x") }
+    get { _suiUnimplemented("SwiftUICore.ScrollPosition.x") }
   }
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public var y: CoreGraphics::CGFloat? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.y") }
+    get { _suiUnimplemented("SwiftUICore.ScrollPosition.y") }
   }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public var viewID: (any Swift::Hashable & Swift::Sendable)? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.viewID") }
+    get { _suiUnimplemented("SwiftUICore.ScrollPosition.viewID") }
   }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public func viewID<T>(type: T.Type) -> T? where T : Swift::Hashable, T : Swift::Sendable { _suiUnimplemented("SwiftUICore.SwiftUICore.viewID(type:)") }
+  public func viewID<T>(type: T.Type) -> T? where T : Swift::Hashable, T : Swift::Sendable { _suiUnimplemented("SwiftUICore.ScrollPosition.viewID(type:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -866,7 +866,7 @@ extension ScrollPosition {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.0)
 extension ScrollPosition : Swift::Equatable {
-  public static func == (lhs: ScrollPosition, rhs: ScrollPosition) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(lhs:rhs:)") }
+  public static func == (lhs: ScrollPosition, rhs: ScrollPosition) -> Swift::Bool { _suiUnimplemented("SwiftUICore.ScrollPosition.==(lhs:rhs:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(anyAppleOS 27.1, *)
@@ -880,7 +880,7 @@ public struct ContentMarginGuide {
 @available(anyAppleOS 27.1, *)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func contentMargins(for guide: ContentMarginGuide, edges: Edge.Set = .all, alignment: Alignment? = nil) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.contentMargins(for:edges:alignment:)") }
+nonisolated public func contentMargins(for guide: ContentMarginGuide, edges: Edge.Set = .all, alignment: Alignment? = nil) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.contentMargins(for:edges:alignment:)") }
   
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -953,7 +953,7 @@ public static var all: VerticalDirection.Set { get { _suiUnimplemented("SwiftUIC
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AnyTransition {
-  public static func modifier<E>(active: E, identity: E) -> AnyTransition where E : ViewModifier { _suiUnimplemented("SwiftUICore.SwiftUICore.modifier(active:identity:)") }
+  public static func modifier<E>(active: E, identity: E) -> AnyTransition where E : ViewModifier { _suiUnimplemented("SwiftUICore.AnyTransition.modifier(active:identity:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
@@ -962,7 +962,7 @@ extension AnyTransition {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
 extension EnvironmentValues {
   public var accessibilityAssistiveAccessEnabled: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityAssistiveAccessEnabled") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilityAssistiveAccessEnabled") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -972,10 +972,10 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
 extension EnvironmentValues {
   public var accessibilityVoiceOverEnabled: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityVoiceOverEnabled") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilityVoiceOverEnabled") }
   }
   public var accessibilitySwitchControlEnabled: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilitySwitchControlEnabled") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilitySwitchControlEnabled") }
   }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -1005,10 +1005,10 @@ public struct ScrollTarget {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ScrollTarget : Swift::Hashable, Swift::Equatable {
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.hash(into:)") }
-  public static func == (a: ScrollTarget, b: ScrollTarget) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.ScrollTarget.hash(into:)") }
+  public static func == (a: ScrollTarget, b: ScrollTarget) -> Swift::Bool { _suiUnimplemented("SwiftUICore.ScrollTarget.==(a:b:)") }
   public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.hashValue") }
+    get { _suiUnimplemented("SwiftUICore.ScrollTarget.hashValue") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -1054,8 +1054,8 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AnyTransition {
-  public static func offset(_ offset: CoreGraphics::CGSize) -> AnyTransition { _suiUnimplemented("SwiftUICore.SwiftUICore.offset(_:)") }
-  public static func offset(x: CoreGraphics::CGFloat = 0, y: CoreGraphics::CGFloat = 0) -> AnyTransition { _suiUnimplemented("SwiftUICore.SwiftUICore.offset(x:y:)") }
+  public static func offset(_ offset: CoreGraphics::CGSize) -> AnyTransition { _suiUnimplemented("SwiftUICore.AnyTransition.offset(_:)") }
+  public static func offset(x: CoreGraphics::CGFloat = 0, y: CoreGraphics::CGFloat = 0) -> AnyTransition { _suiUnimplemented("SwiftUICore.AnyTransition.offset(x:y:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -1067,8 +1067,6 @@ extension Transition where Self == OffsetTransition {
   @export(implementation) @_Concurrency::MainActor @preconcurrency public static func offset(x: CoreGraphics::CGFloat = 0, y: CoreGraphics::CGFloat = 0) -> Self {
         offset(CGSize(width: x, height: y))
     }
-  // port: synthesized witness for Transition (R7); Apple implements it with an internal member
-  public func body(content: PlaceholderContentView<Self>, phase: TransitionPhase) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.body(content:phase:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -1105,10 +1103,10 @@ nonisolated public struct OffsetTransition : Transition {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func offset(_ offset: CoreGraphics::CGSize) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.offset(_:)") }
+public func offset(_ offset: CoreGraphics::CGSize) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.offset(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func offset(x: CoreGraphics::CGFloat = 0, y: CoreGraphics::CGFloat = 0) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.offset(x:y:)") }
+public func offset(x: CoreGraphics::CGFloat = 0, y: CoreGraphics::CGFloat = 0) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.offset(x:y:)") }
   
 }
 @available(visionOS 2.0, *)
@@ -1117,10 +1115,10 @@ public func offset(x: CoreGraphics::CGFloat = 0, y: CoreGraphics::CGFloat = 0) -
 @available(tvOS, unavailable)
 extension HoverEffectContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func offset(_ offset: CoreGraphics::CGSize) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.offset(_:)") }
+public func offset(_ offset: CoreGraphics::CGSize) -> Swift.Never { _suiUnimplemented("SwiftUICore.HoverEffectContent.offset(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func offset(x: CoreGraphics::CGFloat = 0, y: CoreGraphics::CGFloat = 0) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.offset(x:y:)") }
+public func offset(x: CoreGraphics::CGFloat = 0, y: CoreGraphics::CGFloat = 0) -> Swift.Never { _suiUnimplemented("SwiftUICore.HoverEffectContent.offset(x:y:)") }
   
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -1360,7 +1358,7 @@ extension SimultaneousGesture.Value : Swift::Sendable where First.Value : Swift:
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SimultaneousGesture.Value : Swift::Equatable where First.Value : Swift::Equatable, Second.Value : Swift::Equatable {
-  public static func == (a: SimultaneousGesture<First, Second>.Value, b: SimultaneousGesture<First, Second>.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public static func == (a: SimultaneousGesture<First, Second>.Value, b: SimultaneousGesture<First, Second>.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SimultaneousGesture.SwiftUICore.Value.==(a:b:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -1368,9 +1366,9 @@ extension SimultaneousGesture.Value : Swift::Equatable where First.Value : Swift
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SimultaneousGesture.Value : Swift::Hashable where First.Value : Swift::Hashable, Second.Value : Swift::Hashable {
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.hash(into:)") }
+  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SimultaneousGesture.SwiftUICore.Value.hash(into:)") }
   public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.hashValue") }
+    get { _suiUnimplemented("SwiftUICore.SimultaneousGesture.SwiftUICore.Value.hashValue") }
   }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -1646,7 +1644,7 @@ public struct ViewDimensions {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ViewDimensions : Swift::Equatable {
-  public static func == (lhs: ViewDimensions, rhs: ViewDimensions) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(lhs:rhs:)") }
+  public static func == (lhs: ViewDimensions, rhs: ViewDimensions) -> Swift::Bool { _suiUnimplemented("SwiftUICore.ViewDimensions.==(lhs:rhs:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -1689,23 +1687,23 @@ extension View {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @usableFromInline
-  nonisolated internal func _fixedSize() -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore._fixedSize()") }
+  nonisolated internal func _fixedSize() -> Swift.Never { _suiUnimplemented("SwiftUICore.View._fixedSize()") }
   
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension ForEach where ID == Data.Element.ID, Data.Element : Swift::Identifiable {
   @usableFromInline
-  internal static func create(_ data: Data, @ContentBuilder content: @escaping (Data.Element) -> Content) -> ForEach<Data, ID, Content> { _suiUnimplemented("SwiftUICore.SwiftUICore.create(_:?:)") }
+  internal static func create(_ data: Data, @ContentBuilder content: @escaping (Data.Element) -> Content) -> ForEach<Data, ID, Content> { _suiUnimplemented("SwiftUICore.ForEach.create(_:?:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension ForEach {
   @usableFromInline
-  internal static func create(_ data: Data, id: Swift::KeyPath<Data.Element, ID>, @ContentBuilder content: @escaping (Data.Element) -> Content) -> ForEach<Data, ID, Content> { _suiUnimplemented("SwiftUICore.SwiftUICore.create(_:id:?:)") }
+  internal static func create(_ data: Data, id: Swift::KeyPath<Data.Element, ID>, @ContentBuilder content: @escaping (Data.Element) -> Content) -> ForEach<Data, ID, Content> { _suiUnimplemented("SwiftUICore.ForEach.create(_:id:?:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension ForEach where Data == Swift::Range<Swift::Int>, ID == Swift::Int {
   @usableFromInline
-  @_semantics("swiftui.requires_constant_range") internal static func create(_ data: Swift::Range<Swift::Int>, @ContentBuilder content: @escaping (Swift::Int) -> Content) -> ForEach<Data, ID, Content> { _suiUnimplemented("SwiftUICore.SwiftUICore.create(_:?:)") }
+  @_semantics("swiftui.requires_constant_range") internal static func create(_ data: Swift::Range<Swift::Int>, @ContentBuilder content: @escaping (Swift::Int) -> Content) -> ForEach<Data, ID, Content> { _suiUnimplemented("SwiftUICore.ForEach.create(_:?:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -1714,7 +1712,7 @@ extension ForEach where Data == Swift::Range<Swift::Int>, ID == Swift::Int {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Animation {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var `default`: Animation { get { _suiUnimplemented("SwiftUICore.SwiftUICore.default") } }
+public static var `default`: Animation { get { _suiUnimplemented("SwiftUICore.Animation.default") } }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.2)
@@ -1723,7 +1721,7 @@ public static var `default`: Animation { get { _suiUnimplemented("SwiftUICore.Sw
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.2)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.2)
 extension ForEach {
-  public init<V>(sections view: V, @ContentBuilder content: @escaping (SectionConfiguration) -> Content) where Data == ForEachSectionCollection<Content>, ID == SectionConfiguration.ID, Content : View, V : View { _suiUnimplemented("SwiftUICore.SwiftUICore.init(sections:?:)") }
+  public init<V>(sections view: V, @ContentBuilder content: @escaping (SectionConfiguration) -> Content) where Data == ForEachSectionCollection<Content>, ID == SectionConfiguration.ID, Content : View, V : View { _suiUnimplemented("SwiftUICore.ForEach.init(sections:?:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -1815,7 +1813,7 @@ public struct EmptyHoverEffect : CustomHoverEffect {
 @available(watchOS, unavailable)
 extension CustomHoverEffect where Self == EmptyHoverEffect {
   public static var empty: EmptyHoverEffect {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.empty") }
+    get { _suiUnimplemented("SwiftUICore.CustomHoverEffect.empty") }
   }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -1848,7 +1846,7 @@ public struct _CustomHoverEffectOutputs {
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.0)
 @available(watchOS, unavailable)
 extension CustomHoverEffect where Self.Body == Swift::Never {
-  public func body(content: Self.Content) -> Self.Body { _suiUnimplemented("SwiftUICore.SwiftUICore.body(content:)") }
+  public func body(content: Self.Content) -> Self.Body { _suiUnimplemented("SwiftUICore.CustomHoverEffect.body(content:)") }
 }
 @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
 @available(watchOS, unavailable)
@@ -1859,7 +1857,7 @@ extension Swift::Never : CustomHoverEffect {
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.0)
 @available(watchOS, unavailable)
 extension CustomHoverEffect {
-  public static func _makeCustomHoverEffect(effect: _GraphValue<Self>, inputs: _CustomHoverEffectInputs, body: @escaping (_CustomHoverEffectInputs) -> _CustomHoverEffectOutputs) -> _CustomHoverEffectOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeCustomHoverEffect(effect:inputs:body:)") }
+  public static func _makeCustomHoverEffect(effect: _GraphValue<Self>, inputs: _CustomHoverEffectInputs, body: @escaping (_CustomHoverEffectInputs) -> _CustomHoverEffectOutputs) -> _CustomHoverEffectOutputs { _suiUnimplemented("SwiftUICore.CustomHoverEffect._makeCustomHoverEffect(effect:inputs:body:)") }
 }
 @available(iOS 17.0, tvOS 17.0, visionOS 1.0, *)
 @available(watchOS, unavailable)
@@ -1868,8 +1866,8 @@ extension CustomHoverEffect {
 @_originallyDefinedIn(module: "SwiftUI", visionOS 26.0)
 extension EnvironmentValues {
   public var isHoverEffectEnabled: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.isHoverEffectEnabled") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.isHoverEffectEnabled") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.isHoverEffectEnabled") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.isHoverEffectEnabled") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -1947,7 +1945,7 @@ extension ExclusiveGesture.Value : Swift::Sendable where First.Value : Swift::Se
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ExclusiveGesture.Value : Swift::Equatable where First.Value : Swift::Equatable, Second.Value : Swift::Equatable {
-  public static func == (a: ExclusiveGesture<First, Second>.Value, b: ExclusiveGesture<First, Second>.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public static func == (a: ExclusiveGesture<First, Second>.Value, b: ExclusiveGesture<First, Second>.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.ExclusiveGesture.SwiftUICore.Value.==(a:b:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -1988,7 +1986,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func rotationEffect(_ angle: Angle, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.rotationEffect(_:anchor:)") }
+public func rotationEffect(_ angle: Angle, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.rotationEffect(_:anchor:)") }
   
 }
 @available(visionOS 2.0, *)
@@ -1997,7 +1995,7 @@ public func rotationEffect(_ angle: Angle, anchor: UnitPoint = .center) -> Swift
 @available(tvOS, unavailable)
 extension HoverEffectContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func rotationEffect(_ angle: Angle, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.rotationEffect(_:anchor:)") }
+public func rotationEffect(_ angle: Angle, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.HoverEffectContent.rotationEffect(_:anchor:)") }
   
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -2236,10 +2234,10 @@ nonisolated public struct PlaceholderContentView<Value> : View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ViewModifier {
-  nonisolated public static func _makeView(modifier: _GraphValue<Self>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(modifier:inputs:body:)") }
-  nonisolated public static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(modifier:inputs:body:)") }
+  nonisolated public static func _makeView(modifier: _GraphValue<Self>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.ViewModifier._makeView(modifier:inputs:body:)") }
+  nonisolated public static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.ViewModifier._makeViewList(modifier:inputs:body:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:body:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUICore.ViewModifier._viewListCount(inputs:body:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2247,7 +2245,7 @@ extension ViewModifier {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Animation {
-  public func speed(_ speed: Swift::Double) -> Animation { _suiUnimplemented("SwiftUICore.SwiftUICore.speed(_:)") }
+  public func speed(_ speed: Swift::Double) -> Animation { _suiUnimplemented("SwiftUICore.Animation.speed(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -2283,7 +2281,7 @@ public struct KeyframeTrack<Root, Value, Content> : Keyframes where Value == Con
 @available(watchOS, unavailable)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func hoverEffect(_ effect: some CustomHoverEffect = .automatic, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.hoverEffect(_:isEnabled:)") }
+nonisolated public func hoverEffect(_ effect: some CustomHoverEffect = .automatic, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.hoverEffect(_:isEnabled:)") }
   
 }
 @available(visionOS 2.0, *)
@@ -2292,7 +2290,7 @@ nonisolated public func hoverEffect(_ effect: some CustomHoverEffect = .automati
 @available(tvOS, unavailable)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func hoverEffect(_ effect: some CustomHoverEffect, in group: HoverEffectGroup?, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.hoverEffect(_:in:isEnabled:)") }
+nonisolated public func hoverEffect(_ effect: some CustomHoverEffect, in group: HoverEffectGroup?, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.hoverEffect(_:in:isEnabled:)") }
   
 }
 @available(iOS 13.4, tvOS 16.0, visionOS 1.0, *)
@@ -2304,7 +2302,7 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 13.4, tvOS 16.0, visionOS 1.0, *)
     @available(watchOS, unavailable)
-  @_disfavoredOverload nonisolated public func hoverEffect(_ effect: HoverEffect = .automatic) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.hoverEffect(_:)") }
+  @_disfavoredOverload nonisolated public func hoverEffect(_ effect: HoverEffect = .automatic) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.hoverEffect(_:)") }
   
 }
 @available(iOS 17.0, tvOS 17.0, visionOS 1.0, *)
@@ -2314,18 +2312,18 @@ extension View {
 @available(watchOS, unavailable)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func hoverEffect(_ effect: HoverEffect = .automatic, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.hoverEffect(_:isEnabled:)") }
+@_disfavoredOverload nonisolated public func hoverEffect(_ effect: HoverEffect = .automatic, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.hoverEffect(_:isEnabled:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func defaultHoverEffect(_ effect: HoverEffect?) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.defaultHoverEffect(_:)") }
+nonisolated public func defaultHoverEffect(_ effect: HoverEffect?) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.defaultHoverEffect(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
     @available(watchOS, unavailable)
-  nonisolated public func defaultHoverEffect(_ effect: some CustomHoverEffect) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.defaultHoverEffect(_:)") }
+  nonisolated public func defaultHoverEffect(_ effect: some CustomHoverEffect) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.defaultHoverEffect(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func hoverEffectDisabled(_ disabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.hoverEffectDisabled(_:)") }
+nonisolated public func hoverEffectDisabled(_ disabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.hoverEffectDisabled(_:)") }
   
 }
 @available(visionOS 2.0, *)
@@ -2334,7 +2332,7 @@ nonisolated public func hoverEffectDisabled(_ disabled: Swift::Bool = true) -> S
 @available(tvOS, unavailable)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func hoverEffect(in group: HoverEffectGroup? = nil, isEnabled: Swift::Bool = true, body: @escaping (EmptyHoverEffectContent, Swift::Bool, GeometryProxy) -> some HoverEffectContent) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.hoverEffect(in:isEnabled:body:)") }
+nonisolated public func hoverEffect(in group: HoverEffectGroup? = nil, isEnabled: Swift::Bool = true, body: @escaping (EmptyHoverEffectContent, Swift::Bool, GeometryProxy) -> some HoverEffectContent) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.hoverEffect(in:isEnabled:body:)") }
   
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -2384,7 +2382,7 @@ public struct HoverEffect {
 @_originallyDefinedIn(module: "SwiftUI", visionOS 27.0)
 @available(watchOS, unavailable)
 extension HoverEffect : CustomHoverEffect {
-  public static func _makeCustomHoverEffect(effect: _GraphValue<HoverEffect>, inputs: _CustomHoverEffectInputs, body: @escaping (_CustomHoverEffectInputs) -> _CustomHoverEffectOutputs) -> _CustomHoverEffectOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeCustomHoverEffect(effect:inputs:body:)") }
+  public static func _makeCustomHoverEffect(effect: _GraphValue<HoverEffect>, inputs: _CustomHoverEffectInputs, body: @escaping (_CustomHoverEffectInputs) -> _CustomHoverEffectOutputs) -> _CustomHoverEffectOutputs { _suiUnimplemented("SwiftUICore.HoverEffect._makeCustomHoverEffect(effect:inputs:body:)") }
   @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
     @available(watchOS, unavailable)
   public typealias Body = Swift::Never
@@ -2413,8 +2411,8 @@ extension View {
 extension EnvironmentValues {
   @usableFromInline
   package var foregroundColor: Color? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.foregroundColor") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.foregroundColor") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.foregroundColor") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.foregroundColor") }
   }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -2455,7 +2453,7 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Color {
   public static var accentColor: Color {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accentColor") }
+    get { _suiUnimplemented("SwiftUICore.Color.accentColor") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -2482,8 +2480,8 @@ extension View {
 extension EnvironmentValues {
   @usableFromInline
   package var accentColor: Color? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accentColor") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.accentColor") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.accentColor") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.accentColor") }
   }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -2567,7 +2565,7 @@ extension View {
 @available(visionOS 26.0, *)
       @available(watchOS, unavailable)
   @available(tvOS, unavailable)
-  nonisolated public func contentCaptureProtected(_ isActive: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.contentCaptureProtected(_:)") }
+  nonisolated public func contentCaptureProtected(_ isActive: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.contentCaptureProtected(_:)") }
   
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
@@ -2577,13 +2575,13 @@ extension View {
 @available(watchOS, unavailable)
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func colorEffect(_ shader: Shader, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.colorEffect(_:isEnabled:)") }
+public func colorEffect(_ shader: Shader, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.colorEffect(_:isEnabled:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func distortionEffect(_ shader: Shader, maxSampleOffset: CoreGraphics::CGSize, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.distortionEffect(_:maxSampleOffset:isEnabled:)") }
+public func distortionEffect(_ shader: Shader, maxSampleOffset: CoreGraphics::CGSize, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.distortionEffect(_:maxSampleOffset:isEnabled:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func layerEffect(_ shader: Shader, maxSampleOffset: CoreGraphics::CGSize, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.layerEffect(_:maxSampleOffset:isEnabled:)") }
+public func layerEffect(_ shader: Shader, maxSampleOffset: CoreGraphics::CGSize, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.layerEffect(_:maxSampleOffset:isEnabled:)") }
   
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
@@ -2592,7 +2590,7 @@ public func layerEffect(_ shader: Shader, maxSampleOffset: CoreGraphics::CGSize,
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 @available(watchOS, unavailable)
 extension _ShaderFilterEffect : VisualEffect {
-  public static func _makeVisualEffect(effect: _GraphValue<_ShaderFilterEffect>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeVisualEffect(effect:inputs:body:)") }
+  public static func _makeVisualEffect(effect: _GraphValue<_ShaderFilterEffect>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._ShaderFilterEffect._makeVisualEffect(effect:inputs:body:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, *)
   @available(watchOS, unavailable)
   public typealias AnimatableData = EmptyAnimatableData
@@ -2600,7 +2598,7 @@ extension _ShaderFilterEffect : VisualEffect {
 @available(anyAppleOS 27.1, *)
 extension EnvironmentValues {
   public var toolbarVerticalEdge: HorizontalEdge? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.toolbarVerticalEdge") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.toolbarVerticalEdge") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -2636,8 +2634,6 @@ extension TimelineSchedule where Self == PeriodicTimelineSchedule {
   @export(implementation) public static func periodic(from startDate: Foundation::Date, by interval: Foundation::TimeInterval) -> PeriodicTimelineSchedule {
         .init(from: startDate, by: interval)
     }
-  // port: synthesized witness for TimelineSchedule (R7); Apple implements it with an internal member
-  public func entries(from startDate: Foundation::Date, mode: TimelineScheduleMode) -> = Foundation::Date { _suiUnimplemented("SwiftUICore.SwiftUICore.entries(from:mode:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2731,15 +2727,15 @@ public protocol EnvironmentalModifier : ViewModifier where Self.Body == Swift::N
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentalModifier {
-  nonisolated public static func _makeView(modifier: _GraphValue<Self>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(modifier:inputs:body:)") }
-  nonisolated public static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(modifier:inputs:body:)") }
+  nonisolated public static func _makeView(modifier: _GraphValue<Self>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.EnvironmentalModifier._makeView(modifier:inputs:body:)") }
+  nonisolated public static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.EnvironmentalModifier._makeViewList(modifier:inputs:body:)") }
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
   nonisolated public static var _requiresMainThread: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._requiresMainThread") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentalModifier._requiresMainThread") }
   }
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
   nonisolated public static var _tracksEnvironmentDependencies: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._tracksEnvironmentDependencies") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentalModifier._tracksEnvironmentDependencies") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -2765,9 +2761,9 @@ extension EnvironmentalModifier {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Gradient : Swift::Hashable {
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.hash(into:)") }
+  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Gradient.hash(into:)") }
   public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.hashValue") }
+    get { _suiUnimplemented("SwiftUICore.Gradient.hashValue") }
   }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -2776,9 +2772,9 @@ extension Gradient : Swift::Hashable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Gradient.Stop : Swift::Hashable {
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.hash(into:)") }
+  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Gradient.SwiftUICore.Stop.hash(into:)") }
   public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.hashValue") }
+    get { _suiUnimplemented("SwiftUICore.Gradient.SwiftUICore.Stop.hashValue") }
   }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -2787,7 +2783,7 @@ extension Gradient.Stop : Swift::Hashable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Gradient : ShapeStyle {
-  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.SwiftUICore._apply(to:)") }
+  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.Gradient._apply(to:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
 }
@@ -2802,13 +2798,13 @@ extension Color {
     public var linearGreen: Swift::Float
     public var linearBlue: Swift::Float
     public var opacity: Swift::Float
-    public static func == (a: Color.Resolved, b: Color.Resolved) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Resolved.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.Resolved.hash(into:)") }
+    public static func == (a: Color.Resolved, b: Color.Resolved) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Color.Resolved.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Color.Resolved.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Resolved.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Color.Resolved.hashValue") }
     }
   }
-  public init(_ resolved: Color.Resolved) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  public init(_ resolved: Color.Resolved) { _suiUnimplemented("SwiftUICore.Color.init(_:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2816,7 +2812,7 @@ extension Color {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Color.Resolved : ShapeStyle {
-  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.SwiftUICore._apply(to:)") }
+  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.Resolved._apply(to:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
 }
@@ -2827,7 +2823,7 @@ extension Color.Resolved : ShapeStyle {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Color.Resolved : Swift::CustomStringConvertible {
   public var description: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.description") }
+    get { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.Resolved.description") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -2838,8 +2834,8 @@ extension Color.Resolved : Swift::CustomStringConvertible {
 extension Color.Resolved : Animatable {
   public typealias AnimatableData = AnimatablePair<Swift::Float, AnimatablePair<Swift::Float, AnimatablePair<Swift::Float, Swift::Float>>>
   public var animatableData: Color.Resolved.AnimatableData {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.animatableData") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.animatableData") }
+    get { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.Resolved.animatableData") }
+    set { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.Resolved.animatableData") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -2848,18 +2844,18 @@ extension Color.Resolved : Animatable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Color.Resolved {
-  public init(colorSpace: Color.RGBColorSpace = .sRGB, red: Swift::Float, green: Swift::Float, blue: Swift::Float, opacity: Swift::Float = 1) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(colorSpace:red:green:blue:opacity:)") }
+  public init(colorSpace: Color.RGBColorSpace = .sRGB, red: Swift::Float, green: Swift::Float, blue: Swift::Float, opacity: Swift::Float = 1) { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.Resolved.init(colorSpace:red:green:blue:opacity:)") }
   public var red: Swift::Float {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.red") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.red") }
+    get { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.Resolved.red") }
+    set { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.Resolved.red") }
   }
   public var green: Swift::Float {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.green") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.green") }
+    get { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.Resolved.green") }
+    set { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.Resolved.green") }
   }
   public var blue: Swift::Float {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.blue") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.blue") }
+    get { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.Resolved.blue") }
+    set { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.Resolved.blue") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -2868,8 +2864,8 @@ extension Color.Resolved {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Color.Resolved : Swift::Codable {
-  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.encode(to:)") }
-  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.init(from:)") }
+  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.Resolved.encode(to:)") }
+  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.Resolved.init(from:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2880,7 +2876,7 @@ extension Color.Resolved : Swift::Codable {
 extension Text {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public func textVariant<V>(_ preference: V) -> Swift.Never where V : TextVariantPreference { _suiUnimplemented("SwiftUICore.SwiftUICore.textVariant(_:)") }
+  public func textVariant<V>(_ preference: V) -> Swift.Never where V : TextVariantPreference { _suiUnimplemented("SwiftUICore.Text.textVariant(_:)") }
   
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -2930,10 +2926,8 @@ public struct SizeDependentTextVariant : TextVariantPreference, Swift::Sendable 
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.0)
 extension TextVariantPreference where Self == FixedTextVariant {
   public static var fixed: FixedTextVariant {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.fixed") }
+    get { _suiUnimplemented("SwiftUICore.TextVariantPreference.fixed") }
   }
-  // port: synthesized witness for TextVariantPreference (R7); Apple implements it with an internal member
-  public var _preference: _TextVariantPreference<Self> { get { _suiUnimplemented("SwiftUICore.SwiftUICore._preference") } }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2943,7 +2937,7 @@ extension TextVariantPreference where Self == FixedTextVariant {
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.0)
 extension TextVariantPreference where Self == SizeDependentTextVariant {
   public static var sizeDependent: SizeDependentTextVariant {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.sizeDependent") }
+    get { _suiUnimplemented("SwiftUICore.TextVariantPreference.sizeDependent") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -2953,10 +2947,10 @@ extension TextVariantPreference where Self == SizeDependentTextVariant {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func keyframeAnimator<Value>(initialValue: Value, trigger: some Equatable, @ContentBuilder content: @escaping @Sendable (PlaceholderContentView<Self>, Value) -> some View, @KeyframesBuilder<Value> keyframes: @escaping (Value) -> some Keyframes<Value>) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.keyframeAnimator(initialValue:trigger:?:?:)") }
+nonisolated public func keyframeAnimator<Value>(initialValue: Value, trigger: some Equatable, @ContentBuilder content: @escaping @Sendable (PlaceholderContentView<Self>, Value) -> some View, @KeyframesBuilder<Value> keyframes: @escaping (Value) -> some Keyframes<Value>) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.keyframeAnimator(initialValue:trigger:?:?:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func keyframeAnimator<Value>(initialValue: Value, repeating: Swift::Bool = true, @ContentBuilder content: @escaping @Sendable (PlaceholderContentView<Self>, Value) -> some View, @KeyframesBuilder<Value> keyframes: @escaping (Value) -> some Keyframes<Value>) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.keyframeAnimator(initialValue:repeating:?:?:)") }
+nonisolated public func keyframeAnimator<Value>(initialValue: Value, repeating: Swift::Bool = true, @ContentBuilder content: @escaping @Sendable (PlaceholderContentView<Self>, Value) -> some View, @KeyframesBuilder<Value> keyframes: @escaping (Value) -> some Keyframes<Value>) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.keyframeAnimator(initialValue:repeating:?:?:)") }
   
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -3022,13 +3016,13 @@ extension View {
 @available(visionOS 26.0, *)
       @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func onWorldRecenter(action: @escaping @_Concurrency::MainActor (_ event: WorldRecenterPhase) -> Swift::Void) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.onWorldRecenter(action:)") }
+  nonisolated public func onWorldRecenter(action: @escaping @_Concurrency::MainActor (_ event: WorldRecenterPhase) -> Swift::Void) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.onWorldRecenter(action:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(visionOS 26.0, *)
       @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func onWorldRecenter(action: @escaping @_Concurrency::MainActor () -> Swift::Void) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.onWorldRecenter(action:)") }
+  nonisolated public func onWorldRecenter(action: @escaping @_Concurrency::MainActor () -> Swift::Void) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.onWorldRecenter(action:)") }
   
 }
 @available(macOS 26.0, visionOS 26.0, *)
@@ -3093,7 +3087,7 @@ public static var vertical: Axis.Set { get { _suiUnimplemented("SwiftUICore.Axis
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Axis : Swift::CustomStringConvertible {
   public var description: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.description") }
+    get { _suiUnimplemented("SwiftUICore.Axis.description") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -3134,14 +3128,14 @@ extension View {
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  @_Concurrency::MainActor @preconcurrency public func _tightPadding() -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore._tightPadding()") }
+  @_Concurrency::MainActor @preconcurrency public func _tightPadding() -> Swift.Never { _suiUnimplemented("SwiftUICore.View._tightPadding()") }
   
 }
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
   @available(visionOS, unavailable)
-  nonisolated public func glassEffect(_ glass: Glass = .regular, in shape: some Shape = DefaultGlassEffectShape()) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.glassEffect(_:in:)") }
+  nonisolated public func glassEffect(_ glass: Glass = .regular, in shape: some Shape = DefaultGlassEffectShape()) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.glassEffect(_:in:)") }
   
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
@@ -3179,7 +3173,7 @@ public struct DefaultGlassEffectShape : Shape {
 }
 extension EdgeInsets {
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public func inset(by corners: RectangleCornerInsets, edges: Edge.Set = .all) -> EdgeInsets { _suiUnimplemented("SwiftUICore.SwiftUICore.inset(by:edges:)") }
+  public func inset(by corners: RectangleCornerInsets, edges: Edge.Set = .all) -> EdgeInsets { _suiUnimplemented("SwiftUICore.EdgeInsets.inset(by:edges:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -3188,7 +3182,7 @@ extension EdgeInsets {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func _defaultContext() -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore._defaultContext()") }
+nonisolated public func _defaultContext() -> Swift.Never { _suiUnimplemented("SwiftUICore.View._defaultContext()") }
   
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -3254,7 +3248,7 @@ extension View {
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func blendMode(_ blendMode: BlendMode) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.blendMode(_:)") }
+public func blendMode(_ blendMode: BlendMode) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.blendMode(_:)") }
   
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -3312,7 +3306,7 @@ public struct _Placement : Swift::Equatable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func _colorMatrix(_ matrix: _ColorMatrix) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore._colorMatrix(_:)") }
+nonisolated public func _colorMatrix(_ matrix: _ColorMatrix) -> Swift.Never { _suiUnimplemented("SwiftUICore.View._colorMatrix(_:)") }
   
 }
 extension Swift::Collection {
@@ -3378,10 +3372,10 @@ extension Group {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Group : View where Content : View {
   @usableFromInline
-  @_disfavoredOverload nonisolated internal init(@ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(?:)") }
-  nonisolated public static func _makeViewList(view: _GraphValue<Group<Content>>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(view:inputs:)") }
+  @_disfavoredOverload nonisolated internal init(@ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUICore.Group.init(?:)") }
+  nonisolated public static func _makeViewList(view: _GraphValue<Group<Content>>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.Group._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.Group._viewListCount(inputs:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -3545,7 +3539,7 @@ package struct IsSectionFooterTraitKey : _ViewTraitKey {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func privacySensitive(_ sensitive: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.privacySensitive(_:)") }
+nonisolated public func privacySensitive(_ sensitive: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.privacySensitive(_:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -3586,7 +3580,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func contrast(_ amount: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.contrast(_:)") }
+public func contrast(_ amount: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.contrast(_:)") }
   
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
@@ -3606,7 +3600,7 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
   @available(visionOS, unavailable)
-  @_Concurrency::MainActor @preconcurrency public func glassEffectTransition(_ transition: GlassEffectTransition) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.glassEffectTransition(_:)") }
+  @_Concurrency::MainActor @preconcurrency public func glassEffectTransition(_ transition: GlassEffectTransition) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.glassEffectTransition(_:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -3624,16 +3618,16 @@ extension Image {
     case leftMirrored
     case right
     case rightMirrored
-    public init?(rawValue: Swift::UInt8) { _suiUnimplemented("SwiftUICore.SwiftUICore.Orientation.init(rawValue:)") }
+    public init?(rawValue: Swift::UInt8) { _suiUnimplemented("SwiftUICore.Image.Orientation.init(rawValue:)") }
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias AllCases = [Image.Orientation]
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias RawValue = Swift::UInt8
     nonisolated public static var allCases: [Image.Orientation] {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Orientation.allCases") }
+      get { _suiUnimplemented("SwiftUICore.Image.Orientation.allCases") }
     }
     public var rawValue: Swift::UInt8 {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Orientation.rawValue") }
+      get { _suiUnimplemented("SwiftUICore.Image.Orientation.rawValue") }
     }
   }
 }
@@ -3659,10 +3653,10 @@ extension UnitCurve : Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension UnitCurve : Swift::Hashable {
-  public static func == (a: UnitCurve, b: UnitCurve) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.hash(into:)") }
+  public static func == (a: UnitCurve, b: UnitCurve) -> Swift::Bool { _suiUnimplemented("SwiftUICore.UnitCurve.==(a:b:)") }
+  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.UnitCurve.hash(into:)") }
   public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.hashValue") }
+    get { _suiUnimplemented("SwiftUICore.UnitCurve.hashValue") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -3673,21 +3667,21 @@ extension UnitCurve : Swift::Hashable {
 extension UnitCurve {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
 @available(*, deprecated, message: "Use easeInOut instead")
-  public static var easeInEaseOut: UnitCurve { get { _suiUnimplemented("SwiftUICore.SwiftUICore.easeInEaseOut") } }
+  public static var easeInEaseOut: UnitCurve { get { _suiUnimplemented("SwiftUICore.UnitCurve.easeInEaseOut") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var easeInOut: UnitCurve { get { _suiUnimplemented("SwiftUICore.SwiftUICore.easeInOut") } }
+public static var easeInOut: UnitCurve { get { _suiUnimplemented("SwiftUICore.UnitCurve.easeInOut") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var easeIn: UnitCurve { get { _suiUnimplemented("SwiftUICore.SwiftUICore.easeIn") } }
+public static var easeIn: UnitCurve { get { _suiUnimplemented("SwiftUICore.UnitCurve.easeIn") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var easeOut: UnitCurve { get { _suiUnimplemented("SwiftUICore.SwiftUICore.easeOut") } }
+public static var easeOut: UnitCurve { get { _suiUnimplemented("SwiftUICore.UnitCurve.easeOut") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var circularEaseIn: UnitCurve { get { _suiUnimplemented("SwiftUICore.SwiftUICore.circularEaseIn") } }
+public static var circularEaseIn: UnitCurve { get { _suiUnimplemented("SwiftUICore.UnitCurve.circularEaseIn") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var circularEaseOut: UnitCurve { get { _suiUnimplemented("SwiftUICore.SwiftUICore.circularEaseOut") } }
+public static var circularEaseOut: UnitCurve { get { _suiUnimplemented("SwiftUICore.UnitCurve.circularEaseOut") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var circularEaseInOut: UnitCurve { get { _suiUnimplemented("SwiftUICore.SwiftUICore.circularEaseInOut") } }
+public static var circularEaseInOut: UnitCurve { get { _suiUnimplemented("SwiftUICore.UnitCurve.circularEaseInOut") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var linear: UnitCurve { get { _suiUnimplemented("SwiftUICore.SwiftUICore.linear") } }
+public static var linear: UnitCurve { get { _suiUnimplemented("SwiftUICore.UnitCurve.linear") } }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -3695,7 +3689,7 @@ public static var linear: UnitCurve { get { _suiUnimplemented("SwiftUICore.Swift
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 extension Animation {
-  public static func timingCurve(_ curve: UnitCurve, duration: Foundation::TimeInterval) -> Animation { _suiUnimplemented("SwiftUICore.SwiftUICore.timingCurve(_:duration:)") }
+  public static func timingCurve(_ curve: UnitCurve, duration: Foundation::TimeInterval) -> Animation { _suiUnimplemented("SwiftUICore.Animation.timingCurve(_:duration:)") }
 }
 @attached(accessor) @attached(peer, names: prefixed(__Key_)) public macro Entry() = #externalMacro(
     module: "SwiftUIMacros", type: "EntryMacro"
@@ -3868,13 +3862,13 @@ public static var systemAction: OpenURLAction.Result { get { _suiUnimplemented("
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   @preconcurrency @_Concurrency::MainActor public var openURL: OpenURLAction {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.openURL") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.openURL") }
     @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.openURL") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.openURL") }
   }
   @preconcurrency @_Concurrency::MainActor public var _openURL: OpenURLAction {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._openURL") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore._openURL") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues._openURL") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues._openURL") }
   }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -3884,14 +3878,14 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   @preconcurrency @_Concurrency::MainActor public var _openSensitiveURL: OpenURLAction {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._openSensitiveURL") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore._openSensitiveURL") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues._openSensitiveURL") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues._openSensitiveURL") }
   }
 }
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  @_Concurrency::MainActor @preconcurrency public func onOpenURL(prefersInApp: Swift::Bool) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.onOpenURL(prefersInApp:)") }
+  @_Concurrency::MainActor @preconcurrency public func onOpenURL(prefersInApp: Swift::Bool) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.onOpenURL(prefersInApp:)") }
   
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -3912,12 +3906,12 @@ public struct Spring : Swift::Hashable, Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Spring {
-  public init(duration: Foundation::TimeInterval = 0.5, bounce: Swift::Double = 0.0) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(duration:bounce:)") }
+  public init(duration: Foundation::TimeInterval = 0.5, bounce: Swift::Double = 0.0) { _suiUnimplemented("SwiftUICore.Spring.init(duration:bounce:)") }
   public var duration: Foundation::TimeInterval {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.duration") }
+    get { _suiUnimplemented("SwiftUICore.Spring.duration") }
   }
   public var bounce: Swift::Double {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.bounce") }
+    get { _suiUnimplemented("SwiftUICore.Spring.bounce") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -3926,12 +3920,12 @@ extension Spring {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Spring {
-  public init(response: Swift::Double, dampingRatio: Swift::Double) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(response:dampingRatio:)") }
+  public init(response: Swift::Double, dampingRatio: Swift::Double) { _suiUnimplemented("SwiftUICore.Spring.init(response:dampingRatio:)") }
   public var response: Swift::Double {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.response") }
+    get { _suiUnimplemented("SwiftUICore.Spring.response") }
   }
   public var dampingRatio: Swift::Double {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.dampingRatio") }
+    get { _suiUnimplemented("SwiftUICore.Spring.dampingRatio") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -3940,15 +3934,15 @@ extension Spring {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Spring {
-  public init(mass: Swift::Double = 1.0, stiffness: Swift::Double, damping: Swift::Double, allowOverDamping: Swift::Bool = false) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(mass:stiffness:damping:allowOverDamping:)") }
+  public init(mass: Swift::Double = 1.0, stiffness: Swift::Double, damping: Swift::Double, allowOverDamping: Swift::Bool = false) { _suiUnimplemented("SwiftUICore.Spring.init(mass:stiffness:damping:allowOverDamping:)") }
   public var mass: Swift::Double {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.mass") }
+    get { _suiUnimplemented("SwiftUICore.Spring.mass") }
   }
   public var stiffness: Swift::Double {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.stiffness") }
+    get { _suiUnimplemented("SwiftUICore.Spring.stiffness") }
   }
   public var damping: Swift::Double {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.damping") }
+    get { _suiUnimplemented("SwiftUICore.Spring.damping") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -3957,7 +3951,7 @@ extension Spring {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Spring {
-  public init(settlingDuration: Foundation::TimeInterval, dampingRatio: Swift::Double, epsilon: Swift::Double = 0.001) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(settlingDuration:dampingRatio:epsilon:)") }
+  public init(settlingDuration: Foundation::TimeInterval, dampingRatio: Swift::Double, epsilon: Swift::Double = 0.001) { _suiUnimplemented("SwiftUICore.Spring.init(settlingDuration:dampingRatio:epsilon:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -3966,13 +3960,13 @@ extension Spring {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Spring {
   public var settlingDuration: Foundation::TimeInterval {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.settlingDuration") }
+    get { _suiUnimplemented("SwiftUICore.Spring.settlingDuration") }
   }
-  public func settlingDuration<V>(target: V, initialVelocity: V = .zero, epsilon: Swift::Double) -> Foundation::TimeInterval where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.SwiftUICore.settlingDuration(target:initialVelocity:epsilon:)") }
-  public func value<V>(target: V, initialVelocity: V = .zero, time: Foundation::TimeInterval) -> V where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.SwiftUICore.value(target:initialVelocity:time:)") }
-  public func velocity<V>(target: V, initialVelocity: V = .zero, time: Foundation::TimeInterval) -> V where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.SwiftUICore.velocity(target:initialVelocity:time:)") }
-  public func update<V>(value: inout V, velocity: inout V, target: V, deltaTime: Foundation::TimeInterval) where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.SwiftUICore.update(value:velocity:target:deltaTime:)") }
-  public func force<V>(target: V, position: V, velocity: V) -> V where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.SwiftUICore.force(target:position:velocity:)") }
+  public func settlingDuration<V>(target: V, initialVelocity: V = .zero, epsilon: Swift::Double) -> Foundation::TimeInterval where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.Spring.settlingDuration(target:initialVelocity:epsilon:)") }
+  public func value<V>(target: V, initialVelocity: V = .zero, time: Foundation::TimeInterval) -> V where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.Spring.value(target:initialVelocity:time:)") }
+  public func velocity<V>(target: V, initialVelocity: V = .zero, time: Foundation::TimeInterval) -> V where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.Spring.velocity(target:initialVelocity:time:)") }
+  public func update<V>(value: inout V, velocity: inout V, target: V, deltaTime: Foundation::TimeInterval) where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.Spring.update(value:velocity:target:deltaTime:)") }
+  public func force<V>(target: V, position: V, velocity: V) -> V where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.Spring.force(target:position:velocity:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -3980,10 +3974,10 @@ extension Spring {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Spring {
-  public func settlingDuration<V>(fromValue: V, toValue: V, initialVelocity: V, epsilon: Swift::Double) -> Foundation::TimeInterval where V : Animatable { _suiUnimplemented("SwiftUICore.SwiftUICore.settlingDuration(fromValue:toValue:initialVelocity:epsilon:)") }
-  public func value<V>(fromValue: V, toValue: V, initialVelocity: V, time: Foundation::TimeInterval) -> V where V : Animatable { _suiUnimplemented("SwiftUICore.SwiftUICore.value(fromValue:toValue:initialVelocity:time:)") }
-  public func velocity<V>(fromValue: V, toValue: V, initialVelocity: V, time: Foundation::TimeInterval) -> V where V : Animatable { _suiUnimplemented("SwiftUICore.SwiftUICore.velocity(fromValue:toValue:initialVelocity:time:)") }
-  public func force<V>(fromValue: V, toValue: V, position: V, velocity: V) -> V where V : Animatable { _suiUnimplemented("SwiftUICore.SwiftUICore.force(fromValue:toValue:position:velocity:)") }
+  public func settlingDuration<V>(fromValue: V, toValue: V, initialVelocity: V, epsilon: Swift::Double) -> Foundation::TimeInterval where V : Animatable { _suiUnimplemented("SwiftUICore.Spring.settlingDuration(fromValue:toValue:initialVelocity:epsilon:)") }
+  public func value<V>(fromValue: V, toValue: V, initialVelocity: V, time: Foundation::TimeInterval) -> V where V : Animatable { _suiUnimplemented("SwiftUICore.Spring.value(fromValue:toValue:initialVelocity:time:)") }
+  public func velocity<V>(fromValue: V, toValue: V, initialVelocity: V, time: Foundation::TimeInterval) -> V where V : Animatable { _suiUnimplemented("SwiftUICore.Spring.velocity(fromValue:toValue:initialVelocity:time:)") }
+  public func force<V>(fromValue: V, toValue: V, position: V, velocity: V) -> V where V : Animatable { _suiUnimplemented("SwiftUICore.Spring.force(fromValue:toValue:position:velocity:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -4016,8 +4010,8 @@ extension Spring {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Animation {
-  public static func spring(_ spring: Spring, blendDuration: Foundation::TimeInterval = 0.0) -> Animation { _suiUnimplemented("SwiftUICore.SwiftUICore.spring(_:blendDuration:)") }
-  public static func interpolatingSpring(_ spring: Spring, initialVelocity: Swift::Double = 0.0) -> Animation { _suiUnimplemented("SwiftUICore.SwiftUICore.interpolatingSpring(_:initialVelocity:)") }
+  public static func spring(_ spring: Spring, blendDuration: Foundation::TimeInterval = 0.0) -> Animation { _suiUnimplemented("SwiftUICore.Animation.spring(_:blendDuration:)") }
+  public static func interpolatingSpring(_ spring: Spring, initialVelocity: Swift::Double = 0.0) -> Animation { _suiUnimplemented("SwiftUICore.Animation.interpolatingSpring(_:initialVelocity:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -4060,7 +4054,7 @@ extension Animation {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _OverlayModifier : Swift::Equatable where Overlay : Swift::Equatable {
-  public static func == (a: _OverlayModifier<Overlay>, b: _OverlayModifier<Overlay>) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public static func == (a: _OverlayModifier<Overlay>, b: _OverlayModifier<Overlay>) -> Swift::Bool { _suiUnimplemented("SwiftUICore._OverlayModifier.==(a:b:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -4211,17 +4205,17 @@ package class AnyFontBox : @unchecked Swift::Sendable {
 extension Font {
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, visionOS 1.0, *)
   public struct Context : Swift::Hashable, Swift::Sendable {
-    public static func == (a: Font.Context, b: Font.Context) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Context.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.Context.hash(into:)") }
+    public static func == (a: Font.Context, b: Font.Context) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Font.Context.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Font.Context.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Context.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Font.Context.hashValue") }
     }
   }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension Font.Context : Swift::CustomDebugStringConvertible {
   public var debugDescription: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.debugDescription") }
+    get { _suiUnimplemented("SwiftUICore.Font.SwiftUICore.Context.debugDescription") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, visionOS 1.0, *)
@@ -4231,7 +4225,7 @@ extension Font.Context : Swift::CustomDebugStringConvertible {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var fontResolutionContext: Font.Context {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.fontResolutionContext") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.fontResolutionContext") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -4247,10 +4241,10 @@ public struct _ProposedSize : Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _ProposedSize : Swift::Hashable {
-  public static func == (a: _ProposedSize, b: _ProposedSize) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.hash(into:)") }
+  public static func == (a: _ProposedSize, b: _ProposedSize) -> Swift::Bool { _suiUnimplemented("SwiftUICore._ProposedSize.==(a:b:)") }
+  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore._ProposedSize.hash(into:)") }
   public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.hashValue") }
+    get { _suiUnimplemented("SwiftUICore._ProposedSize.hashValue") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -4288,13 +4282,13 @@ public static var switchControl: AccessibilityTechnologies { get { _suiUnimpleme
 extension AccessibilityTechnologies {
   @_silgen_name("$s7SwiftUI25AccessibilityTechnologiesV9voiceOverACvsZ")
   @usableFromInline
-  internal func _setAccessibilityTechnologiesVoiceOver(_ voiceOver: AccessibilityTechnologies) { _suiUnimplemented("SwiftUICore.SwiftUICore._setAccessibilityTechnologiesVoiceOver(_:)") }
+  internal func _setAccessibilityTechnologiesVoiceOver(_ voiceOver: AccessibilityTechnologies) { _suiUnimplemented("SwiftUICore.AccessibilityTechnologies._setAccessibilityTechnologiesVoiceOver(_:)") }
   @_silgen_name("$s7SwiftUI25AccessibilityTechnologiesV13switchControlACvsZ")
   @usableFromInline
-  internal func _setAccessibilityTechnologiesSwitchControl(_ voiceOver: AccessibilityTechnologies) { _suiUnimplemented("SwiftUICore.SwiftUICore._setAccessibilityTechnologiesSwitchControl(_:)") }
+  internal func _setAccessibilityTechnologiesSwitchControl(_ voiceOver: AccessibilityTechnologies) { _suiUnimplemented("SwiftUICore.AccessibilityTechnologies._setAccessibilityTechnologiesSwitchControl(_:)") }
   @_silgen_name("$s7SwiftUI25AccessibilityTechnologiesV18fullKeyboardAccessACvsZ")
   @usableFromInline
-  internal func _setAccessibilityTechnologiesFullKeyboardAccess(_ voiceOver: AccessibilityTechnologies) { _suiUnimplemented("SwiftUICore.SwiftUICore._setAccessibilityTechnologiesFullKeyboardAccess(_:)") }
+  internal func _setAccessibilityTechnologiesFullKeyboardAccess(_ voiceOver: AccessibilityTechnologies) { _suiUnimplemented("SwiftUICore.AccessibilityTechnologies._setAccessibilityTechnologiesFullKeyboardAccess(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -4451,13 +4445,13 @@ public struct ButtonSizing : Swift::Hashable, Swift::Sendable {
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension EnvironmentValues {
   public var buttonSizing: ButtonSizing {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.buttonSizing") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.buttonSizing") }
   }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func buttonSizing(_ sizing: ButtonSizing) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.buttonSizing(_:)") }
+nonisolated public func buttonSizing(_ sizing: ButtonSizing) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.buttonSizing(_:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -4466,7 +4460,7 @@ nonisolated public func buttonSizing(_ sizing: ButtonSizing) -> Swift.Never { _s
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AnyTransition {
-  public static func move(edge: Edge) -> AnyTransition { _suiUnimplemented("SwiftUICore.SwiftUICore.move(edge:)") }
+  public static func move(edge: Edge) -> AnyTransition { _suiUnimplemented("SwiftUICore.AnyTransition.move(edge:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -4605,15 +4599,15 @@ extension Color {
     case sRGB
     case sRGBLinear
     case displayP3
-    public static func == (a: Color.RGBColorSpace, b: Color.RGBColorSpace) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.RGBColorSpace.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.RGBColorSpace.hash(into:)") }
+    public static func == (a: Color.RGBColorSpace, b: Color.RGBColorSpace) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Color.RGBColorSpace.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Color.RGBColorSpace.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.RGBColorSpace.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Color.RGBColorSpace.hashValue") }
     }
   }
-  public init(_ colorSpace: Color.RGBColorSpace = .sRGB, red: Swift::Double, green: Swift::Double, blue: Swift::Double, opacity: Swift::Double = 1) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:red:green:blue:opacity:)") }
-  public init(_ colorSpace: Color.RGBColorSpace = .sRGB, white: Swift::Double, opacity: Swift::Double = 1) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:white:opacity:)") }
-  public init(hue: Swift::Double, saturation: Swift::Double, brightness: Swift::Double, opacity: Swift::Double = 1) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(hue:saturation:brightness:opacity:)") }
+  public init(_ colorSpace: Color.RGBColorSpace = .sRGB, red: Swift::Double, green: Swift::Double, blue: Swift::Double, opacity: Swift::Double = 1) { _suiUnimplemented("SwiftUICore.Color.init(_:red:green:blue:opacity:)") }
+  public init(_ colorSpace: Color.RGBColorSpace = .sRGB, white: Swift::Double, opacity: Swift::Double = 1) { _suiUnimplemented("SwiftUICore.Color.init(_:white:opacity:)") }
+  public init(hue: Swift::Double, saturation: Swift::Double, brightness: Swift::Double, opacity: Swift::Double = 1) { _suiUnimplemented("SwiftUICore.Color.init(hue:saturation:brightness:opacity:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -4672,7 +4666,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func blur(radius: CoreGraphics::CGFloat, opaque: Swift::Bool = false) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.blur(radius:opaque:)") }
+public func blur(radius: CoreGraphics::CGFloat, opaque: Swift::Bool = false) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.blur(radius:opaque:)") }
   
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -4703,8 +4697,6 @@ extension ArrangementViewStyle where Self == SplitArrangementViewStyle {
   @export(implementation) nonisolated public static var split: SplitArrangementViewStyle {
     get { .init() }
   }
-  // port: synthesized witness for ArrangementViewStyle (R7); Apple implements it with an internal member
-  public func makeBody(configuration: ArrangementViewStyleConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.makeBody(configuration:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(anyAppleOS 27.1, *)
@@ -4727,26 +4719,26 @@ nonisolated public struct SplitArrangementViewStyle : ArrangementViewStyle {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(anyAppleOS 27.1, *)
-  nonisolated public func splitArrangementLayoutRatio(_ ratio: CoreGraphics::CGFloat?) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.splitArrangementLayoutRatio(_:)") }
+  nonisolated public func splitArrangementLayoutRatio(_ ratio: CoreGraphics::CGFloat?) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.splitArrangementLayoutRatio(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(anyAppleOS 27.1, *)
-  nonisolated public func splitArrangementLayoutRatio(minHorizontal: CoreGraphics::CGFloat? = nil, idealHorizontal: CoreGraphics::CGFloat? = nil, maxHorizontal: CoreGraphics::CGFloat? = nil, minVertical: CoreGraphics::CGFloat? = nil, idealVertical: CoreGraphics::CGFloat? = nil, maxVertical: CoreGraphics::CGFloat? = nil) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.splitArrangementLayoutRatio(minHorizontal:idealHorizontal:maxHorizontal:minVertical:idealVertical:maxVertical:)") }
+  nonisolated public func splitArrangementLayoutRatio(minHorizontal: CoreGraphics::CGFloat? = nil, idealHorizontal: CoreGraphics::CGFloat? = nil, maxHorizontal: CoreGraphics::CGFloat? = nil, minVertical: CoreGraphics::CGFloat? = nil, idealVertical: CoreGraphics::CGFloat? = nil, maxVertical: CoreGraphics::CGFloat? = nil) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.splitArrangementLayoutRatio(minHorizontal:idealHorizontal:maxHorizontal:minVertical:idealVertical:maxVertical:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(anyAppleOS 27.1, *)
-  nonisolated public func splitArrangementLayoutSize(minWidth: CoreGraphics::CGFloat? = nil, idealWidth: CoreGraphics::CGFloat? = nil, maxWidth: CoreGraphics::CGFloat? = nil, minHeight: CoreGraphics::CGFloat? = nil, idealHeight: CoreGraphics::CGFloat? = nil, maxHeight: CoreGraphics::CGFloat? = nil) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.splitArrangementLayoutSize(minWidth:idealWidth:maxWidth:minHeight:idealHeight:maxHeight:)") }
+  nonisolated public func splitArrangementLayoutSize(minWidth: CoreGraphics::CGFloat? = nil, idealWidth: CoreGraphics::CGFloat? = nil, maxWidth: CoreGraphics::CGFloat? = nil, minHeight: CoreGraphics::CGFloat? = nil, idealHeight: CoreGraphics::CGFloat? = nil, maxHeight: CoreGraphics::CGFloat? = nil) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.splitArrangementLayoutSize(minWidth:idealWidth:maxWidth:minHeight:idealHeight:maxHeight:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(anyAppleOS 27.1, *)
-  nonisolated public func splitArrangementFixedLayoutSize(horizontal: Swift::Bool = true, vertical: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.splitArrangementFixedLayoutSize(horizontal:vertical:)") }
+  nonisolated public func splitArrangementFixedLayoutSize(horizontal: Swift::Bool = true, vertical: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.splitArrangementFixedLayoutSize(horizontal:vertical:)") }
   
 }
 extension EnvironmentValues {
   @available(anyAppleOS 27.1, *)
   public var splitArrangementAxis: Axis? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.splitArrangementAxis") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.splitArrangementAxis") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.splitArrangementAxis") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.splitArrangementAxis") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -4765,10 +4757,8 @@ nonisolated public protocol GeometryEffect : Animatable, ViewModifier where Self
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension GeometryEffect {
   public static var _affectsLayout: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._affectsLayout") }
+    get { _suiUnimplemented("SwiftUICore.GeometryEffect._affectsLayout") }
   }
-  // port: synthesized witness for GeometryEffect (R7); Apple implements it with an internal member
-  public nonisolated func effectValue(size: CoreGraphics::CGSize) -> ProjectionTransform { _suiUnimplemented("SwiftUICore.SwiftUICore.effectValue(size:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -4776,10 +4766,10 @@ extension GeometryEffect {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension GeometryEffect {
-  nonisolated public static func _makeView(modifier: _GraphValue<Self>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(modifier:inputs:body:)") }
-  nonisolated public static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(modifier:inputs:body:)") }
+  nonisolated public static func _makeView(modifier: _GraphValue<Self>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.GeometryEffect._makeView(modifier:inputs:body:)") }
+  nonisolated public static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.GeometryEffect._makeViewList(modifier:inputs:body:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:body:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUICore.GeometryEffect._viewListCount(inputs:body:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -4812,7 +4802,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Color {
   public var gradient: AnyGradient {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.gradient") }
+    get { _suiUnimplemented("SwiftUICore.Color.gradient") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -4976,30 +4966,30 @@ public struct ReservedRegion : Swift::Equatable, Swift::Hashable, Swift::Identif
 @available(anyAppleOS 27.1, *)
 extension ReservedRegion {
   public struct ID : Swift::Hashable, Swift::Sendable {
-    public static func == (a: ReservedRegion.ID, b: ReservedRegion.ID) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.ID.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.ID.hash(into:)") }
+    public static func == (a: ReservedRegion.ID, b: ReservedRegion.ID) -> Swift::Bool { _suiUnimplemented("SwiftUICore.ReservedRegion.ID.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.ReservedRegion.ID.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.ID.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.ReservedRegion.ID.hashValue") }
     }
   }
   public struct Kind : Swift::Hashable, Swift::Sendable {
     public static var occlusion: ReservedRegion.Kind {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Kind.occlusion") }
+      get { _suiUnimplemented("SwiftUICore.ReservedRegion.Kind.occlusion") }
     }
     public static var division: ReservedRegion.Kind {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Kind.division") }
+      get { _suiUnimplemented("SwiftUICore.ReservedRegion.Kind.division") }
     }
-    public static func == (a: ReservedRegion.Kind, b: ReservedRegion.Kind) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Kind.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.Kind.hash(into:)") }
+    public static func == (a: ReservedRegion.Kind, b: ReservedRegion.Kind) -> Swift::Bool { _suiUnimplemented("SwiftUICore.ReservedRegion.Kind.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.ReservedRegion.Kind.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Kind.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.ReservedRegion.Kind.hashValue") }
     }
   }
   @frozen public struct QueryOptions : Swift::OptionSet, Swift::Equatable, Swift::Hashable {
     public let rawValue: Swift::Int
-    public init(rawValue: Swift::Int) { _suiUnimplemented("SwiftUICore.SwiftUICore.QueryOptions.init(rawValue:)") }
+    public init(rawValue: Swift::Int) { _suiUnimplemented("SwiftUICore.ReservedRegion.QueryOptions.init(rawValue:)") }
     public static var includeInactive: ReservedRegion.QueryOptions {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.QueryOptions.includeInactive") }
+      get { _suiUnimplemented("SwiftUICore.ReservedRegion.QueryOptions.includeInactive") }
     }
     @available(anyAppleOS 27.1, *)
     public typealias ArrayLiteralElement = ReservedRegion.QueryOptions
@@ -5012,37 +5002,37 @@ extension ReservedRegion {
 @available(anyAppleOS 27.2, *)
 extension ReservedRegion.ID : Swift::CustomStringConvertible, Swift::CustomDebugStringConvertible, Swift::CustomReflectable {
   public var description: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.description") }
+    get { _suiUnimplemented("SwiftUICore.ReservedRegion.SwiftUICore.ID.description") }
   }
   public var debugDescription: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.debugDescription") }
+    get { _suiUnimplemented("SwiftUICore.ReservedRegion.SwiftUICore.ID.debugDescription") }
   }
   public var customMirror: Swift::Mirror {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.customMirror") }
+    get { _suiUnimplemented("SwiftUICore.ReservedRegion.SwiftUICore.ID.customMirror") }
   }
 }
 @available(anyAppleOS 27.2, *)
 extension ReservedRegion.Kind : Swift::CustomStringConvertible, Swift::CustomDebugStringConvertible, Swift::CustomReflectable {
   public var description: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.description") }
+    get { _suiUnimplemented("SwiftUICore.ReservedRegion.SwiftUICore.Kind.description") }
   }
   public var debugDescription: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.debugDescription") }
+    get { _suiUnimplemented("SwiftUICore.ReservedRegion.SwiftUICore.Kind.debugDescription") }
   }
   public var customMirror: Swift::Mirror {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.customMirror") }
+    get { _suiUnimplemented("SwiftUICore.ReservedRegion.SwiftUICore.Kind.customMirror") }
   }
 }
 @available(anyAppleOS 27.2, *)
 extension ReservedRegion : Swift::CustomStringConvertible, Swift::CustomDebugStringConvertible, Swift::CustomReflectable {
   public var description: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.description") }
+    get { _suiUnimplemented("SwiftUICore.ReservedRegion.description") }
   }
   public var debugDescription: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.debugDescription") }
+    get { _suiUnimplemented("SwiftUICore.ReservedRegion.debugDescription") }
   }
   public var customMirror: Swift::Mirror {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.customMirror") }
+    get { _suiUnimplemented("SwiftUICore.ReservedRegion.customMirror") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -5119,7 +5109,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func grayscale(_ amount: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.grayscale(_:)") }
+public func grayscale(_ amount: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.grayscale(_:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -5153,7 +5143,7 @@ extension Anchor : Swift::Sendable where Value : Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Anchor : Swift::Equatable where Value : Swift::Equatable {
-  public static func == (lhs: Anchor<Value>, rhs: Anchor<Value>) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(lhs:rhs:)") }
+  public static func == (lhs: Anchor<Value>, rhs: Anchor<Value>) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Anchor.==(lhs:rhs:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -5161,9 +5151,9 @@ extension Anchor : Swift::Equatable where Value : Swift::Equatable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Anchor : Swift::Hashable where Value : Swift::Hashable {
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.hash(into:)") }
+  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Anchor.hash(into:)") }
   public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.hashValue") }
+    get { _suiUnimplemented("SwiftUICore.Anchor.hashValue") }
   }
 }
 @_hasMissingDesignatedInitializers @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -5206,7 +5196,7 @@ extension AnchorValueBoxBase : @unchecked Swift::Sendable where T : Swift::Senda
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Anchor.Source {
-  public init<T>(_ array: [Anchor<T>.Source]) where Value == [T] { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  public init<T>(_ array: [Anchor<T>.Source]) where Value == [T] { _suiUnimplemented("SwiftUICore.Anchor.SwiftUICore.Source.init(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -5214,7 +5204,7 @@ extension Anchor.Source {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Anchor.Source {
-  public init<T>(_ anchor: Anchor<T>.Source?) where Value == T? { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  public init<T>(_ anchor: Anchor<T>.Source?) where Value == T? { _suiUnimplemented("SwiftUICore.Anchor.SwiftUICore.Source.init(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -5265,7 +5255,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func rotation3DEffect(_ angle: Angle, axis: (x: CoreGraphics::CGFloat, y: CoreGraphics::CGFloat, z: CoreGraphics::CGFloat), anchor: UnitPoint = .center, anchorZ: CoreGraphics::CGFloat = 0, perspective: CoreGraphics::CGFloat = 1) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.rotation3DEffect(_:axis:anchor:anchorZ:perspective:)") }
+public func rotation3DEffect(_ angle: Angle, axis: (x: CoreGraphics::CGFloat, y: CoreGraphics::CGFloat, z: CoreGraphics::CGFloat), anchor: UnitPoint = .center, anchorZ: CoreGraphics::CGFloat = 0, perspective: CoreGraphics::CGFloat = 1) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.rotation3DEffect(_:axis:anchor:anchorZ:perspective:)") }
   
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -5361,7 +5351,7 @@ public struct _HoverEffectContentOutputs {
 @available(watchOS, unavailable)
 @available(tvOS, unavailable)
 extension ModifiedContent : HoverEffectContent where Content : HoverEffectContent, Modifier : HoverEffectContent {
-  public static func _makeHoverEffectContent(effect: _GraphValue<ModifiedContent<Content, Modifier>>, inputs: _HoverEffectContentInputs, body: @escaping (_HoverEffectContentInputs) -> _HoverEffectContentOutputs) -> _HoverEffectContentOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeHoverEffectContent(effect:inputs:body:)") }
+  public static func _makeHoverEffectContent(effect: _GraphValue<ModifiedContent<Content, Modifier>>, inputs: _HoverEffectContentInputs, body: @escaping (_HoverEffectContentInputs) -> _HoverEffectContentOutputs) -> _HoverEffectContentOutputs { _suiUnimplemented("SwiftUICore.ModifiedContent._makeHoverEffectContent(effect:inputs:body:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -5401,7 +5391,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func opacity(_ opacity: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.opacity(_:)") }
+public func opacity(_ opacity: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.opacity(_:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -5411,7 +5401,7 @@ public func opacity(_ opacity: Swift::Double) -> Swift.Never { _suiUnimplemented
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AnyTransition {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-nonisolated(unsafe) public static var opacity: AnyTransition { get { _suiUnimplemented("SwiftUICore.SwiftUICore.opacity") } }
+nonisolated(unsafe) public static var opacity: AnyTransition { get { _suiUnimplemented("SwiftUICore.AnyTransition.opacity") } }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -5652,7 +5642,7 @@ nonisolated public struct _DrawingGroupEffect : ViewModifier, Swift::Equatable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func drawingGroup(opaque: Swift::Bool = false, colorMode: ColorRenderingMode = .nonLinear) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.drawingGroup(opaque:colorMode:)") }
+nonisolated public func drawingGroup(opaque: Swift::Bool = false, colorMode: ColorRenderingMode = .nonLinear) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.drawingGroup(opaque:colorMode:)") }
   
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 8.0, *)
@@ -5662,8 +5652,8 @@ nonisolated public func drawingGroup(opaque: Swift::Bool = false, colorMode: Col
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var isLuminanceReduced: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.isLuminanceReduced") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.isLuminanceReduced") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.isLuminanceReduced") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.isLuminanceReduced") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -5704,7 +5694,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func brightness(_ amount: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.brightness(_:)") }
+public func brightness(_ amount: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.brightness(_:)") }
   
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -5737,7 +5727,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AnyTransition {
-  public static func asymmetric(insertion: AnyTransition, removal: AnyTransition) -> AnyTransition { _suiUnimplemented("SwiftUICore.SwiftUICore.asymmetric(insertion:removal:)") }
+  public static func asymmetric(insertion: AnyTransition, removal: AnyTransition) -> AnyTransition { _suiUnimplemented("SwiftUICore.AnyTransition.asymmetric(insertion:removal:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -5781,34 +5771,34 @@ nonisolated public struct AsymmetricTransition<Insertion, Removal> : Transition 
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Anchor.Source where Value == CoreGraphics::CGPoint {
-  public static func point(_ p: CoreGraphics::CGPoint) -> Anchor<Value>.Source { _suiUnimplemented("SwiftUICore.SwiftUICore.point(_:)") }
-  public static func unitPoint(_ p: UnitPoint) -> Anchor<Value>.Source { _suiUnimplemented("SwiftUICore.SwiftUICore.unitPoint(_:)") }
+  public static func point(_ p: CoreGraphics::CGPoint) -> Anchor<Value>.Source { _suiUnimplemented("SwiftUICore.Anchor.SwiftUICore.Source.point(_:)") }
+  public static func unitPoint(_ p: UnitPoint) -> Anchor<Value>.Source { _suiUnimplemented("SwiftUICore.Anchor.SwiftUICore.Source.unitPoint(_:)") }
   public static var topLeading: Anchor<CoreGraphics::CGPoint>.Source {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.topLeading") }
+    get { _suiUnimplemented("SwiftUICore.Anchor.SwiftUICore.Source.topLeading") }
   }
   public static var top: Anchor<CoreGraphics::CGPoint>.Source {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.top") }
+    get { _suiUnimplemented("SwiftUICore.Anchor.SwiftUICore.Source.top") }
   }
   public static var topTrailing: Anchor<CoreGraphics::CGPoint>.Source {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.topTrailing") }
+    get { _suiUnimplemented("SwiftUICore.Anchor.SwiftUICore.Source.topTrailing") }
   }
   public static var leading: Anchor<CoreGraphics::CGPoint>.Source {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.leading") }
+    get { _suiUnimplemented("SwiftUICore.Anchor.SwiftUICore.Source.leading") }
   }
   public static var center: Anchor<CoreGraphics::CGPoint>.Source {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.center") }
+    get { _suiUnimplemented("SwiftUICore.Anchor.SwiftUICore.Source.center") }
   }
   public static var trailing: Anchor<CoreGraphics::CGPoint>.Source {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.trailing") }
+    get { _suiUnimplemented("SwiftUICore.Anchor.SwiftUICore.Source.trailing") }
   }
   public static var bottomLeading: Anchor<CoreGraphics::CGPoint>.Source {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.bottomLeading") }
+    get { _suiUnimplemented("SwiftUICore.Anchor.SwiftUICore.Source.bottomLeading") }
   }
   public static var bottom: Anchor<CoreGraphics::CGPoint>.Source {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.bottom") }
+    get { _suiUnimplemented("SwiftUICore.Anchor.SwiftUICore.Source.bottom") }
   }
   public static var bottomTrailing: Anchor<CoreGraphics::CGPoint>.Source {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.bottomTrailing") }
+    get { _suiUnimplemented("SwiftUICore.Anchor.SwiftUICore.Source.bottomTrailing") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -5957,7 +5947,7 @@ extension ViewBuilder {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentObject {
   nonisolated public static var _propertyBehaviors: Swift::UInt32 {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._propertyBehaviors") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentObject._propertyBehaviors") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -5979,7 +5969,7 @@ extension View {
 extension Combine::ObservableObject {
   @usableFromInline
   package static var environmentStore: Swift::WritableKeyPath<EnvironmentValues, Self?> {
-    get { _suiUnimplemented("SwiftUICore.Combine.environmentStore") }
+    get { _suiUnimplemented("SwiftUICore.ObservableObject.environmentStore") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -6035,7 +6025,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _MaskEffect : Swift::Equatable where Mask : Swift::Equatable {
-  public static func == (a: _MaskEffect<Mask>, b: _MaskEffect<Mask>) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public static func == (a: _MaskEffect<Mask>, b: _MaskEffect<Mask>) -> Swift::Bool { _suiUnimplemented("SwiftUICore._MaskEffect.==(a:b:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -6121,10 +6111,10 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
-  nonisolated public static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(view:inputs:)") }
-  nonisolated public static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(view:inputs:)") }
+  nonisolated public static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.View._makeView(view:inputs:)") }
+  nonisolated public static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.View._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.View._viewListCount(inputs:)") }
 }
 extension Swift::Comparable {
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -6245,7 +6235,7 @@ extension CoreGraphics::CGSize {
 @available(watchOS, unavailable)
 extension CustomHoverEffect where Self == AutomaticHoverEffect {
   nonisolated public static var automatic: AutomaticHoverEffect {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.automatic") }
+    get { _suiUnimplemented("SwiftUICore.CustomHoverEffect.automatic") }
   }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -6279,7 +6269,7 @@ public struct AutomaticHoverEffect : CustomHoverEffect {
 @available(watchOS, unavailable)
 extension CustomHoverEffect where Self == HighlightHoverEffect {
   public static var highlight: HighlightHoverEffect {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.highlight") }
+    get { _suiUnimplemented("SwiftUICore.CustomHoverEffect.highlight") }
   }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -6313,7 +6303,7 @@ public struct HighlightHoverEffect : CustomHoverEffect {
 @available(watchOS, unavailable)
 extension CustomHoverEffect where Self == LiftHoverEffect {
   public static var lift: LiftHoverEffect {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.lift") }
+    get { _suiUnimplemented("SwiftUICore.CustomHoverEffect.lift") }
   }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -6353,9 +6343,7 @@ public protocol DepthAlignmentID {
 @available(watchOS, unavailable)
 @available(tvOS, unavailable)
 extension DepthAlignmentID {
-  public static func _combineExplicit(childValue: CoreGraphics::CGFloat, _ n: Swift::Int, into parentValue: inout CoreGraphics::CGFloat?) { _suiUnimplemented("SwiftUICore.SwiftUICore._combineExplicit(childValue:_:into:)") }
-  // port: synthesized witness for DepthAlignmentID (R7); Apple implements it with an internal member
-  public static func defaultValue(in context: ViewDimensions3D) -> CoreGraphics::CGFloat { _suiUnimplemented("SwiftUICore.SwiftUICore.defaultValue(in:)") }
+  public static func _combineExplicit(childValue: CoreGraphics::CGFloat, _ n: Swift::Int, into parentValue: inout CoreGraphics::CGFloat?) { _suiUnimplemented("SwiftUICore.DepthAlignmentID._combineExplicit(childValue:_:into:)") }
 }
 @available(visionOS 1.0, *)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 1.0)
@@ -6383,11 +6371,11 @@ extension DepthAlignmentID {
 @available(tvOS, unavailable)
 extension DepthAlignment {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var front: DepthAlignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.front") } }
+public static var front: DepthAlignment { get { _suiUnimplemented("SwiftUICore.DepthAlignment.front") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var center: DepthAlignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.center") } }
+public static var center: DepthAlignment { get { _suiUnimplemented("SwiftUICore.DepthAlignment.center") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var back: DepthAlignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.back") } }
+public static var back: DepthAlignment { get { _suiUnimplemented("SwiftUICore.DepthAlignment.back") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -6586,10 +6574,10 @@ public protocol _FormatSpecifiable : Swift::Equatable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::Int : _FormatSpecifiable {
   public var _arg: Swift::Int64 {
-    get { _suiUnimplemented("SwiftUICore.Swift._arg") }
+    get { _suiUnimplemented("SwiftUICore.Int._arg") }
   }
   public var _specifier: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.Swift._specifier") }
+    get { _suiUnimplemented("SwiftUICore.Int._specifier") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6599,10 +6587,10 @@ extension Swift::Int : _FormatSpecifiable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::Int8 : _FormatSpecifiable {
   public var _arg: Swift::Int32 {
-    get { _suiUnimplemented("SwiftUICore.Swift._arg") }
+    get { _suiUnimplemented("SwiftUICore.Int8._arg") }
   }
   public var _specifier: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.Swift._specifier") }
+    get { _suiUnimplemented("SwiftUICore.Int8._specifier") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6612,10 +6600,10 @@ extension Swift::Int8 : _FormatSpecifiable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::Int16 : _FormatSpecifiable {
   public var _arg: Swift::Int32 {
-    get { _suiUnimplemented("SwiftUICore.Swift._arg") }
+    get { _suiUnimplemented("SwiftUICore.Int16._arg") }
   }
   public var _specifier: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.Swift._specifier") }
+    get { _suiUnimplemented("SwiftUICore.Int16._specifier") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6625,10 +6613,10 @@ extension Swift::Int16 : _FormatSpecifiable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::Int32 : _FormatSpecifiable {
   public var _arg: Swift::Int32 {
-    get { _suiUnimplemented("SwiftUICore.Swift._arg") }
+    get { _suiUnimplemented("SwiftUICore.Int32._arg") }
   }
   public var _specifier: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.Swift._specifier") }
+    get { _suiUnimplemented("SwiftUICore.Int32._specifier") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6638,10 +6626,10 @@ extension Swift::Int32 : _FormatSpecifiable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::Int64 : _FormatSpecifiable {
   public var _arg: Swift::Int64 {
-    get { _suiUnimplemented("SwiftUICore.Swift._arg") }
+    get { _suiUnimplemented("SwiftUICore.Int64._arg") }
   }
   public var _specifier: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.Swift._specifier") }
+    get { _suiUnimplemented("SwiftUICore.Int64._specifier") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6651,10 +6639,10 @@ extension Swift::Int64 : _FormatSpecifiable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::UInt : _FormatSpecifiable {
   public var _arg: Swift::UInt64 {
-    get { _suiUnimplemented("SwiftUICore.Swift._arg") }
+    get { _suiUnimplemented("SwiftUICore.UInt._arg") }
   }
   public var _specifier: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.Swift._specifier") }
+    get { _suiUnimplemented("SwiftUICore.UInt._specifier") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6664,10 +6652,10 @@ extension Swift::UInt : _FormatSpecifiable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::UInt8 : _FormatSpecifiable {
   public var _arg: Swift::UInt32 {
-    get { _suiUnimplemented("SwiftUICore.Swift._arg") }
+    get { _suiUnimplemented("SwiftUICore.UInt8._arg") }
   }
   public var _specifier: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.Swift._specifier") }
+    get { _suiUnimplemented("SwiftUICore.UInt8._specifier") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6677,10 +6665,10 @@ extension Swift::UInt8 : _FormatSpecifiable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::UInt16 : _FormatSpecifiable {
   public var _arg: Swift::UInt32 {
-    get { _suiUnimplemented("SwiftUICore.Swift._arg") }
+    get { _suiUnimplemented("SwiftUICore.UInt16._arg") }
   }
   public var _specifier: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.Swift._specifier") }
+    get { _suiUnimplemented("SwiftUICore.UInt16._specifier") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6690,10 +6678,10 @@ extension Swift::UInt16 : _FormatSpecifiable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::UInt32 : _FormatSpecifiable {
   public var _arg: Swift::UInt32 {
-    get { _suiUnimplemented("SwiftUICore.Swift._arg") }
+    get { _suiUnimplemented("SwiftUICore.UInt32._arg") }
   }
   public var _specifier: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.Swift._specifier") }
+    get { _suiUnimplemented("SwiftUICore.UInt32._specifier") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6703,10 +6691,10 @@ extension Swift::UInt32 : _FormatSpecifiable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::UInt64 : _FormatSpecifiable {
   public var _arg: Swift::UInt64 {
-    get { _suiUnimplemented("SwiftUICore.Swift._arg") }
+    get { _suiUnimplemented("SwiftUICore.UInt64._arg") }
   }
   public var _specifier: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.Swift._specifier") }
+    get { _suiUnimplemented("SwiftUICore.UInt64._specifier") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6716,10 +6704,10 @@ extension Swift::UInt64 : _FormatSpecifiable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::Float : _FormatSpecifiable {
   public var _arg: Swift::Float {
-    get { _suiUnimplemented("SwiftUICore.Swift._arg") }
+    get { _suiUnimplemented("SwiftUICore.Float._arg") }
   }
   public var _specifier: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.Swift._specifier") }
+    get { _suiUnimplemented("SwiftUICore.Float._specifier") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6729,10 +6717,10 @@ extension Swift::Float : _FormatSpecifiable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::Double : _FormatSpecifiable {
   public var _arg: Swift::Double {
-    get { _suiUnimplemented("SwiftUICore.Swift._arg") }
+    get { _suiUnimplemented("SwiftUICore.Double._arg") }
   }
   public var _specifier: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.Swift._specifier") }
+    get { _suiUnimplemented("SwiftUICore.Double._specifier") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6742,10 +6730,10 @@ extension Swift::Double : _FormatSpecifiable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension CoreGraphics::CGFloat : _FormatSpecifiable {
   public var _arg: CoreGraphics::CGFloat {
-    get { _suiUnimplemented("SwiftUICore.CoreGraphics._arg") }
+    get { _suiUnimplemented("SwiftUICore.CGFloat._arg") }
   }
   public var _specifier: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.CoreGraphics._specifier") }
+    get { _suiUnimplemented("SwiftUICore.CGFloat._specifier") }
   }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -6809,8 +6797,6 @@ extension TextSelectability where Self == EnabledTextSelectability {
   @export(implementation) public static var enabled: EnabledTextSelectability {
     get { .init() }
   }
-  // port: synthesized witness for TextSelectability (R7); Apple implements it with an internal member
-  public static var allowsSelection: Swift::Bool { get { _suiUnimplemented("SwiftUICore.SwiftUICore.allowsSelection") } }
 }
 @available(iOS 15.0, macOS 12.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -6877,7 +6863,7 @@ public struct DisabledTextSelectability : TextSelectability {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text {
   @available(iOS 16.0, macOS 13, tvOS 16.0, watchOS 9.0, *)
-  @_disfavoredOverload public init(_ resource: FoundationShims.LocalizedStringResource) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  @_disfavoredOverload public init(_ resource: FoundationShims.LocalizedStringResource) { _suiUnimplemented("SwiftUICore.Text.init(_:)") }
 }
 @available(iOS 16.0, macOS 13, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -6980,10 +6966,10 @@ public struct ViewDimensions3D {
 @available(tvOS, unavailable)
 extension ViewDimensions3D {
   public subscript(guide: DepthAlignment) -> CoreGraphics::CGFloat {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.subscript(guide:)") }
+    get { _suiUnimplemented("SwiftUICore.ViewDimensions3D.subscript(guide:)") }
   }
   public subscript(explicit guide: DepthAlignment) -> CoreGraphics::CGFloat? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.subscript(explicit:)") }
+    get { _suiUnimplemented("SwiftUICore.ViewDimensions3D.subscript(explicit:)") }
   }
 }
 @available(visionOS 1.0, *)
@@ -6991,7 +6977,7 @@ extension ViewDimensions3D {
 @available(watchOS, unavailable)
 @available(tvOS, unavailable)
 extension ViewDimensions3D : Swift::Equatable {
-  public static func == (lhs: ViewDimensions3D, rhs: ViewDimensions3D) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(lhs:rhs:)") }
+  public static func == (lhs: ViewDimensions3D, rhs: ViewDimensions3D) -> Swift::Bool { _suiUnimplemented("SwiftUICore.ViewDimensions3D.==(lhs:rhs:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -7132,7 +7118,7 @@ public protocol Keyframes<Value> {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Keyframes where Self.Value == Self.Body.Value {
-  public func _resolve(into resolved: inout _ResolvedKeyframes<Self.Value>, initialValue: Self.Value, initialVelocity: Self.Value?) { _suiUnimplemented("SwiftUICore.SwiftUICore._resolve(into:initialValue:initialVelocity:)") }
+  public func _resolve(into resolved: inout _ResolvedKeyframes<Self.Value>, initialValue: Self.Value, initialVelocity: Self.Value?) { _suiUnimplemented("SwiftUICore.Keyframes._resolve(into:initialValue:initialVelocity:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -7140,7 +7126,7 @@ extension Keyframes where Self.Value == Self.Body.Value {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::Never : Keyframes {
-  public func _resolve(into resolved: inout _ResolvedKeyframes<Swift::Never>, initialValue: Swift::Never, initialVelocity: Swift::Never?) { _suiUnimplemented("SwiftUICore.Swift._resolve(into:initialValue:initialVelocity:)") }
+  public func _resolve(into resolved: inout _ResolvedKeyframes<Swift::Never>, initialValue: Swift::Never, initialVelocity: Swift::Never?) { _suiUnimplemented("SwiftUICore.Never._resolve(into:initialValue:initialVelocity:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -7323,7 +7309,7 @@ public struct AccessibilityCustomContentKey {
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension AccessibilityCustomContentKey : Swift::Equatable {
-  public static func == (a: AccessibilityCustomContentKey, b: AccessibilityCustomContentKey) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public static func == (a: AccessibilityCustomContentKey, b: AccessibilityCustomContentKey) -> Swift::Bool { _suiUnimplemented("SwiftUICore.AccessibilityCustomContentKey.==(a:b:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -7396,7 +7382,7 @@ extension Shape {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Gesture {
-  nonisolated public func onEnded(_ action: @escaping (Self.Value) -> Swift::Void) -> _EndedGesture<Self> { _suiUnimplemented("SwiftUICore.SwiftUICore.onEnded(_:)") }
+  nonisolated public func onEnded(_ action: @escaping (Self.Value) -> Swift::Void) -> _EndedGesture<Self> { _suiUnimplemented("SwiftUICore.Gesture.onEnded(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -7404,7 +7390,7 @@ extension Gesture {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Gesture where Self.Value : Swift::Equatable {
-  nonisolated public func onChanged(_ action: @escaping (Self.Value) -> Swift::Void) -> _ChangedGesture<Self> { _suiUnimplemented("SwiftUICore.SwiftUICore.onChanged(_:)") }
+  nonisolated public func onChanged(_ action: @escaping (Self.Value) -> Swift::Void) -> _ChangedGesture<Self> { _suiUnimplemented("SwiftUICore.Gesture.onChanged(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -7482,10 +7468,10 @@ public struct Glass : Swift::Equatable, Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text : View {
-  nonisolated public static func _makeView(view: _GraphValue<Text>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(view:inputs:)") }
-  nonisolated public static func _makeViewList(view: _GraphValue<Text>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(view:inputs:)") }
+  nonisolated public static func _makeView(view: _GraphValue<Text>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.Text._makeView(view:inputs:)") }
+  nonisolated public static func _makeViewList(view: _GraphValue<Text>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.Text._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.Text._viewListCount(inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
 }
@@ -7563,9 +7549,9 @@ extension View {
 @available(watchOS, unavailable)
 @available(tvOS, unavailable)
 extension Spatial::Size3D : VectorArithmetic {
-  public mutating func scale(by factor: Swift::Double) { _suiUnimplemented("SwiftUICore.Spatial.scale(by:)") }
+  public mutating func scale(by factor: Swift::Double) { _suiUnimplemented("SwiftUICore.Size3D.scale(by:)") }
   public var magnitudeSquared: Swift::Double {
-    get { _suiUnimplemented("SwiftUICore.Spatial.magnitudeSquared") }
+    get { _suiUnimplemented("SwiftUICore.Size3D.magnitudeSquared") }
   }
 }
 @available(visionOS 1.0, *)
@@ -7574,8 +7560,8 @@ extension Spatial::Size3D : VectorArithmetic {
 @available(tvOS, unavailable)
 extension Spatial::Size3D : Animatable {
   public var animatableData: Spatial::Vector3D {
-    get { _suiUnimplemented("SwiftUICore.Spatial.animatableData") }
-    set { _suiUnimplemented("SwiftUICore.Spatial.animatableData") }
+    get { _suiUnimplemented("SwiftUICore.Size3D.animatableData") }
+    set { _suiUnimplemented("SwiftUICore.Size3D.animatableData") }
   }
   @available(visionOS 1.0, *)
     @available(iOS, unavailable, introduced: 16.0)
@@ -7615,9 +7601,7 @@ public protocol AXChartDescriptorRepresentable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AXChartDescriptorRepresentable {
-  public func updateChartDescriptor(_ descriptor: Accessibility::AXChartDescriptor) { _suiUnimplemented("SwiftUICore.SwiftUICore.updateChartDescriptor(_:)") }
-  // port: synthesized witness for AXChartDescriptorRepresentable (R7); Apple implements it with an internal member
-  public func makeChartDescriptor() -> Accessibility::AXChartDescriptor { _suiUnimplemented("SwiftUICore.SwiftUICore.makeChartDescriptor()") }
+  public func updateChartDescriptor(_ descriptor: Accessibility::AXChartDescriptor) { _suiUnimplemented("SwiftUICore.AXChartDescriptorRepresentable.updateChartDescriptor(_:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -7626,25 +7610,25 @@ extension AXChartDescriptorRepresentable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text {
   public struct LineStyle : Swift::Hashable, Swift::Sendable {
-    public init(pattern: Text.LineStyle.Pattern = .solid, color: Color? = nil) { _suiUnimplemented("SwiftUICore.SwiftUICore.LineStyle.init(pattern:color:)") }
+    public init(pattern: Text.LineStyle.Pattern = .solid, color: Color? = nil) { _suiUnimplemented("SwiftUICore.Text.LineStyle.init(pattern:color:)") }
     public struct Pattern : Swift::Sendable {
             // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var solid: Text.LineStyle.Pattern { get { _suiUnimplemented("SwiftUICore.SwiftUICore.LineStyle.Pattern.solid") } }
+public static var solid: Text.LineStyle.Pattern { get { _suiUnimplemented("SwiftUICore.Text.LineStyle.Pattern.solid") } }
             // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var dot: Text.LineStyle.Pattern { get { _suiUnimplemented("SwiftUICore.SwiftUICore.LineStyle.Pattern.dot") } }
+public static var dot: Text.LineStyle.Pattern { get { _suiUnimplemented("SwiftUICore.Text.LineStyle.Pattern.dot") } }
             // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var dash: Text.LineStyle.Pattern { get { _suiUnimplemented("SwiftUICore.SwiftUICore.LineStyle.Pattern.dash") } }
+public static var dash: Text.LineStyle.Pattern { get { _suiUnimplemented("SwiftUICore.Text.LineStyle.Pattern.dash") } }
             // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var dashDot: Text.LineStyle.Pattern { get { _suiUnimplemented("SwiftUICore.SwiftUICore.LineStyle.Pattern.dashDot") } }
+public static var dashDot: Text.LineStyle.Pattern { get { _suiUnimplemented("SwiftUICore.Text.LineStyle.Pattern.dashDot") } }
             // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var dashDotDot: Text.LineStyle.Pattern { get { _suiUnimplemented("SwiftUICore.SwiftUICore.LineStyle.Pattern.dashDotDot") } }
+public static var dashDotDot: Text.LineStyle.Pattern { get { _suiUnimplemented("SwiftUICore.Text.LineStyle.Pattern.dashDotDot") } }
     }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var single: Text.LineStyle { get { _suiUnimplemented("SwiftUICore.SwiftUICore.LineStyle.single") } }
-    public static func == (a: Text.LineStyle, b: Text.LineStyle) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.LineStyle.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.LineStyle.hash(into:)") }
+public static var single: Text.LineStyle { get { _suiUnimplemented("SwiftUICore.Text.LineStyle.single") } }
+    public static func == (a: Text.LineStyle, b: Text.LineStyle) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Text.LineStyle.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Text.LineStyle.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.LineStyle.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Text.LineStyle.hashValue") }
     }
   }
 }
@@ -7656,11 +7640,11 @@ public static var single: Text.LineStyle { get { _suiUnimplemented("SwiftUICore.
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func underline(_ isActive: Swift::Bool = true, pattern: Text.LineStyle.Pattern = .solid, color: Color? = nil) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.underline(_:pattern:color:)") }
+  nonisolated public func underline(_ isActive: Swift::Bool = true, pattern: Text.LineStyle.Pattern = .solid, color: Color? = nil) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.underline(_:pattern:color:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func strikethrough(_ isActive: Swift::Bool = true, pattern: Text.LineStyle.Pattern = .solid, color: Color? = nil) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.strikethrough(_:pattern:color:)") }
+  nonisolated public func strikethrough(_ isActive: Swift::Bool = true, pattern: Text.LineStyle.Pattern = .solid, color: Color? = nil) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.strikethrough(_:pattern:color:)") }
   
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -7669,10 +7653,10 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 27.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
 extension Text {
-  public func speechAlwaysIncludesPunctuation(_ value: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.speechAlwaysIncludesPunctuation(_:)") }
-  public func speechSpellsOutCharacters(_ value: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.speechSpellsOutCharacters(_:)") }
-  public func speechAdjustedPitch(_ value: Swift::Double) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.speechAdjustedPitch(_:)") }
-  public func speechAnnouncementsQueued(_ value: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.speechAnnouncementsQueued(_:)") }
+  public func speechAlwaysIncludesPunctuation(_ value: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.Text.speechAlwaysIncludesPunctuation(_:)") }
+  public func speechSpellsOutCharacters(_ value: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.Text.speechSpellsOutCharacters(_:)") }
+  public func speechAdjustedPitch(_ value: Swift::Double) -> Text { _suiUnimplemented("SwiftUICore.Text.speechAdjustedPitch(_:)") }
+  public func speechAnnouncementsQueued(_ value: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.Text.speechAnnouncementsQueued(_:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
@@ -7681,16 +7665,16 @@ extension Text {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func speechAlwaysIncludesPunctuation(_ value: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.speechAlwaysIncludesPunctuation(_:)") }
+nonisolated public func speechAlwaysIncludesPunctuation(_ value: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.speechAlwaysIncludesPunctuation(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func speechSpellsOutCharacters(_ value: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.speechSpellsOutCharacters(_:)") }
+nonisolated public func speechSpellsOutCharacters(_ value: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.speechSpellsOutCharacters(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func speechAdjustedPitch(_ value: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.speechAdjustedPitch(_:)") }
+nonisolated public func speechAdjustedPitch(_ value: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.speechAdjustedPitch(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func speechAnnouncementsQueued(_ value: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.speechAnnouncementsQueued(_:)") }
+nonisolated public func speechAnnouncementsQueued(_ value: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.speechAnnouncementsQueued(_:)") }
   
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -7751,7 +7735,7 @@ public protocol TransactionKey {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension TransactionKey {
-  public static func _valuesEqual(_ lhs: Self.Value, _ rhs: Self.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore._valuesEqual(_:_:)") }
+  public static func _valuesEqual(_ lhs: Self.Value, _ rhs: Self.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.TransactionKey._valuesEqual(_:_:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -7759,7 +7743,7 @@ extension TransactionKey {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension TransactionKey where Self.Value : Swift::Equatable {
-  public static func _valuesEqual(_ lhs: Self.Value, _ rhs: Self.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore._valuesEqual(_:_:)") }
+  public static func _valuesEqual(_ lhs: Self.Value, _ rhs: Self.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.TransactionKey._valuesEqual(_:_:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -7767,7 +7751,7 @@ extension TransactionKey where Self.Value : Swift::Equatable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension TransactionKey where Self : EnvironmentKey, Self.Value : Swift::Equatable {
-  public static func _valuesEqual(_ lhs: Self.Value, _ rhs: Self.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore._valuesEqual(_:_:)") }
+  public static func _valuesEqual(_ lhs: Self.Value, _ rhs: Self.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.TransactionKey._valuesEqual(_:_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -7948,7 +7932,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-@preconcurrency nonisolated public func onGeometryChange<T>(for type: T.Type, of transform: @escaping @Sendable (GeometryProxy) -> T, action: @escaping (_ oldValue: T, _ newValue: T) -> Swift::Void) -> Swift.Never where T : Swift::Equatable, T : Swift::Sendable { _suiUnimplemented("SwiftUICore.SwiftUICore.onGeometryChange(for:of:action:)") }
+@preconcurrency nonisolated public func onGeometryChange<T>(for type: T.Type, of transform: @escaping @Sendable (GeometryProxy) -> T, action: @escaping (_ oldValue: T, _ newValue: T) -> Swift::Void) -> Swift.Never where T : Swift::Equatable, T : Swift::Sendable { _suiUnimplemented("SwiftUICore.View.onGeometryChange(for:of:action:)") }
   
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -7981,10 +7965,10 @@ public static var placeholder: RedactionReasons { get { _suiUnimplemented("Swift
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func redacted(reason: RedactionReasons) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.redacted(reason:)") }
+nonisolated public func redacted(reason: RedactionReasons) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.redacted(reason:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func unredacted() -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.unredacted()") }
+nonisolated public func unredacted() -> Swift.Never { _suiUnimplemented("SwiftUICore.View.unredacted()") }
   
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -7994,8 +7978,8 @@ nonisolated public func unredacted() -> Swift.Never { _suiUnimplemented("SwiftUI
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var redactionReasons: RedactionReasons {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.redactionReasons") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.redactionReasons") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.redactionReasons") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.redactionReasons") }
   }
 }
 @available(iOS 15.0, macOS 10.15, tvOS 15.0, visionOS 1.0, watchOS 9.0, *)
@@ -8024,7 +8008,7 @@ public enum ControlSize : Swift::CaseIterable, Swift::Sendable {
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension ControlSize : Swift::Comparable {
-  public static func < (lhs: ControlSize, rhs: ControlSize) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.<(lhs:rhs:)") }
+  public static func < (lhs: ControlSize, rhs: ControlSize) -> Swift::Bool { _suiUnimplemented("SwiftUICore.ControlSize.<(lhs:rhs:)") }
 }
 @available(iOS 15.0, macOS 10.15, tvOS 15.0, visionOS 1.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8033,8 +8017,8 @@ extension ControlSize : Swift::Comparable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var controlSize: ControlSize {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.controlSize") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.controlSize") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.controlSize") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.controlSize") }
   }
 }
 @available(iOS 15.0, macOS 10.15, tvOS 15.0, visionOS 1.0, watchOS 9.0, *)
@@ -8049,42 +8033,42 @@ extension View {
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  nonisolated public func controlSize<T>(_ range: T) -> Swift.Never where T : Swift::RangeExpression, T.Bound == ControlSize { _suiUnimplemented("SwiftUICore.SwiftUICore.controlSize(_:)") }
+  nonisolated public func controlSize<T>(_ range: T) -> Swift.Never where T : Swift::RangeExpression, T.Bound == ControlSize { _suiUnimplemented("SwiftUICore.View.controlSize(_:)") }
   
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension Foundation::FormatStyle where Self == SystemFormatStyle.DateOffset {
-  public static func offset(to anchor: Foundation::Date, allowedFields: Swift::Set<FoundationShims.ComponentsFormatStyleField> = [.year, .month, .day, .hour, .minute, .second], maxFieldCount: Swift::Int = 2, sign: FoundationShims.SignDisplayStrategy = .automatic) -> SystemFormatStyle.DateOffset { _suiUnimplemented("SwiftUICore.Foundation.offset(to:allowedFields:maxFieldCount:sign:)") }
+  public static func offset(to anchor: Foundation::Date, allowedFields: Swift::Set<FoundationShims.ComponentsFormatStyleField> = [.year, .month, .day, .hour, .minute, .second], maxFieldCount: Swift::Int = 2, sign: FoundationShims.SignDisplayStrategy = .automatic) -> SystemFormatStyle.DateOffset { _suiUnimplemented("SwiftUICore.FormatStyle.offset(to:allowedFields:maxFieldCount:sign:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SystemFormatStyle {
   public struct DateOffset : Swift::Sendable {
-    public init(to anchor: Foundation::Date, allowedFields: Swift::Set<FoundationShims.ComponentsFormatStyleField> = [.year, .month, .week, .day, .hour, .minute, .second], maxFieldCount: Swift::Int = 2, sign: FoundationShims.SignDisplayStrategy = .automatic) { _suiUnimplemented("SwiftUICore.SwiftUICore.DateOffset.init(to:allowedFields:maxFieldCount:sign:)") }
-    public func calendar(_ calendar: Foundation::Calendar) -> SystemFormatStyle.DateOffset { _suiUnimplemented("SwiftUICore.SwiftUICore.DateOffset.calendar(_:)") }
-    public func locale(_ locale: Foundation::Locale) -> SystemFormatStyle.DateOffset { _suiUnimplemented("SwiftUICore.SwiftUICore.DateOffset.locale(_:)") }
+    public init(to anchor: Foundation::Date, allowedFields: Swift::Set<FoundationShims.ComponentsFormatStyleField> = [.year, .month, .week, .day, .hour, .minute, .second], maxFieldCount: Swift::Int = 2, sign: FoundationShims.SignDisplayStrategy = .automatic) { _suiUnimplemented("SwiftUICore.SystemFormatStyle.DateOffset.init(to:allowedFields:maxFieldCount:sign:)") }
+    public func calendar(_ calendar: Foundation::Calendar) -> SystemFormatStyle.DateOffset { _suiUnimplemented("SwiftUICore.SystemFormatStyle.DateOffset.calendar(_:)") }
+    public func locale(_ locale: Foundation::Locale) -> SystemFormatStyle.DateOffset { _suiUnimplemented("SwiftUICore.SystemFormatStyle.DateOffset.locale(_:)") }
   }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SystemFormatStyle.DateOffset : Foundation::FormatStyle {
-  public func format(_ referenceDate: Foundation::Date) -> Foundation::AttributedString { _suiUnimplemented("SwiftUICore.SwiftUICore.format(_:)") }
-  public static func == (a: SystemFormatStyle.DateOffset, b: SystemFormatStyle.DateOffset) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public func format(_ referenceDate: Foundation::Date) -> Foundation::AttributedString { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateOffset.format(_:)") }
+  public static func == (a: SystemFormatStyle.DateOffset, b: SystemFormatStyle.DateOffset) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateOffset.==(a:b:)") }
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias FormatInput = Foundation::Date
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias FormatOutput = Foundation::AttributedString
-  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.encode(to:)") }
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.hash(into:)") }
+  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateOffset.encode(to:)") }
+  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateOffset.hash(into:)") }
   public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.hashValue") }
+    get { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateOffset.hashValue") }
   }
-  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.init(from:)") }
+  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateOffset.init(from:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SystemFormatStyle.DateOffset : Foundation::DiscreteFormatStyle {
-  public func discreteInput(before referenceDate: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SwiftUICore.discreteInput(before:)") }
-  public func discreteInput(after referenceDate: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SwiftUICore.discreteInput(after:)") }
-  public func input(before referenceDate: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SwiftUICore.input(before:)") }
-  public func input(after referenceDate: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SwiftUICore.input(after:)") }
+  public func discreteInput(before referenceDate: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateOffset.discreteInput(before:)") }
+  public func discreteInput(after referenceDate: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateOffset.discreteInput(after:)") }
+  public func input(before referenceDate: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateOffset.input(before:)") }
+  public func input(after referenceDate: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.DateOffset.input(after:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8278,15 +8262,15 @@ extension ShapeStyle where Self == Material {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Material {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var regular: Material { get { _suiUnimplemented("SwiftUICore.SwiftUICore.regular") } }
+public static var regular: Material { get { _suiUnimplemented("SwiftUICore.Material.regular") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var thick: Material { get { _suiUnimplemented("SwiftUICore.SwiftUICore.thick") } }
+public static var thick: Material { get { _suiUnimplemented("SwiftUICore.Material.thick") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var thin: Material { get { _suiUnimplemented("SwiftUICore.SwiftUICore.thin") } }
+public static var thin: Material { get { _suiUnimplemented("SwiftUICore.Material.thin") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var ultraThin: Material { get { _suiUnimplemented("SwiftUICore.SwiftUICore.ultraThin") } }
+public static var ultraThin: Material { get { _suiUnimplemented("SwiftUICore.Material.ultraThin") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var ultraThick: Material { get { _suiUnimplemented("SwiftUICore.SwiftUICore.ultraThick") } }
+public static var ultraThick: Material { get { _suiUnimplemented("SwiftUICore.Material.ultraThick") } }
 }
 @available(iOS 15.0, macOS 12.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8295,7 +8279,7 @@ public static var ultraThick: Material { get { _suiUnimplemented("SwiftUICore.Sw
 @available(watchOS, unavailable)
 extension Material {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bar: Material { get { _suiUnimplemented("SwiftUICore.SwiftUICore.bar") } }
+public static var bar: Material { get { _suiUnimplemented("SwiftUICore.Material.bar") } }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8304,8 +8288,8 @@ public static var bar: Material { get { _suiUnimplemented("SwiftUICore.SwiftUICo
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var backgroundMaterial: Material? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.backgroundMaterial") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.backgroundMaterial") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.backgroundMaterial") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.backgroundMaterial") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -8314,9 +8298,9 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Material : ShapeStyle {
-  nonisolated public static func _makeView<S>(view: _GraphValue<_ShapeView<S, Material>>, inputs: _ViewInputs) -> _ViewOutputs where S : Shape { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(view:inputs:)") }
-  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.SwiftUICore._apply(to:)") }
-  public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.SwiftUICore._apply(to:)") }
+  nonisolated public static func _makeView<S>(view: _GraphValue<_ShapeView<S, Material>>, inputs: _ViewInputs) -> _ViewOutputs where S : Shape { _suiUnimplemented("SwiftUICore.Material._makeView(view:inputs:)") }
+  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.Material._apply(to:)") }
+  public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.Material._apply(to:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
 }
@@ -8348,8 +8332,8 @@ public static var matchWindow: MaterialActiveAppearance { get { _suiUnimplemente
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.0)
 extension EnvironmentValues {
   public var materialActiveAppearance: MaterialActiveAppearance {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.materialActiveAppearance") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.materialActiveAppearance") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.materialActiveAppearance") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.materialActiveAppearance") }
   }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -8359,7 +8343,7 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.0)
 extension Material {
-  public func materialActiveAppearance(_ appearance: MaterialActiveAppearance) -> Material { _suiUnimplemented("SwiftUICore.SwiftUICore.materialActiveAppearance(_:)") }
+  public func materialActiveAppearance(_ appearance: MaterialActiveAppearance) -> Material { _suiUnimplemented("SwiftUICore.Material.materialActiveAppearance(_:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8369,7 +8353,7 @@ extension Material {
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.0)
 extension ShapeStyle {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func materialActiveAppearance(_ appearance: MaterialActiveAppearance) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.materialActiveAppearance(_:)") }
+public func materialActiveAppearance(_ appearance: MaterialActiveAppearance) -> Swift.Never { _suiUnimplemented("SwiftUICore.ShapeStyle.materialActiveAppearance(_:)") }
   
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -8380,7 +8364,7 @@ public func materialActiveAppearance(_ appearance: MaterialActiveAppearance) -> 
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func materialActiveAppearance(_ appearance: MaterialActiveAppearance) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.materialActiveAppearance(_:)") }
+nonisolated public func materialActiveAppearance(_ appearance: MaterialActiveAppearance) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.materialActiveAppearance(_:)") }
   
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -8415,10 +8399,10 @@ extension Image {
     case low
     case medium
     case high
-    public static func == (a: Image.Interpolation, b: Image.Interpolation) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Interpolation.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.Interpolation.hash(into:)") }
+    public static func == (a: Image.Interpolation, b: Image.Interpolation) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Image.Interpolation.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Image.Interpolation.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Interpolation.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Image.Interpolation.hashValue") }
     }
   }
 }
@@ -8428,8 +8412,8 @@ extension Image {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image {
-  public func interpolation(_ interpolation: Image.Interpolation) -> Image { _suiUnimplemented("SwiftUICore.SwiftUICore.interpolation(_:)") }
-  public func antialiased(_ isAntialiased: Swift::Bool) -> Image { _suiUnimplemented("SwiftUICore.SwiftUICore.antialiased(_:)") }
+  public func interpolation(_ interpolation: Image.Interpolation) -> Image { _suiUnimplemented("SwiftUICore.Image.interpolation(_:)") }
+  public func antialiased(_ isAntialiased: Swift::Bool) -> Image { _suiUnimplemented("SwiftUICore.Image.antialiased(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -8463,10 +8447,10 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func transformEffect(_ transform: ProjectionTransform) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.transformEffect(_:)") }
+public func transformEffect(_ transform: ProjectionTransform) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.transformEffect(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func transformEffect(_ transform: CoreGraphics::CGAffineTransform) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.transformEffect(_:)") }
+public func transformEffect(_ transform: CoreGraphics::CGAffineTransform) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.transformEffect(_:)") }
   
 }
 @available(visionOS 2.0, *)
@@ -8475,7 +8459,7 @@ public func transformEffect(_ transform: CoreGraphics::CGAffineTransform) -> Swi
 @available(tvOS, unavailable)
 extension HoverEffectContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func transformEffect(_ transform: CoreGraphics::CGAffineTransform) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.transformEffect(_:)") }
+public func transformEffect(_ transform: CoreGraphics::CGAffineTransform) -> Swift.Never { _suiUnimplemented("SwiftUICore.HoverEffectContent.transformEffect(_:)") }
   
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -8544,10 +8528,10 @@ public protocol _VariadicView_Root {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _VariadicView_Root {
   public static var _viewListOptions: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListOptions") }
+    get { _suiUnimplemented("SwiftUICore._VariadicView_Root._viewListOptions") }
   }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:body:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUICore._VariadicView_Root._viewListCount(inputs:body:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8568,7 +8552,7 @@ extension _VariadicView_Root {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _VariadicView_ViewRoot where Self.Body == Swift::Never {
-  @_Concurrency::MainActor @preconcurrency public func body(children: _VariadicView.Children) -> Swift::Never { _suiUnimplemented("SwiftUICore.SwiftUICore.body(children:)") }
+  @_Concurrency::MainActor @preconcurrency public func body(children: _VariadicView.Children) -> Swift::Never { _suiUnimplemented("SwiftUICore._VariadicView_ViewRoot.body(children:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8583,9 +8567,9 @@ public protocol _VariadicView_UnaryViewRoot : _VariadicView_ViewRoot {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _VariadicView_UnaryViewRoot {
-  nonisolated public static func _makeViewList(root: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(root:inputs:body:)") }
+  nonisolated public static func _makeViewList(root: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore._VariadicView_UnaryViewRoot._makeViewList(root:inputs:body:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:body:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUICore._VariadicView_UnaryViewRoot._viewListCount(inputs:body:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8600,9 +8584,9 @@ public protocol _VariadicView_MultiViewRoot : _VariadicView_ViewRoot {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _VariadicView_MultiViewRoot {
-  nonisolated public static func _makeView(root: _GraphValue<Self>, inputs: _ViewInputs, body: (_Graph, _ViewInputs) -> _ViewListOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(root:inputs:body:)") }
+  nonisolated public static func _makeView(root: _GraphValue<Self>, inputs: _ViewInputs, body: (_Graph, _ViewInputs) -> _ViewListOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._VariadicView_MultiViewRoot._makeView(root:inputs:body:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:body:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUICore._VariadicView_MultiViewRoot._viewListCount(inputs:body:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8627,10 +8611,10 @@ public struct _VariadicView_Children {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _VariadicView_ViewRoot {
-  nonisolated public static func _makeView(root: _GraphValue<Self>, inputs: _ViewInputs, body: (_Graph, _ViewInputs) -> _ViewListOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(root:inputs:body:)") }
-  nonisolated public static func _makeViewList(root: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(root:inputs:body:)") }
+  nonisolated public static func _makeView(root: _GraphValue<Self>, inputs: _ViewInputs, body: (_Graph, _ViewInputs) -> _ViewListOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._VariadicView_ViewRoot._makeView(root:inputs:body:)") }
+  nonisolated public static func _makeViewList(root: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore._VariadicView_ViewRoot._makeViewList(root:inputs:body:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore._VariadicView_ViewRoot._viewListCount(inputs:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8639,10 +8623,10 @@ extension _VariadicView_ViewRoot {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _VariadicView.Tree : View where Root : _VariadicView_ViewRoot, Content : View {
   public typealias Body = Swift::Never
-  nonisolated public static func _makeView(view: _GraphValue<_VariadicView.Tree<Root, Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(view:inputs:)") }
-  nonisolated public static func _makeViewList(view: _GraphValue<_VariadicView.Tree<Root, Content>>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(view:inputs:)") }
+  nonisolated public static func _makeView(view: _GraphValue<_VariadicView.Tree<Root, Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._VariadicView.SwiftUICore.Tree._makeView(view:inputs:)") }
+  nonisolated public static func _makeViewList(view: _GraphValue<_VariadicView.Tree<Root, Content>>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore._VariadicView.SwiftUICore.Tree._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore._VariadicView.SwiftUICore.Tree._viewListCount(inputs:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8700,7 +8684,7 @@ public static var quaternary: HierarchicalShapeStyle { get { _suiUnimplemented("
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension HierarchicalShapeStyle {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var quinary: HierarchicalShapeStyle { get { _suiUnimplemented("SwiftUICore.SwiftUICore.quinary") } }
+public static var quinary: HierarchicalShapeStyle { get { _suiUnimplemented("SwiftUICore.HierarchicalShapeStyle.quinary") } }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8803,7 +8787,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func coordinateSpace(_ name: NamedCoordinateSpace) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.coordinateSpace(_:)") }
+nonisolated public func coordinateSpace(_ name: NamedCoordinateSpace) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.coordinateSpace(_:)") }
   
 }
 @available(visionOS 26.0, *)
@@ -8812,7 +8796,7 @@ nonisolated public func coordinateSpace(_ name: NamedCoordinateSpace) -> Swift.N
 @available(tvOS, unavailable)
 extension HoverEffectGroup {
   public static var systemOverlays: HoverEffectGroup {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.systemOverlays") }
+    get { _suiUnimplemented("SwiftUICore.HoverEffectGroup.systemOverlays") }
   }
 }
 @available(visionOS 26.0, *)
@@ -8821,16 +8805,16 @@ extension HoverEffectGroup {
 @available(tvOS, unavailable)
 extension Animation {
   public static var systemOverlayAppearance: Animation {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.systemOverlayAppearance") }
+    get { _suiUnimplemented("SwiftUICore.Animation.systemOverlayAppearance") }
   }
   public static var systemOverlayDisappearance: Animation {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.systemOverlayDisappearance") }
+    get { _suiUnimplemented("SwiftUICore.Animation.systemOverlayDisappearance") }
   }
   public static var systemOverlayDelayedDisappearance: Animation {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.systemOverlayDelayedDisappearance") }
+    get { _suiUnimplemented("SwiftUICore.Animation.systemOverlayDelayedDisappearance") }
   }
   public static var systemOverlayDisappearanceDelay: Foundation::TimeInterval {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.systemOverlayDisappearanceDelay") }
+    get { _suiUnimplemented("SwiftUICore.Animation.systemOverlayDisappearanceDelay") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8852,15 +8836,15 @@ public protocol DynamicProperty {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension DynamicProperty {
-  public static func _makeProperty<V>(in buffer: inout _DynamicPropertyBuffer, container: _GraphValue<V>, fieldOffset: Swift::Int, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUICore.SwiftUICore._makeProperty(in:container:fieldOffset:inputs:)") }
-  public mutating func update() { _suiUnimplemented("SwiftUICore.SwiftUICore.update()") }
+  public static func _makeProperty<V>(in buffer: inout _DynamicPropertyBuffer, container: _GraphValue<V>, fieldOffset: Swift::Int, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUICore.DynamicProperty._makeProperty(in:container:fieldOffset:inputs:)") }
+  public mutating func update() { _suiUnimplemented("SwiftUICore.DynamicProperty.update()") }
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
   public static var _propertyBehaviors: Swift::UInt32 {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._propertyBehaviors") }
+    get { _suiUnimplemented("SwiftUICore.DynamicProperty._propertyBehaviors") }
   }
   @available(iOS 27.0, macOS 27.0, tvOS 27.0, watchOS 27.0, visionOS 27.0, *)
   public static var _propertyStorageSize: Swift::Int? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._propertyStorageSize") }
+    get { _suiUnimplemented("SwiftUICore.DynamicProperty._propertyStorageSize") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8897,7 +8881,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image {
-  public func symbolRenderingMode(_ mode: SymbolRenderingMode?) -> Image { _suiUnimplemented("SwiftUICore.SwiftUICore.symbolRenderingMode(_:)") }
+  public func symbolRenderingMode(_ mode: SymbolRenderingMode?) -> Image { _suiUnimplemented("SwiftUICore.Image.symbolRenderingMode(_:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8906,8 +8890,8 @@ extension Image {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var symbolRenderingMode: SymbolRenderingMode? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.symbolRenderingMode") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.symbolRenderingMode") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.symbolRenderingMode") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.symbolRenderingMode") }
   }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -8927,13 +8911,13 @@ extension View {
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Image {
-  public func symbolVariableValueMode(_ mode: SymbolVariableValueMode?) -> Image { _suiUnimplemented("SwiftUICore.SwiftUICore.symbolVariableValueMode(_:)") }
+  public func symbolVariableValueMode(_ mode: SymbolVariableValueMode?) -> Image { _suiUnimplemented("SwiftUICore.Image.symbolVariableValueMode(_:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension EnvironmentValues {
   public var symbolVariableValueMode: SymbolVariableValueMode? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.symbolVariableValueMode") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.symbolVariableValueMode") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.symbolVariableValueMode") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.symbolVariableValueMode") }
   }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -8953,13 +8937,13 @@ extension View {
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Image {
-  public func symbolColorRenderingMode(_ mode: SymbolColorRenderingMode?) -> Image { _suiUnimplemented("SwiftUICore.SwiftUICore.symbolColorRenderingMode(_:)") }
+  public func symbolColorRenderingMode(_ mode: SymbolColorRenderingMode?) -> Image { _suiUnimplemented("SwiftUICore.Image.symbolColorRenderingMode(_:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension EnvironmentValues {
   public var symbolColorRenderingMode: SymbolColorRenderingMode? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.symbolColorRenderingMode") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.symbolColorRenderingMode") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.symbolColorRenderingMode") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.symbolColorRenderingMode") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
@@ -9054,20 +9038,20 @@ public struct Shader : Swift::Equatable, Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @available(watchOS, unavailable)
 extension Shader {
-  public func compile(as type: Shader.UsageType) async throws { _suiUnimplemented("SwiftUICore.SwiftUICore.compile(as:)") }
+  public func compile(as type: Shader.UsageType) async throws { _suiUnimplemented("SwiftUICore.Shader.compile(as:)") }
   public struct UsageType : Swift::Hashable, Swift::Sendable {
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var shapeStyle: Shader.UsageType { get { _suiUnimplemented("SwiftUICore.SwiftUICore.UsageType.shapeStyle") } }
+public static var shapeStyle: Shader.UsageType { get { _suiUnimplemented("SwiftUICore.Shader.UsageType.shapeStyle") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var colorEffect: Shader.UsageType { get { _suiUnimplemented("SwiftUICore.SwiftUICore.UsageType.colorEffect") } }
+public static var colorEffect: Shader.UsageType { get { _suiUnimplemented("SwiftUICore.Shader.UsageType.colorEffect") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var distortionEffect: Shader.UsageType { get { _suiUnimplemented("SwiftUICore.SwiftUICore.UsageType.distortionEffect") } }
+public static var distortionEffect: Shader.UsageType { get { _suiUnimplemented("SwiftUICore.Shader.UsageType.distortionEffect") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var layerEffect: Shader.UsageType { get { _suiUnimplemented("SwiftUICore.SwiftUICore.UsageType.layerEffect") } }
-    public static func == (a: Shader.UsageType, b: Shader.UsageType) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.UsageType.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.UsageType.hash(into:)") }
+public static var layerEffect: Shader.UsageType { get { _suiUnimplemented("SwiftUICore.Shader.UsageType.layerEffect") } }
+    public static func == (a: Shader.UsageType, b: Shader.UsageType) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Shader.UsageType.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Shader.UsageType.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.UsageType.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Shader.UsageType.hashValue") }
     }
   }
 }
@@ -9084,13 +9068,13 @@ extension Shader {
 @available(watchOS, unavailable)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func colorEffect(_ shader: Shader, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.colorEffect(_:isEnabled:)") }
+nonisolated public func colorEffect(_ shader: Shader, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.colorEffect(_:isEnabled:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func distortionEffect(_ shader: Shader, maxSampleOffset: CoreGraphics::CGSize, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.distortionEffect(_:maxSampleOffset:isEnabled:)") }
+nonisolated public func distortionEffect(_ shader: Shader, maxSampleOffset: CoreGraphics::CGSize, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.distortionEffect(_:maxSampleOffset:isEnabled:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func layerEffect(_ shader: Shader, maxSampleOffset: CoreGraphics::CGSize, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.layerEffect(_:maxSampleOffset:isEnabled:)") }
+nonisolated public func layerEffect(_ shader: Shader, maxSampleOffset: CoreGraphics::CGSize, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.layerEffect(_:maxSampleOffset:isEnabled:)") }
   
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
@@ -9849,7 +9833,7 @@ nonisolated public struct _ShaderFilterEffect : Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension GraphicsContext {
-  public func withCGContext(content: (CoreGraphics::CGContext) throws -> Swift::Void) rethrows { _suiUnimplemented("SwiftUICore.SwiftUICore.withCGContext(content:)") }
+  public func withCGContext(content: (CoreGraphics::CGContext) throws -> Swift::Void) rethrows { _suiUnimplemented("SwiftUICore.GraphicsContext.withCGContext(content:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -9921,8 +9905,8 @@ extension LocalizedStringKey.StringInterpolation {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text {
-  public init<Subject>(_ subject: Subject, formatter: Foundation::Formatter) where Subject : Foundation::ReferenceConvertible { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:formatter:)") }
-  public init<Subject>(_ subject: Subject, formatter: Foundation::Formatter) where Subject : ObjectiveC::NSObject { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:formatter:)") }
+  public init<Subject>(_ subject: Subject, formatter: Foundation::Formatter) where Subject : Foundation::ReferenceConvertible { _suiUnimplemented("SwiftUICore.Text.init(_:formatter:)") }
+  public init<Subject>(_ subject: Subject, formatter: Foundation::Formatter) where Subject : ObjectiveC::NSObject { _suiUnimplemented("SwiftUICore.Text.init(_:formatter:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -9930,17 +9914,17 @@ extension Text {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text {
-  public init<F>(_ input: F.FormatInput, format: F) where F : Foundation::FormatStyle, F.FormatInput : Swift::Equatable, F.FormatOutput == Swift::String { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:format:)") }
+  public init<F>(_ input: F.FormatInput, format: F) where F : Foundation::FormatStyle, F.FormatInput : Swift::Equatable, F.FormatOutput == Swift::String { _suiUnimplemented("SwiftUICore.Text.init(_:format:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension Text {
-  public init<F>(_ input: F.FormatInput, format: F) where F : Foundation::FormatStyle, F.FormatInput : Swift::Equatable, F.FormatOutput == Foundation::AttributedString { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:format:)") }
+  public init<F>(_ input: F.FormatInput, format: F) where F : Foundation::FormatStyle, F.FormatInput : Swift::Equatable, F.FormatOutput == Foundation::AttributedString { _suiUnimplemented("SwiftUICore.Text.init(_:format:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension TupleContent : View where repeat each Content : View {
-  nonisolated public static func _makeView(view: _GraphValue<TupleContent<repeat each Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(view:inputs:)") }
-  nonisolated public static func _makeViewList(view: _GraphValue<TupleContent<repeat each Content>>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(view:inputs:)") }
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:)") }
+  nonisolated public static func _makeView(view: _GraphValue<TupleContent<repeat each Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.TupleContent._makeView(view:inputs:)") }
+  nonisolated public static func _makeViewList(view: _GraphValue<TupleContent<repeat each Content>>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.TupleContent._makeViewList(view:inputs:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.TupleContent._viewListCount(inputs:)") }
   @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public typealias Body = Swift::Never
 }
@@ -9951,7 +9935,7 @@ extension TupleContent : View where repeat each Content : View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text {
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  public init(_ image: Image) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  public init(_ image: Image) { _suiUnimplemented("SwiftUICore.Text.init(_:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -9968,19 +9952,19 @@ extension LocalizedStringKey.StringInterpolation {
 extension Text {
   public struct DateStyle : Swift::Sendable {
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var time: Text.DateStyle { get { _suiUnimplemented("SwiftUICore.SwiftUICore.DateStyle.time") } }
+public static var time: Text.DateStyle { get { _suiUnimplemented("SwiftUICore.Text.DateStyle.time") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var date: Text.DateStyle { get { _suiUnimplemented("SwiftUICore.SwiftUICore.DateStyle.date") } }
+public static var date: Text.DateStyle { get { _suiUnimplemented("SwiftUICore.Text.DateStyle.date") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var relative: Text.DateStyle { get { _suiUnimplemented("SwiftUICore.SwiftUICore.DateStyle.relative") } }
+public static var relative: Text.DateStyle { get { _suiUnimplemented("SwiftUICore.Text.DateStyle.relative") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var offset: Text.DateStyle { get { _suiUnimplemented("SwiftUICore.SwiftUICore.DateStyle.offset") } }
+public static var offset: Text.DateStyle { get { _suiUnimplemented("SwiftUICore.Text.DateStyle.offset") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var timer: Text.DateStyle { get { _suiUnimplemented("SwiftUICore.SwiftUICore.DateStyle.timer") } }
+public static var timer: Text.DateStyle { get { _suiUnimplemented("SwiftUICore.Text.DateStyle.timer") } }
   }
-  public init(_ date: Foundation::Date, style: Text.DateStyle) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:style:)") }
-  public init(_ dates: Swift::ClosedRange<Foundation::Date>) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
-  public init(_ interval: Foundation::DateInterval) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  public init(_ date: Foundation::Date, style: Text.DateStyle) { _suiUnimplemented("SwiftUICore.Text.init(_:style:)") }
+  public init(_ dates: Swift::ClosedRange<Foundation::Date>) { _suiUnimplemented("SwiftUICore.Text.init(_:)") }
+  public init(_ interval: Foundation::DateInterval) { _suiUnimplemented("SwiftUICore.Text.init(_:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -9988,7 +9972,7 @@ public static var timer: Text.DateStyle { get { _suiUnimplemented("SwiftUICore.S
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text {
-  public init(timerInterval: Swift::ClosedRange<Foundation::Date>, pauseTime: Foundation::Date? = nil, countsDown: Swift::Bool = true, showsHours: Swift::Bool = true) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(timerInterval:pauseTime:countsDown:showsHours:)") }
+  public init(timerInterval: Swift::ClosedRange<Foundation::Date>, pauseTime: Foundation::Date? = nil, countsDown: Swift::Bool = true, showsHours: Swift::Bool = true) { _suiUnimplemented("SwiftUICore.Text.init(timerInterval:pauseTime:countsDown:showsHours:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -10006,7 +9990,7 @@ extension LocalizedStringKey.StringInterpolation {
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension Text.DateStyle : Swift::Equatable {
-  public static func == (a: Text.DateStyle, b: Text.DateStyle) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public static func == (a: Text.DateStyle, b: Text.DateStyle) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Text.SwiftUICore.DateStyle.==(a:b:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -10014,8 +9998,8 @@ extension Text.DateStyle : Swift::Equatable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text.DateStyle : Swift::Codable {
-  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.encode(to:)") }
-  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.init(from:)") }
+  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.Text.SwiftUICore.DateStyle.encode(to:)") }
+  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.Text.SwiftUICore.DateStyle.init(from:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -10024,46 +10008,46 @@ extension Text.DateStyle : Swift::Codable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Color {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var red: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.red") } }
+public static var red: Color { get { _suiUnimplemented("SwiftUICore.Color.red") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var orange: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.orange") } }
+public static var orange: Color { get { _suiUnimplemented("SwiftUICore.Color.orange") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var yellow: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.yellow") } }
+public static var yellow: Color { get { _suiUnimplemented("SwiftUICore.Color.yellow") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var green: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.green") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  public static var mint: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.mint") } }
+public static var green: Color { get { _suiUnimplemented("SwiftUICore.Color.green") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  public static var teal: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.teal") } }
+  public static var mint: Color { get { _suiUnimplemented("SwiftUICore.Color.mint") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  public static var cyan: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.cyan") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var blue: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.blue") } }
+  public static var teal: Color { get { _suiUnimplemented("SwiftUICore.Color.teal") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  public static var indigo: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.indigo") } }
+  public static var cyan: Color { get { _suiUnimplemented("SwiftUICore.Color.cyan") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var purple: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.purple") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var pink: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.pink") } }
+public static var blue: Color { get { _suiUnimplemented("SwiftUICore.Color.blue") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  public static var brown: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.brown") } }
+  public static var indigo: Color { get { _suiUnimplemented("SwiftUICore.Color.indigo") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var white: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.white") } }
+public static var purple: Color { get { _suiUnimplemented("SwiftUICore.Color.purple") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var gray: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.gray") } }
+public static var pink: Color { get { _suiUnimplemented("SwiftUICore.Color.pink") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var black: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.black") } }
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+  public static var brown: Color { get { _suiUnimplemented("SwiftUICore.Color.brown") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var clear: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.clear") } }
+public static var white: Color { get { _suiUnimplemented("SwiftUICore.Color.white") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var primary: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.primary") } }
+public static var gray: Color { get { _suiUnimplemented("SwiftUICore.Color.gray") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var secondary: Color { get { _suiUnimplemented("SwiftUICore.SwiftUICore.secondary") } }
+public static var black: Color { get { _suiUnimplemented("SwiftUICore.Color.black") } }
+    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
+public static var clear: Color { get { _suiUnimplemented("SwiftUICore.Color.clear") } }
+    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
+public static var primary: Color { get { _suiUnimplemented("SwiftUICore.Color.primary") } }
+    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
+public static var secondary: Color { get { _suiUnimplemented("SwiftUICore.Color.secondary") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -10131,7 +10115,7 @@ extension ShapeStyle where Self == Color {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text {
-  @_disfavoredOverload public init(_ attributedContent: Foundation::AttributedString) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  @_disfavoredOverload public init(_ attributedContent: Foundation::AttributedString) { _suiUnimplemented("SwiftUICore.Text.init(_:)") }
 }
 @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -10141,7 +10125,7 @@ extension Text {
 extension Foundation::AttributeScopes {
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   public var swiftUI: Foundation::AttributeScopes.SwiftUIAttributes.Type {
-    get { _suiUnimplemented("SwiftUICore.Foundation.swiftUI") }
+    get { _suiUnimplemented("SwiftUICore.AttributeScopes.swiftUI") }
   }
   #if compiler(>=5.3) && $TildeSendable
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
@@ -10203,86 +10187,86 @@ extension Foundation::AttributeScopes.SwiftUIAttributes {
   @frozen public enum FontAttribute : Foundation::AttributedStringKey {
     public typealias Value = Font
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.Foundation.FontAttribute.name") } }
+public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.FontAttribute.name") } }
   }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   @frozen public enum ForegroundColorAttribute : Foundation::AttributedStringKey {
     public typealias Value = Color
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.Foundation.ForegroundColorAttribute.name") } }
+public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.ForegroundColorAttribute.name") } }
   }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   @frozen public enum BackgroundColorAttribute : Foundation::AttributedStringKey {
     public typealias Value = Color
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.Foundation.BackgroundColorAttribute.name") } }
+public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.BackgroundColorAttribute.name") } }
   }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   @frozen public enum StrikethroughStyleAttribute : Foundation::AttributedStringKey {
     public typealias Value = Text.LineStyle
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.Foundation.StrikethroughStyleAttribute.name") } }
+public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.StrikethroughStyleAttribute.name") } }
   }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   @frozen public enum UnderlineStyleAttribute : Foundation::AttributedStringKey {
     public typealias Value = Text.LineStyle
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.Foundation.UnderlineStyleAttribute.name") } }
+public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.UnderlineStyleAttribute.name") } }
   }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   @frozen public enum KerningAttribute : Foundation::CodableAttributedStringKey {
     public typealias Value = CoreGraphics::CGFloat
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.Foundation.KerningAttribute.name") } }
+public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.KerningAttribute.name") } }
   }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   @frozen public enum TrackingAttribute : Foundation::CodableAttributedStringKey {
     public typealias Value = CoreGraphics::CGFloat
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.Foundation.TrackingAttribute.name") } }
+public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.TrackingAttribute.name") } }
   }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   @frozen public enum BaselineOffsetAttribute : Foundation::CodableAttributedStringKey {
     public typealias Value = CoreGraphics::CGFloat
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.Foundation.BaselineOffsetAttribute.name") } }
+public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.BaselineOffsetAttribute.name") } }
   }
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   @frozen public enum AdaptiveImageGlyphAttribute : Foundation::AttributedStringKey {
     public typealias Value = Foundation::AttributedString.CoreText::AdaptiveImageGlyph
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.Foundation.AdaptiveImageGlyphAttribute.name") } }
+public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.AdaptiveImageGlyphAttribute.name") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-nonisolated(unsafe) public static var inheritedByAddedText: Swift::Bool { get { _suiUnimplemented("SwiftUICore.Foundation.AdaptiveImageGlyphAttribute.inheritedByAddedText") } }
+nonisolated(unsafe) public static var inheritedByAddedText: Swift::Bool { get { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.AdaptiveImageGlyphAttribute.inheritedByAddedText") } }
     public static var runBoundaries: FoundationShims.AttributeRunBoundaries? {
-      get { _suiUnimplemented("SwiftUICore.Foundation.AdaptiveImageGlyphAttribute.runBoundaries") }
+      get { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.AdaptiveImageGlyphAttribute.runBoundaries") }
     }
   }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Foundation::AttributeScopes.SwiftUIAttributes.FontAttribute : Foundation::CodableAttributedStringKey {
-  public static func decode(from decoder: any Swift::Decoder) throws -> Font { _suiUnimplemented("SwiftUICore.Foundation.decode(from:)") }
-  public static func encode(_ value: Font, to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.Foundation.encode(_:to:)") }
+  public static func decode(from decoder: any Swift::Decoder) throws -> Font { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.SwiftUICore.FontAttribute.decode(from:)") }
+  public static func encode(_ value: Font, to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.SwiftUICore.FontAttribute.encode(_:to:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Foundation::AttributeScopes.SwiftUIAttributes.ForegroundColorAttribute : Foundation::CodableAttributedStringKey {
-  public static func decode(from decoder: any Swift::Decoder) throws -> Foundation::AttributeScopes.SwiftUIAttributes.ForegroundColorAttribute.Value { _suiUnimplemented("SwiftUICore.Foundation.decode(from:)") }
-  public static func encode(_ value: Foundation::AttributeScopes.SwiftUIAttributes.ForegroundColorAttribute.Value, to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.Foundation.encode(_:to:)") }
+  public static func decode(from decoder: any Swift::Decoder) throws -> Foundation::AttributeScopes.SwiftUIAttributes.ForegroundColorAttribute.Value { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.SwiftUICore.ForegroundColorAttribute.decode(from:)") }
+  public static func encode(_ value: Foundation::AttributeScopes.SwiftUIAttributes.ForegroundColorAttribute.Value, to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.SwiftUICore.ForegroundColorAttribute.encode(_:to:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Foundation::AttributeScopes.SwiftUIAttributes.BackgroundColorAttribute : Foundation::CodableAttributedStringKey {
-  public static func decode(from decoder: any Swift::Decoder) throws -> Foundation::AttributeScopes.SwiftUIAttributes.BackgroundColorAttribute.Value { _suiUnimplemented("SwiftUICore.Foundation.decode(from:)") }
-  public static func encode(_ value: Foundation::AttributeScopes.SwiftUIAttributes.BackgroundColorAttribute.Value, to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.Foundation.encode(_:to:)") }
+  public static func decode(from decoder: any Swift::Decoder) throws -> Foundation::AttributeScopes.SwiftUIAttributes.BackgroundColorAttribute.Value { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.SwiftUICore.BackgroundColorAttribute.decode(from:)") }
+  public static func encode(_ value: Foundation::AttributeScopes.SwiftUIAttributes.BackgroundColorAttribute.Value, to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.SwiftUICore.BackgroundColorAttribute.encode(_:to:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Foundation::AttributeScopes.SwiftUIAttributes.StrikethroughStyleAttribute : Foundation::CodableAttributedStringKey {
-  public static func decode(from decoder: any Swift::Decoder) throws -> Foundation::AttributeScopes.SwiftUIAttributes.StrikethroughStyleAttribute.Value { _suiUnimplemented("SwiftUICore.Foundation.decode(from:)") }
-  public static func encode(_ value: Foundation::AttributeScopes.SwiftUIAttributes.StrikethroughStyleAttribute.Value, to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.Foundation.encode(_:to:)") }
+  public static func decode(from decoder: any Swift::Decoder) throws -> Foundation::AttributeScopes.SwiftUIAttributes.StrikethroughStyleAttribute.Value { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.SwiftUICore.StrikethroughStyleAttribute.decode(from:)") }
+  public static func encode(_ value: Foundation::AttributeScopes.SwiftUIAttributes.StrikethroughStyleAttribute.Value, to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.SwiftUICore.StrikethroughStyleAttribute.encode(_:to:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Foundation::AttributeScopes.SwiftUIAttributes.UnderlineStyleAttribute : Foundation::CodableAttributedStringKey {
-  public static func decode(from decoder: any Swift::Decoder) throws -> Foundation::AttributeScopes.SwiftUIAttributes.UnderlineStyleAttribute.Value { _suiUnimplemented("SwiftUICore.Foundation.decode(from:)") }
-  public static func encode(_ value: Foundation::AttributeScopes.SwiftUIAttributes.UnderlineStyleAttribute.Value, to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.Foundation.encode(_:to:)") }
+  public static func decode(from decoder: any Swift::Decoder) throws -> Foundation::AttributeScopes.SwiftUIAttributes.UnderlineStyleAttribute.Value { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.SwiftUICore.UnderlineStyleAttribute.decode(from:)") }
+  public static func encode(_ value: Foundation::AttributeScopes.SwiftUIAttributes.UnderlineStyleAttribute.Value, to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.AttributeScopes.SwiftUICore.SwiftUIAttributes.SwiftUICore.UnderlineStyleAttribute.encode(_:to:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Foundation::AttributeScopes.SwiftUIAttributes.AdaptiveImageGlyphAttribute : Foundation::CodableAttributedStringKey {
@@ -10294,7 +10278,7 @@ extension Foundation::AttributeScopes.SwiftUIAttributes.AdaptiveImageGlyphAttrib
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Foundation::AttributeDynamicLookup {
   public subscript<T>(dynamicMember keyPath: Swift::KeyPath<Foundation::AttributeScopes.SwiftUIAttributes, T>) -> T where T : Foundation::AttributedStringKey {
-    get { _suiUnimplemented("SwiftUICore.Foundation.subscript(dynamicMember:)") }
+    get { _suiUnimplemented("SwiftUICore.AttributeDynamicLookup.subscript(dynamicMember:)") }
   }
 }
 @available(iOS 17.0, macOS 10.15, tvOS 17.0, watchOS 10.0, *)
@@ -10324,8 +10308,8 @@ public struct SeparatorShapeStyle : ShapeStyle {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SeparatorShapeStyle {
-  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.SwiftUICore._apply(to:)") }
-  public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.SwiftUICore._apply(to:)") }
+  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.SeparatorShapeStyle._apply(to:)") }
+  public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.SeparatorShapeStyle._apply(to:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Color {
@@ -10370,18 +10354,18 @@ extension Color {
       get { _headroom == _headroom ? _headroom : nil }
       set { _headroom = newValue ?? .nan }
     }
-    public static func == (lhs: Color.ResolvedHDR, rhs: Color.ResolvedHDR) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.ResolvedHDR.==(lhs:rhs:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.ResolvedHDR.hash(into:)") }
+    public static func == (lhs: Color.ResolvedHDR, rhs: Color.ResolvedHDR) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Color.ResolvedHDR.==(lhs:rhs:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Color.ResolvedHDR.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.ResolvedHDR.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Color.ResolvedHDR.hashValue") }
     }
   }
-  public init(_ resolved: Color.ResolvedHDR) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  public init(_ resolved: Color.ResolvedHDR) { _suiUnimplemented("SwiftUICore.Color.init(_:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Color.ResolvedHDR {
-  public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.SwiftUICore._apply(to:)") }
-  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.SwiftUICore._apply(to:)") }
+  public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.ResolvedHDR._apply(to:)") }
+  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.ResolvedHDR._apply(to:)") }
   @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public typealias Resolved = Swift::Never
 }
@@ -10389,34 +10373,34 @@ extension Color.ResolvedHDR {
 extension Color.ResolvedHDR : Animatable {
   public typealias AnimatableData = Color.ResolvedHDR._Animatable
   public var animatableData: Color.ResolvedHDR.AnimatableData {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.animatableData") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.animatableData") }
+    get { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.ResolvedHDR.animatableData") }
+    set { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.ResolvedHDR.animatableData") }
   }
   public struct _Animatable : VectorArithmetic, Swift::Sendable {
     public static var zero: Color.ResolvedHDR._Animatable {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Animatable.zero") }
+      get { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.ResolvedHDR._Animatable.zero") }
     }
-    public static func += (lhs: inout Color.ResolvedHDR._Animatable, rhs: Color.ResolvedHDR._Animatable) { _suiUnimplemented("SwiftUICore.SwiftUICore._Animatable.+=(lhs:rhs:)") }
-    public static func -= (lhs: inout Color.ResolvedHDR._Animatable, rhs: Color.ResolvedHDR._Animatable) { _suiUnimplemented("SwiftUICore.SwiftUICore._Animatable.-=(lhs:rhs:)") }
-    public static func + (lhs: Color.ResolvedHDR._Animatable, rhs: Color.ResolvedHDR._Animatable) -> Color.ResolvedHDR._Animatable { _suiUnimplemented("SwiftUICore.SwiftUICore._Animatable.+(lhs:rhs:)") }
-    public static func - (lhs: Color.ResolvedHDR._Animatable, rhs: Color.ResolvedHDR._Animatable) -> Color.ResolvedHDR._Animatable { _suiUnimplemented("SwiftUICore.SwiftUICore._Animatable.-(lhs:rhs:)") }
-    public mutating func scale(by rhs: Swift::Double) { _suiUnimplemented("SwiftUICore.SwiftUICore._Animatable.scale(by:)") }
+    public static func += (lhs: inout Color.ResolvedHDR._Animatable, rhs: Color.ResolvedHDR._Animatable) { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.ResolvedHDR._Animatable.+=(lhs:rhs:)") }
+    public static func -= (lhs: inout Color.ResolvedHDR._Animatable, rhs: Color.ResolvedHDR._Animatable) { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.ResolvedHDR._Animatable.-=(lhs:rhs:)") }
+    public static func + (lhs: Color.ResolvedHDR._Animatable, rhs: Color.ResolvedHDR._Animatable) -> Color.ResolvedHDR._Animatable { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.ResolvedHDR._Animatable.+(lhs:rhs:)") }
+    public static func - (lhs: Color.ResolvedHDR._Animatable, rhs: Color.ResolvedHDR._Animatable) -> Color.ResolvedHDR._Animatable { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.ResolvedHDR._Animatable.-(lhs:rhs:)") }
+    public mutating func scale(by rhs: Swift::Double) { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.ResolvedHDR._Animatable.scale(by:)") }
     public var magnitudeSquared: Swift::Double {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Animatable.magnitudeSquared") }
+      get { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.ResolvedHDR._Animatable.magnitudeSquared") }
     }
-    public static func == (a: Color.ResolvedHDR._Animatable, b: Color.ResolvedHDR._Animatable) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore._Animatable.==(a:b:)") }
+    public static func == (a: Color.ResolvedHDR._Animatable, b: Color.ResolvedHDR._Animatable) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.ResolvedHDR._Animatable.==(a:b:)") }
   }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Color.ResolvedHDR : Swift::CustomStringConvertible {
   public var description: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.description") }
+    get { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.ResolvedHDR.description") }
   }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Color.ResolvedHDR : Swift::Codable {
-  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.encode(to:)") }
-  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.init(from:)") }
+  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.ResolvedHDR.encode(to:)") }
+  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.ResolvedHDR.init(from:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -10506,25 +10490,25 @@ public struct GeometryProxy {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension GeometryProxy {
-  public func bounds(of coordinateSpace: NamedCoordinateSpace) -> CoreGraphics::CGRect? { _suiUnimplemented("SwiftUICore.SwiftUICore.bounds(of:)") }
-  public func frame(in coordinateSpace: some CoordinateSpaceProtocol) -> CoreGraphics::CGRect { _suiUnimplemented("SwiftUICore.SwiftUICore.frame(in:)") }
+  public func bounds(of coordinateSpace: NamedCoordinateSpace) -> CoreGraphics::CGRect? { _suiUnimplemented("SwiftUICore.GeometryProxy.bounds(of:)") }
+  public func frame(in coordinateSpace: some CoordinateSpaceProtocol) -> CoreGraphics::CGRect { _suiUnimplemented("SwiftUICore.GeometryProxy.frame(in:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension GeometryProxy {
   public var containerCornerInsets: RectangleCornerInsets {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.containerCornerInsets") }
+    get { _suiUnimplemented("SwiftUICore.GeometryProxy.containerCornerInsets") }
   }
 }
 @available(anyAppleOS 27.0, *)
 extension GeometryProxy {
   public var concentricCornerRadii: RectangleCornerRadii? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.concentricCornerRadii") }
+    get { _suiUnimplemented("SwiftUICore.GeometryProxy.concentricCornerRadii") }
   }
-  public func concentricCornerRadii(in frame: CoreGraphics::CGRect) -> RectangleCornerRadii? { _suiUnimplemented("SwiftUICore.SwiftUICore.concentricCornerRadii(in:)") }
+  public func concentricCornerRadii(in frame: CoreGraphics::CGRect) -> RectangleCornerRadii? { _suiUnimplemented("SwiftUICore.GeometryProxy.concentricCornerRadii(in:)") }
 }
 @available(anyAppleOS 27.1, *)
 extension GeometryProxy {
-  public func contentMargins(for guide: ContentMarginGuide, edges: Edge.Set = .all) -> EdgeInsets { _suiUnimplemented("SwiftUICore.SwiftUICore.contentMargins(for:edges:)") }
+  public func contentMargins(for guide: ContentMarginGuide, edges: Edge.Set = .all) -> EdgeInsets { _suiUnimplemented("SwiftUICore.GeometryProxy.contentMargins(for:edges:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -10533,8 +10517,8 @@ extension GeometryProxy {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Transaction {
   public var isContinuous: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.isContinuous") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.isContinuous") }
+    get { _suiUnimplemented("SwiftUICore.Transaction.isContinuous") }
+    set { _suiUnimplemented("SwiftUICore.Transaction.isContinuous") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -10566,10 +10550,10 @@ extension Transaction {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ObservedObject {
-  nonisolated public static func _makeProperty<V>(in buffer: inout _DynamicPropertyBuffer, container: _GraphValue<V>, fieldOffset: Swift::Int, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUICore.SwiftUICore._makeProperty(in:container:fieldOffset:inputs:)") }
+  nonisolated public static func _makeProperty<V>(in buffer: inout _DynamicPropertyBuffer, container: _GraphValue<V>, fieldOffset: Swift::Int, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUICore.ObservedObject._makeProperty(in:container:fieldOffset:inputs:)") }
   @available(iOS 27.0, macOS 27.0, tvOS 27.0, watchOS 27.0, visionOS 27.0, *)
   nonisolated public static var _propertyStorageSize: Swift::Int? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._propertyStorageSize") }
+    get { _suiUnimplemented("SwiftUICore.ObservedObject._propertyStorageSize") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -10579,7 +10563,7 @@ extension ObservedObject {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ObservedObject {
   nonisolated public static var _propertyBehaviors: Swift::UInt32 {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._propertyBehaviors") }
+    get { _suiUnimplemented("SwiftUICore.ObservedObject._propertyBehaviors") }
   }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -10727,16 +10711,16 @@ internal class AnyLayoutBox : @unchecked Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Animation {
-  public func logicallyComplete(after duration: Foundation::TimeInterval) -> Animation { _suiUnimplemented("SwiftUICore.SwiftUICore.logicallyComplete(after:)") }
+  public func logicallyComplete(after duration: Foundation::TimeInterval) -> Animation { _suiUnimplemented("SwiftUICore.Animation.logicallyComplete(after:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Color {
-  public func headroom(_ headroom: Swift::Double?) -> Color { _suiUnimplemented("SwiftUICore.SwiftUICore.headroom(_:)") }
+  public func headroom(_ headroom: Swift::Double?) -> Color { _suiUnimplemented("SwiftUICore.Color.headroom(_:)") }
   @export(implementation) public func exposureAdjust(_ stops: Swift::Double) -> Color {
         return _linearScale(exp2(Float(stops)))
     }
   @usableFromInline
-  internal func _linearScale(_ factor: Swift::Float) -> Color { _suiUnimplemented("SwiftUICore.SwiftUICore._linearScale(_:)") }
+  internal func _linearScale(_ factor: Swift::Float) -> Color { _suiUnimplemented("SwiftUICore.Color._linearScale(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -10798,7 +10782,7 @@ package struct ZIndexTraitKey : _ViewTraitKey {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Layout {
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  public static func _makeLayoutView(root: _GraphValue<Self>, inputs: _ViewInputs, body: (_Graph, _ViewInputs) -> _ViewListOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeLayoutView(root:inputs:body:)") }
+  public static func _makeLayoutView(root: _GraphValue<Self>, inputs: _ViewInputs, body: (_Graph, _ViewInputs) -> _ViewListOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.Layout._makeLayoutView(root:inputs:body:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -10807,16 +10791,16 @@ extension Layout {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Layout {
   public static var layoutProperties: LayoutProperties {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.layoutProperties") }
+    get { _suiUnimplemented("SwiftUICore.Layout.layoutProperties") }
   }
-  public func updateCache(_ cache: inout Self.Cache, subviews: Self.Subviews) { _suiUnimplemented("SwiftUICore.SwiftUICore.updateCache(_:subviews:)") }
-  public func explicitAlignment(of guide: HorizontalAlignment, in bounds: CoreGraphics::CGRect, proposal: ProposedViewSize, subviews: Self.Subviews, cache: inout Self.Cache) -> CoreGraphics::CGFloat? { _suiUnimplemented("SwiftUICore.SwiftUICore.explicitAlignment(of:in:proposal:subviews:cache:)") }
-  public func explicitAlignment(of guide: VerticalAlignment, in bounds: CoreGraphics::CGRect, proposal: ProposedViewSize, subviews: Self.Subviews, cache: inout Self.Cache) -> CoreGraphics::CGFloat? { _suiUnimplemented("SwiftUICore.SwiftUICore.explicitAlignment(of:in:proposal:subviews:cache:)") }
-  public func spacing(subviews: Self.Subviews, cache: inout Self.Cache) -> ViewSpacing { _suiUnimplemented("SwiftUICore.SwiftUICore.spacing(subviews:cache:)") }
+  public func updateCache(_ cache: inout Self.Cache, subviews: Self.Subviews) { _suiUnimplemented("SwiftUICore.Layout.updateCache(_:subviews:)") }
+  public func explicitAlignment(of guide: HorizontalAlignment, in bounds: CoreGraphics::CGRect, proposal: ProposedViewSize, subviews: Self.Subviews, cache: inout Self.Cache) -> CoreGraphics::CGFloat? { _suiUnimplemented("SwiftUICore.Layout.explicitAlignment(of:in:proposal:subviews:cache:)") }
+  public func explicitAlignment(of guide: VerticalAlignment, in bounds: CoreGraphics::CGRect, proposal: ProposedViewSize, subviews: Self.Subviews, cache: inout Self.Cache) -> CoreGraphics::CGFloat? { _suiUnimplemented("SwiftUICore.Layout.explicitAlignment(of:in:proposal:subviews:cache:)") }
+  public func spacing(subviews: Self.Subviews, cache: inout Self.Cache) -> ViewSpacing { _suiUnimplemented("SwiftUICore.Layout.spacing(subviews:cache:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension Layout where Self.Cache == () {
-  public func makeCache(subviews: Self.Subviews) -> Self.Cache { _suiUnimplemented("SwiftUICore.SwiftUICore.makeCache(subviews:)") }
+  public func makeCache(subviews: Self.Subviews) -> Self.Cache { _suiUnimplemented("SwiftUICore.Layout.makeCache(subviews:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11060,10 +11044,8 @@ public struct _IdentifiedViewProxy {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _BenchmarkHost {
-  public func viewForIdentifier<I, V>(_ identifier: I, _ type: V.Type) -> V? where I : Swift::Hashable, V : View { _suiUnimplemented("SwiftUICore.SwiftUICore.viewForIdentifier(_:_:)") }
-  public func stateForIdentifier<I, S, V>(_ id: I, type stateType: S.Type, in viewType: V.Type) -> Binding<S>? where I : Swift::Hashable, V : View { _suiUnimplemented("SwiftUICore.SwiftUICore.stateForIdentifier(_:type:in:)") }
-  // port: synthesized witness for _BenchmarkHost (R7); Apple implements it with an internal member
-  public func _renderForTest(interval: Swift::Double) { _suiUnimplemented("SwiftUICore.SwiftUICore._renderForTest(interval:)") }
+  public func viewForIdentifier<I, V>(_ identifier: I, _ type: V.Type) -> V? where I : Swift::Hashable, V : View { _suiUnimplemented("SwiftUICore._BenchmarkHost.viewForIdentifier(_:_:)") }
+  public func stateForIdentifier<I, S, V>(_ id: I, type stateType: S.Type, in viewType: V.Type) -> Binding<S>? where I : Swift::Hashable, V : View { _suiUnimplemented("SwiftUICore._BenchmarkHost.stateForIdentifier(_:type:in:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -11099,7 +11081,7 @@ nonisolated public struct LazyVStack<Content> : View where Content : View {
 @available(tvOS, introduced: 13.0, deprecated: 26.0, message: "Use string interpolation on `Text` instead: `Text(\"Hello \\(name)\")`")
 @available(watchOS, introduced: 6.0, deprecated: 26.0, message: "Use string interpolation on `Text` instead: `Text(\"Hello \\(name)\")`")
 extension Text {
-  public static func + (lhs: Text, rhs: Text) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.+(lhs:rhs:)") }
+  public static func + (lhs: Text, rhs: Text) -> Text { _suiUnimplemented("SwiftUICore.Text.+(lhs:rhs:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11108,7 +11090,7 @@ extension Text {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AnyTransition {
   public static var slide: AnyTransition {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.slide") }
+    get { _suiUnimplemented("SwiftUICore.AnyTransition.slide") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -11155,20 +11137,20 @@ extension Text {
     case head
     case tail
     case middle
-    public static func == (a: Text.TruncationMode, b: Text.TruncationMode) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.TruncationMode.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.TruncationMode.hash(into:)") }
+    public static func == (a: Text.TruncationMode, b: Text.TruncationMode) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Text.TruncationMode.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Text.TruncationMode.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.TruncationMode.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Text.TruncationMode.hashValue") }
     }
   }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   public enum Case : Swift::Sendable {
     case uppercase
     case lowercase
-    public static func == (a: Text.Case, b: Text.Case) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Case.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.Case.hash(into:)") }
+    public static func == (a: Text.Case, b: Text.Case) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Text.Case.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Text.Case.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Case.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Text.Case.hashValue") }
     }
   }
 }
@@ -11179,34 +11161,34 @@ extension Text {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var multilineTextAlignment: TextAlignment {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.multilineTextAlignment") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.multilineTextAlignment") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.multilineTextAlignment") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.multilineTextAlignment") }
   }
   public var truncationMode: Text.TruncationMode {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.truncationMode") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.truncationMode") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.truncationMode") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.truncationMode") }
   }
   public var lineSpacing: CoreGraphics::CGFloat {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.lineSpacing") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.lineSpacing") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.lineSpacing") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.lineSpacing") }
   }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   public var _lineHeightMultiple: CoreGraphics::CGFloat {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._lineHeightMultiple") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore._lineHeightMultiple") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues._lineHeightMultiple") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues._lineHeightMultiple") }
   }
   public var allowsTightening: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.allowsTightening") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.allowsTightening") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.allowsTightening") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.allowsTightening") }
   }
   public var minimumScaleFactor: CoreGraphics::CGFloat {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.minimumScaleFactor") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.minimumScaleFactor") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.minimumScaleFactor") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.minimumScaleFactor") }
   }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   public var textCase: Text.Case? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.textCase") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.textCase") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.textCase") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.textCase") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -11231,7 +11213,7 @@ extension View {
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   @usableFromInline
   @available(*, deprecated, renamed: "lineHeightMultiple")
-  @_Concurrency::MainActor @preconcurrency internal func _lineHeightMultiple(_ multiple: CoreGraphics::CGFloat) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore._lineHeightMultiple(_:)") }
+  @_Concurrency::MainActor @preconcurrency internal func _lineHeightMultiple(_ multiple: CoreGraphics::CGFloat) -> Swift.Never { _suiUnimplemented("SwiftUICore.View._lineHeightMultiple(_:)") }
   
   @inlinable nonisolated public func allowsTightening(_ flag: Swift::Bool) -> some View {
         return environment(\.allowsTightening, flag)
@@ -11253,8 +11235,8 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image {
-  public init(_ cgImage: CoreGraphics::CGImage, scale: CoreGraphics::CGFloat, orientation: Image.Orientation = .up, label: Text) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:scale:orientation:label:)") }
-  public init(decorative cgImage: CoreGraphics::CGImage, scale: CoreGraphics::CGFloat, orientation: Image.Orientation = .up) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(decorative:scale:orientation:)") }
+  public init(_ cgImage: CoreGraphics::CGImage, scale: CoreGraphics::CGFloat, orientation: Image.Orientation = .up, label: Text) { _suiUnimplemented("SwiftUICore.Image.init(_:scale:orientation:label:)") }
+  public init(decorative cgImage: CoreGraphics::CGImage, scale: CoreGraphics::CGFloat, orientation: Image.Orientation = .up) { _suiUnimplemented("SwiftUICore.Image.init(decorative:scale:orientation:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11330,8 +11312,8 @@ extension ShapeStyle where Self == AnyShapeStyle {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _AnchoredShapeStyle {
-  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.SwiftUICore._apply(to:)") }
-  public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.SwiftUICore._apply(to:)") }
+  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore._AnchoredShapeStyle._apply(to:)") }
+  public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore._AnchoredShapeStyle._apply(to:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11367,8 +11349,8 @@ extension ShapeStyle {
 extension StrokeStyle : Animatable {
   public typealias AnimatableData = AnimatablePair<CoreGraphics::CGFloat, AnimatablePair<CoreGraphics::CGFloat, CoreGraphics::CGFloat>>
   public var animatableData: StrokeStyle.AnimatableData {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.animatableData") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.animatableData") }
+    get { _suiUnimplemented("SwiftUICore.StrokeStyle.animatableData") }
+    set { _suiUnimplemented("SwiftUICore.StrokeStyle.animatableData") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -11377,7 +11359,7 @@ extension StrokeStyle : Animatable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image {
-  public func renderingMode(_ renderingMode: Image.TemplateRenderingMode?) -> Image { _suiUnimplemented("SwiftUICore.SwiftUICore.renderingMode(_:)") }
+  public func renderingMode(_ renderingMode: Image.TemplateRenderingMode?) -> Image { _suiUnimplemented("SwiftUICore.Image.renderingMode(_:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11398,11 +11380,11 @@ public static var automatic: TypesettingLanguage { get { _suiUnimplemented("Swif
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func typesettingLanguage(_ language: FoundationShims.Language, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.typesettingLanguage(_:isEnabled:)") }
+  nonisolated public func typesettingLanguage(_ language: FoundationShims.Language, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.typesettingLanguage(_:isEnabled:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func typesettingLanguage(_ language: TypesettingLanguage, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.typesettingLanguage(_:isEnabled:)") }
+  nonisolated public func typesettingLanguage(_ language: TypesettingLanguage, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.typesettingLanguage(_:isEnabled:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -11412,9 +11394,9 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text {
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  public func typesettingLanguage(_ language: FoundationShims.Language, isEnabled: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.typesettingLanguage(_:isEnabled:)") }
+  public func typesettingLanguage(_ language: FoundationShims.Language, isEnabled: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.Text.typesettingLanguage(_:isEnabled:)") }
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  public func typesettingLanguage(_ language: TypesettingLanguage, isEnabled: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.typesettingLanguage(_:isEnabled:)") }
+  public func typesettingLanguage(_ language: TypesettingLanguage, isEnabled: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.Text.typesettingLanguage(_:isEnabled:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11424,8 +11406,8 @@ extension Text {
 extension Transaction {
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
   public var scrollTargetAnchor: UnitPoint? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.scrollTargetAnchor") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.scrollTargetAnchor") }
+    get { _suiUnimplemented("SwiftUICore.Transaction.scrollTargetAnchor") }
+    set { _suiUnimplemented("SwiftUICore.Transaction.scrollTargetAnchor") }
   }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -11436,8 +11418,8 @@ extension Transaction {
 extension Transaction {
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public var scrollPositionUpdatePreservesVelocity: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.scrollPositionUpdatePreservesVelocity") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.scrollPositionUpdatePreservesVelocity") }
+    get { _suiUnimplemented("SwiftUICore.Transaction.scrollPositionUpdatePreservesVelocity") }
+    set { _suiUnimplemented("SwiftUICore.Transaction.scrollPositionUpdatePreservesVelocity") }
   }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -11480,8 +11462,8 @@ public struct ScrollContentOffsetAdjustmentBehavior {
 extension Transaction {
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public var scrollContentOffsetAdjustmentBehavior: ScrollContentOffsetAdjustmentBehavior {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.scrollContentOffsetAdjustmentBehavior") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.scrollContentOffsetAdjustmentBehavior") }
+    get { _suiUnimplemented("SwiftUICore.Transaction.scrollContentOffsetAdjustmentBehavior") }
+    set { _suiUnimplemented("SwiftUICore.Transaction.scrollContentOffsetAdjustmentBehavior") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -11497,19 +11479,19 @@ extension View {
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func lineLimit(_ limit: Swift::PartialRangeFrom<Swift::Int>) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.lineLimit(_:)") }
+  nonisolated public func lineLimit(_ limit: Swift::PartialRangeFrom<Swift::Int>) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.lineLimit(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func lineLimit(_ limit: Swift::PartialRangeThrough<Swift::Int>) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.lineLimit(_:)") }
+  nonisolated public func lineLimit(_ limit: Swift::PartialRangeThrough<Swift::Int>) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.lineLimit(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func lineLimit(_ limit: Swift::ClosedRange<Swift::Int>) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.lineLimit(_:)") }
+  nonisolated public func lineLimit(_ limit: Swift::ClosedRange<Swift::Int>) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.lineLimit(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func lineLimit(_ limit: Swift::Int, reservesSpace: Swift::Bool) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.lineLimit(_:reservesSpace:)") }
+  nonisolated public func lineLimit(_ limit: Swift::Int, reservesSpace: Swift::Bool) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.lineLimit(_:reservesSpace:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -11520,8 +11502,8 @@ extension View {
 extension EnvironmentValues {
   @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
   public var lineLimit: Swift::Int? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.lineLimit") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.lineLimit") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.lineLimit") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.lineLimit") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -11547,8 +11529,8 @@ public static var increased: BackgroundProminence { get { _suiUnimplemented("Swi
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var backgroundProminence: BackgroundProminence {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.backgroundProminence") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.backgroundProminence") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.backgroundProminence") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.backgroundProminence") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -11558,7 +11540,7 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var _mainNamedBundle: Foundation::Bundle? { get { _suiUnimplemented("SwiftUICore.SwiftUICore._mainNamedBundle") } }
+public static var _mainNamedBundle: Foundation::Bundle? { get { _suiUnimplemented("SwiftUICore.Image._mainNamedBundle") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11566,13 +11548,13 @@ public static var _mainNamedBundle: Foundation::Bundle? { get { _suiUnimplemente
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image {
-  public init(_ name: Swift::String, bundle: Foundation::Bundle? = nil) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:bundle:)") }
-  public init(_ name: Swift::String, bundle: Foundation::Bundle? = nil, label: Text) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:bundle:label:)") }
-  public init(decorative name: Swift::String, bundle: Foundation::Bundle? = nil) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(decorative:bundle:)") }
+  public init(_ name: Swift::String, bundle: Foundation::Bundle? = nil) { _suiUnimplemented("SwiftUICore.Image.init(_:bundle:)") }
+  public init(_ name: Swift::String, bundle: Foundation::Bundle? = nil, label: Text) { _suiUnimplemented("SwiftUICore.Image.init(_:bundle:label:)") }
+  public init(decorative name: Swift::String, bundle: Foundation::Bundle? = nil) { _suiUnimplemented("SwiftUICore.Image.init(decorative:bundle:)") }
   @available(macOS 11.0, *)
-  public init(systemName: Swift::String) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(systemName:)") }
+  public init(systemName: Swift::String) { _suiUnimplemented("SwiftUICore.Image.init(systemName:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  public init(_internalSystemName systemName: Swift::String) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_internalSystemName:)") }
+  public init(_internalSystemName systemName: Swift::String) { _suiUnimplemented("SwiftUICore.Image.init(_internalSystemName:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11580,11 +11562,11 @@ extension Image {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image {
-  public init(systemName: Swift::String, variableValue: Swift::Double?) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(systemName:variableValue:)") }
-  public init(_internalSystemName systemName: Swift::String, variableValue: Swift::Double?) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_internalSystemName:variableValue:)") }
-  public init(_ name: Swift::String, variableValue: Swift::Double?, bundle: Foundation::Bundle? = nil) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:variableValue:bundle:)") }
-  public init(_ name: Swift::String, variableValue: Swift::Double?, bundle: Foundation::Bundle? = nil, label: Text) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:variableValue:bundle:label:)") }
-  public init(decorative name: Swift::String, variableValue: Swift::Double?, bundle: Foundation::Bundle? = nil) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(decorative:variableValue:bundle:)") }
+  public init(systemName: Swift::String, variableValue: Swift::Double?) { _suiUnimplemented("SwiftUICore.Image.init(systemName:variableValue:)") }
+  public init(_internalSystemName systemName: Swift::String, variableValue: Swift::Double?) { _suiUnimplemented("SwiftUICore.Image.init(_internalSystemName:variableValue:)") }
+  public init(_ name: Swift::String, variableValue: Swift::Double?, bundle: Foundation::Bundle? = nil) { _suiUnimplemented("SwiftUICore.Image.init(_:variableValue:bundle:)") }
+  public init(_ name: Swift::String, variableValue: Swift::Double?, bundle: Foundation::Bundle? = nil, label: Text) { _suiUnimplemented("SwiftUICore.Image.init(_:variableValue:bundle:label:)") }
+  public init(decorative name: Swift::String, variableValue: Swift::Double?, bundle: Foundation::Bundle? = nil) { _suiUnimplemented("SwiftUICore.Image.init(decorative:variableValue:bundle:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11593,9 +11575,9 @@ extension Image {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image {
   @available(*, deprecated, message: "Use .renderingMode(.original)")
-  public init(_systemName systemName: Swift::String, colorPalette: [Color]? = nil) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_systemName:colorPalette:)") }
+  public init(_systemName systemName: Swift::String, colorPalette: [Color]? = nil) { _suiUnimplemented("SwiftUICore.Image.init(_systemName:colorPalette:)") }
   @available(*, deprecated, message: "Use .renderingMode(.original)")
-  public init(_internalSystemName systemName: Swift::String, colorPalette: [Color]? = nil) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_internalSystemName:colorPalette:)") }
+  public init(_internalSystemName systemName: Swift::String, colorPalette: [Color]? = nil) { _suiUnimplemented("SwiftUICore.Image.init(_internalSystemName:colorPalette:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11603,7 +11585,7 @@ extension Image {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image {
-  public init(_ resource: DeveloperToolsSupport::ImageResource) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  public init(_ resource: DeveloperToolsSupport::ImageResource) { _suiUnimplemented("SwiftUICore.Image.init(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11726,7 +11708,7 @@ public struct _ViewListOutputs {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.2)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.2)
 extension ForEach {
-  public init<V>(subviews view: V, @ContentBuilder content: @escaping (Subview) -> Content) where Data == ForEachSubviewCollection<Content>, ID == Subview.ID, Content : View, V : View { _suiUnimplemented("SwiftUICore.SwiftUICore.init(subviews:?:)") }
+  public init<V>(subviews view: V, @ContentBuilder content: @escaping (Subview) -> Content) where Data == ForEachSubviewCollection<Content>, ID == Subview.ID, Content : View, V : View { _suiUnimplemented("SwiftUICore.ForEach.init(subviews:?:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -11842,15 +11824,15 @@ extension View {
 extension EnvironmentValues {
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public var lineHeight: Foundation::AttributedString.CoreText::LineHeight? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.lineHeight") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.lineHeight") }
-    _modify { _suiUnimplemented("SwiftUICore.SwiftUICore.lineHeight") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.lineHeight") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.lineHeight") }
+    _modify { _suiUnimplemented("SwiftUICore.EnvironmentValues.lineHeight") }
   }
 }
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  nonisolated public func lineHeight(_ lineHeight: Foundation::AttributedString.CoreText::LineHeight?) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.lineHeight(_:)") }
+  nonisolated public func lineHeight(_ lineHeight: Foundation::AttributedString.CoreText::LineHeight?) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.lineHeight(_:)") }
   
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
@@ -11865,48 +11847,48 @@ extension View {
 extension Font {
   public struct Resolved : Swift::Hashable, Swift::Sendable {
     public var ctFont: CoreText::CTFont {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Resolved.ctFont") }
+      get { _suiUnimplemented("SwiftUICore.Font.Resolved.ctFont") }
     }
     public var isBold: Swift::Bool {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Resolved.isBold") }
+      get { _suiUnimplemented("SwiftUICore.Font.Resolved.isBold") }
     }
     public var isItalic: Swift::Bool {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Resolved.isItalic") }
+      get { _suiUnimplemented("SwiftUICore.Font.Resolved.isItalic") }
     }
     public var pointSize: CoreGraphics::CGFloat {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Resolved.pointSize") }
+      get { _suiUnimplemented("SwiftUICore.Font.Resolved.pointSize") }
     }
     public var weight: Font.Weight {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Resolved.weight") }
+      get { _suiUnimplemented("SwiftUICore.Font.Resolved.weight") }
     }
     public var width: Font.Width {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Resolved.width") }
+      get { _suiUnimplemented("SwiftUICore.Font.Resolved.width") }
     }
     public var leading: Font.Leading {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Resolved.leading") }
+      get { _suiUnimplemented("SwiftUICore.Font.Resolved.leading") }
     }
     public var isMonospaced: Swift::Bool {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Resolved.isMonospaced") }
+      get { _suiUnimplemented("SwiftUICore.Font.Resolved.isMonospaced") }
     }
     public var isLowercaseSmallCaps: Swift::Bool {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Resolved.isLowercaseSmallCaps") }
+      get { _suiUnimplemented("SwiftUICore.Font.Resolved.isLowercaseSmallCaps") }
     }
     public var isUppercaseSmallCaps: Swift::Bool {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Resolved.isUppercaseSmallCaps") }
+      get { _suiUnimplemented("SwiftUICore.Font.Resolved.isUppercaseSmallCaps") }
     }
     public var isSmallCaps: Swift::Bool {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Resolved.isSmallCaps") }
+      get { _suiUnimplemented("SwiftUICore.Font.Resolved.isSmallCaps") }
     }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Resolved.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Font.Resolved.hashValue") }
     }
   }
-  public func resolve(in context: Font.Context) -> Font.Resolved { _suiUnimplemented("SwiftUICore.SwiftUICore.resolve(in:)") }
+  public func resolve(in context: Font.Context) -> Font.Resolved { _suiUnimplemented("SwiftUICore.Font.resolve(in:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Font.Resolved {
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.hash(into:)") }
-  public static func == (lhs: Font.Resolved, rhs: Font.Resolved) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(lhs:rhs:)") }
+  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Font.SwiftUICore.Resolved.hash(into:)") }
+  public static func == (lhs: Font.Resolved, rhs: Font.Resolved) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Font.SwiftUICore.Resolved.==(lhs:rhs:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11940,10 +11922,10 @@ extension ShapeStyle where Self == BackgroundStyle {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency::MainActor @preconcurrency public func _addingBackgroundGroup() -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore._addingBackgroundGroup()") }
+@_Concurrency::MainActor @preconcurrency public func _addingBackgroundGroup() -> Swift.Never { _suiUnimplemented("SwiftUICore.View._addingBackgroundGroup()") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency::MainActor @preconcurrency public func _addingBackgroundLayer() -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore._addingBackgroundLayer()") }
+@_Concurrency::MainActor @preconcurrency public func _addingBackgroundLayer() -> Swift.Never { _suiUnimplemented("SwiftUICore.View._addingBackgroundLayer()") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @inlinable nonisolated public func backgroundStyle<S>(_ style: S) -> some View where S : ShapeStyle {
@@ -11958,8 +11940,8 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var backgroundStyle: AnyShapeStyle? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.backgroundStyle") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.backgroundStyle") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.backgroundStyle") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.backgroundStyle") }
   }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -12146,8 +12128,8 @@ extension ShapeStyle where Self == ForegroundStyle {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ForegroundStyle {
-  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.SwiftUICore._apply(to:)") }
-  public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.SwiftUICore._apply(to:)") }
+  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.ForegroundStyle._apply(to:)") }
+  public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.ForegroundStyle._apply(to:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -12184,7 +12166,7 @@ public protocol ShapeStyle : Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::Never : ShapeStyle {
   public typealias Resolved = Swift::Never
-  nonisolated public static func _makeView<S>(view: _GraphValue<_ShapeView<S, Swift::Never>>, inputs: _ViewInputs) -> _ViewOutputs where S : Shape { _suiUnimplemented("SwiftUICore.Swift._makeView(view:inputs:)") }
+  nonisolated public static func _makeView<S>(view: _GraphValue<_ShapeView<S, Swift::Never>>, inputs: _ViewInputs) -> _ViewOutputs where S : Shape { _suiUnimplemented("SwiftUICore.Never._makeView(view:inputs:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -12192,8 +12174,8 @@ extension Swift::Never : ShapeStyle {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ShapeStyle where Self.Resolved == Swift::Never {
-  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.SwiftUICore.resolve(in:)") }
-  public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.SwiftUICore._apply(to:)") }
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.ShapeStyle.resolve(in:)") }
+  public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.ShapeStyle._apply(to:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -12201,9 +12183,9 @@ extension ShapeStyle where Self.Resolved == Swift::Never {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ShapeStyle {
-  nonisolated public static func _makeView<S>(view: _GraphValue<_ShapeView<S, Self>>, inputs: _ViewInputs) -> _ViewOutputs where S : Shape { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(view:inputs:)") }
-  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.SwiftUICore._apply(to:)") }
-  public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.SwiftUICore._apply(to:)") }
+  nonisolated public static func _makeView<S>(view: _GraphValue<_ShapeView<S, Self>>, inputs: _ViewInputs) -> _ViewOutputs where S : Shape { _suiUnimplemented("SwiftUICore.ShapeStyle._makeView(view:inputs:)") }
+  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.ShapeStyle._apply(to:)") }
+  public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.ShapeStyle._apply(to:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -12251,15 +12233,15 @@ public enum AttributedTextFormatting {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  nonisolated public func attributedTextFormattingDefinition<D>(_ definition: D) -> Swift.Never where D : AttributedTextFormattingDefinition { _suiUnimplemented("SwiftUICore.SwiftUICore.attributedTextFormattingDefinition(_:)") }
+  nonisolated public func attributedTextFormattingDefinition<D>(_ definition: D) -> Swift.Never where D : AttributedTextFormattingDefinition { _suiUnimplemented("SwiftUICore.View.attributedTextFormattingDefinition(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  nonisolated public func attributedTextFormattingDefinition<S>(_ scope: S.Type) -> Swift.Never where S : Foundation::AttributeScope { _suiUnimplemented("SwiftUICore.SwiftUICore.attributedTextFormattingDefinition(_:)") }
+  nonisolated public func attributedTextFormattingDefinition<S>(_ scope: S.Type) -> Swift.Never where S : Foundation::AttributeScope { _suiUnimplemented("SwiftUICore.View.attributedTextFormattingDefinition(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  nonisolated public func attributedTextFormattingDefinition<S>(_ path: Swift::KeyPath<Foundation::AttributeScopes, S.Type>) -> Swift.Never where S : Foundation::AttributeScope { _suiUnimplemented("SwiftUICore.SwiftUICore.attributedTextFormattingDefinition(_:)") }
+  nonisolated public func attributedTextFormattingDefinition<S>(_ path: Swift::KeyPath<Foundation::AttributeScopes, S.Type>) -> Swift.Never where S : Foundation::AttributeScope { _suiUnimplemented("SwiftUICore.View.attributedTextFormattingDefinition(_:)") }
   
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -12293,7 +12275,7 @@ extension AttributedTextFormatting {
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension AttributedTextFormattingDefinition {
-  public static func _makeDefinition(_ inputs: AttributedTextFormatting._Inputs<Self>) -> AttributedTextFormatting._Outputs<Self> { _suiUnimplemented("SwiftUICore.SwiftUICore._makeDefinition(_:)") }
+  public static func _makeDefinition(_ inputs: AttributedTextFormatting._Inputs<Self>) -> AttributedTextFormatting._Outputs<Self> { _suiUnimplemented("SwiftUICore.AttributedTextFormattingDefinition._makeDefinition(_:)") }
 }
 extension AttributedTextFormatting {
   #if compiler(>=5.3) && $TildeSendable
@@ -12453,7 +12435,7 @@ extension AttributedTextFormatting {
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Swift::Optional : AttributedTextFormattingDefinition where Wrapped : AttributedTextFormattingDefinition {
   public var body: some AttributedTextFormattingDefinition<Wrapped.Scope> {
-    get { _suiUnimplemented("SwiftUICore.Swift.body") }
+    get { _suiUnimplemented("SwiftUICore.Optional.body") }
   }
   @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -12463,10 +12445,10 @@ extension AttributedTextFormatting {
   #if compiler(>=5.3) && $TildeSendable
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public struct EmptyDefinition<Scope> : AttributedTextFormattingDefinition, ~Swift::Sendable where Scope : Foundation::AttributeScope {
-    public init() { _suiUnimplemented("SwiftUICore.SwiftUICore.EmptyDefinition.init()") }
-    public static func _makeDefinition(_ inputs: AttributedTextFormatting._Inputs<AttributedTextFormatting.EmptyDefinition<Scope>>) -> AttributedTextFormatting._Outputs<AttributedTextFormatting.EmptyDefinition<Scope>> { _suiUnimplemented("SwiftUICore.SwiftUICore.EmptyDefinition._makeDefinition(_:)") }
+    public init() { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.EmptyDefinition.init()") }
+    public static func _makeDefinition(_ inputs: AttributedTextFormatting._Inputs<AttributedTextFormatting.EmptyDefinition<Scope>>) -> AttributedTextFormatting._Outputs<AttributedTextFormatting.EmptyDefinition<Scope>> { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.EmptyDefinition._makeDefinition(_:)") }
     public var body: AttributedTextFormatting.EmptyDefinition<Scope> {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.EmptyDefinition.body") }
+      get { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.EmptyDefinition.body") }
     }
     @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
     public typealias Body = AttributedTextFormatting.EmptyDefinition<Scope>
@@ -12488,10 +12470,10 @@ extension AttributedTextFormatting {
   #if compiler(>=5.3) && $TildeSendable
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public struct AnyDefinition<Scope> : AttributedTextFormattingDefinition, ~Swift::Sendable where Scope : Foundation::AttributeScope {
-    public init<D>(_ definition: D) where Scope == D.Scope, D : AttributedTextFormattingDefinition { _suiUnimplemented("SwiftUICore.SwiftUICore.AnyDefinition.init(_:)") }
-    public static func _makeDefinition(_ inputs: AttributedTextFormatting._Inputs<AttributedTextFormatting.AnyDefinition<Scope>>) -> AttributedTextFormatting._Outputs<AttributedTextFormatting.AnyDefinition<Scope>> { _suiUnimplemented("SwiftUICore.SwiftUICore.AnyDefinition._makeDefinition(_:)") }
+    public init<D>(_ definition: D) where Scope == D.Scope, D : AttributedTextFormattingDefinition { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AnyDefinition.init(_:)") }
+    public static func _makeDefinition(_ inputs: AttributedTextFormatting._Inputs<AttributedTextFormatting.AnyDefinition<Scope>>) -> AttributedTextFormatting._Outputs<AttributedTextFormatting.AnyDefinition<Scope>> { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AnyDefinition._makeDefinition(_:)") }
     public var body: AttributedTextFormatting.AnyDefinition<Scope> {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.AnyDefinition.body") }
+      get { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AnyDefinition.body") }
     }
     @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
     public typealias Body = AttributedTextFormatting.AnyDefinition<Scope>
@@ -12513,10 +12495,10 @@ extension AttributedTextFormatting {
 extension _ConditionalContent : AttributedTextFormattingDefinition where TrueContent : AttributedTextFormattingDefinition, FalseContent : AttributedTextFormattingDefinition, TrueContent.Scope == FalseContent.Scope {
   public typealias Scope = TrueContent.Scope
   @usableFromInline
-  internal init(storage: _ConditionalContent<TrueContent, FalseContent>.Storage) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(storage:)") }
-  public static func _makeDefinition(_ inputs: AttributedTextFormatting._Inputs<_ConditionalContent<TrueContent, FalseContent>>) -> AttributedTextFormatting._Outputs<_ConditionalContent<TrueContent, FalseContent>> { _suiUnimplemented("SwiftUICore.SwiftUICore._makeDefinition(_:)") }
+  internal init(storage: _ConditionalContent<TrueContent, FalseContent>.Storage) { _suiUnimplemented("SwiftUICore._ConditionalContent.init(storage:)") }
+  public static func _makeDefinition(_ inputs: AttributedTextFormatting._Inputs<_ConditionalContent<TrueContent, FalseContent>>) -> AttributedTextFormatting._Outputs<_ConditionalContent<TrueContent, FalseContent>> { _suiUnimplemented("SwiftUICore._ConditionalContent._makeDefinition(_:)") }
   public var body: _ConditionalContent<TrueContent, FalseContent> {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.body") }
+    get { _suiUnimplemented("SwiftUICore._ConditionalContent.body") }
   }
   @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public typealias Body = _ConditionalContent<TrueContent, FalseContent>
@@ -12525,10 +12507,10 @@ extension AttributedTextFormatting {
   #if compiler(>=5.3) && $TildeSendable
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public struct TupleDefinition<Scope, each Definition> : AttributedTextFormattingDefinition, ~Swift::Sendable where Scope : Foundation::AttributeScope, repeat each Definition : AttributedTextFormattingDefinition {
-    public init(definition: repeat each Definition) { _suiUnimplemented("SwiftUICore.SwiftUICore.TupleDefinition.init(definition:)") }
-    public static func _makeDefinition(_ inputs: AttributedTextFormatting._Inputs<AttributedTextFormatting.TupleDefinition<Scope, repeat each Definition>>) -> AttributedTextFormatting._Outputs<AttributedTextFormatting.TupleDefinition<Scope, repeat each Definition>> { _suiUnimplemented("SwiftUICore.SwiftUICore.TupleDefinition._makeDefinition(_:)") }
+    public init(definition: repeat each Definition) { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.TupleDefinition.init(definition:)") }
+    public static func _makeDefinition(_ inputs: AttributedTextFormatting._Inputs<AttributedTextFormatting.TupleDefinition<Scope, repeat each Definition>>) -> AttributedTextFormatting._Outputs<AttributedTextFormatting.TupleDefinition<Scope, repeat each Definition>> { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.TupleDefinition._makeDefinition(_:)") }
     public var body: AttributedTextFormatting.TupleDefinition<Scope, repeat each Definition> {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.TupleDefinition.body") }
+      get { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.TupleDefinition.body") }
     }
     @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
     public typealias Body = AttributedTextFormatting.TupleDefinition<Scope, repeat each Definition>
@@ -12549,15 +12531,15 @@ extension AttributedTextFormatting {
 extension AttributedTextFormatting {
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public struct ValueConstraint<Scope, AttributeKey> : AttributedTextValueConstraint where Scope : Foundation::AttributeScope, AttributeKey : Foundation::AttributedStringKey, AttributeKey.Value : Swift::Sendable {
-    public init(for keyPath: Swift::KeyPath<Scope, AttributeKey>, values allowedValues: Swift::Set<AttributeKey.Value?>, default defaultValue: AttributeKey.Value?) { _suiUnimplemented("SwiftUICore.SwiftUICore.ValueConstraint.init(for:values:default:)") }
-    public init(for attribute: AttributeKey.Type, values allowedValues: Swift::Set<AttributeKey.Value?>, default defaultValue: AttributeKey.Value?) { _suiUnimplemented("SwiftUICore.SwiftUICore.ValueConstraint.init(for:values:default:)") }
-    public func constrain(_ container: inout AttributedTextFormatting.ValueConstraint<Scope, AttributeKey>.Attributes) { _suiUnimplemented("SwiftUICore.SwiftUICore.ValueConstraint.constrain(_:)") }
-    public static func == (a: AttributedTextFormatting.ValueConstraint<Scope, AttributeKey>, b: AttributedTextFormatting.ValueConstraint<Scope, AttributeKey>) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.ValueConstraint.==(a:b:)") }
+    public init(for keyPath: Swift::KeyPath<Scope, AttributeKey>, values allowedValues: Swift::Set<AttributeKey.Value?>, default defaultValue: AttributeKey.Value?) { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.ValueConstraint.init(for:values:default:)") }
+    public init(for attribute: AttributeKey.Type, values allowedValues: Swift::Set<AttributeKey.Value?>, default defaultValue: AttributeKey.Value?) { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.ValueConstraint.init(for:values:default:)") }
+    public func constrain(_ container: inout AttributedTextFormatting.ValueConstraint<Scope, AttributeKey>.Attributes) { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.ValueConstraint.constrain(_:)") }
+    public static func == (a: AttributedTextFormatting.ValueConstraint<Scope, AttributeKey>, b: AttributedTextFormatting.ValueConstraint<Scope, AttributeKey>) -> Swift::Bool { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.ValueConstraint.==(a:b:)") }
     @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
     public typealias Body = AttributedTextFormatting.ValueConstraint<Scope, AttributeKey>
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.ValueConstraint.hash(into:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.ValueConstraint.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.ValueConstraint.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.ValueConstraint.hashValue") }
     }
   }
 }
@@ -12573,9 +12555,9 @@ public protocol AttributedTextValueConstraint : Swift::Hashable, Swift::Sendable
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension AttributedTextValueConstraint {
   public var body: Self {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.body") }
+    get { _suiUnimplemented("SwiftUICore.AttributedTextValueConstraint.body") }
   }
-  public static func _makeDefinition(_ inputs: AttributedTextFormatting._Inputs<Self>) -> AttributedTextFormatting._Outputs<Self> { _suiUnimplemented("SwiftUICore.SwiftUICore._makeDefinition(_:)") }
+  public static func _makeDefinition(_ inputs: AttributedTextFormatting._Inputs<Self>) -> AttributedTextFormatting._Outputs<Self> { _suiUnimplemented("SwiftUICore.AttributedTextValueConstraint._makeDefinition(_:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension AttributedTextValueConstraint {
@@ -12585,37 +12567,37 @@ extension AttributedTextFormatting {
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   @dynamicMemberLookup public struct AttributeContainerProxy<Scope, Attribute> : Swift::Sendable where Scope : Foundation::AttributeScope, Attribute : Foundation::AttributedStringKey, Attribute.Value : Swift::Sendable {
     public subscript<K>(key: K.Type) -> K.Value? where K : Foundation::AttributedStringKey, K.Value : Swift::Sendable {
-      mutating get { _suiUnimplemented("SwiftUICore.SwiftUICore.AttributeContainerProxy.subscript(key:)") }
+      mutating get { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AttributeContainerProxy.subscript(key:)") }
     }
     public subscript<K>(dynamicMember keyPath: Swift::KeyPath<Foundation::AttributeDynamicLookup, K>) -> K.Value? where K : Foundation::AttributedStringKey, K.Value : Swift::Sendable {
-      mutating get { _suiUnimplemented("SwiftUICore.SwiftUICore.AttributeContainerProxy.subscript(dynamicMember:)") }
+      mutating get { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AttributeContainerProxy.subscript(dynamicMember:)") }
     }
     public subscript<K>(dynamicMember keyPath: Swift::KeyPath<Scope, K>) -> K.Value? where K : Foundation::AttributedStringKey, K.Value : Swift::Sendable {
-      mutating get { _suiUnimplemented("SwiftUICore.SwiftUICore.AttributeContainerProxy.subscript(dynamicMember:)") }
+      mutating get { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AttributeContainerProxy.subscript(dynamicMember:)") }
     }
     public subscript(key: Attribute.Type) -> Attribute.Value? {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.AttributeContainerProxy.subscript(key:)") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore.AttributeContainerProxy.subscript(key:)") }
+      get { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AttributeContainerProxy.subscript(key:)") }
+      set { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AttributeContainerProxy.subscript(key:)") }
     }
     public subscript(dynamicMember keyPath: Swift::KeyPath<Scope, Attribute>) -> Attribute.Value? {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.AttributeContainerProxy.subscript(dynamicMember:)") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore.AttributeContainerProxy.subscript(dynamicMember:)") }
+      get { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AttributeContainerProxy.subscript(dynamicMember:)") }
+      set { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AttributeContainerProxy.subscript(dynamicMember:)") }
     }
     public subscript(dynamicMember keyPath: Swift::KeyPath<Foundation::AttributeDynamicLookup, Attribute>) -> Attribute.Value? {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.AttributeContainerProxy.subscript(dynamicMember:)") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore.AttributeContainerProxy.subscript(dynamicMember:)") }
+      get { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AttributeContainerProxy.subscript(dynamicMember:)") }
+      set { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AttributeContainerProxy.subscript(dynamicMember:)") }
     }
     public subscript<S>(dynamicMember keyPath: Swift::KeyPath<Scope, S>) -> AttributedTextFormatting.AttributeContainerProxy<Scope, Attribute>.Scoped<S> where S : Foundation::AttributeScope {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.AttributeContainerProxy.subscript(dynamicMember:)") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore.AttributeContainerProxy.subscript(dynamicMember:)") }
+      get { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AttributeContainerProxy.subscript(dynamicMember:)") }
+      set { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AttributeContainerProxy.subscript(dynamicMember:)") }
     }
     @_disfavoredOverload public subscript<S>(dynamicMember keyPath: Swift::KeyPath<Foundation::AttributeScopes, S.Type>) -> AttributedTextFormatting.AttributeContainerProxy<Scope, Attribute>.Scoped<S> where S : Foundation::AttributeScope {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.AttributeContainerProxy.subscript(dynamicMember:)") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore.AttributeContainerProxy.subscript(dynamicMember:)") }
+      get { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AttributeContainerProxy.subscript(dynamicMember:)") }
+      set { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AttributeContainerProxy.subscript(dynamicMember:)") }
     }
     public subscript<S>(scope: S.Type) -> AttributedTextFormatting.AttributeContainerProxy<Scope, Attribute>.Scoped<S> where S : Foundation::AttributeScope {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.AttributeContainerProxy.subscript(scope:)") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore.AttributeContainerProxy.subscript(scope:)") }
+      get { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AttributeContainerProxy.subscript(scope:)") }
+      set { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.AttributeContainerProxy.subscript(scope:)") }
     }
   }
 }
@@ -12623,18 +12605,18 @@ extension AttributedTextFormatting {
 extension AttributedTextFormatting.AttributeContainerProxy {
   @dynamicMemberLookup public struct Scoped<Subscope> : Swift::Sendable where Subscope : Foundation::AttributeScope {
     public subscript<K>(dynamicMember keyPath: Swift::KeyPath<Subscope, K>) -> K.Value? where K : Foundation::AttributedStringKey, K.Value : Swift::Sendable {
-      mutating get { _suiUnimplemented("SwiftUICore.SwiftUICore.Scoped.subscript(dynamicMember:)") }
+      mutating get { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.SwiftUICore.AttributeContainerProxy.Scoped.subscript(dynamicMember:)") }
     }
     public subscript(dynamicMember keyPath: Swift::KeyPath<Subscope, Attribute>) -> Attribute.Value? {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Scoped.subscript(dynamicMember:)") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore.Scoped.subscript(dynamicMember:)") }
+      get { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.SwiftUICore.AttributeContainerProxy.Scoped.subscript(dynamicMember:)") }
+      set { _suiUnimplemented("SwiftUICore.AttributedTextFormatting.SwiftUICore.AttributeContainerProxy.Scoped.subscript(dynamicMember:)") }
     }
   }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension AttributedTextFormattingDefinition {
-  public func constrain(_ string: inout Foundation::AttributedString) { _suiUnimplemented("SwiftUICore.SwiftUICore.constrain(_:)") }
-  public func constrain(_ container: inout Foundation::AttributeContainer) { _suiUnimplemented("SwiftUICore.SwiftUICore.constrain(_:)") }
+  public func constrain(_ string: inout Foundation::AttributedString) { _suiUnimplemented("SwiftUICore.AttributedTextFormattingDefinition.constrain(_:)") }
+  public func constrain(_ container: inout Foundation::AttributeContainer) { _suiUnimplemented("SwiftUICore.AttributedTextFormattingDefinition.constrain(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -12656,7 +12638,7 @@ nonisolated public protocol Shape : Swift::Sendable, Animatable, View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Shape {
-  nonisolated public func sizeThatFits(_ proposal: ProposedViewSize) -> CoreGraphics::CGSize { _suiUnimplemented("SwiftUICore.SwiftUICore.sizeThatFits(_:)") }
+  nonisolated public func sizeThatFits(_ proposal: ProposedViewSize) -> CoreGraphics::CGSize { _suiUnimplemented("SwiftUICore.Shape.sizeThatFits(_:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -12681,7 +12663,7 @@ public enum ShapeRole : Swift::Sendable {
 extension Shape {
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
   public static var role: ShapeRole {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.role") }
+    get { _suiUnimplemented("SwiftUICore.Shape.role") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -12691,7 +12673,7 @@ extension Shape {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Shape {
   nonisolated public var layoutDirectionBehavior: LayoutDirectionBehavior {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.layoutDirectionBehavior") }
+    get { _suiUnimplemented("SwiftUICore.Shape.layoutDirectionBehavior") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -12762,7 +12744,7 @@ extension Shape {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AnyLocation : Swift::Equatable {
-  public static func == (lhs: AnyLocation<Value>, rhs: AnyLocation<Value>) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(lhs:rhs:)") }
+  public static func == (lhs: AnyLocation<Value>, rhs: AnyLocation<Value>) -> Swift::Bool { _suiUnimplemented("SwiftUICore.AnyLocation.==(lhs:rhs:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -12813,14 +12795,14 @@ public static var bottomTrailing: UnitPoint { get { _suiUnimplemented("SwiftUICo
 extension UnitPoint : Animatable {
   public typealias AnimatableData = AnimatablePair<CoreGraphics::CGFloat, CoreGraphics::CGFloat>
   public var animatableData: UnitPoint.AnimatableData {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.animatableData") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.animatableData") }
+    get { _suiUnimplemented("SwiftUICore.UnitPoint.animatableData") }
+    set { _suiUnimplemented("SwiftUICore.UnitPoint.animatableData") }
   }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension UnitPoint : Swift::Codable {
-  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.encode(to:)") }
-  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.init(from:)") }
+  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.UnitPoint.encode(to:)") }
+  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.UnitPoint.init(from:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -12916,7 +12898,7 @@ public struct _ViewOutputs {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _PreferenceWritingModifier : Swift::Equatable where Key.Value : Swift::Equatable {
-  public static func == (a: _PreferenceWritingModifier<Key>, b: _PreferenceWritingModifier<Key>) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public static func == (a: _PreferenceWritingModifier<Key>, b: _PreferenceWritingModifier<Key>) -> Swift::Bool { _suiUnimplemented("SwiftUICore._PreferenceWritingModifier.==(a:b:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -12988,7 +12970,7 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
   @available(visionOS, unavailable)
-  @_Concurrency::MainActor @preconcurrency public func glassEffectUnion(id: (some (Hashable & Sendable))?, namespace: Namespace.ID) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.glassEffectUnion(id:namespace:)") }
+  @_Concurrency::MainActor @preconcurrency public func glassEffectUnion(id: (some (Hashable & Sendable))?, namespace: Namespace.ID) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.glassEffectUnion(id:namespace:)") }
   
 }
 @available(anyAppleOS 27.1, *)
@@ -13018,18 +13000,18 @@ nonisolated public struct OverlayArrangementViewStyle : ArrangementViewStyle {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(anyAppleOS 27.1, *)
-  nonisolated public func overlayArrangementEdge(_ edge: VerticalEdge?) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.overlayArrangementEdge(_:)") }
+  nonisolated public func overlayArrangementEdge(_ edge: VerticalEdge?) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.overlayArrangementEdge(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(anyAppleOS 27.1, *)
-  nonisolated public func overlayArrangementEdge(_ edge: HorizontalEdge?) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.overlayArrangementEdge(_:)") }
+  nonisolated public func overlayArrangementEdge(_ edge: HorizontalEdge?) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.overlayArrangementEdge(_:)") }
   
 }
 extension EnvironmentValues {
   @available(anyAppleOS 27.1, *)
   public var overlayArrangementZIndex: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.overlayArrangementZIndex") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.overlayArrangementZIndex") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.overlayArrangementZIndex") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.overlayArrangementZIndex") }
   }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -13089,7 +13071,7 @@ internal class AnyShapeBox {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Gesture {
-  nonisolated public func map<T>(_ body: @escaping (Self.Value) -> T) -> _MapGesture<Self, T> { _suiUnimplemented("SwiftUICore.SwiftUICore.map(_:)") }
+  nonisolated public func map<T>(_ body: @escaping (Self.Value) -> T) -> _MapGesture<Self, T> { _suiUnimplemented("SwiftUICore.Gesture.map(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -13260,7 +13242,7 @@ internal class AnyGestureStorageBase<Value> {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Path : Shape {
-  nonisolated public func path(in _: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore.path(in:)") }
+  nonisolated public func path(in _: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.Path.path(in:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -13322,41 +13304,41 @@ package struct TrimmedPath : Swift::Equatable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Path {
-  public mutating func move(to end: CoreGraphics::CGPoint) { _suiUnimplemented("SwiftUICore.SwiftUICore.move(to:)") }
-  public mutating func addLine(to end: CoreGraphics::CGPoint) { _suiUnimplemented("SwiftUICore.SwiftUICore.addLine(to:)") }
-  public mutating func addQuadCurve(to end: CoreGraphics::CGPoint, control: CoreGraphics::CGPoint) { _suiUnimplemented("SwiftUICore.SwiftUICore.addQuadCurve(to:control:)") }
-  public mutating func addCurve(to end: CoreGraphics::CGPoint, control1: CoreGraphics::CGPoint, control2: CoreGraphics::CGPoint) { _suiUnimplemented("SwiftUICore.SwiftUICore.addCurve(to:control1:control2:)") }
-  public mutating func closeSubpath() { _suiUnimplemented("SwiftUICore.SwiftUICore.closeSubpath()") }
-  public mutating func addRect(_ rect: CoreGraphics::CGRect, transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.SwiftUICore.addRect(_:transform:)") }
-  public mutating func addRoundedRect(in rect: CoreGraphics::CGRect, cornerSize: CoreGraphics::CGSize, style: RoundedCornerStyle = .continuous, transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.SwiftUICore.addRoundedRect(in:cornerSize:style:transform:)") }
+  public mutating func move(to end: CoreGraphics::CGPoint) { _suiUnimplemented("SwiftUICore.Path.move(to:)") }
+  public mutating func addLine(to end: CoreGraphics::CGPoint) { _suiUnimplemented("SwiftUICore.Path.addLine(to:)") }
+  public mutating func addQuadCurve(to end: CoreGraphics::CGPoint, control: CoreGraphics::CGPoint) { _suiUnimplemented("SwiftUICore.Path.addQuadCurve(to:control:)") }
+  public mutating func addCurve(to end: CoreGraphics::CGPoint, control1: CoreGraphics::CGPoint, control2: CoreGraphics::CGPoint) { _suiUnimplemented("SwiftUICore.Path.addCurve(to:control1:control2:)") }
+  public mutating func closeSubpath() { _suiUnimplemented("SwiftUICore.Path.closeSubpath()") }
+  public mutating func addRect(_ rect: CoreGraphics::CGRect, transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.Path.addRect(_:transform:)") }
+  public mutating func addRoundedRect(in rect: CoreGraphics::CGRect, cornerSize: CoreGraphics::CGSize, style: RoundedCornerStyle = .continuous, transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.Path.addRoundedRect(in:cornerSize:style:transform:)") }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  public mutating func addRoundedRect(in rect: CoreGraphics::CGRect, cornerRadii: RectangleCornerRadii, style: RoundedCornerStyle = .continuous, transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.SwiftUICore.addRoundedRect(in:cornerRadii:style:transform:)") }
-  public mutating func addEllipse(in rect: CoreGraphics::CGRect, transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.SwiftUICore.addEllipse(in:transform:)") }
-  public mutating func addRects(_ rects: [CoreGraphics::CGRect], transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.SwiftUICore.addRects(_:transform:)") }
-  public mutating func addLines(_ lines: [CoreGraphics::CGPoint]) { _suiUnimplemented("SwiftUICore.SwiftUICore.addLines(_:)") }
-  public mutating func addRelativeArc(center: CoreGraphics::CGPoint, radius: CoreGraphics::CGFloat, startAngle: Angle, delta: Angle, transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.SwiftUICore.addRelativeArc(center:radius:startAngle:delta:transform:)") }
-  public mutating func addArc(center: CoreGraphics::CGPoint, radius: CoreGraphics::CGFloat, startAngle: Angle, endAngle: Angle, clockwise: Swift::Bool, transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.SwiftUICore.addArc(center:radius:startAngle:endAngle:clockwise:transform:)") }
-  public mutating func addArc(tangent1End: CoreGraphics::CGPoint, tangent2End: CoreGraphics::CGPoint, radius: CoreGraphics::CGFloat, transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.SwiftUICore.addArc(tangent1End:tangent2End:radius:transform:)") }
-  public mutating func addPath(_ path: Path, transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.SwiftUICore.addPath(_:transform:)") }
+  public mutating func addRoundedRect(in rect: CoreGraphics::CGRect, cornerRadii: RectangleCornerRadii, style: RoundedCornerStyle = .continuous, transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.Path.addRoundedRect(in:cornerRadii:style:transform:)") }
+  public mutating func addEllipse(in rect: CoreGraphics::CGRect, transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.Path.addEllipse(in:transform:)") }
+  public mutating func addRects(_ rects: [CoreGraphics::CGRect], transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.Path.addRects(_:transform:)") }
+  public mutating func addLines(_ lines: [CoreGraphics::CGPoint]) { _suiUnimplemented("SwiftUICore.Path.addLines(_:)") }
+  public mutating func addRelativeArc(center: CoreGraphics::CGPoint, radius: CoreGraphics::CGFloat, startAngle: Angle, delta: Angle, transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.Path.addRelativeArc(center:radius:startAngle:delta:transform:)") }
+  public mutating func addArc(center: CoreGraphics::CGPoint, radius: CoreGraphics::CGFloat, startAngle: Angle, endAngle: Angle, clockwise: Swift::Bool, transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.Path.addArc(center:radius:startAngle:endAngle:clockwise:transform:)") }
+  public mutating func addArc(tangent1End: CoreGraphics::CGPoint, tangent2End: CoreGraphics::CGPoint, radius: CoreGraphics::CGFloat, transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.Path.addArc(tangent1End:tangent2End:radius:transform:)") }
+  public mutating func addPath(_ path: Path, transform: CoreGraphics::CGAffineTransform = .identity) { _suiUnimplemented("SwiftUICore.Path.addPath(_:transform:)") }
   public var currentPoint: CoreGraphics::CGPoint? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.currentPoint") }
+    get { _suiUnimplemented("SwiftUICore.Path.currentPoint") }
   }
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  public func normalized(eoFill: Swift::Bool = true) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore.normalized(eoFill:)") }
+  public func normalized(eoFill: Swift::Bool = true) -> Path { _suiUnimplemented("SwiftUICore.Path.normalized(eoFill:)") }
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  public func intersection(_ other: Path, eoFill: Swift::Bool = false) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore.intersection(_:eoFill:)") }
+  public func intersection(_ other: Path, eoFill: Swift::Bool = false) -> Path { _suiUnimplemented("SwiftUICore.Path.intersection(_:eoFill:)") }
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  public func union(_ other: Path, eoFill: Swift::Bool = false) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore.union(_:eoFill:)") }
+  public func union(_ other: Path, eoFill: Swift::Bool = false) -> Path { _suiUnimplemented("SwiftUICore.Path.union(_:eoFill:)") }
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  public func subtracting(_ other: Path, eoFill: Swift::Bool = false) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore.subtracting(_:eoFill:)") }
+  public func subtracting(_ other: Path, eoFill: Swift::Bool = false) -> Path { _suiUnimplemented("SwiftUICore.Path.subtracting(_:eoFill:)") }
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  public func symmetricDifference(_ other: Path, eoFill: Swift::Bool = false) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore.symmetricDifference(_:eoFill:)") }
+  public func symmetricDifference(_ other: Path, eoFill: Swift::Bool = false) -> Path { _suiUnimplemented("SwiftUICore.Path.symmetricDifference(_:eoFill:)") }
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  public func lineIntersection(_ other: Path, eoFill: Swift::Bool = false) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore.lineIntersection(_:eoFill:)") }
+  public func lineIntersection(_ other: Path, eoFill: Swift::Bool = false) -> Path { _suiUnimplemented("SwiftUICore.Path.lineIntersection(_:eoFill:)") }
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  public func lineSubtraction(_ other: Path, eoFill: Swift::Bool = false) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore.lineSubtraction(_:eoFill:)") }
-  public func applying(_ transform: CoreGraphics::CGAffineTransform) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore.applying(_:)") }
-  public func offsetBy(dx: CoreGraphics::CGFloat, dy: CoreGraphics::CGFloat) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore.offsetBy(dx:dy:)") }
+  public func lineSubtraction(_ other: Path, eoFill: Swift::Bool = false) -> Path { _suiUnimplemented("SwiftUICore.Path.lineSubtraction(_:eoFill:)") }
+  public func applying(_ transform: CoreGraphics::CGAffineTransform) -> Path { _suiUnimplemented("SwiftUICore.Path.applying(_:)") }
+  public func offsetBy(dx: CoreGraphics::CGFloat, dy: CoreGraphics::CGFloat) -> Path { _suiUnimplemented("SwiftUICore.Path.offsetBy(dx:dy:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -13370,7 +13352,7 @@ public func withAnimation<Result>(_ animation: Animation? = .default, completion
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 extension Transaction {
-  public mutating func addAnimationCompletion(criteria: AnimationCompletionCriteria = .logicallyComplete, _ completion: @escaping () -> Swift::Void) { _suiUnimplemented("SwiftUICore.SwiftUICore.addAnimationCompletion(criteria:_:)") }
+  public mutating func addAnimationCompletion(criteria: AnimationCompletionCriteria = .logicallyComplete, _ completion: @escaping () -> Swift::Void) { _suiUnimplemented("SwiftUICore.Transaction.addAnimationCompletion(criteria:_:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -13593,7 +13575,7 @@ extension Shape where Self == Circle {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Circle {
-  nonisolated public func sizeThatFits(_ proposal: ProposedViewSize) -> CoreGraphics::CGSize { _suiUnimplemented("SwiftUICore.SwiftUICore.sizeThatFits(_:)") }
+  nonisolated public func sizeThatFits(_ proposal: ProposedViewSize) -> CoreGraphics::CGSize { _suiUnimplemented("SwiftUICore.Circle.sizeThatFits(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -13651,16 +13633,16 @@ extension Rectangle : InsettableShape {
             self.amount = amount
         }
     @usableFromInline
-    nonisolated internal func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.path(in:)") }
+    nonisolated internal func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.Rectangle._Inset.path(in:)") }
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
     @usableFromInline
     nonisolated internal var layoutDirectionBehavior: LayoutDirectionBehavior {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.layoutDirectionBehavior") }
+      get { _suiUnimplemented("SwiftUICore.Rectangle._Inset.layoutDirectionBehavior") }
     }
     @usableFromInline
     internal var animatableData: CoreGraphics::CGFloat {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.animatableData") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.animatableData") }
+      get { _suiUnimplemented("SwiftUICore.Rectangle._Inset.animatableData") }
+      set { _suiUnimplemented("SwiftUICore.Rectangle._Inset.animatableData") }
     }
     @inlinable nonisolated internal func inset(by amount: CoreGraphics::CGFloat) -> Rectangle._Inset {
             var copy = self
@@ -13698,16 +13680,16 @@ extension RoundedRectangle : InsettableShape {
             (self.base, self.amount) = (base, amount)
         }
     @usableFromInline
-    nonisolated internal func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.path(in:)") }
+    nonisolated internal func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.RoundedRectangle._Inset.path(in:)") }
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
     @usableFromInline
     nonisolated internal var layoutDirectionBehavior: LayoutDirectionBehavior {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.layoutDirectionBehavior") }
+      get { _suiUnimplemented("SwiftUICore.RoundedRectangle._Inset.layoutDirectionBehavior") }
     }
     @usableFromInline
     internal var animatableData: AnimatablePair<RoundedRectangle.AnimatableData, CoreGraphics::CGFloat> {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.animatableData") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.animatableData") }
+      get { _suiUnimplemented("SwiftUICore.RoundedRectangle._Inset.animatableData") }
+      set { _suiUnimplemented("SwiftUICore.RoundedRectangle._Inset.animatableData") }
     }
     @inlinable nonisolated internal func inset(by amount: CoreGraphics::CGFloat) -> RoundedRectangle._Inset {
             var copy = self
@@ -13745,11 +13727,11 @@ extension UnevenRoundedRectangle : InsettableShape {
             (self.base, self.amount) = (base, amount)
         }
     @usableFromInline
-    nonisolated internal func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.path(in:)") }
+    nonisolated internal func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.UnevenRoundedRectangle._Inset.path(in:)") }
     @usableFromInline
     internal var animatableData: AnimatablePair<UnevenRoundedRectangle.AnimatableData, CoreGraphics::CGFloat> {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.animatableData") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.animatableData") }
+      get { _suiUnimplemented("SwiftUICore.UnevenRoundedRectangle._Inset.animatableData") }
+      set { _suiUnimplemented("SwiftUICore.UnevenRoundedRectangle._Inset.animatableData") }
     }
     @inlinable nonisolated internal func inset(by amount: CoreGraphics::CGFloat) -> UnevenRoundedRectangle._Inset {
             var copy = self
@@ -13785,16 +13767,16 @@ extension Capsule : InsettableShape {
             self.amount = amount
         }
     @usableFromInline
-    nonisolated internal func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.path(in:)") }
+    nonisolated internal func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.Capsule._Inset.path(in:)") }
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
     @usableFromInline
     nonisolated internal var layoutDirectionBehavior: LayoutDirectionBehavior {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.layoutDirectionBehavior") }
+      get { _suiUnimplemented("SwiftUICore.Capsule._Inset.layoutDirectionBehavior") }
     }
     @usableFromInline
     internal var animatableData: CoreGraphics::CGFloat {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.animatableData") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.animatableData") }
+      get { _suiUnimplemented("SwiftUICore.Capsule._Inset.animatableData") }
+      set { _suiUnimplemented("SwiftUICore.Capsule._Inset.animatableData") }
     }
     @inlinable nonisolated internal func inset(by amount: CoreGraphics::CGFloat) -> Capsule._Inset {
             let (inset, style) = Self._extractInset(self.amount)
@@ -13839,16 +13821,16 @@ extension Ellipse : InsettableShape {
             self.amount = amount
         }
     @usableFromInline
-    nonisolated internal func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.path(in:)") }
+    nonisolated internal func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.Ellipse._Inset.path(in:)") }
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
     @usableFromInline
     nonisolated internal var layoutDirectionBehavior: LayoutDirectionBehavior {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.layoutDirectionBehavior") }
+      get { _suiUnimplemented("SwiftUICore.Ellipse._Inset.layoutDirectionBehavior") }
     }
     @usableFromInline
     internal var animatableData: CoreGraphics::CGFloat {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.animatableData") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.animatableData") }
+      get { _suiUnimplemented("SwiftUICore.Ellipse._Inset.animatableData") }
+      set { _suiUnimplemented("SwiftUICore.Ellipse._Inset.animatableData") }
     }
     @inlinable nonisolated internal func inset(by amount: CoreGraphics::CGFloat) -> Ellipse._Inset {
             var copy = self
@@ -13884,16 +13866,16 @@ extension Circle : InsettableShape {
             self.amount = amount
         }
     @usableFromInline
-    nonisolated internal func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.path(in:)") }
+    nonisolated internal func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.Circle._Inset.path(in:)") }
     @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
     @usableFromInline
     nonisolated internal var layoutDirectionBehavior: LayoutDirectionBehavior {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.layoutDirectionBehavior") }
+      get { _suiUnimplemented("SwiftUICore.Circle._Inset.layoutDirectionBehavior") }
     }
     @usableFromInline
     internal var animatableData: CoreGraphics::CGFloat {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.animatableData") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.animatableData") }
+      get { _suiUnimplemented("SwiftUICore.Circle._Inset.animatableData") }
+      set { _suiUnimplemented("SwiftUICore.Circle._Inset.animatableData") }
     }
     @inlinable nonisolated internal func inset(by amount: CoreGraphics::CGFloat) -> Circle._Inset {
             var copy = self
@@ -13965,15 +13947,15 @@ public enum AccessibilityAdjustmentDirection : Swift::Sendable {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func containerRelativeFrame(_ axes: Axis.Set, alignment: Alignment = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.containerRelativeFrame(_:alignment:)") }
+  nonisolated public func containerRelativeFrame(_ axes: Axis.Set, alignment: Alignment = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.containerRelativeFrame(_:alignment:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func containerRelativeFrame(_ axes: Axis.Set, count: Swift::Int, span: Swift::Int = 1, spacing: CoreGraphics::CGFloat, alignment: Alignment = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.containerRelativeFrame(_:count:span:spacing:alignment:)") }
+  nonisolated public func containerRelativeFrame(_ axes: Axis.Set, count: Swift::Int, span: Swift::Int = 1, spacing: CoreGraphics::CGFloat, alignment: Alignment = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.containerRelativeFrame(_:count:span:spacing:alignment:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func containerRelativeFrame(_ axes: Axis.Set, alignment: Alignment = .center, _ length: @escaping (CoreGraphics::CGFloat, Axis) -> CoreGraphics::CGFloat) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.containerRelativeFrame(_:alignment:_:)") }
+  nonisolated public func containerRelativeFrame(_ axes: Axis.Set, alignment: Alignment = .center, _ length: @escaping (CoreGraphics::CGFloat, Axis) -> CoreGraphics::CGFloat) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.containerRelativeFrame(_:alignment:_:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14024,7 +14006,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ProjectionTransform : Swift::Equatable {
-  public static func == (a: ProjectionTransform, b: ProjectionTransform) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public static func == (a: ProjectionTransform, b: ProjectionTransform) -> Swift::Bool { _suiUnimplemented("SwiftUICore.ProjectionTransform.==(a:b:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14061,7 +14043,7 @@ extension ProjectionTransform {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension CoreGraphics::CGPoint {
-  public func applying(_ m: ProjectionTransform) -> CoreGraphics::CGPoint { _suiUnimplemented("SwiftUICore.CoreGraphics.applying(_:)") }
+  public func applying(_ m: ProjectionTransform) -> CoreGraphics::CGPoint { _suiUnimplemented("SwiftUICore.CGPoint.applying(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14069,7 +14051,7 @@ extension CoreGraphics::CGPoint {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Animation {
-  public static func interpolatingSpring(mass: Swift::Double = 1.0, stiffness: Swift::Double, damping: Swift::Double, initialVelocity: Swift::Double = 0.0) -> Animation { _suiUnimplemented("SwiftUICore.SwiftUICore.interpolatingSpring(mass:stiffness:damping:initialVelocity:)") }
+  public static func interpolatingSpring(mass: Swift::Double = 1.0, stiffness: Swift::Double, damping: Swift::Double, initialVelocity: Swift::Double = 0.0) -> Animation { _suiUnimplemented("SwiftUICore.Animation.interpolatingSpring(mass:stiffness:damping:initialVelocity:)") }
   @export(implementation) public static func interpolatingSpring(duration: Foundation::TimeInterval = 0.5, bounce: Swift::Double = 0.0, initialVelocity: Swift::Double = 0.0) -> Animation {
         let stiffness = springStiffness(response: duration)
         let fraction = springDampingFraction(bounce: bounce)
@@ -14131,7 +14113,7 @@ extension EdgeInsets : Animatable, _VectorMath {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EdgeInsets {
   @usableFromInline
-  package init(_all: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_all:)") }
+  package init(_all: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.EdgeInsets.init(_all:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14245,8 +14227,6 @@ extension PreferenceKey {
         return _DelayedPreferenceView(transform: transform)
     }
   
-  // port: synthesized witness for PreferenceKey (R7); Apple implements it with an internal member
-  public static func reduce(value: inout Swift.Never, nextValue: () -> Swift.Never) { _suiUnimplemented("SwiftUICore.SwiftUICore.reduce(value:nextValue:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14338,10 +14318,8 @@ public static var all: _DetachableProperties { get { _suiUnimplemented("SwiftUIC
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _Detachable {
   public static var detachedProperties: _DetachableProperties {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.detachedProperties") }
+    get { _suiUnimplemented("SwiftUICore._Detachable.detachedProperties") }
   }
-  // port: synthesized witness for _Detachable (R7); Apple implements it with an internal member
-  public static func matches<K>(key: K.Type) -> Swift::Bool where K : PreferenceKey { _suiUnimplemented("SwiftUICore.SwiftUICore.matches(key:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14470,14 +14448,14 @@ extension EnvironmentValues {
   @available(iOS 18.0, macOS 10.15, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   @backDeployed(before: macOS 15.0)
   public var appearsActive: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.appearsActive") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.appearsActive") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.appearsActive") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.appearsActive") }
   }
   @available(anyAppleOS 27.0, *)
   @usableFromInline
   internal var _appearsActive: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._appearsActive") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore._appearsActive") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues._appearsActive") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues._appearsActive") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14491,7 +14469,7 @@ public protocol AlignmentID {
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension AlignmentID {
-  public static func _combineExplicit(childValue: CoreGraphics::CGFloat, _ n: Swift::Int, into parentValue: inout CoreGraphics::CGFloat?) { _suiUnimplemented("SwiftUICore.SwiftUICore._combineExplicit(childValue:_:into:)") }
+  public static func _combineExplicit(childValue: CoreGraphics::CGFloat, _ n: Swift::Int, into parentValue: inout CoreGraphics::CGFloat?) { _suiUnimplemented("SwiftUICore.AlignmentID._combineExplicit(childValue:_:into:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14509,7 +14487,7 @@ extension AlignmentID {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension HorizontalAlignment {
-  public func combineExplicit<S>(_ values: S) -> CoreGraphics::CGFloat? where S : Swift::Sequence, S.Element == CoreGraphics::CGFloat? { _suiUnimplemented("SwiftUICore.SwiftUICore.combineExplicit(_:)") }
+  public func combineExplicit<S>(_ values: S) -> CoreGraphics::CGFloat? where S : Swift::Sequence, S.Element == CoreGraphics::CGFloat? { _suiUnimplemented("SwiftUICore.HorizontalAlignment.combineExplicit(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14527,7 +14505,7 @@ extension HorizontalAlignment {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension VerticalAlignment {
-  public func combineExplicit<S>(_ values: S) -> CoreGraphics::CGFloat? where S : Swift::Sequence, S.Element == CoreGraphics::CGFloat? { _suiUnimplemented("SwiftUICore.SwiftUICore.combineExplicit(_:)") }
+  public func combineExplicit<S>(_ values: S) -> CoreGraphics::CGFloat? where S : Swift::Sequence, S.Element == CoreGraphics::CGFloat? { _suiUnimplemented("SwiftUICore.VerticalAlignment.combineExplicit(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14550,11 +14528,11 @@ extension VerticalAlignment {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension HorizontalAlignment {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var leading: HorizontalAlignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.leading") } }
+public static var leading: HorizontalAlignment { get { _suiUnimplemented("SwiftUICore.HorizontalAlignment.leading") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var center: HorizontalAlignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.center") } }
+public static var center: HorizontalAlignment { get { _suiUnimplemented("SwiftUICore.HorizontalAlignment.center") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var trailing: HorizontalAlignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.trailing") } }
+public static var trailing: HorizontalAlignment { get { _suiUnimplemented("SwiftUICore.HorizontalAlignment.trailing") } }
 }
 @available(iOS 16.0, macOS 13.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.2)
@@ -14563,9 +14541,9 @@ public static var trailing: HorizontalAlignment { get { _suiUnimplemented("Swift
 @available(watchOS, unavailable)
 extension HorizontalAlignment {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var listRowSeparatorLeading: HorizontalAlignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.listRowSeparatorLeading") } }
+public static var listRowSeparatorLeading: HorizontalAlignment { get { _suiUnimplemented("SwiftUICore.HorizontalAlignment.listRowSeparatorLeading") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var listRowSeparatorTrailing: HorizontalAlignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.listRowSeparatorTrailing") } }
+public static var listRowSeparatorTrailing: HorizontalAlignment { get { _suiUnimplemented("SwiftUICore.HorizontalAlignment.listRowSeparatorTrailing") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14574,15 +14552,15 @@ public static var listRowSeparatorTrailing: HorizontalAlignment { get { _suiUnim
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension VerticalAlignment {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var top: VerticalAlignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.top") } }
+public static var top: VerticalAlignment { get { _suiUnimplemented("SwiftUICore.VerticalAlignment.top") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var center: VerticalAlignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.center") } }
+public static var center: VerticalAlignment { get { _suiUnimplemented("SwiftUICore.VerticalAlignment.center") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bottom: VerticalAlignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.bottom") } }
+public static var bottom: VerticalAlignment { get { _suiUnimplemented("SwiftUICore.VerticalAlignment.bottom") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var firstTextBaseline: VerticalAlignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.firstTextBaseline") } }
+public static var firstTextBaseline: VerticalAlignment { get { _suiUnimplemented("SwiftUICore.VerticalAlignment.firstTextBaseline") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var lastTextBaseline: VerticalAlignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.lastTextBaseline") } }
+public static var lastTextBaseline: VerticalAlignment { get { _suiUnimplemented("SwiftUICore.VerticalAlignment.lastTextBaseline") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14591,23 +14569,23 @@ public static var lastTextBaseline: VerticalAlignment { get { _suiUnimplemented(
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Alignment {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var center: Alignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.center") } }
+public static var center: Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.center") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var leading: Alignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.leading") } }
+public static var leading: Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.leading") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var trailing: Alignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.trailing") } }
+public static var trailing: Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.trailing") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var top: Alignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.top") } }
+public static var top: Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.top") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bottom: Alignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.bottom") } }
+public static var bottom: Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.bottom") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var topLeading: Alignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.topLeading") } }
+public static var topLeading: Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.topLeading") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var topTrailing: Alignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.topTrailing") } }
+public static var topTrailing: Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.topTrailing") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bottomLeading: Alignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.bottomLeading") } }
+public static var bottomLeading: Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.bottomLeading") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bottomTrailing: Alignment { get { _suiUnimplemented("SwiftUICore.SwiftUICore.bottomTrailing") } }
+public static var bottomTrailing: Alignment { get { _suiUnimplemented("SwiftUICore.Alignment.bottomTrailing") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14719,7 +14697,7 @@ extension Environment : Swift::Sendable where Value : Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AnyTransition {
-  public static func push(from edge: Edge) -> AnyTransition { _suiUnimplemented("SwiftUICore.SwiftUICore.push(from:)") }
+  public static func push(from edge: Edge) -> AnyTransition { _suiUnimplemented("SwiftUICore.AnyTransition.push(from:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14793,7 +14771,7 @@ extension Binding : @unchecked Swift::Sendable where Value : Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Binding : Swift::Identifiable where Value : Swift::Identifiable {
   public var id: Value.ID {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.id") }
+    get { _suiUnimplemented("SwiftUICore.Binding.id") }
   }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   public typealias ID = Value.ID
@@ -14817,18 +14795,18 @@ extension Binding : Swift::Collection where Value : Swift::MutableCollection {
   public typealias Index = Value.Index
   public typealias Indices = Value.Indices
   public var startIndex: Binding<Value>.Index {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.startIndex") }
+    get { _suiUnimplemented("SwiftUICore.Binding.startIndex") }
   }
   public var endIndex: Binding<Value>.Index {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.endIndex") }
+    get { _suiUnimplemented("SwiftUICore.Binding.endIndex") }
   }
   public var indices: Value.Indices {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.indices") }
+    get { _suiUnimplemented("SwiftUICore.Binding.indices") }
   }
-  public func index(after i: Binding<Value>.Index) -> Binding<Value>.Index { _suiUnimplemented("SwiftUICore.SwiftUICore.index(after:)") }
-  public func formIndex(after i: inout Binding<Value>.Index) { _suiUnimplemented("SwiftUICore.SwiftUICore.formIndex(after:)") }
+  public func index(after i: Binding<Value>.Index) -> Binding<Value>.Index { _suiUnimplemented("SwiftUICore.Binding.index(after:)") }
+  public func formIndex(after i: inout Binding<Value>.Index) { _suiUnimplemented("SwiftUICore.Binding.formIndex(after:)") }
   public subscript(position: Binding<Value>.Index) -> Binding<Value>.Element {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.subscript(position:)") }
+    get { _suiUnimplemented("SwiftUICore.Binding.subscript(position:)") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -14837,8 +14815,8 @@ extension Binding : Swift::Collection where Value : Swift::MutableCollection {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Binding : Swift::BidirectionalCollection where Value : Swift::BidirectionalCollection, Value : Swift::MutableCollection {
-  public func index(before i: Binding<Value>.Index) -> Binding<Value>.Index { _suiUnimplemented("SwiftUICore.SwiftUICore.index(before:)") }
-  public func formIndex(before i: inout Binding<Value>.Index) { _suiUnimplemented("SwiftUICore.SwiftUICore.formIndex(before:)") }
+  public func index(before i: Binding<Value>.Index) -> Binding<Value>.Index { _suiUnimplemented("SwiftUICore.Binding.index(before:)") }
+  public func formIndex(before i: inout Binding<Value>.Index) { _suiUnimplemented("SwiftUICore.Binding.formIndex(before:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14853,8 +14831,8 @@ extension Binding : Swift::RandomAccessCollection where Value : Swift::MutableCo
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Binding {
-  public func transaction(_ transaction: Transaction) -> Binding<Value> { _suiUnimplemented("SwiftUICore.SwiftUICore.transaction(_:)") }
-  public func animation(_ animation: Animation? = .default) -> Binding<Value> { _suiUnimplemented("SwiftUICore.SwiftUICore.animation(_:)") }
+  public func transaction(_ transaction: Transaction) -> Binding<Value> { _suiUnimplemented("SwiftUICore.Binding.transaction(_:)") }
+  public func animation(_ animation: Animation? = .default) -> Binding<Value> { _suiUnimplemented("SwiftUICore.Binding.animation(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14862,10 +14840,10 @@ extension Binding {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Binding : DynamicProperty {
-  public static func _makeProperty<V>(in buffer: inout _DynamicPropertyBuffer, container: _GraphValue<V>, fieldOffset: Swift::Int, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUICore.SwiftUICore._makeProperty(in:container:fieldOffset:inputs:)") }
+  public static func _makeProperty<V>(in buffer: inout _DynamicPropertyBuffer, container: _GraphValue<V>, fieldOffset: Swift::Int, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUICore.Binding._makeProperty(in:container:fieldOffset:inputs:)") }
   @available(iOS 27.0, macOS 27.0, tvOS 27.0, watchOS 27.0, visionOS 27.0, *)
   public static var _propertyStorageSize: Swift::Int? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._propertyStorageSize") }
+    get { _suiUnimplemented("SwiftUICore.Binding._propertyStorageSize") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14908,7 +14886,7 @@ extension View {
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @usableFromInline
-  @_Concurrency::MainActor @preconcurrency internal func tag<V>(_ tag: V) -> Swift.Never where V : Swift::Hashable { _suiUnimplemented("SwiftUICore.SwiftUICore.tag(_:)") }
+  @_Concurrency::MainActor @preconcurrency internal func tag<V>(_ tag: V) -> Swift.Never where V : Swift::Hashable { _suiUnimplemented("SwiftUICore.View.tag(_:)") }
   
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -15033,7 +15011,7 @@ extension _Velocity : Swift::Sendable where Value : Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _Velocity : Swift::Comparable where Value : Swift::Comparable {
-  public static func < (lhs: _Velocity<Value>, rhs: _Velocity<Value>) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.<(lhs:rhs:)") }
+  public static func < (lhs: _Velocity<Value>, rhs: _Velocity<Value>) -> Swift::Bool { _suiUnimplemented("SwiftUICore._Velocity.<(lhs:rhs:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -15041,9 +15019,9 @@ extension _Velocity : Swift::Comparable where Value : Swift::Comparable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _Velocity : Swift::Hashable where Value : Swift::Hashable {
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.hash(into:)") }
+  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore._Velocity.hash(into:)") }
   public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.hashValue") }
+    get { _suiUnimplemented("SwiftUICore._Velocity.hashValue") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -15173,8 +15151,8 @@ public enum DynamicTypeSize : Swift::Hashable, Swift::Comparable, Swift::CaseIte
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var dynamicTypeSize: DynamicTypeSize {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.dynamicTypeSize") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.dynamicTypeSize") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.dynamicTypeSize") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.dynamicTypeSize") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -15184,10 +15162,10 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dynamicTypeSize(_ size: DynamicTypeSize) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.dynamicTypeSize(_:)") }
+nonisolated public func dynamicTypeSize(_ size: DynamicTypeSize) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.dynamicTypeSize(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dynamicTypeSize<T>(_ range: T) -> Swift.Never where T : Swift::RangeExpression, T.Bound == DynamicTypeSize { _suiUnimplemented("SwiftUICore.SwiftUICore.dynamicTypeSize(_:)") }
+nonisolated public func dynamicTypeSize<T>(_ range: T) -> Swift.Never where T : Swift::RangeExpression, T.Bound == DynamicTypeSize { _suiUnimplemented("SwiftUICore.View.dynamicTypeSize(_:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -15196,7 +15174,7 @@ nonisolated public func dynamicTypeSize<T>(_ range: T) -> Swift.Never where T : 
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Animation {
-  public func delay(_ delay: Foundation::TimeInterval) -> Animation { _suiUnimplemented("SwiftUICore.SwiftUICore.delay(_:)") }
+  public func delay(_ delay: Foundation::TimeInterval) -> Animation { _suiUnimplemented("SwiftUICore.Animation.delay(_:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -15552,8 +15530,8 @@ extension EnvironmentValues {
   @available(watchOS, introduced: 6.0, deprecated: 100000.0, renamed: "dynamicTypeSize")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, renamed: "dynamicTypeSize")
   public var sizeCategory: ContentSizeCategory {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.sizeCategory") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.sizeCategory") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.sizeCategory") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.sizeCategory") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -15563,48 +15541,48 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Font {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var largeTitle: Font { get { _suiUnimplemented("SwiftUICore.SwiftUICore.largeTitle") } }
+public static var largeTitle: Font { get { _suiUnimplemented("SwiftUICore.Font.largeTitle") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var title: Font { get { _suiUnimplemented("SwiftUICore.SwiftUICore.title") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  public static var title2: Font { get { _suiUnimplemented("SwiftUICore.SwiftUICore.title2") } }
+public static var title: Font { get { _suiUnimplemented("SwiftUICore.Font.title") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  public static var title3: Font { get { _suiUnimplemented("SwiftUICore.SwiftUICore.title3") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var headline: Font { get { _suiUnimplemented("SwiftUICore.SwiftUICore.headline") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var subheadline: Font { get { _suiUnimplemented("SwiftUICore.SwiftUICore.subheadline") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var body: Font { get { _suiUnimplemented("SwiftUICore.SwiftUICore.body") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var callout: Font { get { _suiUnimplemented("SwiftUICore.SwiftUICore.callout") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var footnote: Font { get { _suiUnimplemented("SwiftUICore.SwiftUICore.footnote") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var caption: Font { get { _suiUnimplemented("SwiftUICore.SwiftUICore.caption") } }
+  public static var title2: Font { get { _suiUnimplemented("SwiftUICore.Font.title2") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  public static var caption2: Font { get { _suiUnimplemented("SwiftUICore.SwiftUICore.caption2") } }
+  public static var title3: Font { get { _suiUnimplemented("SwiftUICore.Font.title3") } }
+    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
+public static var headline: Font { get { _suiUnimplemented("SwiftUICore.Font.headline") } }
+    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
+public static var subheadline: Font { get { _suiUnimplemented("SwiftUICore.Font.subheadline") } }
+    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
+public static var body: Font { get { _suiUnimplemented("SwiftUICore.Font.body") } }
+    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
+public static var callout: Font { get { _suiUnimplemented("SwiftUICore.Font.callout") } }
+    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
+public static var footnote: Font { get { _suiUnimplemented("SwiftUICore.Font.footnote") } }
+    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
+public static var caption: Font { get { _suiUnimplemented("SwiftUICore.Font.caption") } }
+    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+  public static var caption2: Font { get { _suiUnimplemented("SwiftUICore.Font.caption2") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
 @available(visionOS 1.0, *)
       @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  public static var extraLargeTitle: Font { get { _suiUnimplemented("SwiftUICore.SwiftUICore.extraLargeTitle") } }
+  public static var extraLargeTitle: Font { get { _suiUnimplemented("SwiftUICore.Font.extraLargeTitle") } }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
 @available(visionOS 1.0, *)
       @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  public static var extraLargeTitle2: Font { get { _suiUnimplemented("SwiftUICore.SwiftUICore.extraLargeTitle2") } }
+  public static var extraLargeTitle2: Font { get { _suiUnimplemented("SwiftUICore.Font.extraLargeTitle2") } }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  public static func system(_ style: Font.TextStyle, design: Font.Design? = nil, weight: Font.Weight? = nil) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.system(_:design:weight:)") }
+  public static func system(_ style: Font.TextStyle, design: Font.Design? = nil, weight: Font.Weight? = nil) -> Font { _suiUnimplemented("SwiftUICore.Font.system(_:design:weight:)") }
   @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use `system(_:design:weight:)` instead.")
   @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `system(_:design:weight:)` instead.")
   @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "Use `system(_:design:weight:)` instead.")
   @available(watchOS, introduced: 6.0, deprecated: 100000.0, message: "Use `system(_:design:weight:)` instead.")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use `system(_:design:weight:)` instead.")
-  @_disfavoredOverload public static func system(_ style: Font.TextStyle, design: Font.Design = .default) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.system(_:design:)") }
+  @_disfavoredOverload public static func system(_ style: Font.TextStyle, design: Font.Design = .default) -> Font { _suiUnimplemented("SwiftUICore.Font.system(_:design:)") }
   public enum TextStyle : Swift::CaseIterable, Swift::Sendable {
     case largeTitle
     case title
@@ -15629,26 +15607,26 @@ public static var caption: Font { get { _suiUnimplemented("SwiftUICore.SwiftUICo
     @available(watchOS, unavailable)
     case extraLargeTitle2
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var allCases: [Font.TextStyle] { get { _suiUnimplemented("SwiftUICore.SwiftUICore.TextStyle.allCases") } }
-    public static func == (a: Font.TextStyle, b: Font.TextStyle) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.TextStyle.==(a:b:)") }
+public static var allCases: [Font.TextStyle] { get { _suiUnimplemented("SwiftUICore.Font.TextStyle.allCases") } }
+    public static func == (a: Font.TextStyle, b: Font.TextStyle) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Font.TextStyle.==(a:b:)") }
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias AllCases = [Font.TextStyle]
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.TextStyle.hash(into:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Font.TextStyle.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.TextStyle.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Font.TextStyle.hashValue") }
     }
   }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Font.TextStyle : Swift::Codable {
-  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.encode(to:)") }
-  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.init(from:)") }
+  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.Font.SwiftUICore.TextStyle.encode(to:)") }
+  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.Font.SwiftUICore.TextStyle.init(from:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension Font.TextStyle {
   @_silgen_name("$s7SwiftUI4FontV9TextStyleO8allCasesSayAEGvsZ")
   @usableFromInline
-  internal func _setTextStyleAllCases(_ allCases: [Font.TextStyle]) { _suiUnimplemented("SwiftUICore.SwiftUICore._setTextStyleAllCases(_:)") }
+  internal func _setTextStyleAllCases(_ allCases: [Font.TextStyle]) { _suiUnimplemented("SwiftUICore.Font.SwiftUICore.TextStyle._setTextStyleAllCases(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -15656,84 +15634,84 @@ extension Font.TextStyle {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Font {
-  public func italic() -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.italic()") }
+  public func italic() -> Font { _suiUnimplemented("SwiftUICore.Font.italic()") }
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public func italic(_ isActive: Swift::Bool) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.italic(_:)") }
-  public func smallCaps() -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.smallCaps()") }
+  public func italic(_ isActive: Swift::Bool) -> Font { _suiUnimplemented("SwiftUICore.Font.italic(_:)") }
+  public func smallCaps() -> Font { _suiUnimplemented("SwiftUICore.Font.smallCaps()") }
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public func smallCaps(_ isActive: Swift::Bool) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.smallCaps(_:)") }
-  public func lowercaseSmallCaps() -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.lowercaseSmallCaps()") }
+  public func smallCaps(_ isActive: Swift::Bool) -> Font { _suiUnimplemented("SwiftUICore.Font.smallCaps(_:)") }
+  public func lowercaseSmallCaps() -> Font { _suiUnimplemented("SwiftUICore.Font.lowercaseSmallCaps()") }
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public func lowercaseSmallCaps(_ isActive: Swift::Bool) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.lowercaseSmallCaps(_:)") }
-  public func uppercaseSmallCaps() -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.uppercaseSmallCaps()") }
+  public func lowercaseSmallCaps(_ isActive: Swift::Bool) -> Font { _suiUnimplemented("SwiftUICore.Font.lowercaseSmallCaps(_:)") }
+  public func uppercaseSmallCaps() -> Font { _suiUnimplemented("SwiftUICore.Font.uppercaseSmallCaps()") }
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public func uppercaseSmallCaps(_ isActive: Swift::Bool) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.uppercaseSmallCaps(_:)") }
-  public func monospacedDigit() -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.monospacedDigit()") }
-  public func weight(_ weight: Font.Weight) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.weight(_:)") }
+  public func uppercaseSmallCaps(_ isActive: Swift::Bool) -> Font { _suiUnimplemented("SwiftUICore.Font.uppercaseSmallCaps(_:)") }
+  public func monospacedDigit() -> Font { _suiUnimplemented("SwiftUICore.Font.monospacedDigit()") }
+  public func weight(_ weight: Font.Weight) -> Font { _suiUnimplemented("SwiftUICore.Font.weight(_:)") }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  public func width(_ width: Font.Width) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.width(_:)") }
-  public func bold() -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.bold()") }
+  public func width(_ width: Font.Width) -> Font { _suiUnimplemented("SwiftUICore.Font.width(_:)") }
+  public func bold() -> Font { _suiUnimplemented("SwiftUICore.Font.bold()") }
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public func bold(_ isActive: Swift::Bool) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.bold(_:)") }
+  public func bold(_ isActive: Swift::Bool) -> Font { _suiUnimplemented("SwiftUICore.Font.bold(_:)") }
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  public func monospaced() -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.monospaced()") }
+  public func monospaced() -> Font { _suiUnimplemented("SwiftUICore.Font.monospaced()") }
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public func monospaced(_ isActive: Swift::Bool) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.monospaced(_:)") }
+  public func monospaced(_ isActive: Swift::Bool) -> Font { _suiUnimplemented("SwiftUICore.Font.monospaced(_:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  public func leading(_ leading: Font.Leading) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.leading(_:)") }
+  public func leading(_ leading: Font.Leading) -> Font { _suiUnimplemented("SwiftUICore.Font.leading(_:)") }
   @available(iOS, introduced: 14.0, deprecated: 14.0, renamed: "leading")
   @available(macOS, introduced: 11.0, deprecated: 11.0, renamed: "leading")
   @available(tvOS, introduced: 14.0, deprecated: 14.0, renamed: "leading")
   @available(watchOS, introduced: 7.0, deprecated: 7.0, renamed: "leading")
   @available(visionOS, introduced: 1.0, deprecated: 1.0, renamed: "leading")
-  public func _leading(_ leading: Font._Leading) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore._leading(_:)") }
+  public func _leading(_ leading: Font._Leading) -> Font { _suiUnimplemented("SwiftUICore.Font._leading(_:)") }
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public func pointSize(_ size: CoreGraphics::CGFloat) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.pointSize(_:)") }
+  public func pointSize(_ size: CoreGraphics::CGFloat) -> Font { _suiUnimplemented("SwiftUICore.Font.pointSize(_:)") }
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public func scaled(by factor: CoreGraphics::CGFloat) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.scaled(by:)") }
-  public func _stylisticAlternative(_ alternative: Font._StylisticAlternative) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore._stylisticAlternative(_:)") }
+  public func scaled(by factor: CoreGraphics::CGFloat) -> Font { _suiUnimplemented("SwiftUICore.Font.scaled(by:)") }
+  public func _stylisticAlternative(_ alternative: Font._StylisticAlternative) -> Font { _suiUnimplemented("SwiftUICore.Font._stylisticAlternative(_:)") }
   @frozen public struct Weight : Swift::Hashable {
     package var value: CoreGraphics::CGFloat
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var ultraLight: Font.Weight { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Weight.ultraLight") } }
+public static var ultraLight: Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.ultraLight") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var thin: Font.Weight { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Weight.thin") } }
+public static var thin: Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.thin") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var light: Font.Weight { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Weight.light") } }
+public static var light: Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.light") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var regular: Font.Weight { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Weight.regular") } }
+public static var regular: Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.regular") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var medium: Font.Weight { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Weight.medium") } }
+public static var medium: Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.medium") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var semibold: Font.Weight { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Weight.semibold") } }
+public static var semibold: Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.semibold") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bold: Font.Weight { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Weight.bold") } }
+public static var bold: Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.bold") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var heavy: Font.Weight { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Weight.heavy") } }
+public static var heavy: Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.heavy") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var black: Font.Weight { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Weight.black") } }
-    public static func == (a: Font.Weight, b: Font.Weight) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Weight.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.Weight.hash(into:)") }
+public static var black: Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.black") } }
+    public static func == (a: Font.Weight, b: Font.Weight) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Font.Weight.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Font.Weight.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Weight.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Font.Weight.hashValue") }
     }
   }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   public struct Width : Swift::Hashable, Swift::Sendable {
     public var value: CoreGraphics::CGFloat
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var compressed: Font.Width { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Width.compressed") } }
+public static var compressed: Font.Width { get { _suiUnimplemented("SwiftUICore.Font.Width.compressed") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var condensed: Font.Width { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Width.condensed") } }
+public static var condensed: Font.Width { get { _suiUnimplemented("SwiftUICore.Font.Width.condensed") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var standard: Font.Width { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Width.standard") } }
+public static var standard: Font.Width { get { _suiUnimplemented("SwiftUICore.Font.Width.standard") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var expanded: Font.Width { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Width.expanded") } }
-    public init(_ value: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.SwiftUICore.Width.init(_:)") }
-    public static func == (a: Font.Width, b: Font.Width) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Width.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.Width.hash(into:)") }
+public static var expanded: Font.Width { get { _suiUnimplemented("SwiftUICore.Font.Width.expanded") } }
+    public init(_ value: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.Font.Width.init(_:)") }
+    public static func == (a: Font.Width, b: Font.Width) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Font.Width.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Font.Width.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Width.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Font.Width.hashValue") }
     }
   }
   #if compiler(>=5.3) && $TildeSendable
@@ -15758,11 +15736,11 @@ public static var expanded: Font.Width { get { _suiUnimplemented("SwiftUICore.Sw
     case eighteen
     case nineteen
     case twenty
-    public init?(rawValue: Swift::Int) { _suiUnimplemented("SwiftUICore.SwiftUICore._StylisticAlternative.init(rawValue:)") }
+    public init?(rawValue: Swift::Int) { _suiUnimplemented("SwiftUICore.Font._StylisticAlternative.init(rawValue:)") }
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias RawValue = Swift::Int
     public var rawValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._StylisticAlternative.rawValue") }
+      get { _suiUnimplemented("SwiftUICore.Font._StylisticAlternative.rawValue") }
     }
   }
   #else
@@ -15800,10 +15778,10 @@ public static var expanded: Font.Width { get { _suiUnimplemented("SwiftUICore.Sw
     case standard
     case tight
     case loose
-    public static func == (a: Font.Leading, b: Font.Leading) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Leading.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.Leading.hash(into:)") }
+    public static func == (a: Font.Leading, b: Font.Leading) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Font.Leading.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Font.Leading.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Leading.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Font.Leading.hashValue") }
     }
   }
   #if compiler(>=5.3) && $TildeSendable
@@ -15811,10 +15789,10 @@ public static var expanded: Font.Width { get { _suiUnimplemented("SwiftUICore.Sw
     case tight
     case loose
     case standard
-    public static func == (a: Font._Leading, b: Font._Leading) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore._Leading.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore._Leading.hash(into:)") }
+    public static func == (a: Font._Leading, b: Font._Leading) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Font._Leading.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Font._Leading.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Leading.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Font._Leading.hashValue") }
     }
   }
   #else
@@ -15834,22 +15812,22 @@ extension Text {
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public struct WritingDirectionStrategy : Swift::Hashable, Swift::Sendable {
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var layoutBased: Text.WritingDirectionStrategy { get { _suiUnimplemented("SwiftUICore.SwiftUICore.WritingDirectionStrategy.layoutBased") } }
+public static var layoutBased: Text.WritingDirectionStrategy { get { _suiUnimplemented("SwiftUICore.Text.WritingDirectionStrategy.layoutBased") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var contentBased: Text.WritingDirectionStrategy { get { _suiUnimplemented("SwiftUICore.SwiftUICore.WritingDirectionStrategy.contentBased") } }
+public static var contentBased: Text.WritingDirectionStrategy { get { _suiUnimplemented("SwiftUICore.Text.WritingDirectionStrategy.contentBased") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var `default`: Text.WritingDirectionStrategy { get { _suiUnimplemented("SwiftUICore.SwiftUICore.WritingDirectionStrategy.default") } }
-    public static func == (a: Text.WritingDirectionStrategy, b: Text.WritingDirectionStrategy) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.WritingDirectionStrategy.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.WritingDirectionStrategy.hash(into:)") }
+public static var `default`: Text.WritingDirectionStrategy { get { _suiUnimplemented("SwiftUICore.Text.WritingDirectionStrategy.default") } }
+    public static func == (a: Text.WritingDirectionStrategy, b: Text.WritingDirectionStrategy) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Text.WritingDirectionStrategy.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Text.WritingDirectionStrategy.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.WritingDirectionStrategy.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Text.WritingDirectionStrategy.hashValue") }
     }
   }
 }
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  nonisolated public func writingDirection(strategy: Text.WritingDirectionStrategy) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.writingDirection(strategy:)") }
+  nonisolated public func writingDirection(strategy: Text.WritingDirectionStrategy) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.writingDirection(strategy:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -15858,9 +15836,9 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.2)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.2)
 extension Anchor.Source where Value == CoreGraphics::CGRect {
-  public static func rect(_ r: CoreGraphics::CGRect) -> Anchor<Value>.Source { _suiUnimplemented("SwiftUICore.SwiftUICore.rect(_:)") }
+  public static func rect(_ r: CoreGraphics::CGRect) -> Anchor<Value>.Source { _suiUnimplemented("SwiftUICore.Anchor.SwiftUICore.Source.rect(_:)") }
   public static var bounds: Anchor<CoreGraphics::CGRect>.Source {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.bounds") }
+    get { _suiUnimplemented("SwiftUICore.Anchor.SwiftUICore.Source.bounds") }
   }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -15933,7 +15911,7 @@ public protocol EnvironmentKey {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentKey {
-  public static func _valuesEqual(_ lhs: Self.Value, _ rhs: Self.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore._valuesEqual(_:_:)") }
+  public static func _valuesEqual(_ lhs: Self.Value, _ rhs: Self.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.EnvironmentKey._valuesEqual(_:_:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -15941,7 +15919,7 @@ extension EnvironmentKey {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentKey where Self.Value : Swift::Equatable {
-  public static func _valuesEqual(_ lhs: Self.Value, _ rhs: Self.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore._valuesEqual(_:_:)") }
+  public static func _valuesEqual(_ lhs: Self.Value, _ rhs: Self.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.EnvironmentKey._valuesEqual(_:_:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -15965,12 +15943,12 @@ extension EnvironmentKey where Self.Value : Swift::Equatable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Bindable where Value : AnyObject {
   public subscript<Subject>(dynamicMember keyPath: Swift::ReferenceWritableKeyPath<Value, Subject>) -> Binding<Subject> {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.subscript(dynamicMember:)") }
+    get { _suiUnimplemented("SwiftUICore.Bindable.subscript(dynamicMember:)") }
   }
 }
 extension Bindable where Value : Combine::ObservableObject {
   @available(*, unavailable, message: "@Bindable only works with Observable types. For ObservableObject types, use @ObservedObject instead.")
-  public init(wrappedValue: Value) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(wrappedValue:)") }
+  public init(wrappedValue: Value) { _suiUnimplemented("SwiftUICore.Bindable.init(wrappedValue:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -15978,9 +15956,9 @@ extension Bindable where Value : Combine::ObservableObject {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Bindable where Value : AnyObject, Value : Observation::Observable {
-  public init(wrappedValue: Value) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(wrappedValue:)") }
-  public init(_ wrappedValue: Value) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
-  public init(projectedValue: Bindable<Value>) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(projectedValue:)") }
+  public init(wrappedValue: Value) { _suiUnimplemented("SwiftUICore.Bindable.init(wrappedValue:)") }
+  public init(_ wrappedValue: Value) { _suiUnimplemented("SwiftUICore.Bindable.init(_:)") }
+  public init(projectedValue: Bindable<Value>) { _suiUnimplemented("SwiftUICore.Bindable.init(projectedValue:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -15989,7 +15967,7 @@ extension Bindable where Value : AnyObject, Value : Observation::Observable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Bindable : Swift::Identifiable where Value : Swift::Identifiable {
   public var id: Value.ID {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.id") }
+    get { _suiUnimplemented("SwiftUICore.Bindable.id") }
   }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias ID = Value.ID
@@ -16080,7 +16058,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::Optional : Gesture where Wrapped : Gesture {
   public typealias Value = Wrapped.Value
-  nonisolated public static func _makeGesture(gesture: _GraphValue<Swift::Optional<Wrapped>>, inputs: _GestureInputs) -> _GestureOutputs<Wrapped.Value> { _suiUnimplemented("SwiftUICore.Swift._makeGesture(gesture:inputs:)") }
+  nonisolated public static func _makeGesture(gesture: _GraphValue<Swift::Optional<Wrapped>>, inputs: _GestureInputs) -> _GestureOutputs<Wrapped.Value> { _suiUnimplemented("SwiftUICore.Optional._makeGesture(gesture:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
 }
@@ -16244,8 +16222,6 @@ extension TextRenderer {
   @export(implementation) public var displayPadding: EdgeInsets {
     get { EdgeInsets() }
   }
-  // port: synthesized witness for TextRenderer (R7); Apple implements it with an internal member
-  public func draw(layout: Text.Layout, in ctx: inout GraphicsContext) { _suiUnimplemented("SwiftUICore.SwiftUICore.draw(layout:in:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -16293,7 +16269,7 @@ public protocol TextAttribute : Swift::Hashable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text {
-  public func customAttribute<T>(_ value: T) -> Text where T : TextAttribute { _suiUnimplemented("SwiftUICore.SwiftUICore.customAttribute(_:)") }
+  public func customAttribute<T>(_ value: T) -> Text where T : TextAttribute { _suiUnimplemented("SwiftUICore.Text.customAttribute(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -16336,16 +16312,16 @@ extension Text {
   public struct Layout : Swift::RandomAccessCollection, Swift::Equatable, ~Swift::Sendable {
     @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
     public var isTruncated: Swift::Bool {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.isTruncated") }
+      get { _suiUnimplemented("SwiftUICore.Text.Layout.isTruncated") }
     }
     public var startIndex: Swift::Int {
       @export(implementation) get { 0 }
     }
     public var endIndex: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.endIndex") }
+      get { _suiUnimplemented("SwiftUICore.Text.Layout.endIndex") }
     }
     public subscript(index: Swift::Int) -> Text.Layout.Line {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.subscript(index:)") }
+      get { _suiUnimplemented("SwiftUICore.Text.Layout.subscript(index:)") }
     }
     @frozen public struct CharacterIndex : Swift::Comparable, Swift::Hashable, Swift::Strideable, Swift::Sendable {
       @usableFromInline
@@ -16364,9 +16340,9 @@ extension Text {
             }
       @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
       public typealias Stride = Swift::Int
-      public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.CharacterIndex.hash(into:)") }
+      public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Text.Layout.CharacterIndex.hash(into:)") }
       public var hashValue: Swift::Int {
-        get { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.CharacterIndex.hashValue") }
+        get { _suiUnimplemented("SwiftUICore.Text.Layout.CharacterIndex.hashValue") }
       }
     }
     @frozen public struct TypographicBounds : Swift::Equatable, Swift::Sendable {
@@ -16385,7 +16361,7 @@ extension Text {
                         width: width, height: ascent + descent)
                 }
       }
-      public static func == (a: Text.Layout.TypographicBounds, b: Text.Layout.TypographicBounds) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.TypographicBounds.==(a:b:)") }
+      public static func == (a: Text.Layout.TypographicBounds, b: Text.Layout.TypographicBounds) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Text.Layout.TypographicBounds.==(a:b:)") }
     }
     public struct Line : Swift::RandomAccessCollection, Swift::Equatable, ~Swift::Sendable {
       public var origin: CoreGraphics::CGPoint
@@ -16393,15 +16369,15 @@ extension Text {
         @export(implementation) get { 0 }
       }
       public var endIndex: Swift::Int {
-        get { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.Line.endIndex") }
+        get { _suiUnimplemented("SwiftUICore.Text.Layout.Line.endIndex") }
       }
       public subscript(index: Swift::Int) -> Text.Layout.Run {
-        get { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.Line.subscript(index:)") }
+        get { _suiUnimplemented("SwiftUICore.Text.Layout.Line.subscript(index:)") }
       }
       public var typographicBounds: Text.Layout.TypographicBounds {
-        get { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.Line.typographicBounds") }
+        get { _suiUnimplemented("SwiftUICore.Text.Layout.Line.typographicBounds") }
       }
-      public static func == (lhs: Text.Layout.Line, rhs: Text.Layout.Line) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.Line.==(lhs:rhs:)") }
+      public static func == (lhs: Text.Layout.Line, rhs: Text.Layout.Line) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Text.Layout.Line.==(lhs:rhs:)") }
       @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
       public typealias Element = Text.Layout.Run
       @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
@@ -16418,7 +16394,7 @@ extension Text {
         @export(implementation) get { 0 }
       }
       public var endIndex: Swift::Int {
-        get { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.Run.endIndex") }
+        get { _suiUnimplemented("SwiftUICore.Text.Layout.Run.endIndex") }
       }
       public subscript(index: Swift::Int) -> Text.Layout.RunSlice {
         @export(implementation) get {
@@ -16431,18 +16407,18 @@ extension Text {
                 }
       }
       public subscript<T>(key: T.Type) -> T? where T : TextAttribute {
-        get { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.Run.subscript(key:)") }
+        get { _suiUnimplemented("SwiftUICore.Text.Layout.Run.subscript(key:)") }
       }
       public var layoutDirection: LayoutDirection {
-        get { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.Run.layoutDirection") }
+        get { _suiUnimplemented("SwiftUICore.Text.Layout.Run.layoutDirection") }
       }
       public var typographicBounds: Text.Layout.TypographicBounds {
-        get { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.Run.typographicBounds") }
+        get { _suiUnimplemented("SwiftUICore.Text.Layout.Run.typographicBounds") }
       }
       public var characterIndices: [Text.Layout.CharacterIndex] {
-        get { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.Run.characterIndices") }
+        get { _suiUnimplemented("SwiftUICore.Text.Layout.Run.characterIndices") }
       }
-      public static func == (lhs: Text.Layout.Run, rhs: Text.Layout.Run) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.Run.==(lhs:rhs:)") }
+      public static func == (lhs: Text.Layout.Run, rhs: Text.Layout.Run) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Text.Layout.Run.==(lhs:rhs:)") }
       @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
       public typealias Element = Text.Layout.RunSlice
       @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
@@ -16457,7 +16433,7 @@ extension Text {
     public struct RunSlice : Swift::RandomAccessCollection, Swift::Equatable, ~Swift::Sendable {
       public var run: Text.Layout.Run
       public var indices: Swift::Range<Swift::Int>
-      public init(run: Text.Layout.Run, indices: Swift::Range<Swift::Int>) { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.RunSlice.init(run:indices:)") }
+      public init(run: Text.Layout.Run, indices: Swift::Range<Swift::Int>) { _suiUnimplemented("SwiftUICore.Text.Layout.RunSlice.init(run:indices:)") }
       public var startIndex: Swift::Int {
         @export(implementation) get { indices.lowerBound }
       }
@@ -16468,18 +16444,18 @@ extension Text {
         @export(implementation) get { self[index ..< index &+ 1] }
       }
       public subscript(bounds: Swift::Range<Swift::Int>) -> Text.Layout.RunSlice {
-        get { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.RunSlice.subscript(bounds:)") }
+        get { _suiUnimplemented("SwiftUICore.Text.Layout.RunSlice.subscript(bounds:)") }
       }
       public subscript<T>(key: T.Type) -> T? where T : TextAttribute {
         @export(implementation) get { run[key] }
       }
       public var typographicBounds: Text.Layout.TypographicBounds {
-        get { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.RunSlice.typographicBounds") }
+        get { _suiUnimplemented("SwiftUICore.Text.Layout.RunSlice.typographicBounds") }
       }
       public var characterIndices: [Text.Layout.CharacterIndex] {
-        get { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.RunSlice.characterIndices") }
+        get { _suiUnimplemented("SwiftUICore.Text.Layout.RunSlice.characterIndices") }
       }
-      public static func == (a: Text.Layout.RunSlice, b: Text.Layout.RunSlice) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.RunSlice.==(a:b:)") }
+      public static func == (a: Text.Layout.RunSlice, b: Text.Layout.RunSlice) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Text.Layout.RunSlice.==(a:b:)") }
       @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
       public typealias Element = Text.Layout.RunSlice
       @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
@@ -16491,7 +16467,7 @@ extension Text {
       @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
       public typealias SubSequence = Text.Layout.RunSlice
     }
-    public static func == (a: Text.Layout, b: Text.Layout) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Layout.==(a:b:)") }
+    public static func == (a: Text.Layout, b: Text.Layout) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Text.Layout.==(a:b:)") }
     @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
     public typealias Element = Text.Layout.Line
     @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
@@ -16687,7 +16663,7 @@ extension Text {
     public struct AnchoredLayout : Swift::Equatable, ~Swift::Sendable {
       public var origin: Anchor<CoreGraphics::CGPoint>
       public var layout: Text.Layout
-      public static func == (a: Text.LayoutKey.AnchoredLayout, b: Text.LayoutKey.AnchoredLayout) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.LayoutKey.AnchoredLayout.==(a:b:)") }
+      public static func == (a: Text.LayoutKey.AnchoredLayout, b: Text.LayoutKey.AnchoredLayout) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Text.LayoutKey.AnchoredLayout.==(a:b:)") }
     }
     #else
     public struct AnchoredLayout : Swift::Equatable {
@@ -16698,9 +16674,9 @@ extension Text {
     #endif
     public typealias Value = [Text.LayoutKey.AnchoredLayout]
     public static var defaultValue: Text.LayoutKey.Value {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.LayoutKey.defaultValue") }
+      get { _suiUnimplemented("SwiftUICore.Text.LayoutKey.defaultValue") }
     }
-    public static func reduce(value: inout Text.LayoutKey.Value, nextValue: () -> Text.LayoutKey.Value) { _suiUnimplemented("SwiftUICore.SwiftUICore.LayoutKey.reduce(value:nextValue:)") }
+    public static func reduce(value: inout Text.LayoutKey.Value, nextValue: () -> Text.LayoutKey.Value) { _suiUnimplemented("SwiftUICore.Text.LayoutKey.reduce(value:nextValue:)") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -16731,9 +16707,9 @@ extension Text.Layout {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension GraphicsContext {
-  public func draw(_ line: Text.Layout.Line, options: Text.Layout.DrawingOptions = .init()) { _suiUnimplemented("SwiftUICore.SwiftUICore.draw(_:options:)") }
-  public func draw(_ run: Text.Layout.Run, options: Text.Layout.DrawingOptions = .init()) { _suiUnimplemented("SwiftUICore.SwiftUICore.draw(_:options:)") }
-  public func draw(_ slice: Text.Layout.RunSlice, options: Text.Layout.DrawingOptions = .init()) { _suiUnimplemented("SwiftUICore.SwiftUICore.draw(_:options:)") }
+  public func draw(_ line: Text.Layout.Line, options: Text.Layout.DrawingOptions = .init()) { _suiUnimplemented("SwiftUICore.GraphicsContext.draw(_:options:)") }
+  public func draw(_ run: Text.Layout.Run, options: Text.Layout.DrawingOptions = .init()) { _suiUnimplemented("SwiftUICore.GraphicsContext.draw(_:options:)") }
+  public func draw(_ slice: Text.Layout.RunSlice, options: Text.Layout.DrawingOptions = .init()) { _suiUnimplemented("SwiftUICore.GraphicsContext.draw(_:options:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -16746,35 +16722,35 @@ extension Text {
   @available(tvOS, introduced: 13.0, deprecated: 100000.0, renamed: "foregroundStyle(_:)")
   @available(watchOS, introduced: 6.0, deprecated: 100000.0, renamed: "foregroundStyle(_:)")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, renamed: "foregroundStyle(_:)")
-  nonisolated public func foregroundColor(_ color: Color?) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.foregroundColor(_:)") }
+  nonisolated public func foregroundColor(_ color: Color?) -> Text { _suiUnimplemented("SwiftUICore.Text.foregroundColor(_:)") }
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func foregroundStyle<S>(_ style: S) -> Text where S : ShapeStyle { _suiUnimplemented("SwiftUICore.SwiftUICore.foregroundStyle(_:)") }
-  nonisolated public func font(_ font: Font?) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.font(_:)") }
-  nonisolated public func fontWeight(_ weight: Font.Weight?) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.fontWeight(_:)") }
+  nonisolated public func foregroundStyle<S>(_ style: S) -> Text where S : ShapeStyle { _suiUnimplemented("SwiftUICore.Text.foregroundStyle(_:)") }
+  nonisolated public func font(_ font: Font?) -> Text { _suiUnimplemented("SwiftUICore.Text.font(_:)") }
+  nonisolated public func fontWeight(_ weight: Font.Weight?) -> Text { _suiUnimplemented("SwiftUICore.Text.fontWeight(_:)") }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func fontWidth(_ width: Font.Width?) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.fontWidth(_:)") }
-  nonisolated public func bold() -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.bold()") }
+  nonisolated public func fontWidth(_ width: Font.Width?) -> Text { _suiUnimplemented("SwiftUICore.Text.fontWidth(_:)") }
+  nonisolated public func bold() -> Text { _suiUnimplemented("SwiftUICore.Text.bold()") }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func bold(_ isActive: Swift::Bool) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.bold(_:)") }
-  nonisolated public func italic() -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.italic()") }
+  nonisolated public func bold(_ isActive: Swift::Bool) -> Text { _suiUnimplemented("SwiftUICore.Text.bold(_:)") }
+  nonisolated public func italic() -> Text { _suiUnimplemented("SwiftUICore.Text.italic()") }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func italic(_ isActive: Swift::Bool) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.italic(_:)") }
+  nonisolated public func italic(_ isActive: Swift::Bool) -> Text { _suiUnimplemented("SwiftUICore.Text.italic(_:)") }
   @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
-  nonisolated public func monospaced(_ isActive: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.monospaced(_:)") }
+  nonisolated public func monospaced(_ isActive: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.Text.monospaced(_:)") }
   @available(iOS 16.1, macOS 13.0, tvOS 16.1, watchOS 9.1, *)
-  nonisolated public func fontDesign(_ design: Font.Design?) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.fontDesign(_:)") }
+  nonisolated public func fontDesign(_ design: Font.Design?) -> Text { _suiUnimplemented("SwiftUICore.Text.fontDesign(_:)") }
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  nonisolated public func monospacedDigit() -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.monospacedDigit()") }
-  nonisolated public func strikethrough(_ isActive: Swift::Bool = true, color: Color? = nil) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.strikethrough(_:color:)") }
+  nonisolated public func monospacedDigit() -> Text { _suiUnimplemented("SwiftUICore.Text.monospacedDigit()") }
+  nonisolated public func strikethrough(_ isActive: Swift::Bool = true, color: Color? = nil) -> Text { _suiUnimplemented("SwiftUICore.Text.strikethrough(_:color:)") }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func strikethrough(_ isActive: Swift::Bool = true, pattern: Text.LineStyle.Pattern, color: Color? = nil) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.strikethrough(_:pattern:color:)") }
-  nonisolated public func underline(_ isActive: Swift::Bool = true, color: Color? = nil) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.underline(_:color:)") }
+  nonisolated public func strikethrough(_ isActive: Swift::Bool = true, pattern: Text.LineStyle.Pattern, color: Color? = nil) -> Text { _suiUnimplemented("SwiftUICore.Text.strikethrough(_:pattern:color:)") }
+  nonisolated public func underline(_ isActive: Swift::Bool = true, color: Color? = nil) -> Text { _suiUnimplemented("SwiftUICore.Text.underline(_:color:)") }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func underline(_ isActive: Swift::Bool = true, pattern: Text.LineStyle.Pattern, color: Color? = nil) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.underline(_:pattern:color:)") }
-  nonisolated public func kerning(_ kerning: CoreGraphics::CGFloat) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.kerning(_:)") }
-  nonisolated public func tracking(_ tracking: CoreGraphics::CGFloat) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.tracking(_:)") }
-  nonisolated public func baselineOffset(_ baselineOffset: CoreGraphics::CGFloat) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.baselineOffset(_:)") }
-  nonisolated public func _stylisticAlternative(_ alternative: Font._StylisticAlternative) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore._stylisticAlternative(_:)") }
+  nonisolated public func underline(_ isActive: Swift::Bool = true, pattern: Text.LineStyle.Pattern, color: Color? = nil) -> Text { _suiUnimplemented("SwiftUICore.Text.underline(_:pattern:color:)") }
+  nonisolated public func kerning(_ kerning: CoreGraphics::CGFloat) -> Text { _suiUnimplemented("SwiftUICore.Text.kerning(_:)") }
+  nonisolated public func tracking(_ tracking: CoreGraphics::CGFloat) -> Text { _suiUnimplemented("SwiftUICore.Text.tracking(_:)") }
+  nonisolated public func baselineOffset(_ baselineOffset: CoreGraphics::CGFloat) -> Text { _suiUnimplemented("SwiftUICore.Text.baselineOffset(_:)") }
+  nonisolated public func _stylisticAlternative(_ alternative: Font._StylisticAlternative) -> Text { _suiUnimplemented("SwiftUICore.Text._stylisticAlternative(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -16785,13 +16761,13 @@ extension Text {
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
   public struct Scale : Swift::Sendable, Swift::Hashable {
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var `default`: Text.Scale { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Scale.default") } }
+public static var `default`: Text.Scale { get { _suiUnimplemented("SwiftUICore.Text.Scale.default") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var secondary: Text.Scale { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Scale.secondary") } }
-    public static func == (a: Text.Scale, b: Text.Scale) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Scale.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.Scale.hash(into:)") }
+public static var secondary: Text.Scale { get { _suiUnimplemented("SwiftUICore.Text.Scale.secondary") } }
+    public static func == (a: Text.Scale, b: Text.Scale) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Text.Scale.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Text.Scale.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Scale.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Text.Scale.hashValue") }
     }
   }
 }
@@ -16802,7 +16778,7 @@ public static var secondary: Text.Scale { get { _suiUnimplemented("SwiftUICore.S
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text {
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  public func textScale(_ scale: Text.Scale, isEnabled: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.textScale(_:isEnabled:)") }
+  public func textScale(_ scale: Text.Scale, isEnabled: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.Text.textScale(_:isEnabled:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -16812,7 +16788,7 @@ extension Text {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func textScale(_ scale: Text.Scale, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.textScale(_:isEnabled:)") }
+  nonisolated public func textScale(_ scale: Text.Scale, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.textScale(_:isEnabled:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, visionOS 1.0, watchOS 6.0, *)
@@ -16938,12 +16914,12 @@ nonisolated public struct ArrangementView<Primary, Secondary> : View where Prima
 #endif
 @available(anyAppleOS 27.1, *)
 extension ArrangementView where Primary == ArrangementViewStyleConfiguration.Primary, Secondary == ArrangementViewStyleConfiguration.Secondary {
-  nonisolated public init(_ configuration: ArrangementViewStyleConfiguration) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  nonisolated public init(_ configuration: ArrangementViewStyleConfiguration) { _suiUnimplemented("SwiftUICore.ArrangementView.init(_:)") }
 }
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(anyAppleOS 27.1, *)
-  nonisolated public func arrangementViewStyle(_ style: some ArrangementViewStyle) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.arrangementViewStyle(_:)") }
+  nonisolated public func arrangementViewStyle(_ style: some ArrangementViewStyle) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.arrangementViewStyle(_:)") }
   
 }
 @available(anyAppleOS 27.1, *)
@@ -17021,18 +16997,18 @@ public struct DeviceHinge : Swift::Hashable, Swift::Sendable {
 extension DeviceHinge {
   public struct Status : Swift::Hashable, Swift::Sendable {
     public static var closed: DeviceHinge.Status {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Status.closed") }
+      get { _suiUnimplemented("SwiftUICore.DeviceHinge.Status.closed") }
     }
     public static var partiallyOpen: DeviceHinge.Status {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Status.partiallyOpen") }
+      get { _suiUnimplemented("SwiftUICore.DeviceHinge.Status.partiallyOpen") }
     }
     public static var fullyOpen: DeviceHinge.Status {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Status.fullyOpen") }
+      get { _suiUnimplemented("SwiftUICore.DeviceHinge.Status.fullyOpen") }
     }
-    public static func == (a: DeviceHinge.Status, b: DeviceHinge.Status) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Status.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.Status.hash(into:)") }
+    public static func == (a: DeviceHinge.Status, b: DeviceHinge.Status) -> Swift::Bool { _suiUnimplemented("SwiftUICore.DeviceHinge.Status.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.DeviceHinge.Status.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Status.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.DeviceHinge.Status.hashValue") }
     }
   }
 }
@@ -17268,7 +17244,7 @@ extension Transition where Self == SymbolEffectTransition {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 27.0)
 extension ContentTransition {
-  public static func symbolEffect<T>(_ effect: T, options: Symbols::SymbolEffectOptions = .default) -> ContentTransition where T : Symbols::ContentTransitionSymbolEffect, T : Symbols::SymbolEffect { _suiUnimplemented("SwiftUICore.SwiftUICore.symbolEffect(_:options:)") }
+  public static func symbolEffect<T>(_ effect: T, options: Symbols::SymbolEffectOptions = .default) -> ContentTransition where T : Symbols::ContentTransitionSymbolEffect, T : Symbols::SymbolEffect { _suiUnimplemented("SwiftUICore.ContentTransition.symbolEffect(_:options:)") }
   @export(implementation) public static var symbolEffect: ContentTransition {
     get {
         return symbolEffect(.automatic)
@@ -17328,11 +17304,11 @@ extension Animation {
             dampingFraction: springDampingFraction(bounce: bounce),
             blendDuration: blendDuration)
     }
-  @_disfavoredOverload public static func spring(response: Swift::Double = 0.5, dampingFraction: Swift::Double = 0.825, blendDuration: Foundation::TimeInterval = 0) -> Animation { _suiUnimplemented("SwiftUICore.SwiftUICore.spring(response:dampingFraction:blendDuration:)") }
+  @_disfavoredOverload public static func spring(response: Swift::Double = 0.5, dampingFraction: Swift::Double = 0.825, blendDuration: Foundation::TimeInterval = 0) -> Animation { _suiUnimplemented("SwiftUICore.Animation.spring(response:dampingFraction:blendDuration:)") }
   @export(implementation) public static var spring: Animation {
     get { spring() }
   }
-  @_disfavoredOverload public static func interactiveSpring(response: Swift::Double = 0.15, dampingFraction: Swift::Double = 0.86, blendDuration: Foundation::TimeInterval = 0.25) -> Animation { _suiUnimplemented("SwiftUICore.SwiftUICore.interactiveSpring(response:dampingFraction:blendDuration:)") }
+  @_disfavoredOverload public static func interactiveSpring(response: Swift::Double = 0.15, dampingFraction: Swift::Double = 0.86, blendDuration: Foundation::TimeInterval = 0.25) -> Animation { _suiUnimplemented("SwiftUICore.Animation.interactiveSpring(response:dampingFraction:blendDuration:)") }
   @export(implementation) public static var interactiveSpring: Animation {
     get { interactiveSpring() }
   }
@@ -17442,7 +17418,7 @@ extension Animation {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _AnimationModifier : Swift::Equatable {
-  public static func == (a: _AnimationModifier<Value>, b: _AnimationModifier<Value>) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public static func == (a: _AnimationModifier<Value>, b: _AnimationModifier<Value>) -> Swift::Bool { _suiUnimplemented("SwiftUICore._AnimationModifier.==(a:b:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -17552,23 +17528,23 @@ extension Shape where Self == ConcentricRectangle {
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Rectangle : RoundedRectangularShape {
-  public func corners(in size: CoreGraphics::CGSize?) -> Rectangle.Corners? { _suiUnimplemented("SwiftUICore.SwiftUICore.corners(in:)") }
+  public func corners(in size: CoreGraphics::CGSize?) -> Rectangle.Corners? { _suiUnimplemented("SwiftUICore.Rectangle.corners(in:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension RoundedRectangle : RoundedRectangularShape {
-  public func corners(in size: CoreGraphics::CGSize?) -> RoundedRectangle.Corners? { _suiUnimplemented("SwiftUICore.SwiftUICore.corners(in:)") }
+  public func corners(in size: CoreGraphics::CGSize?) -> RoundedRectangle.Corners? { _suiUnimplemented("SwiftUICore.RoundedRectangle.corners(in:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension UnevenRoundedRectangle : RoundedRectangularShape {
-  public func corners(in size: CoreGraphics::CGSize?) -> UnevenRoundedRectangle.Corners? { _suiUnimplemented("SwiftUICore.SwiftUICore.corners(in:)") }
+  public func corners(in size: CoreGraphics::CGSize?) -> UnevenRoundedRectangle.Corners? { _suiUnimplemented("SwiftUICore.UnevenRoundedRectangle.corners(in:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Circle : RoundedRectangularShape {
-  public func corners(in size: CoreGraphics::CGSize?) -> Circle.Corners? { _suiUnimplemented("SwiftUICore.SwiftUICore.corners(in:)") }
+  public func corners(in size: CoreGraphics::CGSize?) -> Circle.Corners? { _suiUnimplemented("SwiftUICore.Circle.corners(in:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Capsule : RoundedRectangularShape {
-  public func corners(in size: CoreGraphics::CGSize?) -> Capsule.Corners? { _suiUnimplemented("SwiftUICore.SwiftUICore.corners(in:)") }
+  public func corners(in size: CoreGraphics::CGSize?) -> Capsule.Corners? { _suiUnimplemented("SwiftUICore.Capsule.corners(in:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 public protocol RoundedRectangularShape : InsettableShape {
@@ -17718,8 +17694,8 @@ extension EnvironmentValues {
       @available(tvOS, unavailable)
   @available(visionOS, unavailable)
   public var _deviceVariant: _DeviceVariant {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._deviceVariant") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore._deviceVariant") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues._deviceVariant") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues._deviceVariant") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -17760,7 +17736,7 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Color {
-  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.SwiftUICore._apply(to:)") }
+  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.Color._apply(to:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -17883,10 +17859,10 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onChange<V>(of value: V, initial: Swift::Bool = false, _ action: @escaping (_ oldValue: V, _ newValue: V) -> Swift::Void) -> Swift.Never where V : Swift::Equatable { _suiUnimplemented("SwiftUICore.SwiftUICore.onChange(of:initial:_:)") }
+nonisolated public func onChange<V>(of value: V, initial: Swift::Bool = false, _ action: @escaping (_ oldValue: V, _ newValue: V) -> Swift::Void) -> Swift.Never where V : Swift::Equatable { _suiUnimplemented("SwiftUICore.View.onChange(of:initial:_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onChange<V>(of value: V, initial: Swift::Bool = false, _ action: @escaping () -> Swift::Void) -> Swift.Never where V : Swift::Equatable { _suiUnimplemented("SwiftUICore.SwiftUICore.onChange(of:initial:_:)") }
+nonisolated public func onChange<V>(of value: V, initial: Swift::Bool = false, _ action: @escaping () -> Swift::Void) -> Swift.Never where V : Swift::Equatable { _suiUnimplemented("SwiftUICore.View.onChange(of:initial:_:)") }
   
 }
 @available(anyAppleOS 27.0, *)
@@ -17976,14 +17952,14 @@ public protocol AnimationStateKey {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Transaction {
-  public init(animation: Animation?) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(animation:)") }
+  public init(animation: Animation?) { _suiUnimplemented("SwiftUICore.Transaction.init(animation:)") }
   public var animation: Animation? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.animation") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.animation") }
+    get { _suiUnimplemented("SwiftUICore.Transaction.animation") }
+    set { _suiUnimplemented("SwiftUICore.Transaction.animation") }
   }
   public var disablesAnimations: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.disablesAnimations") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.disablesAnimations") }
+    get { _suiUnimplemented("SwiftUICore.Transaction.disablesAnimations") }
+    set { _suiUnimplemented("SwiftUICore.Transaction.disablesAnimations") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -18104,7 +18080,7 @@ extension Swift::Never : Gesture {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Gesture where Self.Value == Self.Body.Value {
-  nonisolated public static func _makeGesture(gesture: _GraphValue<Self>, inputs: _GestureInputs) -> _GestureOutputs<Self.Body.Value> { _suiUnimplemented("SwiftUICore.SwiftUICore._makeGesture(gesture:inputs:)") }
+  nonisolated public static func _makeGesture(gesture: _GraphValue<Self>, inputs: _GestureInputs) -> _GestureOutputs<Self.Body.Value> { _suiUnimplemented("SwiftUICore.Gesture._makeGesture(gesture:inputs:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -18150,7 +18126,7 @@ public struct _GestureOutputs<Value> {
 @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "Use Color(cgColor:) when converting a CGColor, or create a standard Color directly")
 @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use Color(cgColor:) when converting a CGColor, or create a standard Color directly")
 extension Color {
-  public init(_ cgColor: CoreGraphics::CGColor) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  public init(_ cgColor: CoreGraphics::CGColor) { _suiUnimplemented("SwiftUICore.Color.init(_:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -18158,7 +18134,7 @@ extension Color {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Color {
-  public init(cgColor: CoreGraphics::CGColor) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(cgColor:)") }
+  public init(cgColor: CoreGraphics::CGColor) { _suiUnimplemented("SwiftUICore.Color.init(cgColor:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -18167,7 +18143,7 @@ extension Color {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Color.Resolved {
   public var cgColor: CoreGraphics::CGColor {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.cgColor") }
+    get { _suiUnimplemented("SwiftUICore.Color.SwiftUICore.Resolved.cgColor") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -18177,11 +18153,11 @@ extension Color.Resolved {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
 extension EnvironmentValues {
   public var accessibilityLargeContentViewerEnabled: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityLargeContentViewerEnabled") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilityLargeContentViewerEnabled") }
   }
   public var _accessibilityLargeContentViewerEnabled: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._accessibilityLargeContentViewerEnabled") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore._accessibilityLargeContentViewerEnabled") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues._accessibilityLargeContentViewerEnabled") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues._accessibilityLargeContentViewerEnabled") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -18191,10 +18167,10 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityShowsLargeContentViewer<V>(@ContentBuilder _ largeContentView: () -> V) -> Swift.Never where V : View { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityShowsLargeContentViewer(?:)") }
+nonisolated public func accessibilityShowsLargeContentViewer<V>(@ContentBuilder _ largeContentView: () -> V) -> Swift.Never where V : View { _suiUnimplemented("SwiftUICore.View.accessibilityShowsLargeContentViewer(?:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityShowsLargeContentViewer() -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityShowsLargeContentViewer()") }
+nonisolated public func accessibilityShowsLargeContentViewer() -> Swift.Never { _suiUnimplemented("SwiftUICore.View.accessibilityShowsLargeContentViewer()") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -18208,13 +18184,13 @@ public struct _LayoutTraits : Swift::Equatable, Swift::Sendable {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension _LayoutTraits : Swift::CustomStringConvertible {
   public var description: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.description") }
+    get { _suiUnimplemented("SwiftUICore._LayoutTraits.description") }
   }
 }
 extension Font {
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public static var `default`: Font {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.default") }
+    get { _suiUnimplemented("SwiftUICore.Font.default") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -18223,8 +18199,8 @@ extension Font {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ViewModifier where Self : Animatable {
-  nonisolated public static func _makeView(modifier: _GraphValue<Self>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(modifier:inputs:body:)") }
-  nonisolated public static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(modifier:inputs:body:)") }
+  nonisolated public static func _makeView(modifier: _GraphValue<Self>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.ViewModifier._makeView(modifier:inputs:body:)") }
+  nonisolated public static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.ViewModifier._makeViewList(modifier:inputs:body:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -18246,9 +18222,9 @@ extension ViewModifier where Self : Animatable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _VariadicView_Children : View {
-  nonisolated public static func _makeViewList(view: _GraphValue<_VariadicView.Children>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(view:inputs:)") }
+  nonisolated public static func _makeViewList(view: _GraphValue<_VariadicView.Children>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore._VariadicView_Children._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore._VariadicView_Children._viewListCount(inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
 }
@@ -18261,14 +18237,14 @@ extension _VariadicView_Children : Swift::RandomAccessCollection {
   #if compiler(>=5.3) && $TildeSendable
   nonisolated public struct Element : View, Swift::Identifiable, ~Swift::Sendable {
     nonisolated public var id: Swift::AnyHashable {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Element.id") }
+      get { _suiUnimplemented("SwiftUICore._VariadicView_Children.Element.id") }
     }
-    nonisolated public func id<ID>(as _: ID.Type = ID.self) -> ID? where ID : Swift::Hashable { _suiUnimplemented("SwiftUICore.SwiftUICore.Element.id(as:)") }
+    nonisolated public func id<ID>(as _: ID.Type = ID.self) -> ID? where ID : Swift::Hashable { _suiUnimplemented("SwiftUICore._VariadicView_Children.Element.id(as:)") }
     nonisolated public subscript<Trait>(key: Trait.Type) -> Trait.Value where Trait : _ViewTraitKey {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Element.subscript(key:)") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore.Element.subscript(key:)") }
+      get { _suiUnimplemented("SwiftUICore._VariadicView_Children.Element.subscript(key:)") }
+      set { _suiUnimplemented("SwiftUICore._VariadicView_Children.Element.subscript(key:)") }
     }
-    public static func _makeView(view: _GraphValue<_VariadicView_Children.Element>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore.Element._makeView(view:inputs:)") }
+    public static func _makeView(view: _GraphValue<_VariadicView_Children.Element>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._VariadicView_Children.Element._makeView(view:inputs:)") }
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias Body = Swift::Never
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -18292,13 +18268,13 @@ extension _VariadicView_Children : Swift::RandomAccessCollection {
   }
   #endif
   public var startIndex: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.startIndex") }
+    get { _suiUnimplemented("SwiftUICore._VariadicView_Children.startIndex") }
   }
   public var endIndex: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.endIndex") }
+    get { _suiUnimplemented("SwiftUICore._VariadicView_Children.endIndex") }
   }
   public subscript(index: Swift::Int) -> _VariadicView_Children.Element {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.subscript(index:)") }
+    get { _suiUnimplemented("SwiftUICore._VariadicView_Children.subscript(index:)") }
   }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Index = Swift::Int
@@ -18316,7 +18292,7 @@ extension _VariadicView_Children : Swift::RandomAccessCollection {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::RangeReplaceableCollection where Self : Swift::MutableCollection {
   @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-  public mutating func remove(atOffsets offsets: Foundation::IndexSet) { _suiUnimplemented("SwiftUICore.Swift.remove(atOffsets:)") }
+  public mutating func remove(atOffsets offsets: Foundation::IndexSet) { _suiUnimplemented("SwiftUICore.RangeReplaceableCollection.remove(atOffsets:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -18325,7 +18301,7 @@ extension Swift::RangeReplaceableCollection where Self : Swift::MutableCollectio
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::MutableCollection {
   @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-  public mutating func move(fromOffsets source: Foundation::IndexSet, toOffset destination: Swift::Int) { _suiUnimplemented("SwiftUICore.Swift.move(fromOffsets:toOffset:)") }
+  public mutating func move(fromOffsets source: Foundation::IndexSet, toOffset destination: Swift::Int) { _suiUnimplemented("SwiftUICore.MutableCollection.move(fromOffsets:toOffset:)") }
 }
 extension _Concurrency::MainActor {
   #if compiler(>=5.3) && $InlineAlways
@@ -18344,9 +18320,9 @@ extension _Concurrency::MainActor {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Color {
-  public init(_ name: Swift::String, bundle: Foundation::Bundle? = nil) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:bundle:)") }
+  public init(_ name: Swift::String, bundle: Foundation::Bundle? = nil) { _suiUnimplemented("SwiftUICore.Color.init(_:bundle:)") }
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var _mainNamedBundle: Foundation::Bundle? { get { _suiUnimplemented("SwiftUICore.SwiftUICore._mainNamedBundle") } }
+public static var _mainNamedBundle: Foundation::Bundle? { get { _suiUnimplemented("SwiftUICore.Color._mainNamedBundle") } }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -18354,7 +18330,7 @@ public static var _mainNamedBundle: Foundation::Bundle? { get { _suiUnimplemente
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Color {
-  public init(_ resource: DeveloperToolsSupport::ColorResource) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  public init(_ resource: DeveloperToolsSupport::ColorResource) { _suiUnimplemented("SwiftUICore.Color.init(_:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public struct TimeDataSource<Value> {
@@ -18365,26 +18341,26 @@ extension TimeDataSource : Swift::Sendable where Value : Swift::Sendable {
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension TimeDataSource {
   public static var currentDate: TimeDataSource<Foundation::Date> {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.currentDate") }
+    get { _suiUnimplemented("SwiftUICore.TimeDataSource.currentDate") }
   }
-  public static func durationOffset(to date: Foundation::Date) -> TimeDataSource<Swift::Duration> { _suiUnimplemented("SwiftUICore.SwiftUICore.durationOffset(to:)") }
-  public static func dateRange(startingAt date: Foundation::Date) -> TimeDataSource<Swift::Range<Foundation::Date>> { _suiUnimplemented("SwiftUICore.SwiftUICore.dateRange(startingAt:)") }
-  public static func dateRange(endingAt date: Foundation::Date) -> TimeDataSource<Swift::Range<Foundation::Date>> { _suiUnimplemented("SwiftUICore.SwiftUICore.dateRange(endingAt:)") }
+  public static func durationOffset(to date: Foundation::Date) -> TimeDataSource<Swift::Duration> { _suiUnimplemented("SwiftUICore.TimeDataSource.durationOffset(to:)") }
+  public static func dateRange(startingAt date: Foundation::Date) -> TimeDataSource<Swift::Range<Foundation::Date>> { _suiUnimplemented("SwiftUICore.TimeDataSource.dateRange(startingAt:)") }
+  public static func dateRange(endingAt date: Foundation::Date) -> TimeDataSource<Swift::Range<Foundation::Date>> { _suiUnimplemented("SwiftUICore.TimeDataSource.dateRange(endingAt:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public enum SystemFormatStyle : Swift::Sendable {
 }
 extension Text {
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public init<V, F>(_ source: TimeDataSource<V>, format: F) where V == F.FormatInput, F : Foundation::DiscreteFormatStyle, F.FormatOutput == Foundation::AttributedString { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:format:)") }
+  public init<V, F>(_ source: TimeDataSource<V>, format: F) where V == F.FormatInput, F : Foundation::DiscreteFormatStyle, F.FormatOutput == Foundation::AttributedString { _suiUnimplemented("SwiftUICore.Text.init(_:format:)") }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  @_disfavoredOverload public init<V, F>(_ source: TimeDataSource<V>, format: F) where V == F.FormatInput, F : Foundation::DiscreteFormatStyle, F.FormatOutput == Swift::String { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:format:)") }
+  @_disfavoredOverload public init<V, F>(_ source: TimeDataSource<V>, format: F) where V == F.FormatInput, F : Foundation::DiscreteFormatStyle, F.FormatOutput == Swift::String { _suiUnimplemented("SwiftUICore.Text.init(_:format:)") }
 }
 extension LocalizedStringKey.StringInterpolation {
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation<V, F>(_ source: TimeDataSource<V>, format: F) where V == F.FormatInput, F : Foundation::DiscreteFormatStyle, F.FormatOutput == Foundation::AttributedString { _suiUnimplemented("SwiftUICore.SwiftUICore.appendInterpolation(_:format:)") }
+  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation<V, F>(_ source: TimeDataSource<V>, format: F) where V == F.FormatInput, F : Foundation::DiscreteFormatStyle, F.FormatOutput == Foundation::AttributedString { _suiUnimplemented("SwiftUICore.LocalizedStringKey.SwiftUICore.StringInterpolation.appendInterpolation(_:format:)") }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  @_disfavoredOverload @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation<V, F>(_ source: TimeDataSource<V>, format: F) where V == F.FormatInput, F : Foundation::DiscreteFormatStyle, F.FormatOutput == Swift::String { _suiUnimplemented("SwiftUICore.SwiftUICore.appendInterpolation(_:format:)") }
+  @_disfavoredOverload @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation<V, F>(_ source: TimeDataSource<V>, format: F) where V == F.FormatInput, F : Foundation::DiscreteFormatStyle, F.FormatOutput == Swift::String { _suiUnimplemented("SwiftUICore.LocalizedStringKey.SwiftUICore.StringInterpolation.appendInterpolation(_:format:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -18427,11 +18403,11 @@ extension ContainerRelativeShape : InsettableShape {
             self.amount = amount
         }
     @usableFromInline
-    nonisolated internal func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.path(in:)") }
+    nonisolated internal func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.ContainerRelativeShape._Inset.path(in:)") }
     @usableFromInline
     internal var animatableData: CoreGraphics::CGFloat {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.animatableData") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.animatableData") }
+      get { _suiUnimplemented("SwiftUICore.ContainerRelativeShape._Inset.animatableData") }
+      set { _suiUnimplemented("SwiftUICore.ContainerRelativeShape._Inset.animatableData") }
     }
     @inlinable nonisolated internal func inset(by amount: CoreGraphics::CGFloat) -> ContainerRelativeShape._Inset {
             var copy = self
@@ -18456,7 +18432,7 @@ extension ContainerRelativeShape : InsettableShape {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ShapeStyle {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func _fillingContainerShape() -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore._fillingContainerShape()") }
+public func _fillingContainerShape() -> Swift.Never { _suiUnimplemented("SwiftUICore.ShapeStyle._fillingContainerShape()") }
   
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -18477,7 +18453,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency::MainActor @preconcurrency public func _containerShape<T>(_ shape: T) -> Swift.Never where T : InsettableShape { _suiUnimplemented("SwiftUICore.SwiftUICore._containerShape(_:)") }
+@_Concurrency::MainActor @preconcurrency public func _containerShape<T>(_ shape: T) -> Swift.Never where T : InsettableShape { _suiUnimplemented("SwiftUICore.View._containerShape(_:)") }
   
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -18524,7 +18500,7 @@ public protocol KeyframeTrackContent<Value> {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension KeyframeTrackContent where Self.Value == Self.Body.Value {
-  public func _resolve(into resolved: inout _ResolvedKeyframeTrackContent<Self.Value>) { _suiUnimplemented("SwiftUICore.SwiftUICore._resolve(into:)") }
+  public func _resolve(into resolved: inout _ResolvedKeyframeTrackContent<Self.Value>) { _suiUnimplemented("SwiftUICore.KeyframeTrackContent._resolve(into:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -18695,10 +18671,10 @@ nonisolated public struct PhaseAnimator<Phase, Content> : View where Phase : Swi
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func phaseAnimator<Phase>(_ phases: some Sequence<Phase>, trigger: some Equatable, @ContentBuilder content: @escaping (PlaceholderContentView<Self>, Phase) -> some View, animation: @escaping (Phase) -> Animation? = { _ in .default }) -> Swift.Never where Phase : Swift::Equatable { _suiUnimplemented("SwiftUICore.SwiftUICore.phaseAnimator(_:trigger:?:animation:)") }
+nonisolated public func phaseAnimator<Phase>(_ phases: some Sequence<Phase>, trigger: some Equatable, @ContentBuilder content: @escaping (PlaceholderContentView<Self>, Phase) -> some View, animation: @escaping (Phase) -> Animation? = { _ in .default }) -> Swift.Never where Phase : Swift::Equatable { _suiUnimplemented("SwiftUICore.View.phaseAnimator(_:trigger:?:animation:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func phaseAnimator<Phase>(_ phases: some Sequence<Phase>, @ContentBuilder content: @escaping (PlaceholderContentView<Self>, Phase) -> some View, animation: @escaping (Phase) -> Animation? = { _ in .default }) -> Swift.Never where Phase : Swift::Equatable { _suiUnimplemented("SwiftUICore.SwiftUICore.phaseAnimator(_:?:animation:)") }
+nonisolated public func phaseAnimator<Phase>(_ phases: some Sequence<Phase>, @ContentBuilder content: @escaping (PlaceholderContentView<Self>, Phase) -> some View, animation: @escaping (Phase) -> Animation? = { _ in .default }) -> Swift.Never where Phase : Swift::Equatable { _suiUnimplemented("SwiftUICore.View.phaseAnimator(_:?:animation:)") }
   
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -18816,7 +18792,7 @@ nonisolated public struct TapGesture : Gesture {
 #endif
 @available(anyAppleOS 27.0, *)
 extension TapGesture {
-  nonisolated public init(count: Swift::Int = 1, inputKinds: GestureInputKinds = .all) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(count:inputKinds:)") }
+  nonisolated public init(count: Swift::Int = 1, inputKinds: GestureInputKinds = .all) { _suiUnimplemented("SwiftUICore.TapGesture.init(count:inputKinds:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 16.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -18825,7 +18801,7 @@ extension TapGesture {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onTapGesture(count: Swift::Int = 1, perform action: @escaping () -> Swift::Void) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.onTapGesture(count:perform:)") }
+nonisolated public func onTapGesture(count: Swift::Int = 1, perform action: @escaping () -> Swift::Void) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.onTapGesture(count:perform:)") }
   
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -18877,7 +18853,7 @@ extension KeyframeTrackContentBuilder {
   #if compiler(>=5.3) && $TildeSendable
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
   public struct Conditional<ConditionalValue, First, Second> : KeyframeTrackContent, ~Swift::Sendable where ConditionalValue == First.Value, First : KeyframeTrackContent, Second : KeyframeTrackContent, First.Value == Second.Value {
-    public func _resolve(into resolved: inout _ResolvedKeyframeTrackContent<ConditionalValue>) { _suiUnimplemented("SwiftUICore.SwiftUICore.Conditional._resolve(into:)") }
+    public func _resolve(into resolved: inout _ResolvedKeyframeTrackContent<ConditionalValue>) { _suiUnimplemented("SwiftUICore.KeyframeTrackContentBuilder.Conditional._resolve(into:)") }
     @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
     public typealias Body = KeyframeTrackContentBuilder<Value>.Conditional<ConditionalValue, First, Second>
     @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
@@ -18929,7 +18905,7 @@ extension KeyframeTrackContentBuilder {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension StateObject {
   nonisolated public static var _propertyBehaviors: Swift::UInt32 {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._propertyBehaviors") }
+    get { _suiUnimplemented("SwiftUICore.StateObject._propertyBehaviors") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -18981,9 +18957,9 @@ package struct LayoutPriorityTraitKey : _ViewTraitKey {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Environment {
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  public init(_ objectType: Value.Type) where Value : AnyObject, Value : Observation::Observable { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  public init(_ objectType: Value.Type) where Value : AnyObject, Value : Observation::Observable { _suiUnimplemented("SwiftUICore.Environment.init(_:)") }
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  public init<T>(_ objectType: T.Type) where Value == T?, T : AnyObject, T : Observation::Observable { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  public init<T>(_ objectType: T.Type) where Value == T?, T : AnyObject, T : Observation::Observable { _suiUnimplemented("SwiftUICore.Environment.init(_:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -18993,8 +18969,8 @@ extension Environment {
 extension EnvironmentValues {
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
   public subscript<T>(objectType: T.Type) -> T? where T : AnyObject, T : Observation::Observable {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.subscript(objectType:)") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.subscript(objectType:)") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.subscript(objectType:)") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.subscript(objectType:)") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -19005,7 +18981,7 @@ extension EnvironmentValues {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func environment<T>(_ object: T?) -> Swift.Never where T : AnyObject, T : Observation::Observable { _suiUnimplemented("SwiftUICore.SwiftUICore.environment(_:)") }
+  nonisolated public func environment<T>(_ object: T?) -> Swift.Never where T : AnyObject, T : Observation::Observable { _suiUnimplemented("SwiftUICore.View.environment(_:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -19190,8 +19166,8 @@ public enum Prominence : Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var headerProminence: Prominence {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.headerProminence") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.headerProminence") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.headerProminence") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.headerProminence") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -19201,7 +19177,7 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func headerProminence(_ prominence: Prominence) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.headerProminence(_:)") }
+nonisolated public func headerProminence(_ prominence: Prominence) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.headerProminence(_:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -19408,7 +19384,7 @@ public enum _ViewDebug {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _ViewDebug {
-  public static func serializedData(_ viewDebugData: [_ViewDebug.Data]) -> Foundation::Data? { _suiUnimplemented("SwiftUICore.SwiftUICore.serializedData(_:)") }
+  public static func serializedData(_ viewDebugData: [_ViewDebug.Data]) -> Foundation::Data? { _suiUnimplemented("SwiftUICore._ViewDebug.serializedData(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -19416,7 +19392,7 @@ extension _ViewDebug {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _ViewDebug.Data : Swift::Encodable {
-  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.encode(to:)") }
+  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore._ViewDebug.SwiftUICore.Data.encode(to:)") }
 }
 @available(iOS 17.1, macOS 14.1, tvOS 17.1, watchOS 10.1, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -19424,7 +19400,7 @@ extension _ViewDebug.Data : Swift::Encodable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
-  @_Concurrency::MainActor @preconcurrency public static func _logChanges() { _suiUnimplemented("SwiftUICore.SwiftUICore._logChanges()") }
+  @_Concurrency::MainActor @preconcurrency public static func _logChanges() { _suiUnimplemented("SwiftUICore.View._logChanges()") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -19432,23 +19408,23 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Animation {
-  public static func easeInOut(duration: Foundation::TimeInterval) -> Animation { _suiUnimplemented("SwiftUICore.SwiftUICore.easeInOut(duration:)") }
+  public static func easeInOut(duration: Foundation::TimeInterval) -> Animation { _suiUnimplemented("SwiftUICore.Animation.easeInOut(duration:)") }
   public static var easeInOut: Animation {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.easeInOut") }
+    get { _suiUnimplemented("SwiftUICore.Animation.easeInOut") }
   }
-  public static func easeIn(duration: Foundation::TimeInterval) -> Animation { _suiUnimplemented("SwiftUICore.SwiftUICore.easeIn(duration:)") }
+  public static func easeIn(duration: Foundation::TimeInterval) -> Animation { _suiUnimplemented("SwiftUICore.Animation.easeIn(duration:)") }
   public static var easeIn: Animation {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.easeIn") }
+    get { _suiUnimplemented("SwiftUICore.Animation.easeIn") }
   }
-  public static func easeOut(duration: Foundation::TimeInterval) -> Animation { _suiUnimplemented("SwiftUICore.SwiftUICore.easeOut(duration:)") }
+  public static func easeOut(duration: Foundation::TimeInterval) -> Animation { _suiUnimplemented("SwiftUICore.Animation.easeOut(duration:)") }
   public static var easeOut: Animation {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.easeOut") }
+    get { _suiUnimplemented("SwiftUICore.Animation.easeOut") }
   }
-  public static func linear(duration: Foundation::TimeInterval) -> Animation { _suiUnimplemented("SwiftUICore.SwiftUICore.linear(duration:)") }
+  public static func linear(duration: Foundation::TimeInterval) -> Animation { _suiUnimplemented("SwiftUICore.Animation.linear(duration:)") }
   public static var linear: Animation {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.linear") }
+    get { _suiUnimplemented("SwiftUICore.Animation.linear") }
   }
-  public static func timingCurve(_ p1x: Swift::Double, _ p1y: Swift::Double, _ p2x: Swift::Double, _ p2y: Swift::Double, duration: Foundation::TimeInterval = 0.35) -> Animation { _suiUnimplemented("SwiftUICore.SwiftUICore.timingCurve(_:_:_:_:duration:)") }
+  public static func timingCurve(_ p1x: Swift::Double, _ p1y: Swift::Double, _ p2x: Swift::Double, _ p2y: Swift::Double, duration: Foundation::TimeInterval = 0.35) -> Animation { _suiUnimplemented("SwiftUICore.Animation.timingCurve(_:_:_:_:duration:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -19522,8 +19498,8 @@ public protocol Animatable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Animatable where Self : VectorArithmetic {
   public var animatableData: Self {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.animatableData") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.animatableData") }
+    get { _suiUnimplemented("SwiftUICore.Animatable.animatableData") }
+    set { _suiUnimplemented("SwiftUICore.Animatable.animatableData") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -19536,7 +19512,7 @@ extension Animatable where Self.AnimatableData == EmptyAnimatableData {
     @inlinable get { return EmptyAnimatableData() }
     @inlinable set {}
   }
-  public static func _makeAnimatable(value: inout _GraphValue<Self>, inputs: _GraphInputs) { _suiUnimplemented("SwiftUICore.SwiftUICore._makeAnimatable(value:inputs:)") }
+  public static func _makeAnimatable(value: inout _GraphValue<Self>, inputs: _GraphInputs) { _suiUnimplemented("SwiftUICore.Animatable._makeAnimatable(value:inputs:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -19544,7 +19520,7 @@ extension Animatable where Self.AnimatableData == EmptyAnimatableData {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Animatable {
-  public static func _makeAnimatable(value: inout _GraphValue<Self>, inputs: _GraphInputs) { _suiUnimplemented("SwiftUICore.SwiftUICore._makeAnimatable(value:inputs:)") }
+  public static func _makeAnimatable(value: inout _GraphValue<Self>, inputs: _GraphInputs) { _suiUnimplemented("SwiftUICore.Animatable._makeAnimatable(value:inputs:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -19768,10 +19744,10 @@ nonisolated public struct MeshGradient : ShapeStyle, Swift::Equatable, Swift::Se
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Swift::Optional : View where Wrapped : View {
   public typealias Body = Swift::Never
-  nonisolated public static func _makeView(view: _GraphValue<Swift::Optional<Wrapped>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.Swift._makeView(view:inputs:)") }
-  nonisolated public static func _makeViewList(view: _GraphValue<Swift::Optional<Wrapped>>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.Swift._makeViewList(view:inputs:)") }
+  nonisolated public static func _makeView(view: _GraphValue<Swift::Optional<Wrapped>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.Optional._makeView(view:inputs:)") }
+  nonisolated public static func _makeViewList(view: _GraphValue<Swift::Optional<Wrapped>>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.Optional._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.Swift._viewListCount(inputs:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.Optional._viewListCount(inputs:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -19848,7 +19824,7 @@ extension PropertyList {
     deinit {}
     @usableFromInline
     internal var description: Swift::String {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Element.description") }
+      get { _suiUnimplemented("SwiftUICore.PropertyList.Element.description") }
     }
   }
   #else
@@ -19913,10 +19889,10 @@ extension Shape {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Shape {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func size(_ size: CoreGraphics::CGSize, anchor: UnitPoint) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.size(_:anchor:)") }
+nonisolated public func size(_ size: CoreGraphics::CGSize, anchor: UnitPoint) -> Swift.Never { _suiUnimplemented("SwiftUICore.Shape.size(_:anchor:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func size(width: CoreGraphics::CGFloat, height: CoreGraphics::CGFloat, anchor: UnitPoint) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.size(width:height:anchor:)") }
+nonisolated public func size(width: CoreGraphics::CGFloat, height: CoreGraphics::CGFloat, anchor: UnitPoint) -> Swift.Never { _suiUnimplemented("SwiftUICore.Shape.size(width:height:anchor:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -19939,9 +19915,9 @@ nonisolated public func size(width: CoreGraphics::CGFloat, height: CoreGraphics:
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ViewModifier where Self.Body == Swift::Never {
-  @_Concurrency::MainActor @preconcurrency public func body(content: Self.Content) -> Self.Body { _suiUnimplemented("SwiftUICore.SwiftUICore.body(content:)") }
+  @_Concurrency::MainActor @preconcurrency public func body(content: Self.Content) -> Self.Body { _suiUnimplemented("SwiftUICore.ViewModifier.body(content:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:body:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUICore.ViewModifier._viewListCount(inputs:body:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -19949,10 +19925,10 @@ extension ViewModifier where Self.Body == Swift::Never {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ViewModifier where Self : _GraphInputsModifier, Self.Body == Swift::Never {
-  nonisolated public static func _makeView(modifier: _GraphValue<Self>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(modifier:inputs:body:)") }
-  nonisolated public static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(modifier:inputs:body:)") }
+  nonisolated public static func _makeView(modifier: _GraphValue<Self>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.ViewModifier._makeView(modifier:inputs:body:)") }
+  nonisolated public static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.ViewModifier._makeViewList(modifier:inputs:body:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:body:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUICore.ViewModifier._viewListCount(inputs:body:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -20000,7 +19976,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ModifiedContent : Swift::Equatable where Content : Swift::Equatable, Modifier : Swift::Equatable {
-  public static func == (a: ModifiedContent<Content, Modifier>, b: ModifiedContent<Content, Modifier>) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public static func == (a: ModifiedContent<Content, Modifier>, b: ModifiedContent<Content, Modifier>) -> Swift::Bool { _suiUnimplemented("SwiftUICore.ModifiedContent.==(a:b:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension ModifiedContent : Swift::Sendable where Content : Swift::Sendable, Modifier : Swift::Sendable {
@@ -20008,8 +19984,8 @@ extension ModifiedContent : Swift::Sendable where Content : Swift::Sendable, Mod
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension ModifiedContent : Animatable where Content : Animatable, Modifier : Animatable {
   public var animatableData: AnimatablePair<Content.AnimatableData, Modifier.AnimatableData> {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.animatableData") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.animatableData") }
+    get { _suiUnimplemented("SwiftUICore.ModifiedContent.animatableData") }
+    set { _suiUnimplemented("SwiftUICore.ModifiedContent.animatableData") }
   }
   @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public typealias AnimatableData = AnimatablePair<Content.AnimatableData, Modifier.AnimatableData>
@@ -20020,12 +19996,12 @@ extension ModifiedContent : Animatable where Content : Animatable, Modifier : An
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ModifiedContent : View where Content : View, Modifier : ViewModifier {
-  nonisolated public static func _makeView(view: _GraphValue<ModifiedContent<Content, Modifier>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(view:inputs:)") }
-  nonisolated public static func _makeViewList(view: _GraphValue<ModifiedContent<Content, Modifier>>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(view:inputs:)") }
+  nonisolated public static func _makeView(view: _GraphValue<ModifiedContent<Content, Modifier>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.ModifiedContent._makeView(view:inputs:)") }
+  nonisolated public static func _makeViewList(view: _GraphValue<ModifiedContent<Content, Modifier>>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.ModifiedContent._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.ModifiedContent._viewListCount(inputs:)") }
   @_Concurrency::MainActor @preconcurrency public var body: ModifiedContent<Content, Modifier>.Body {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.body") }
+    get { _suiUnimplemented("SwiftUICore.ModifiedContent.body") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -20034,10 +20010,10 @@ extension ModifiedContent : View where Content : View, Modifier : ViewModifier {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ModifiedContent : ViewModifier where Content : ViewModifier, Modifier : ViewModifier {
-  nonisolated public static func _makeView(modifier: _GraphValue<ModifiedContent<Content, Modifier>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(modifier:inputs:body:)") }
-  nonisolated public static func _makeViewList(modifier: _GraphValue<ModifiedContent<Content, Modifier>>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(modifier:inputs:body:)") }
+  nonisolated public static func _makeView(modifier: _GraphValue<ModifiedContent<Content, Modifier>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.ModifiedContent._makeView(modifier:inputs:body:)") }
+  nonisolated public static func _makeViewList(modifier: _GraphValue<ModifiedContent<Content, Modifier>>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.ModifiedContent._makeViewList(modifier:inputs:body:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:body:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUICore.ModifiedContent._viewListCount(inputs:body:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -20057,18 +20033,18 @@ extension ViewModifier {
 extension Image {
   public struct DynamicRange : Swift::Hashable, Swift::Sendable {
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var standard: Image.DynamicRange { get { _suiUnimplemented("SwiftUICore.SwiftUICore.DynamicRange.standard") } }
+public static var standard: Image.DynamicRange { get { _suiUnimplemented("SwiftUICore.Image.DynamicRange.standard") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var constrainedHigh: Image.DynamicRange { get { _suiUnimplemented("SwiftUICore.SwiftUICore.DynamicRange.constrainedHigh") } }
+public static var constrainedHigh: Image.DynamicRange { get { _suiUnimplemented("SwiftUICore.Image.DynamicRange.constrainedHigh") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var high: Image.DynamicRange { get { _suiUnimplemented("SwiftUICore.SwiftUICore.DynamicRange.high") } }
-    public static func == (a: Image.DynamicRange, b: Image.DynamicRange) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.DynamicRange.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.DynamicRange.hash(into:)") }
+public static var high: Image.DynamicRange { get { _suiUnimplemented("SwiftUICore.Image.DynamicRange.high") } }
+    public static func == (a: Image.DynamicRange, b: Image.DynamicRange) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Image.DynamicRange.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Image.DynamicRange.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.DynamicRange.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Image.DynamicRange.hashValue") }
     }
   }
-  public func allowedDynamicRange(_ range: Image.DynamicRange?) -> Image { _suiUnimplemented("SwiftUICore.SwiftUICore.allowedDynamicRange(_:)") }
+  public func allowedDynamicRange(_ range: Image.DynamicRange?) -> Image { _suiUnimplemented("SwiftUICore.Image.allowedDynamicRange(_:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -20077,8 +20053,8 @@ public static var high: Image.DynamicRange { get { _suiUnimplemented("SwiftUICor
 @available(watchOS, unavailable)
 extension EnvironmentValues {
   public var allowedDynamicRange: Image.DynamicRange? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.allowedDynamicRange") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.allowedDynamicRange") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.allowedDynamicRange") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.allowedDynamicRange") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
@@ -20139,7 +20115,7 @@ public static var slash: SymbolVariants { get { _suiUnimplemented("SwiftUICore.S
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func symbolVariant(_ variant: SymbolVariants) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.symbolVariant(_:)") }
+nonisolated public func symbolVariant(_ variant: SymbolVariants) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.symbolVariant(_:)") }
   
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -20149,8 +20125,8 @@ nonisolated public func symbolVariant(_ variant: SymbolVariants) -> Swift.Never 
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var symbolVariants: SymbolVariants {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.symbolVariants") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.symbolVariants") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.symbolVariants") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.symbolVariants") }
   }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -20159,7 +20135,7 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image {
-  public init(size: CoreGraphics::CGSize, label: Text? = nil, opaque: Swift::Bool = false, colorMode: ColorRenderingMode = .nonLinear, renderer: @escaping (inout GraphicsContext) -> Swift::Void) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(size:label:opaque:colorMode:renderer:)") }
+  public init(size: CoreGraphics::CGSize, label: Text? = nil, opaque: Swift::Bool = false, colorMode: ColorRenderingMode = .nonLinear, renderer: @escaping (inout GraphicsContext) -> Swift::Void) { _suiUnimplemented("SwiftUICore.Image.init(size:label:opaque:colorMode:renderer:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.2)
@@ -20184,7 +20160,7 @@ extension Image {
 @available(anyAppleOS 27.1, *)
 extension ContentMarginGuide {
   public static var container: ContentMarginGuide {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.container") }
+    get { _suiUnimplemented("SwiftUICore.ContentMarginGuide.container") }
   }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -20228,7 +20204,7 @@ extension ContentMarginGuide {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _BackgroundModifier : Swift::Equatable where Background : Swift::Equatable {
-  public static func == (a: _BackgroundModifier<Background>, b: _BackgroundModifier<Background>) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public static func == (a: _BackgroundModifier<Background>, b: _BackgroundModifier<Background>) -> Swift::Bool { _suiUnimplemented("SwiftUICore._BackgroundModifier.==(a:b:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -20418,13 +20394,13 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension CustomAnimation {
-  public func velocity<V>(value: V, time: Foundation::TimeInterval, context: AnimationContext<V>) -> V? where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.SwiftUICore.velocity(value:time:context:)") }
-  public func shouldMerge<V>(previous: Animation, value: V, time: Foundation::TimeInterval, context: inout AnimationContext<V>) -> Swift::Bool where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.SwiftUICore.shouldMerge(previous:value:time:context:)") }
+  public func velocity<V>(value: V, time: Foundation::TimeInterval, context: AnimationContext<V>) -> V? where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.CustomAnimation.velocity(value:time:context:)") }
+  public func shouldMerge<V>(previous: Animation, value: V, time: Foundation::TimeInterval, context: inout AnimationContext<V>) -> Swift::Bool where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.CustomAnimation.shouldMerge(previous:value:time:context:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension Swift::Never : View {
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.Swift._viewListCount(inputs:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.Never._viewListCount(inputs:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -20449,7 +20425,7 @@ extension ForEach : DynamicViewContent where Content : View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ModifiedContent : DynamicViewContent where Content : DynamicViewContent, Modifier : ViewModifier {
   public var data: Content.Data {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.data") }
+    get { _suiUnimplemented("SwiftUICore.ModifiedContent.data") }
   }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Data = Content.Data
@@ -20543,7 +20519,7 @@ extension ModifiedContent : DynamicViewContent where Content : DynamicViewConten
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 extension _IgnoredByLayoutEffect : Swift::Equatable where Base : Swift::Equatable {
-  public static func == (a: _IgnoredByLayoutEffect<Base>, b: _IgnoredByLayoutEffect<Base>) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public static func == (a: _IgnoredByLayoutEffect<Base>, b: _IgnoredByLayoutEffect<Base>) -> Swift::Bool { _suiUnimplemented("SwiftUICore._IgnoredByLayoutEffect.==(a:b:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -20861,10 +20837,10 @@ internal class AnyTransitionBox {
 @available(tvOS, unavailable)
 extension CustomHoverEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func hoverEffectGroup(id: Swift::String? = nil, in namespace: Namespace.ID, behavior: HoverEffectGroup.Behavior = .activatesGroup) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.hoverEffectGroup(id:in:behavior:)") }
+public func hoverEffectGroup(id: Swift::String? = nil, in namespace: Namespace.ID, behavior: HoverEffectGroup.Behavior = .activatesGroup) -> Swift.Never { _suiUnimplemented("SwiftUICore.CustomHoverEffect.hoverEffectGroup(id:in:behavior:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func hoverEffectGroup(_ group: HoverEffectGroup?) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.hoverEffectGroup(_:)") }
+public func hoverEffectGroup(_ group: HoverEffectGroup?) -> Swift.Never { _suiUnimplemented("SwiftUICore.CustomHoverEffect.hoverEffectGroup(_:)") }
   
 }
 @available(visionOS 2.0, *)
@@ -20873,13 +20849,13 @@ public func hoverEffectGroup(_ group: HoverEffectGroup?) -> Swift.Never { _suiUn
 @available(tvOS, unavailable)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func hoverEffectGroup(id: Swift::String? = nil, in namespace: Namespace.ID, behavior: HoverEffectGroup.Behavior = .activatesGroup) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.hoverEffectGroup(id:in:behavior:)") }
+nonisolated public func hoverEffectGroup(id: Swift::String? = nil, in namespace: Namespace.ID, behavior: HoverEffectGroup.Behavior = .activatesGroup) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.hoverEffectGroup(id:in:behavior:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func hoverEffectGroup(_ group: HoverEffectGroup?) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.hoverEffectGroup(_:)") }
+nonisolated public func hoverEffectGroup(_ group: HoverEffectGroup?) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.hoverEffectGroup(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func hoverEffectGroup() -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.hoverEffectGroup()") }
+nonisolated public func hoverEffectGroup() -> Swift.Never { _suiUnimplemented("SwiftUICore.View.hoverEffectGroup()") }
   
 }
 @available(visionOS 2.0, *)
@@ -20911,8 +20887,8 @@ public static var ignoresGroup: HoverEffectGroup.Behavior { get { _suiUnimplemen
 @available(watchOS, unavailable)
 @available(tvOS, unavailable)
 extension CustomHoverEffect where Self == GroupHoverEffect {
-  public static func hoverEffectGroup(id: Swift::String? = nil, in namespace: Namespace.ID, behavior: HoverEffectGroup.Behavior = .activatesGroup) -> GroupHoverEffect { _suiUnimplemented("SwiftUICore.SwiftUICore.hoverEffectGroup(id:in:behavior:)") }
-  public static func hoverEffectGroup(_ group: HoverEffectGroup?) -> GroupHoverEffect { _suiUnimplemented("SwiftUICore.SwiftUICore.hoverEffectGroup(_:)") }
+  public static func hoverEffectGroup(id: Swift::String? = nil, in namespace: Namespace.ID, behavior: HoverEffectGroup.Behavior = .activatesGroup) -> GroupHoverEffect { _suiUnimplemented("SwiftUICore.CustomHoverEffect.hoverEffectGroup(id:in:behavior:)") }
+  public static func hoverEffectGroup(_ group: HoverEffectGroup?) -> GroupHoverEffect { _suiUnimplemented("SwiftUICore.CustomHoverEffect.hoverEffectGroup(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(visionOS 26.0, *)
@@ -20934,7 +20910,7 @@ public struct GroupHoverEffect {
 @available(tvOS, unavailable)
 extension GroupHoverEffect : CustomHoverEffect {
   public typealias Body = Swift::Never
-  public static func _makeCustomHoverEffect(effect: _GraphValue<GroupHoverEffect>, inputs: _CustomHoverEffectInputs, body: @escaping (_CustomHoverEffectInputs) -> _CustomHoverEffectOutputs) -> _CustomHoverEffectOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeCustomHoverEffect(effect:inputs:body:)") }
+  public static func _makeCustomHoverEffect(effect: _GraphValue<GroupHoverEffect>, inputs: _CustomHoverEffectInputs, body: @escaping (_CustomHoverEffectInputs) -> _CustomHoverEffectOutputs) -> _CustomHoverEffectOutputs { _suiUnimplemented("SwiftUICore.GroupHoverEffect._makeCustomHoverEffect(effect:inputs:body:)") }
 }
 @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
@@ -20943,7 +20919,7 @@ extension GroupHoverEffect : CustomHoverEffect {
 @available(watchOS, unavailable)
 extension CustomHoverEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func hoverEffectDisabled(_ isDisabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.hoverEffectDisabled(_:)") }
+public func hoverEffectDisabled(_ isDisabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.CustomHoverEffect.hoverEffectDisabled(_:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -20952,7 +20928,7 @@ public func hoverEffectDisabled(_ isDisabled: Swift::Bool = true) -> Swift.Never
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AnyTransition {
-  public func animation(_ animation: Animation?) -> AnyTransition { _suiUnimplemented("SwiftUICore.SwiftUICore.animation(_:)") }
+  public func animation(_ animation: Animation?) -> AnyTransition { _suiUnimplemented("SwiftUICore.AnyTransition.animation(_:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -20961,7 +20937,7 @@ extension AnyTransition {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Transition {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency::MainActor @preconcurrency public func animation(_ animation: Animation?) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.animation(_:)") }
+@_Concurrency::MainActor @preconcurrency public func animation(_ animation: Animation?) -> Swift.Never { _suiUnimplemented("SwiftUICore.Transition.animation(_:)") }
   
 }
 @available(iOS 26.4, macOS 26.4, tvOS 26.4, watchOS 26.4, *)
@@ -20979,7 +20955,7 @@ extension _ArchivedViewHostDelegate_URLConfiguration : Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AnyTransition {
-  public func combined(with other: AnyTransition) -> AnyTransition { _suiUnimplemented("SwiftUICore.SwiftUICore.combined(with:)") }
+  public func combined(with other: AnyTransition) -> AnyTransition { _suiUnimplemented("SwiftUICore.AnyTransition.combined(with:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -20988,7 +20964,7 @@ extension AnyTransition {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Transition {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency::MainActor @preconcurrency public func combined<T>(with other: T) -> Swift.Never where T : Transition { _suiUnimplemented("SwiftUICore.SwiftUICore.combined(with:)") }
+@_Concurrency::MainActor @preconcurrency public func combined<T>(with other: T) -> Swift.Never where T : Transition { _suiUnimplemented("SwiftUICore.Transition.combined(with:)") }
   
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -21026,12 +21002,12 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var contentTransition: ContentTransition {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.contentTransition") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.contentTransition") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.contentTransition") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.contentTransition") }
   }
   public var contentTransitionAddsDrawingGroup: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.contentTransitionAddsDrawingGroup") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.contentTransitionAddsDrawingGroup") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.contentTransitionAddsDrawingGroup") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.contentTransitionAddsDrawingGroup") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -21040,8 +21016,8 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Animation {
-  public func repeatCount(_ repeatCount: Swift::Int, autoreverses: Swift::Bool = true) -> Animation { _suiUnimplemented("SwiftUICore.SwiftUICore.repeatCount(_:autoreverses:)") }
-  public func repeatForever(autoreverses: Swift::Bool = true) -> Animation { _suiUnimplemented("SwiftUICore.SwiftUICore.repeatForever(autoreverses:)") }
+  public func repeatCount(_ repeatCount: Swift::Int, autoreverses: Swift::Bool = true) -> Animation { _suiUnimplemented("SwiftUICore.Animation.repeatCount(_:autoreverses:)") }
+  public func repeatForever(autoreverses: Swift::Bool = true) -> Animation { _suiUnimplemented("SwiftUICore.Animation.repeatForever(autoreverses:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -21069,12 +21045,12 @@ public protocol _Benchmark : _Test {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _BenchmarkHost {
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  public func _renderAsyncForTest(interval: Swift::Double) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore._renderAsyncForTest(interval:)") }
-  public func _performScrollTest(startOffset: CoreGraphics::CGFloat, iterations: Swift::Int, delta: CoreGraphics::CGFloat, length: CoreGraphics::CGFloat, completion: (() -> Swift::Void)?) { _suiUnimplemented("SwiftUICore.SwiftUICore._performScrollTest(startOffset:iterations:delta:length:completion:)") }
-  public func measureAction(action: () -> Swift::Void) -> Swift::Double { _suiUnimplemented("SwiftUICore.SwiftUICore.measureAction(action:)") }
-  public func measureRender(interval: Swift::Double = 1.0 / 60.0) -> Swift::Double { _suiUnimplemented("SwiftUICore.SwiftUICore.measureRender(interval:)") }
-  public func measureRenders(seconds: Swift::Double) -> [Swift::Double] { _suiUnimplemented("SwiftUICore.SwiftUICore.measureRenders(seconds:)") }
-  public func measureRenders(duration: Swift::Double) -> [Swift::Double] { _suiUnimplemented("SwiftUICore.SwiftUICore.measureRenders(duration:)") }
+  public func _renderAsyncForTest(interval: Swift::Double) -> Swift::Bool { _suiUnimplemented("SwiftUICore._BenchmarkHost._renderAsyncForTest(interval:)") }
+  public func _performScrollTest(startOffset: CoreGraphics::CGFloat, iterations: Swift::Int, delta: CoreGraphics::CGFloat, length: CoreGraphics::CGFloat, completion: (() -> Swift::Void)?) { _suiUnimplemented("SwiftUICore._BenchmarkHost._performScrollTest(startOffset:iterations:delta:length:completion:)") }
+  public func measureAction(action: () -> Swift::Void) -> Swift::Double { _suiUnimplemented("SwiftUICore._BenchmarkHost.measureAction(action:)") }
+  public func measureRender(interval: Swift::Double = 1.0 / 60.0) -> Swift::Double { _suiUnimplemented("SwiftUICore._BenchmarkHost.measureRender(interval:)") }
+  public func measureRenders(seconds: Swift::Double) -> [Swift::Double] { _suiUnimplemented("SwiftUICore._BenchmarkHost.measureRenders(seconds:)") }
+  public func measureRenders(duration: Swift::Double) -> [Swift::Double] { _suiUnimplemented("SwiftUICore._BenchmarkHost.measureRenders(duration:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -21095,11 +21071,11 @@ extension _BenchmarkHost {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Transition {
   @_Concurrency::MainActor @preconcurrency public static var properties: TransitionProperties {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.properties") }
+    get { _suiUnimplemented("SwiftUICore.Transition.properties") }
   }
-  nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition) { _suiUnimplemented("SwiftUICore.SwiftUICore._makeContentTransition(transition:)") }
+  nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition) { _suiUnimplemented("SwiftUICore.Transition._makeContentTransition(transition:)") }
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func apply<V>(content: V, phase: TransitionPhase) -> Swift.Never where V : View { _suiUnimplemented("SwiftUICore.SwiftUICore.apply(content:phase:)") }
+nonisolated public func apply<V>(content: V, phase: TransitionPhase) -> Swift.Never where V : View { _suiUnimplemented("SwiftUICore.Transition.apply(content:phase:)") }
   
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -21144,7 +21120,7 @@ public struct _Transition_ContentTransition {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension TransitionPhase {
   public var value: Swift::Double {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.value") }
+    get { _suiUnimplemented("SwiftUICore.TransitionPhase.value") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -21163,7 +21139,7 @@ public struct TransitionProperties : Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AnyTransition {
   public static var identity: AnyTransition {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.identity") }
+    get { _suiUnimplemented("SwiftUICore.AnyTransition.identity") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -21227,7 +21203,7 @@ public struct _VisualEffectTransformOutputs {
 #endif
 extension VisualEffect {
   @available(iOS 26.2, macOS 26.2, tvOS 26.2, watchOS 26.2, visionOS 26.2, *)
-  public static func _makeTransform(effect: _GraphValue<Self>, inputs: _ViewInputs) -> _VisualEffectTransformOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeTransform(effect:inputs:)") }
+  public static func _makeTransform(effect: _GraphValue<Self>, inputs: _ViewInputs) -> _VisualEffectTransformOutputs { _suiUnimplemented("SwiftUICore.VisualEffect._makeTransform(effect:inputs:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -21236,7 +21212,7 @@ extension VisualEffect {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func visualEffect(_ effect: @escaping @Sendable (EmptyVisualEffect, GeometryProxy) -> some VisualEffect) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.visualEffect(_:)") }
+nonisolated public func visualEffect(_ effect: @escaping @Sendable (EmptyVisualEffect, GeometryProxy) -> some VisualEffect) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.visualEffect(_:)") }
   
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -21252,7 +21228,7 @@ public struct EmptyVisualEffect : VisualEffect {
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension ModifiedContent : VisualEffect where Content : VisualEffect, Modifier : VisualEffect {
-  public static func _makeVisualEffect(effect: _GraphValue<ModifiedContent<Content, Modifier>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeVisualEffect(effect:inputs:body:)") }
+  public static func _makeVisualEffect(effect: _GraphValue<ModifiedContent<Content, Modifier>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.ModifiedContent._makeVisualEffect(effect:inputs:body:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension VisualEffect {
@@ -21290,10 +21266,10 @@ public enum CoordinateSpace {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension CoordinateSpace {
   public var isGlobal: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.isGlobal") }
+    get { _suiUnimplemented("SwiftUICore.CoordinateSpace.isGlobal") }
   }
   public var isLocal: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.isLocal") }
+    get { _suiUnimplemented("SwiftUICore.CoordinateSpace.isLocal") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -21302,10 +21278,10 @@ extension CoordinateSpace {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension CoordinateSpace : Swift::Equatable, Swift::Hashable {
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.hash(into:)") }
-  public static func == (lhs: CoordinateSpace, rhs: CoordinateSpace) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(lhs:rhs:)") }
+  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.CoordinateSpace.hash(into:)") }
+  public static func == (lhs: CoordinateSpace, rhs: CoordinateSpace) -> Swift::Bool { _suiUnimplemented("SwiftUICore.CoordinateSpace.==(lhs:rhs:)") }
   public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.hashValue") }
+    get { _suiUnimplemented("SwiftUICore.CoordinateSpace.hashValue") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -21347,9 +21323,7 @@ public struct NamedCoordinateSpace : CoordinateSpaceProtocol, Swift::Equatable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension CoordinateSpaceProtocol where Self == NamedCoordinateSpace {
-  public static func named(_ name: some Hashable) -> NamedCoordinateSpace { _suiUnimplemented("SwiftUICore.SwiftUICore.named(_:)") }
-  // port: synthesized witness for CoordinateSpaceProtocol (R7); Apple implements it with an internal member
-  public var coordinateSpace: CoordinateSpace { get { _suiUnimplemented("SwiftUICore.SwiftUICore.coordinateSpace") } }
+  public static func named(_ name: some Hashable) -> NamedCoordinateSpace { _suiUnimplemented("SwiftUICore.CoordinateSpaceProtocol.named(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -21383,7 +21357,7 @@ public struct LocalCoordinateSpace : CoordinateSpaceProtocol {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension CoordinateSpaceProtocol where Self == LocalCoordinateSpace {
   public static var local: LocalCoordinateSpace {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.local") }
+    get { _suiUnimplemented("SwiftUICore.CoordinateSpaceProtocol.local") }
   }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -21418,7 +21392,7 @@ public struct GlobalCoordinateSpace : CoordinateSpaceProtocol {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension CoordinateSpaceProtocol where Self == GlobalCoordinateSpace {
   public static var global: GlobalCoordinateSpace {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.global") }
+    get { _suiUnimplemented("SwiftUICore.CoordinateSpaceProtocol.global") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -21456,7 +21430,7 @@ public static var escape: AccessibilityActionKind { get { _suiUnimplemented("Swi
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.2)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.2)
 extension Group {
-  public init<Base, Result>(subviews view: Base, @ContentBuilder transform: @escaping (SubviewsCollection) -> Result) where Content == GroupElementsOfContent<Base, Result>, Base : View, Result : View { _suiUnimplemented("SwiftUICore.SwiftUICore.init(subviews:?:)") }
+  public init<Base, Result>(subviews view: Base, @ContentBuilder transform: @escaping (SubviewsCollection) -> Result) where Content == GroupElementsOfContent<Base, Result>, Base : View, Result : View { _suiUnimplemented("SwiftUICore.Group.init(subviews:?:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -21557,8 +21531,8 @@ public struct SubviewsCollection : Swift::RandomAccessCollection {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.2)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.2)
 extension SubviewsCollection : View {
-  nonisolated public static func _makeViewList(view: _GraphValue<SubviewsCollection>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(view:inputs:)") }
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:)") }
+  nonisolated public static func _makeViewList(view: _GraphValue<SubviewsCollection>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SubviewsCollection._makeViewList(view:inputs:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SubviewsCollection._viewListCount(inputs:)") }
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias Body = Swift::Never
 }
@@ -21632,8 +21606,8 @@ public struct SubviewsCollectionSlice : Swift::RandomAccessCollection {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.2)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.2)
 extension SubviewsCollectionSlice : View {
-  nonisolated public static func _makeViewList(view: _GraphValue<SubviewsCollectionSlice>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(view:inputs:)") }
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:)") }
+  nonisolated public static func _makeViewList(view: _GraphValue<SubviewsCollectionSlice>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SubviewsCollectionSlice._makeViewList(view:inputs:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SubviewsCollectionSlice._viewListCount(inputs:)") }
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias Body = Swift::Never
 }
@@ -21784,7 +21758,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func saturation(_ amount: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.saturation(_:)") }
+public func saturation(_ amount: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.saturation(_:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -21793,9 +21767,9 @@ public func saturation(_ amount: Swift::Double) -> Swift.Never { _suiUnimplement
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Color {
-  public func opacity(_ opacity: Swift::Double) -> Color { _suiUnimplemented("SwiftUICore.SwiftUICore.opacity(_:)") }
+  public func opacity(_ opacity: Swift::Double) -> Color { _suiUnimplemented("SwiftUICore.Color.opacity(_:)") }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public func mix(with rhs: Color, by fraction: Swift::Double, in colorSpace: Gradient.ColorSpace = .perceptual) -> Color { _suiUnimplemented("SwiftUICore.SwiftUICore.mix(with:by:in:)") }
+  public func mix(with rhs: Color, by fraction: Swift::Double, in colorSpace: Gradient.ColorSpace = .perceptual) -> Color { _suiUnimplemented("SwiftUICore.Color.mix(with:by:in:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -21821,22 +21795,22 @@ extension Text {
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public struct AlignmentStrategy : Swift::Hashable, Swift::Sendable {
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var layoutBased: Text.AlignmentStrategy { get { _suiUnimplemented("SwiftUICore.SwiftUICore.AlignmentStrategy.layoutBased") } }
+public static var layoutBased: Text.AlignmentStrategy { get { _suiUnimplemented("SwiftUICore.Text.AlignmentStrategy.layoutBased") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var writingDirectionBased: Text.AlignmentStrategy { get { _suiUnimplemented("SwiftUICore.SwiftUICore.AlignmentStrategy.writingDirectionBased") } }
+public static var writingDirectionBased: Text.AlignmentStrategy { get { _suiUnimplemented("SwiftUICore.Text.AlignmentStrategy.writingDirectionBased") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var `default`: Text.AlignmentStrategy { get { _suiUnimplemented("SwiftUICore.SwiftUICore.AlignmentStrategy.default") } }
-    public static func == (a: Text.AlignmentStrategy, b: Text.AlignmentStrategy) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.AlignmentStrategy.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.AlignmentStrategy.hash(into:)") }
+public static var `default`: Text.AlignmentStrategy { get { _suiUnimplemented("SwiftUICore.Text.AlignmentStrategy.default") } }
+    public static func == (a: Text.AlignmentStrategy, b: Text.AlignmentStrategy) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Text.AlignmentStrategy.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Text.AlignmentStrategy.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.AlignmentStrategy.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Text.AlignmentStrategy.hashValue") }
     }
   }
 }
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  nonisolated public func multilineTextAlignment(strategy: Text.AlignmentStrategy) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.multilineTextAlignment(strategy:)") }
+  nonisolated public func multilineTextAlignment(strategy: Text.AlignmentStrategy) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.multilineTextAlignment(strategy:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -21875,16 +21849,16 @@ extension Angle : Swift::Hashable, Swift::Comparable {
   @inlinable public static func < (lhs: Angle, rhs: Angle) -> Swift::Bool {
         return lhs.radians < rhs.radians
     }
-  public static func == (a: Angle, b: Angle) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.hash(into:)") }
+  public static func == (a: Angle, b: Angle) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Angle.==(a:b:)") }
+  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Angle.hash(into:)") }
   public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.hashValue") }
+    get { _suiUnimplemented("SwiftUICore.Angle.hashValue") }
   }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Angle : Swift::Codable {
-  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.encode(to:)") }
-  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.init(from:)") }
+  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.Angle.encode(to:)") }
+  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.Angle.init(from:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -21893,8 +21867,8 @@ extension Angle : Swift::Codable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Angle : Animatable, _VectorMath {
   public var animatableData: Swift::Double {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.animatableData") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.animatableData") }
+    get { _suiUnimplemented("SwiftUICore.Angle.animatableData") }
+    set { _suiUnimplemented("SwiftUICore.Angle.animatableData") }
   }
   @inlinable public static var zero: Angle {
     get {
@@ -22065,11 +22039,11 @@ extension _ConditionalContent {
 extension _ConditionalContent : View where TrueContent : View, FalseContent : View {
   public typealias Body = Swift::Never
   @usableFromInline
-  internal init(storage: _ConditionalContent<TrueContent, FalseContent>.Storage) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(storage:)") }
-  nonisolated public static func _makeView(view: _GraphValue<_ConditionalContent<TrueContent, FalseContent>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(view:inputs:)") }
-  nonisolated public static func _makeViewList(view: _GraphValue<_ConditionalContent<TrueContent, FalseContent>>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(view:inputs:)") }
+  internal init(storage: _ConditionalContent<TrueContent, FalseContent>.Storage) { _suiUnimplemented("SwiftUICore._ConditionalContent.init(storage:)") }
+  nonisolated public static func _makeView(view: _GraphValue<_ConditionalContent<TrueContent, FalseContent>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._ConditionalContent._makeView(view:inputs:)") }
+  nonisolated public static func _makeViewList(view: _GraphValue<_ConditionalContent<TrueContent, FalseContent>>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore._ConditionalContent._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore._ConditionalContent._viewListCount(inputs:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -22125,10 +22099,10 @@ extension Image {
   public enum TemplateRenderingMode : Swift::Sendable {
     case template
     case original
-    public static func == (a: Image.TemplateRenderingMode, b: Image.TemplateRenderingMode) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.TemplateRenderingMode.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.TemplateRenderingMode.hash(into:)") }
+    public static func == (a: Image.TemplateRenderingMode, b: Image.TemplateRenderingMode) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Image.TemplateRenderingMode.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Image.TemplateRenderingMode.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.TemplateRenderingMode.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Image.TemplateRenderingMode.hashValue") }
     }
   }
   @available(macOS 11.0, *)
@@ -22136,10 +22110,10 @@ extension Image {
     case small
     case medium
     case large
-    public static func == (a: Image.Scale, b: Image.Scale) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Scale.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.Scale.hash(into:)") }
+    public static func == (a: Image.Scale, b: Image.Scale) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Image.Scale.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Image.Scale.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Scale.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Image.Scale.hashValue") }
     }
   }
 }
@@ -22213,43 +22187,43 @@ extension View {
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  nonisolated public func monospacedDigit() -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.monospacedDigit()") }
+  nonisolated public func monospacedDigit() -> Swift.Never { _suiUnimplemented("SwiftUICore.View.monospacedDigit()") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func monospaced(_ isActive: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.monospaced(_:)") }
+  nonisolated public func monospaced(_ isActive: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.monospaced(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func fontWeight(_ weight: Font.Weight?) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.fontWeight(_:)") }
+  nonisolated public func fontWeight(_ weight: Font.Weight?) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.fontWeight(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func fontWidth(_ width: Font.Width?) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.fontWidth(_:)") }
+  nonisolated public func fontWidth(_ width: Font.Width?) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.fontWidth(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func bold(_ isActive: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.bold(_:)") }
+  nonisolated public func bold(_ isActive: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.bold(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func italic(_ isActive: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.italic(_:)") }
+  nonisolated public func italic(_ isActive: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.italic(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.1, macOS 13.0, tvOS 16.1, watchOS 9.1, *)
-  nonisolated public func fontDesign(_ design: Font.Design?) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.fontDesign(_:)") }
+  nonisolated public func fontDesign(_ design: Font.Design?) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.fontDesign(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func kerning(_ kerning: CoreGraphics::CGFloat) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.kerning(_:)") }
+  nonisolated public func kerning(_ kerning: CoreGraphics::CGFloat) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.kerning(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func tracking(_ tracking: CoreGraphics::CGFloat) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.tracking(_:)") }
+  nonisolated public func tracking(_ tracking: CoreGraphics::CGFloat) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.tracking(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func baselineOffset(_ baselineOffset: CoreGraphics::CGFloat) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.baselineOffset(_:)") }
+  nonisolated public func baselineOffset(_ baselineOffset: CoreGraphics::CGFloat) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.baselineOffset(_:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -22259,13 +22233,13 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var font: Font? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.font") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.font") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.font") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.font") }
   }
   @available(macOS 11.0, *)
   public var imageScale: Image.Scale {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.imageScale") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.imageScale") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.imageScale") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.imageScale") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -22275,11 +22249,11 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var displayScale: CoreGraphics::CGFloat {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.displayScale") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.displayScale") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.displayScale") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.displayScale") }
   }
   public var pixelLength: CoreGraphics::CGFloat {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.pixelLength") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.pixelLength") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -22289,52 +22263,52 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var legibilityWeight: LegibilityWeight? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.legibilityWeight") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.legibilityWeight") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.legibilityWeight") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.legibilityWeight") }
   }
   public var locale: Foundation::Locale {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.locale") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.locale") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.locale") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.locale") }
   }
   public var calendar: Foundation::Calendar {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.calendar") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.calendar") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.calendar") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.calendar") }
   }
   public var timeZone: Foundation::TimeZone {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.timeZone") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.timeZone") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.timeZone") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.timeZone") }
   }
     @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `EnvironmentValues.appearsActive` instead.")
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public var controlActiveState: ControlActiveState {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.controlActiveState") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.controlActiveState") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.controlActiveState") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.controlActiveState") }
   }
   @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
   @backDeployed(before: macOS 14.0, tvOS 17.0, watchOS 10.0)
   public var horizontalSizeClass: UserInterfaceSizeClass? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.horizontalSizeClass") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.horizontalSizeClass") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.horizontalSizeClass") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.horizontalSizeClass") }
   }
   @available(iOS 13.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
   @usableFromInline
   internal var realHorizontalSizeClass: UserInterfaceSizeClass? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.realHorizontalSizeClass") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.realHorizontalSizeClass") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.realHorizontalSizeClass") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.realHorizontalSizeClass") }
   }
   @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
   @backDeployed(before: macOS 14.0, tvOS 17.0, watchOS 10.0)
   public var verticalSizeClass: UserInterfaceSizeClass? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.verticalSizeClass") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.verticalSizeClass") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.verticalSizeClass") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.verticalSizeClass") }
   }
   @available(iOS 13.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
   @usableFromInline
   internal var realVerticalSizeClass: UserInterfaceSizeClass? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.realVerticalSizeClass") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.realVerticalSizeClass") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.realVerticalSizeClass") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.realVerticalSizeClass") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -22348,8 +22322,8 @@ extension EnvironmentValues {
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public var _useVibrantStyling: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._useVibrantStyling") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore._useVibrantStyling") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues._useVibrantStyling") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues._useVibrantStyling") }
   }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -22360,16 +22334,16 @@ extension EnvironmentValues {
 extension Gradient {
   public struct ColorSpace : Swift::Hashable, Swift::Sendable {
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var device: Gradient.ColorSpace { get { _suiUnimplemented("SwiftUICore.SwiftUICore.ColorSpace.device") } }
+public static var device: Gradient.ColorSpace { get { _suiUnimplemented("SwiftUICore.Gradient.ColorSpace.device") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var perceptual: Gradient.ColorSpace { get { _suiUnimplemented("SwiftUICore.SwiftUICore.ColorSpace.perceptual") } }
-    public static func == (a: Gradient.ColorSpace, b: Gradient.ColorSpace) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.ColorSpace.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.ColorSpace.hash(into:)") }
+public static var perceptual: Gradient.ColorSpace { get { _suiUnimplemented("SwiftUICore.Gradient.ColorSpace.perceptual") } }
+    public static func == (a: Gradient.ColorSpace, b: Gradient.ColorSpace) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Gradient.ColorSpace.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Gradient.ColorSpace.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.ColorSpace.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Gradient.ColorSpace.hashValue") }
     }
   }
-  public func colorSpace(_ space: Gradient.ColorSpace) -> AnyGradient { _suiUnimplemented("SwiftUICore.SwiftUICore.colorSpace(_:)") }
+  public func colorSpace(_ space: Gradient.ColorSpace) -> AnyGradient { _suiUnimplemented("SwiftUICore.Gradient.colorSpace(_:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -22377,7 +22351,7 @@ public static var perceptual: Gradient.ColorSpace { get { _suiUnimplemented("Swi
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AnyGradient {
-  public func colorSpace(_ space: Gradient.ColorSpace) -> AnyGradient { _suiUnimplemented("SwiftUICore.SwiftUICore.colorSpace(_:)") }
+  public func colorSpace(_ space: Gradient.ColorSpace) -> AnyGradient { _suiUnimplemented("SwiftUICore.AnyGradient.colorSpace(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -22407,8 +22381,8 @@ public struct ForEach<Data, ID, Content> where Data : Swift::RandomAccessCollect
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ForEach : View where Content : View {
   public typealias Body = Swift::Never
-  nonisolated public static func _makeView(view: _GraphValue<ForEach<Data, ID, Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(view:inputs:)") }
-  nonisolated public static func _makeViewList(view: _GraphValue<ForEach<Data, ID, Content>>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(view:inputs:)") }
+  nonisolated public static func _makeView(view: _GraphValue<ForEach<Data, ID, Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.ForEach._makeView(view:inputs:)") }
+  nonisolated public static func _makeViewList(view: _GraphValue<ForEach<Data, ID, Content>>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.ForEach._makeViewList(view:inputs:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension ForEach where ID == Data.Element.ID, Data.Element : Swift::Identifiable {
@@ -22438,7 +22412,7 @@ extension ForEach where ID == Data.Element.ID, Data.Element : Swift::Identifiabl
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ForEach where ID == Data.Element.ID, Content : View, Data.Element : Swift::Identifiable {
   @usableFromInline
-  internal init(_ data: Data, @ContentBuilder content: @escaping (Data.Element) -> Content) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:?:)") }
+  internal init(_ data: Data, @ContentBuilder content: @escaping (Data.Element) -> Content) { _suiUnimplemented("SwiftUICore.ForEach.init(_:?:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension ForEach {
@@ -22468,7 +22442,7 @@ extension ForEach {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ForEach where Content : View {
   @usableFromInline
-  internal init(_ data: Data, id: Swift::KeyPath<Data.Element, ID>, @ContentBuilder content: @escaping (Data.Element) -> Content) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:id:?:)") }
+  internal init(_ data: Data, id: Swift::KeyPath<Data.Element, ID>, @ContentBuilder content: @escaping (Data.Element) -> Content) { _suiUnimplemented("SwiftUICore.ForEach.init(_:id:?:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -22698,7 +22672,7 @@ extension Shape {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  nonisolated public func containerCornerOffset(_ edges: Edge.Set, sizeToFit: Swift::Bool = false) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.containerCornerOffset(_:sizeToFit:)") }
+  nonisolated public func containerCornerOffset(_ edges: Edge.Set, sizeToFit: Swift::Bool = false) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.containerCornerOffset(_:sizeToFit:)") }
   
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -22842,7 +22816,7 @@ nonisolated public struct Canvas<Symbols> where Symbols : View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Canvas where Symbols == EmptyView {
-  nonisolated public init(opaque: Swift::Bool = false, colorMode: ColorRenderingMode = .nonLinear, rendersAsynchronously: Swift::Bool = false, renderer: @escaping (inout GraphicsContext, CoreGraphics::CGSize) -> Swift::Void) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(opaque:colorMode:rendersAsynchronously:renderer:)") }
+  nonisolated public init(opaque: Swift::Bool = false, colorMode: ColorRenderingMode = .nonLinear, rendersAsynchronously: Swift::Bool = false, renderer: @escaping (inout GraphicsContext, CoreGraphics::CGSize) -> Swift::Void) { _suiUnimplemented("SwiftUICore.Canvas.init(opaque:colorMode:rendersAsynchronously:renderer:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -22949,14 +22923,14 @@ extension View {
 @available(tvOS, unavailable)
 extension HoverEffectContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func clipShape<S>(_ shape: S, style: FillStyle = FillStyle()) -> Swift.Never where S : Shape { _suiUnimplemented("SwiftUICore.SwiftUICore.clipShape(_:style:)") }
+public func clipShape<S>(_ shape: S, style: FillStyle = FillStyle()) -> Swift.Never where S : Shape { _suiUnimplemented("SwiftUICore.HoverEffectContent.clipShape(_:style:)") }
   
 }
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
   @available(visionOS, unavailable)
-  nonisolated public func glassEffectID(_ id: (some (Hashable & Sendable))?, in namespace: Namespace.ID) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.glassEffectID(_:in:)") }
+  nonisolated public func glassEffectID(_ id: (some (Hashable & Sendable))?, in namespace: Namespace.ID) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.glassEffectID(_:in:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -23014,10 +22988,10 @@ extension ViewModifier {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func transaction<V>(_ transform: @escaping (inout Transaction) -> Swift::Void, @ContentBuilder body: (PlaceholderContentView<Self>) -> V) -> Swift.Never where V : View { _suiUnimplemented("SwiftUICore.SwiftUICore.transaction(_:?:)") }
+nonisolated public func transaction<V>(_ transform: @escaping (inout Transaction) -> Swift::Void, @ContentBuilder body: (PlaceholderContentView<Self>) -> V) -> Swift.Never where V : View { _suiUnimplemented("SwiftUICore.View.transaction(_:?:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func animation<V>(_ animation: Animation?, @ContentBuilder body: (PlaceholderContentView<Self>) -> V) -> Swift.Never where V : View { _suiUnimplemented("SwiftUICore.SwiftUICore.animation(_:?:)") }
+nonisolated public func animation<V>(_ animation: Animation?, @ContentBuilder body: (PlaceholderContentView<Self>) -> V) -> Swift.Never where V : View { _suiUnimplemented("SwiftUICore.View.animation(_:?:)") }
   
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -23127,18 +23101,18 @@ nonisolated public func animation<V>(_ animation: Animation?, @ContentBuilder bo
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Font {
-  public static func custom(_ name: Swift::String, size: CoreGraphics::CGFloat) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.custom(_:size:)") }
+  public static func custom(_ name: Swift::String, size: CoreGraphics::CGFloat) -> Font { _suiUnimplemented("SwiftUICore.Font.custom(_:size:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  public static func custom(_ name: Swift::String, size: CoreGraphics::CGFloat, relativeTo textStyle: Font.TextStyle) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.custom(_:size:relativeTo:)") }
+  public static func custom(_ name: Swift::String, size: CoreGraphics::CGFloat, relativeTo textStyle: Font.TextStyle) -> Font { _suiUnimplemented("SwiftUICore.Font.custom(_:size:relativeTo:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   @available(*, deprecated, renamed: "custom(_:size:textStyle:)")
-  public static func _custom(_ name: Swift::String, size: CoreGraphics::CGFloat, textStyle: Font.TextStyle) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore._custom(_:size:textStyle:)") }
+  public static func _custom(_ name: Swift::String, size: CoreGraphics::CGFloat, textStyle: Font.TextStyle) -> Font { _suiUnimplemented("SwiftUICore.Font._custom(_:size:textStyle:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  public static func custom(_ name: Swift::String, fixedSize: CoreGraphics::CGFloat) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.custom(_:fixedSize:)") }
+  public static func custom(_ name: Swift::String, fixedSize: CoreGraphics::CGFloat) -> Font { _suiUnimplemented("SwiftUICore.Font.custom(_:fixedSize:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   @available(*, deprecated, renamed: "custom(_:fixedSize:)")
-  public static func _custom(_ name: Swift::String, verbatimSize: CoreGraphics::CGFloat) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore._custom(_:verbatimSize:)") }
-  public init(_ font: CoreText::CTFont) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  public static func _custom(_ name: Swift::String, verbatimSize: CoreGraphics::CGFloat) -> Font { _suiUnimplemented("SwiftUICore.Font._custom(_:verbatimSize:)") }
+  public init(_ font: CoreText::CTFont) { _suiUnimplemented("SwiftUICore.Font.init(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -23147,13 +23121,13 @@ extension Font {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Font {
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  public static func system(size: CoreGraphics::CGFloat, weight: Font.Weight? = nil, design: Font.Design? = nil) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.system(size:weight:design:)") }
+  public static func system(size: CoreGraphics::CGFloat, weight: Font.Weight? = nil, design: Font.Design? = nil) -> Font { _suiUnimplemented("SwiftUICore.Font.system(size:weight:design:)") }
   @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use `system(size:weight:design:)` instead.")
   @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `system(size:weight:design:)` instead.")
   @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "Use `system(size:weight:design:)` instead.")
   @available(watchOS, introduced: 6.0, deprecated: 100000.0, message: "Use `system(size:weight:design:)` instead.")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use `system(size:weight:design:)` instead.")
-  @_disfavoredOverload public static func system(size: CoreGraphics::CGFloat, weight: Font.Weight = .regular, design: Font.Design = .default) -> Font { _suiUnimplemented("SwiftUICore.SwiftUICore.system(size:weight:design:)") }
+  @_disfavoredOverload public static func system(size: CoreGraphics::CGFloat, weight: Font.Weight = .regular, design: Font.Design = .default) -> Font { _suiUnimplemented("SwiftUICore.Font.system(size:weight:design:)") }
   public enum Design : Swift::Hashable, Swift::Sendable {
     case `default`
     @available(watchOS 7.0, *)
@@ -23161,10 +23135,10 @@ extension Font {
     case rounded
     @available(watchOS 7.0, *)
     case monospaced
-    public static func == (a: Font.Design, b: Font.Design) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Design.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.Design.hash(into:)") }
+    public static func == (a: Font.Design, b: Font.Design) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Font.Design.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Font.Design.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Design.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Font.Design.hashValue") }
     }
   }
 }
@@ -23184,11 +23158,11 @@ public protocol PreferenceKey {
 }
 @available(iOS 27.0, macOS 27.0, tvOS 27.0, visionOS 27.0, watchOS 27.0, *)
 extension PreferenceKey {
-  public static func _preferenceValuesEqual(_ lhs: Self.Value, _ rhs: Self.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore._preferenceValuesEqual(_:_:)") }
+  public static func _preferenceValuesEqual(_ lhs: Self.Value, _ rhs: Self.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.PreferenceKey._preferenceValuesEqual(_:_:)") }
 }
 @available(iOS 27.0, macOS 27.0, tvOS 27.0, visionOS 27.0, watchOS 27.0, *)
 extension PreferenceKey where Self.Value : Swift::Equatable {
-  public static func _preferenceValuesEqual(_ lhs: Self.Value, _ rhs: Self.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore._preferenceValuesEqual(_:_:)") }
+  public static func _preferenceValuesEqual(_ lhs: Self.Value, _ rhs: Self.Value) -> Swift::Bool { _suiUnimplemented("SwiftUICore.PreferenceKey._preferenceValuesEqual(_:_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -23197,7 +23171,7 @@ extension PreferenceKey where Self.Value : Swift::Equatable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension PreferenceKey where Self.Value : Swift::ExpressibleByNilLiteral {
   public static var defaultValue: Self.Value {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.defaultValue") }
+    get { _suiUnimplemented("SwiftUICore.PreferenceKey.defaultValue") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -23207,10 +23181,10 @@ extension PreferenceKey where Self.Value : Swift::ExpressibleByNilLiteral {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension PreferenceKey {
   public static var _includesRemovedValues: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._includesRemovedValues") }
+    get { _suiUnimplemented("SwiftUICore.PreferenceKey._includesRemovedValues") }
   }
   public static var _isReadableByHost: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._isReadableByHost") }
+    get { _suiUnimplemented("SwiftUICore.PreferenceKey._isReadableByHost") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -23245,7 +23219,7 @@ extension Shape {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Shape {
   nonisolated public var body: _ShapeView<Self, ForegroundStyle> {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.body") }
+    get { _suiUnimplemented("SwiftUICore.Shape.body") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -23254,8 +23228,8 @@ extension Shape {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Shape {
-  nonisolated public static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(view:inputs:)") }
-  nonisolated public static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(view:inputs:)") }
+  nonisolated public static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.Shape._makeView(view:inputs:)") }
+  nonisolated public static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.Shape._makeViewList(view:inputs:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -23264,7 +23238,7 @@ extension Shape {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ShapeStyle where Self : View, Self.Body == _ShapeView<Rectangle, Self> {
   public var body: _ShapeView<Rectangle, Self> {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.body") }
+    get { _suiUnimplemented("SwiftUICore.ShapeStyle.body") }
   }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -23613,8 +23587,6 @@ extension ShapeView {
             content, style: StrokeStyle(lineWidth: lineWidth),
             antialiased: antialiased)
     }
-  // port: synthesized witness for ShapeView (R7); Apple implements it with an internal member
-  public nonisolated var shape: Swift.Never { get { _suiUnimplemented("SwiftUICore.SwiftUICore.shape") } }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -23638,9 +23610,9 @@ extension ShapeView where Self.Content : InsettableShape {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Binding {
-  public init<V>(_ base: Binding<V>) where Value == V? { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
-  public init?(_ base: Binding<Value?>) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
-  public init<V>(_ base: Binding<V>) where Value == Swift::AnyHashable, V : Swift::Hashable { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  public init<V>(_ base: Binding<V>) where Value == V? { _suiUnimplemented("SwiftUICore.Binding.init(_:)") }
+  public init?(_ base: Binding<Value?>) { _suiUnimplemented("SwiftUICore.Binding.init(_:)") }
+  public init<V>(_ base: Binding<V>) where Value == Swift::AnyHashable, V : Swift::Hashable { _suiUnimplemented("SwiftUICore.Binding.init(_:)") }
 }
 extension Swift::Optional {
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -23760,13 +23732,13 @@ package enum Log {
 extension os::OSLog {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
 @usableFromInline
-  internal static var runtimeIssuesLog: os::OSLog { get { _suiUnimplemented("SwiftUICore.os.runtimeIssuesLog") } }
+  internal static var runtimeIssuesLog: os::OSLog { get { _suiUnimplemented("SwiftUICore.OSLog.runtimeIssuesLog") } }
 }
 @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.0)
 @available(watchOS, unavailable)
 extension ModifiedContent : CustomHoverEffect where Content : CustomHoverEffect, Modifier : CustomHoverEffect {
-  public static func _makeCustomHoverEffect(effect: _GraphValue<ModifiedContent<Content, Modifier>>, inputs: _CustomHoverEffectInputs, body: @escaping (_CustomHoverEffectInputs) -> _CustomHoverEffectOutputs) -> _CustomHoverEffectOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeCustomHoverEffect(effect:inputs:body:)") }
+  public static func _makeCustomHoverEffect(effect: _GraphValue<ModifiedContent<Content, Modifier>>, inputs: _CustomHoverEffectInputs, body: @escaping (_CustomHoverEffectInputs) -> _CustomHoverEffectOutputs) -> _CustomHoverEffectOutputs { _suiUnimplemented("SwiftUICore.ModifiedContent._makeCustomHoverEffect(effect:inputs:body:)") }
 }
 extension Swift::FloatingPoint {
   #if compiler(>=5.3) && $InlineAlways
@@ -23994,8 +23966,8 @@ extension EdgeInsets {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var accessibilityEnabled: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityEnabled") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityEnabled") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilityEnabled") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilityEnabled") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -24005,37 +23977,37 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var accessibilityDifferentiateWithoutColor: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityDifferentiateWithoutColor") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilityDifferentiateWithoutColor") }
   }
   public var _accessibilityDifferentiateWithoutColor: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._accessibilityDifferentiateWithoutColor") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore._accessibilityDifferentiateWithoutColor") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues._accessibilityDifferentiateWithoutColor") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues._accessibilityDifferentiateWithoutColor") }
   }
   public var accessibilityReduceTransparency: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityReduceTransparency") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilityReduceTransparency") }
   }
   public var _accessibilityReduceTransparency: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._accessibilityReduceTransparency") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore._accessibilityReduceTransparency") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues._accessibilityReduceTransparency") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues._accessibilityReduceTransparency") }
   }
   public var accessibilityReduceMotion: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityReduceMotion") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilityReduceMotion") }
   }
   public var _accessibilityReduceMotion: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._accessibilityReduceMotion") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore._accessibilityReduceMotion") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues._accessibilityReduceMotion") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues._accessibilityReduceMotion") }
   }
   @available(iOS 26.4, macOS 26.4, tvOS 26.4, watchOS 26.4, visionOS 26.4, *)
   public var accessibilityPrefersCrossFadeTransitions: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityPrefersCrossFadeTransitions") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityPrefersCrossFadeTransitions") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilityPrefersCrossFadeTransitions") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilityPrefersCrossFadeTransitions") }
   }
   public var accessibilityInvertColors: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityInvertColors") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilityInvertColors") }
   }
   public var _accessibilityInvertColors: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._accessibilityInvertColors") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore._accessibilityInvertColors") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues._accessibilityInvertColors") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues._accessibilityInvertColors") }
   }
 }
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -24049,11 +24021,11 @@ extension EnvironmentValues {
 @available(visionOS, introduced: 1.0, deprecated: 1000, renamed: "accessibilityShowBorders")
 extension EnvironmentValues {
   public var accessibilityShowButtonShapes: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityShowButtonShapes") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilityShowButtonShapes") }
   }
   public var _accessibilityShowButtonShapes: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._accessibilityShowButtonShapes") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore._accessibilityShowButtonShapes") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues._accessibilityShowButtonShapes") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues._accessibilityShowButtonShapes") }
   }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -24072,10 +24044,10 @@ extension EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var accessibilityDimFlashingLights: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityDimFlashingLights") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilityDimFlashingLights") }
   }
   public var accessibilityPlayAnimatedImages: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityPlayAnimatedImages") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilityPlayAnimatedImages") }
   }
 }
 @available(visionOS 1.0, *)
@@ -24084,13 +24056,13 @@ extension EnvironmentValues {
 @available(tvOS, unavailable)
 extension EnvironmentValues {
   public var accessibilityPrefersHeadAnchorAlternative: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityPrefersHeadAnchorAlternative") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilityPrefersHeadAnchorAlternative") }
   }
 }
 @available(iOS 26.4, macOS 26.4, tvOS 26.4, watchOS 26.4, visionOS 26.4, *)
 extension EnvironmentValues {
   public var accessibilityReduceHighlightingEffects: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.accessibilityReduceHighlightingEffects") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.accessibilityReduceHighlightingEffects") }
   }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -24223,7 +24195,7 @@ extension AnyTextStorage : @unchecked Swift::Sendable {
 extension AnyTextStorage : Swift::CustomDebugStringConvertible {
   @usableFromInline
   package var debugDescription: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.debugDescription") }
+    get { _suiUnimplemented("SwiftUICore.AnyTextStorage.debugDescription") }
   }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -24256,7 +24228,7 @@ package class AnyTextModifier {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text {
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  public func _resolveText(in environment: EnvironmentValues) -> Swift::String { _suiUnimplemented("SwiftUICore.SwiftUICore._resolveText(in:)") }
+  public func _resolveText(in environment: EnvironmentValues) -> Swift::String { _suiUnimplemented("SwiftUICore.Text._resolveText(in:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -24290,7 +24262,7 @@ public enum _LocalizationInfo : Swift::Equatable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text {
   public var _localizationInfo: _LocalizationInfo {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._localizationInfo") }
+    get { _suiUnimplemented("SwiftUICore.Text._localizationInfo") }
   }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -24322,7 +24294,7 @@ public static var all: SafeAreaRegions { get { _suiUnimplemented("SwiftUICore.Sa
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  @_Concurrency::MainActor @preconcurrency public func _safeAreaInsets(_ insets: EdgeInsets) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore._safeAreaInsets(_:)") }
+  @_Concurrency::MainActor @preconcurrency public func _safeAreaInsets(_ insets: EdgeInsets) -> Swift.Never { _suiUnimplemented("SwiftUICore.View._safeAreaInsets(_:)") }
   
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -24392,7 +24364,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension IDView {
   @usableFromInline
-  package static func _makeView(view: _GraphValue<IDView<Content, ID>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(view:inputs:)") }
+  package static func _makeView(view: _GraphValue<IDView<Content, ID>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.IDView._makeView(view:inputs:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -24401,10 +24373,10 @@ extension IDView {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension IDView {
   @usableFromInline
-  package static func _makeViewList(view: _GraphValue<IDView<Content, ID>>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(view:inputs:)") }
+  package static func _makeViewList(view: _GraphValue<IDView<Content, ID>>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.IDView._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   @usableFromInline
-  package static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:)") }
+  package static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.IDView._viewListCount(inputs:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -24466,15 +24438,15 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EnvironmentValues {
   public var colorScheme: ColorScheme {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.colorScheme") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.colorScheme") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.colorScheme") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.colorScheme") }
   }
   public var colorSchemeContrast: ColorSchemeContrast {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.colorSchemeContrast") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.colorSchemeContrast") }
   }
   public var _colorSchemeContrast: ColorSchemeContrast {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore._colorSchemeContrast") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore._colorSchemeContrast") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues._colorSchemeContrast") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues._colorSchemeContrast") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -24494,10 +24466,10 @@ public protocol _Test {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _Test {
-  public func setUpTest() { _suiUnimplemented("SwiftUICore.SwiftUICore.setUpTest()") }
-  public func tearDownTest() { _suiUnimplemented("SwiftUICore.SwiftUICore.tearDownTest()") }
+  public func setUpTest() { _suiUnimplemented("SwiftUICore._Test.setUpTest()") }
+  public func tearDownTest() { _suiUnimplemented("SwiftUICore._Test.tearDownTest()") }
   @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
-  public func tearDownTestWithError() throws { _suiUnimplemented("SwiftUICore.SwiftUICore.tearDownTestWithError()") }
+  public func tearDownTestWithError() throws { _suiUnimplemented("SwiftUICore._Test.tearDownTestWithError()") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 11.0, tvOS 13.0, watchOS 6.0, *)
@@ -24547,10 +24519,10 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image : View {
-  nonisolated public static func _makeView(view: _GraphValue<Image>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeView(view:inputs:)") }
-  nonisolated public static func _makeViewList(view: _GraphValue<Image>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.SwiftUICore._makeViewList(view:inputs:)") }
+  nonisolated public static func _makeView(view: _GraphValue<Image>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.Image._makeView(view:inputs:)") }
+  nonisolated public static func _makeViewList(view: _GraphValue<Image>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.Image._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.SwiftUICore._viewListCount(inputs:)") }
+  nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.Image._viewListCount(inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
 }
@@ -24567,7 +24539,7 @@ package class AnyImageProviderBox : @unchecked Swift::Sendable {
 @available(anyAppleOS 27.1, *)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onHingeChange(isEnabled: Swift::Bool = true, _ action: @escaping (_ oldContext: DeviceHingeContext, _ newContext: DeviceHingeContext) -> Swift::Void) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.onHingeChange(isEnabled:_:)") }
+nonisolated public func onHingeChange(isEnabled: Swift::Bool = true, _ action: @escaping (_ oldContext: DeviceHingeContext, _ newContext: DeviceHingeContext) -> Swift::Void) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.onHingeChange(isEnabled:_:)") }
   
 }
 extension CoreGraphics::CGRect {
@@ -24709,13 +24681,13 @@ package protocol TopLeftGlobalSpaceConstant {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func gesture<T>(_ gesture: T, including mask: GestureMask = .all) -> Swift.Never where T : Gesture { _suiUnimplemented("SwiftUICore.SwiftUICore.gesture(_:including:)") }
+nonisolated public func gesture<T>(_ gesture: T, including mask: GestureMask = .all) -> Swift.Never where T : Gesture { _suiUnimplemented("SwiftUICore.View.gesture(_:including:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func highPriorityGesture<T>(_ gesture: T, including mask: GestureMask = .all) -> Swift.Never where T : Gesture { _suiUnimplemented("SwiftUICore.SwiftUICore.highPriorityGesture(_:including:)") }
+nonisolated public func highPriorityGesture<T>(_ gesture: T, including mask: GestureMask = .all) -> Swift.Never where T : Gesture { _suiUnimplemented("SwiftUICore.View.highPriorityGesture(_:including:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func simultaneousGesture<T>(_ gesture: T, including mask: GestureMask = .all) -> Swift.Never where T : Gesture { _suiUnimplemented("SwiftUICore.SwiftUICore.simultaneousGesture(_:including:)") }
+nonisolated public func simultaneousGesture<T>(_ gesture: T, including mask: GestureMask = .all) -> Swift.Never where T : Gesture { _suiUnimplemented("SwiftUICore.View.simultaneousGesture(_:including:)") }
   
   @export(implementation) nonisolated public func gesture<T>(_ gesture: T, isEnabled: Swift::Bool) -> some View where T : Gesture {
         self.gesture(gesture, including: isEnabled ? .all : .subviews)
@@ -24733,13 +24705,13 @@ nonisolated public func simultaneousGesture<T>(_ gesture: T, including mask: Ges
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func gesture<T>(_ gesture: T, name: Swift::String, isEnabled: Swift::Bool = true) -> Swift.Never where T : Gesture { _suiUnimplemented("SwiftUICore.SwiftUICore.gesture(_:name:isEnabled:)") }
+nonisolated public func gesture<T>(_ gesture: T, name: Swift::String, isEnabled: Swift::Bool = true) -> Swift.Never where T : Gesture { _suiUnimplemented("SwiftUICore.View.gesture(_:name:isEnabled:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func highPriorityGesture<T>(_ gesture: T, name: Swift::String, isEnabled: Swift::Bool = true) -> Swift.Never where T : Gesture { _suiUnimplemented("SwiftUICore.SwiftUICore.highPriorityGesture(_:name:isEnabled:)") }
+nonisolated public func highPriorityGesture<T>(_ gesture: T, name: Swift::String, isEnabled: Swift::Bool = true) -> Swift.Never where T : Gesture { _suiUnimplemented("SwiftUICore.View.highPriorityGesture(_:name:isEnabled:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func simultaneousGesture<T>(_ gesture: T, name: Swift::String, isEnabled: Swift::Bool = true) -> Swift.Never where T : Gesture { _suiUnimplemented("SwiftUICore.SwiftUICore.simultaneousGesture(_:name:isEnabled:)") }
+nonisolated public func simultaneousGesture<T>(_ gesture: T, name: Swift::String, isEnabled: Swift::Bool = true) -> Swift.Never where T : Gesture { _suiUnimplemented("SwiftUICore.View.simultaneousGesture(_:name:isEnabled:)") }
   
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -24814,9 +24786,9 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AnyTransition {
   public static var scale: AnyTransition {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.scale") }
+    get { _suiUnimplemented("SwiftUICore.AnyTransition.scale") }
   }
-  public static func scale(scale: CoreGraphics::CGFloat, anchor: UnitPoint = .center) -> AnyTransition { _suiUnimplemented("SwiftUICore.SwiftUICore.scale(scale:anchor:)") }
+  public static func scale(scale: CoreGraphics::CGFloat, anchor: UnitPoint = .center) -> AnyTransition { _suiUnimplemented("SwiftUICore.AnyTransition.scale(scale:anchor:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -24868,13 +24840,13 @@ nonisolated public struct ScaleTransition : Transition {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func scaleEffect(_ scale: CoreGraphics::CGSize, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.scaleEffect(_:anchor:)") }
+public func scaleEffect(_ scale: CoreGraphics::CGSize, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.scaleEffect(_:anchor:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func scaleEffect(_ scale: CoreGraphics::CGFloat, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.scaleEffect(_:anchor:)") }
+public func scaleEffect(_ scale: CoreGraphics::CGFloat, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.scaleEffect(_:anchor:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func scaleEffect(x: CoreGraphics::CGFloat = 1.0, y: CoreGraphics::CGFloat = 1.0, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.scaleEffect(x:y:anchor:)") }
+public func scaleEffect(x: CoreGraphics::CGFloat = 1.0, y: CoreGraphics::CGFloat = 1.0, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.scaleEffect(x:y:anchor:)") }
   
 }
 @available(visionOS 2.0, *)
@@ -24883,13 +24855,13 @@ public func scaleEffect(x: CoreGraphics::CGFloat = 1.0, y: CoreGraphics::CGFloat
 @available(tvOS, unavailable)
 extension HoverEffectContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func scaleEffect(_ scale: CoreGraphics::CGSize, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.scaleEffect(_:anchor:)") }
+public func scaleEffect(_ scale: CoreGraphics::CGSize, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.HoverEffectContent.scaleEffect(_:anchor:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func scaleEffect(_ scale: CoreGraphics::CGFloat, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.scaleEffect(_:anchor:)") }
+public func scaleEffect(_ scale: CoreGraphics::CGFloat, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.HoverEffectContent.scaleEffect(_:anchor:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func scaleEffect(x: CoreGraphics::CGFloat = 1.0, y: CoreGraphics::CGFloat = 1.0, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.scaleEffect(x:y:anchor:)") }
+public func scaleEffect(x: CoreGraphics::CGFloat = 1.0, y: CoreGraphics::CGFloat = 1.0, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.HoverEffectContent.scaleEffect(x:y:anchor:)") }
   
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -25018,7 +24990,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.2)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.2)
 extension Group {
-  public init<Base, Result>(sections view: Base, @ContentBuilder transform: @escaping (SectionCollection) -> Result) where Content == GroupSectionsOfContent<Base, Result>, Base : View, Result : View { _suiUnimplemented("SwiftUICore.SwiftUICore.init(sections:?:)") }
+  public init<Base, Result>(sections view: Base, @ContentBuilder transform: @escaping (SectionCollection) -> Result) where Content == GroupSectionsOfContent<Base, Result>, Base : View, Result : View { _suiUnimplemented("SwiftUICore.Group.init(sections:?:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -25171,9 +25143,9 @@ public struct SectionConfiguration : Swift::Identifiable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension CoordinateSpaceProtocol where Self == NamedCoordinateSpace {
-  public static func scrollView(axis: Axis) -> Self { _suiUnimplemented("SwiftUICore.SwiftUICore.scrollView(axis:)") }
+  public static func scrollView(axis: Axis) -> Self { _suiUnimplemented("SwiftUICore.CoordinateSpaceProtocol.scrollView(axis:)") }
   public static var scrollView: NamedCoordinateSpace {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.scrollView") }
+    get { _suiUnimplemented("SwiftUICore.CoordinateSpaceProtocol.scrollView") }
   }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -25218,15 +25190,15 @@ package struct FixedRoundedRect : Swift::Equatable {
 extension Animation : Swift::Hashable {
   @_specialize(exported: false, kind: partial, where V == Swift::Double)
   @_specialize(exported: false, kind: partial, where V == AnimatablePair<AnimatablePair<CoreGraphics::CGFloat, CoreGraphics::CGFloat>, AnimatablePair<CoreGraphics::CGFloat, CoreGraphics::CGFloat>>)
-  public func animate<V>(value: V, time: Foundation::TimeInterval, context: inout AnimationContext<V>) -> V? where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.SwiftUICore.animate(value:time:context:)") }
-  public func velocity<V>(value: V, time: Foundation::TimeInterval, context: AnimationContext<V>) -> V? where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.SwiftUICore.velocity(value:time:context:)") }
-  public func shouldMerge<V>(previous: Animation, value: V, time: Foundation::TimeInterval, context: inout AnimationContext<V>) -> Swift::Bool where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.SwiftUICore.shouldMerge(previous:value:time:context:)") }
+  public func animate<V>(value: V, time: Foundation::TimeInterval, context: inout AnimationContext<V>) -> V? where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.Animation.animate(value:time:context:)") }
+  public func velocity<V>(value: V, time: Foundation::TimeInterval, context: AnimationContext<V>) -> V? where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.Animation.velocity(value:time:context:)") }
+  public func shouldMerge<V>(previous: Animation, value: V, time: Foundation::TimeInterval, context: inout AnimationContext<V>) -> Swift::Bool where V : VectorArithmetic { _suiUnimplemented("SwiftUICore.Animation.shouldMerge(previous:value:time:context:)") }
   public var base: any CustomAnimation {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.base") }
+    get { _suiUnimplemented("SwiftUICore.Animation.base") }
   }
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.hash(into:)") }
+  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Animation.hash(into:)") }
   public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.hashValue") }
+    get { _suiUnimplemented("SwiftUICore.Animation.hashValue") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -25236,13 +25208,13 @@ extension Animation : Swift::Hashable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Animation : Swift::CustomStringConvertible, Swift::CustomDebugStringConvertible, Swift::CustomReflectable {
   public var description: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.description") }
+    get { _suiUnimplemented("SwiftUICore.Animation.description") }
   }
   public var debugDescription: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.debugDescription") }
+    get { _suiUnimplemented("SwiftUICore.Animation.debugDescription") }
   }
   public var customMirror: Swift::Mirror {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.customMirror") }
+    get { _suiUnimplemented("SwiftUICore.Animation.customMirror") }
   }
 }
 @_hasMissingDesignatedInitializers @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -25262,105 +25234,105 @@ extension Edge {
     public struct Set : Swift::OptionSet, Swift::Hashable, Swift::Sendable {
       public typealias Element = Edge.Corner.Set
       public let rawValue: Swift::Int8
-      public init(rawValue: Swift::Int8) { _suiUnimplemented("SwiftUICore.SwiftUICore.Corner.Set.init(rawValue:)") }
+      public init(rawValue: Swift::Int8) { _suiUnimplemented("SwiftUICore.Edge.Corner.Set.init(rawValue:)") }
             // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var none: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Corner.Set.none") } }
+public static var none: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.Edge.Corner.Set.none") } }
             // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var topLeading: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Corner.Set.topLeading") } }
+public static var topLeading: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.Edge.Corner.Set.topLeading") } }
             // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var topTrailing: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Corner.Set.topTrailing") } }
+public static var topTrailing: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.Edge.Corner.Set.topTrailing") } }
             // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bottomLeading: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Corner.Set.bottomLeading") } }
+public static var bottomLeading: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.Edge.Corner.Set.bottomLeading") } }
             // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bottomTrailing: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Corner.Set.bottomTrailing") } }
+public static var bottomTrailing: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.Edge.Corner.Set.bottomTrailing") } }
             // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var all: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Corner.Set.all") } }
+public static var all: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.Edge.Corner.Set.all") } }
             // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var leading: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Corner.Set.leading") } }
+public static var leading: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.Edge.Corner.Set.leading") } }
             // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var trailing: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Corner.Set.trailing") } }
+public static var trailing: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.Edge.Corner.Set.trailing") } }
             // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bottom: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Corner.Set.bottom") } }
+public static var bottom: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.Edge.Corner.Set.bottom") } }
             // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var top: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.SwiftUICore.Corner.Set.top") } }
-      public init(_ corner: Edge.Corner) { _suiUnimplemented("SwiftUICore.SwiftUICore.Corner.Set.init(_:)") }
-      public func contains(_ corner: Edge.Corner) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Corner.Set.contains(_:)") }
+public static var top: Edge.Corner.Set { get { _suiUnimplemented("SwiftUICore.Edge.Corner.Set.top") } }
+      public init(_ corner: Edge.Corner) { _suiUnimplemented("SwiftUICore.Edge.Corner.Set.init(_:)") }
+      public func contains(_ corner: Edge.Corner) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Edge.Corner.Set.contains(_:)") }
       @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
       public typealias ArrayLiteralElement = Edge.Corner.Set.Element
       @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
       public typealias RawValue = Swift::Int8
     }
-    public init?(rawValue: Swift::Int8) { _suiUnimplemented("SwiftUICore.SwiftUICore.Corner.init(rawValue:)") }
+    public init?(rawValue: Swift::Int8) { _suiUnimplemented("SwiftUICore.Edge.Corner.init(rawValue:)") }
     @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
     public typealias AllCases = [Edge.Corner]
     @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
     public typealias RawValue = Swift::Int8
     nonisolated public static var allCases: [Edge.Corner] {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Corner.allCases") }
+      get { _suiUnimplemented("SwiftUICore.Edge.Corner.allCases") }
     }
     public var rawValue: Swift::Int8 {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Corner.rawValue") }
+      get { _suiUnimplemented("SwiftUICore.Edge.Corner.rawValue") }
     }
   }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Edge.Corner : Swift::CustomDebugStringConvertible {
   public var debugDescription: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.debugDescription") }
+    get { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.debugDescription") }
   }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Edge.Corner.Set : Swift::CustomDebugStringConvertible {
   public var debugDescription: Swift::String {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.debugDescription") }
+    get { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.SwiftUICore.Set.debugDescription") }
   }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension RectangleCornerRadii {
   public subscript(corner: Edge.Corner) -> CoreGraphics::CGFloat {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.subscript(corner:)") }
+    get { _suiUnimplemented("SwiftUICore.RectangleCornerRadii.subscript(corner:)") }
   }
 }
 extension Edge.Corner {
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public struct Style : Swift::Sendable, Swift::Hashable, Swift::Equatable, Animatable {
-    public static func fixed(_ radius: CoreGraphics::CGFloat) -> Edge.Corner.Style { _suiUnimplemented("SwiftUICore.SwiftUICore.Style.fixed(_:)") }
+    public static func fixed(_ radius: CoreGraphics::CGFloat) -> Edge.Corner.Style { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.Style.fixed(_:)") }
     public static var concentric: Edge.Corner.Style {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Style.concentric") }
+      get { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.Style.concentric") }
     }
-    public static func concentric(minimum: Edge.Corner.Style? = nil) -> Edge.Corner.Style { _suiUnimplemented("SwiftUICore.SwiftUICore.Style.concentric(minimum:)") }
+    public static func concentric(minimum: Edge.Corner.Style? = nil) -> Edge.Corner.Style { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.Style.concentric(minimum:)") }
     public var animatableData: Edge.Corner.Style.AnimatableData {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Style.animatableData") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore.Style.animatableData") }
+      get { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.Style.animatableData") }
+      set { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.Style.animatableData") }
     }
     public struct AnimatableData : VectorArithmetic, Swift::Sendable {
-      public static func - (lhs: Edge.Corner.Style.AnimatableData, rhs: Edge.Corner.Style.AnimatableData) -> Edge.Corner.Style.AnimatableData { _suiUnimplemented("SwiftUICore.SwiftUICore.Style.AnimatableData.-(lhs:rhs:)") }
-      public static func + (lhs: Edge.Corner.Style.AnimatableData, rhs: Edge.Corner.Style.AnimatableData) -> Edge.Corner.Style.AnimatableData { _suiUnimplemented("SwiftUICore.SwiftUICore.Style.AnimatableData.+(lhs:rhs:)") }
-      public mutating func scale(by rhs: Swift::Double) { _suiUnimplemented("SwiftUICore.SwiftUICore.Style.AnimatableData.scale(by:)") }
+      public static func - (lhs: Edge.Corner.Style.AnimatableData, rhs: Edge.Corner.Style.AnimatableData) -> Edge.Corner.Style.AnimatableData { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.Style.AnimatableData.-(lhs:rhs:)") }
+      public static func + (lhs: Edge.Corner.Style.AnimatableData, rhs: Edge.Corner.Style.AnimatableData) -> Edge.Corner.Style.AnimatableData { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.Style.AnimatableData.+(lhs:rhs:)") }
+      public mutating func scale(by rhs: Swift::Double) { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.Style.AnimatableData.scale(by:)") }
       public var magnitudeSquared: Swift::Double {
-        get { _suiUnimplemented("SwiftUICore.SwiftUICore.Style.AnimatableData.magnitudeSquared") }
+        get { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.Style.AnimatableData.magnitudeSquared") }
       }
       public static var zero: Edge.Corner.Style.AnimatableData {
-        get { _suiUnimplemented("SwiftUICore.SwiftUICore.Style.AnimatableData.zero") }
+        get { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.Style.AnimatableData.zero") }
       }
-      public static func == (a: Edge.Corner.Style.AnimatableData, b: Edge.Corner.Style.AnimatableData) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Style.AnimatableData.==(a:b:)") }
+      public static func == (a: Edge.Corner.Style.AnimatableData, b: Edge.Corner.Style.AnimatableData) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.Style.AnimatableData.==(a:b:)") }
     }
-    public static func == (a: Edge.Corner.Style, b: Edge.Corner.Style) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.Style.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.Style.hash(into:)") }
+    public static func == (a: Edge.Corner.Style, b: Edge.Corner.Style) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.Style.==(a:b:)") }
+    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.Style.hash(into:)") }
     public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore.Style.hashValue") }
+      get { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.Style.hashValue") }
     }
   }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Edge.Corner.Style : Swift::ExpressibleByFloatLiteral {
   public typealias FloatLiteralType = Swift::Float
-  public init(floatLiteral value: Edge.Corner.Style.FloatLiteralType) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(floatLiteral:)") }
+  public init(floatLiteral value: Edge.Corner.Style.FloatLiteralType) { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.SwiftUICore.Style.init(floatLiteral:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Edge.Corner.Style : Swift::ExpressibleByIntegerLiteral {
   public typealias IntegerLiteralType = Swift::Int
-  public init(integerLiteral value: Edge.Corner.Style.IntegerLiteralType) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(integerLiteral:)") }
+  public init(integerLiteral value: Edge.Corner.Style.IntegerLiteralType) { _suiUnimplemented("SwiftUICore.Edge.SwiftUICore.Corner.SwiftUICore.Style.init(integerLiteral:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -25392,8 +25364,8 @@ extension View {
 extension EnvironmentValues {
   @usableFromInline
   package var tint: AnyShapeStyle? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.tint") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.tint") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.tint") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.tint") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -25404,8 +25376,8 @@ extension EnvironmentValues {
 extension EnvironmentValues {
   @usableFromInline
   package var tintColor: Color? {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.tintColor") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.tintColor") }
+    get { _suiUnimplemented("SwiftUICore.EnvironmentValues.tintColor") }
+    set { _suiUnimplemented("SwiftUICore.EnvironmentValues.tintColor") }
   }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -25513,8 +25485,8 @@ public static var center: Alignment3D { get { _suiUnimplemented("SwiftUICore.Ali
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Transaction {
   public var tracksVelocity: Swift::Bool {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.tracksVelocity") }
-    set { _suiUnimplemented("SwiftUICore.SwiftUICore.tracksVelocity") }
+    get { _suiUnimplemented("SwiftUICore.Transaction.tracksVelocity") }
+    set { _suiUnimplemented("SwiftUICore.Transaction.tracksVelocity") }
   }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -25524,68 +25496,68 @@ extension Transaction {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.0)
 extension Foundation::FormatStyle where Self == SystemFormatStyle.Timer {
-  public static func timer(countingDownIn interval: Swift::Range<Foundation::Date>, showsHours: Swift::Bool = true, maxFieldCount: Swift::Int = 3, maxPrecision: Swift::Duration = .seconds(1)) -> SystemFormatStyle.Timer { _suiUnimplemented("SwiftUICore.Foundation.timer(countingDownIn:showsHours:maxFieldCount:maxPrecision:)") }
-  public static func timer(countingUpIn interval: Swift::Range<Foundation::Date>, showsHours: Swift::Bool = true, maxFieldCount: Swift::Int = 3, maxPrecision: Swift::Duration = .seconds(1)) -> SystemFormatStyle.Timer { _suiUnimplemented("SwiftUICore.Foundation.timer(countingUpIn:showsHours:maxFieldCount:maxPrecision:)") }
+  public static func timer(countingDownIn interval: Swift::Range<Foundation::Date>, showsHours: Swift::Bool = true, maxFieldCount: Swift::Int = 3, maxPrecision: Swift::Duration = .seconds(1)) -> SystemFormatStyle.Timer { _suiUnimplemented("SwiftUICore.FormatStyle.timer(countingDownIn:showsHours:maxFieldCount:maxPrecision:)") }
+  public static func timer(countingUpIn interval: Swift::Range<Foundation::Date>, showsHours: Swift::Bool = true, maxFieldCount: Swift::Int = 3, maxPrecision: Swift::Duration = .seconds(1)) -> SystemFormatStyle.Timer { _suiUnimplemented("SwiftUICore.FormatStyle.timer(countingUpIn:showsHours:maxFieldCount:maxPrecision:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SystemFormatStyle {
   public struct Timer : Swift::Sendable {
     public typealias FormatInput = Foundation::Date
-    public init(countingDownIn interval: Swift::Range<Foundation::Date>, showsHours: Swift::Bool = true, maxFieldCount: Swift::Int = 3, maxPrecision: Swift::Duration = .seconds(1)) { _suiUnimplemented("SwiftUICore.SwiftUICore.Timer.init(countingDownIn:showsHours:maxFieldCount:maxPrecision:)") }
-    public init(countingUpIn interval: Swift::Range<Foundation::Date>, showsHours: Swift::Bool = true, maxFieldCount: Swift::Int = 3, maxPrecision: Swift::Duration = .seconds(1)) { _suiUnimplemented("SwiftUICore.SwiftUICore.Timer.init(countingUpIn:showsHours:maxFieldCount:maxPrecision:)") }
+    public init(countingDownIn interval: Swift::Range<Foundation::Date>, showsHours: Swift::Bool = true, maxFieldCount: Swift::Int = 3, maxPrecision: Swift::Duration = .seconds(1)) { _suiUnimplemented("SwiftUICore.SystemFormatStyle.Timer.init(countingDownIn:showsHours:maxFieldCount:maxPrecision:)") }
+    public init(countingUpIn interval: Swift::Range<Foundation::Date>, showsHours: Swift::Bool = true, maxFieldCount: Swift::Int = 3, maxPrecision: Swift::Duration = .seconds(1)) { _suiUnimplemented("SwiftUICore.SystemFormatStyle.Timer.init(countingUpIn:showsHours:maxFieldCount:maxPrecision:)") }
   }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SystemFormatStyle.Timer : Foundation::FormatStyle {
-  public func format(_ input: Foundation::Date) -> Foundation::AttributedString { _suiUnimplemented("SwiftUICore.SwiftUICore.format(_:)") }
-  public func locale(_ locale: Foundation::Locale) -> SystemFormatStyle.Timer { _suiUnimplemented("SwiftUICore.SwiftUICore.locale(_:)") }
-  public static func == (a: SystemFormatStyle.Timer, b: SystemFormatStyle.Timer) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public func format(_ input: Foundation::Date) -> Foundation::AttributedString { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Timer.format(_:)") }
+  public func locale(_ locale: Foundation::Locale) -> SystemFormatStyle.Timer { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Timer.locale(_:)") }
+  public static func == (a: SystemFormatStyle.Timer, b: SystemFormatStyle.Timer) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Timer.==(a:b:)") }
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias FormatOutput = Foundation::AttributedString
-  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.encode(to:)") }
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.hash(into:)") }
+  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Timer.encode(to:)") }
+  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Timer.hash(into:)") }
   public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.hashValue") }
+    get { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Timer.hashValue") }
   }
-  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.init(from:)") }
+  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Timer.init(from:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SystemFormatStyle.Timer : Foundation::DiscreteFormatStyle {
-  public func discreteInput(before input: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SwiftUICore.discreteInput(before:)") }
-  public func discreteInput(after input: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SwiftUICore.discreteInput(after:)") }
+  public func discreteInput(before input: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Timer.discreteInput(before:)") }
+  public func discreteInput(after input: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Timer.discreteInput(after:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension Foundation::FormatStyle where Self == SystemFormatStyle.Stopwatch {
-  public static func stopwatch(startingAt startDate: Foundation::Date, showsHours: Swift::Bool = true, maxFieldCount: Swift::Int = 4, maxPrecision: Swift::Duration = .milliseconds(10)) -> SystemFormatStyle.Stopwatch { _suiUnimplemented("SwiftUICore.Foundation.stopwatch(startingAt:showsHours:maxFieldCount:maxPrecision:)") }
+  public static func stopwatch(startingAt startDate: Foundation::Date, showsHours: Swift::Bool = true, maxFieldCount: Swift::Int = 4, maxPrecision: Swift::Duration = .milliseconds(10)) -> SystemFormatStyle.Stopwatch { _suiUnimplemented("SwiftUICore.FormatStyle.stopwatch(startingAt:showsHours:maxFieldCount:maxPrecision:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SystemFormatStyle {
   public struct Stopwatch : Swift::Sendable {
     public typealias FormatInput = Foundation::Date
-    public init(startingAt startDate: Foundation::Date, showsHours: Swift::Bool = true, maxFieldCount: Swift::Int = 4, maxPrecision: Swift::Duration = .milliseconds(10)) { _suiUnimplemented("SwiftUICore.SwiftUICore.Stopwatch.init(startingAt:showsHours:maxFieldCount:maxPrecision:)") }
+    public init(startingAt startDate: Foundation::Date, showsHours: Swift::Bool = true, maxFieldCount: Swift::Int = 4, maxPrecision: Swift::Duration = .milliseconds(10)) { _suiUnimplemented("SwiftUICore.SystemFormatStyle.Stopwatch.init(startingAt:showsHours:maxFieldCount:maxPrecision:)") }
   }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SystemFormatStyle.Stopwatch : Foundation::FormatStyle {
-  public func format(_ input: Foundation::Date) -> Foundation::AttributedString { _suiUnimplemented("SwiftUICore.SwiftUICore.format(_:)") }
-  public func locale(_ locale: Foundation::Locale) -> SystemFormatStyle.Stopwatch { _suiUnimplemented("SwiftUICore.SwiftUICore.locale(_:)") }
-  public static func == (a: SystemFormatStyle.Stopwatch, b: SystemFormatStyle.Stopwatch) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SwiftUICore.==(a:b:)") }
+  public func format(_ input: Foundation::Date) -> Foundation::AttributedString { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Stopwatch.format(_:)") }
+  public func locale(_ locale: Foundation::Locale) -> SystemFormatStyle.Stopwatch { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Stopwatch.locale(_:)") }
+  public static func == (a: SystemFormatStyle.Stopwatch, b: SystemFormatStyle.Stopwatch) -> Swift::Bool { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Stopwatch.==(a:b:)") }
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias FormatOutput = Foundation::AttributedString
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SwiftUICore.hash(into:)") }
+  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Stopwatch.hash(into:)") }
   public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.hashValue") }
+    get { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Stopwatch.hashValue") }
   }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SystemFormatStyle.Stopwatch : Foundation::DiscreteFormatStyle {
-  public func discreteInput(before input: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SwiftUICore.discreteInput(before:)") }
-  public func discreteInput(after input: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SwiftUICore.discreteInput(after:)") }
+  public func discreteInput(before input: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Stopwatch.discreteInput(before:)") }
+  public func discreteInput(after input: Foundation::Date) -> Foundation::Date? { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Stopwatch.discreteInput(after:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SystemFormatStyle.Stopwatch {
-  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.init(from:)") }
-  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.SwiftUICore.encode(to:)") }
+  public init(from decoder: any Swift::Decoder) throws { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Stopwatch.init(from:)") }
+  public func encode(to encoder: any Swift::Encoder) throws { _suiUnimplemented("SwiftUICore.SystemFormatStyle.SwiftUICore.Stopwatch.encode(to:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -25678,13 +25650,13 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public func hueRotation(_ angle: Angle) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.hueRotation(_:)") }
+public func hueRotation(_ angle: Angle) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.hueRotation(_:)") }
   
 }
 @available(anyAppleOS 27.0, *)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func textInputBorderShape(_ shape: TextInputBorderShape) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.textInputBorderShape(_:)") }
+nonisolated public func textInputBorderShape(_ shape: TextInputBorderShape) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.textInputBorderShape(_:)") }
   
 }
 @available(anyAppleOS 27.0, *)
@@ -25702,7 +25674,7 @@ public struct TextInputBorderShape : Swift::Sendable, Swift::Equatable {
 }
 @available(anyAppleOS 27.0, *)
 extension TextInputBorderShape : Shape {
-  nonisolated public func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore.path(in:)") }
+  nonisolated public func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.TextInputBorderShape.path(in:)") }
   @available(anyAppleOS 27.0, *)
   public typealias AnimatableData = EmptyAnimatableData
   @available(anyAppleOS 27.0, *)
@@ -25724,15 +25696,15 @@ extension TextInputBorderShape : InsettableShape {
             (self.base, self.amount) = (base, amount)
         }
     @usableFromInline
-    nonisolated internal func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.path(in:)") }
+    nonisolated internal func path(in rect: CoreGraphics::CGRect) -> Path { _suiUnimplemented("SwiftUICore.TextInputBorderShape._Inset.path(in:)") }
     @usableFromInline
     nonisolated internal var layoutDirectionBehavior: LayoutDirectionBehavior {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.layoutDirectionBehavior") }
+      get { _suiUnimplemented("SwiftUICore.TextInputBorderShape._Inset.layoutDirectionBehavior") }
     }
     @usableFromInline
     internal var animatableData: CoreGraphics::CGFloat {
-      get { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.animatableData") }
-      set { _suiUnimplemented("SwiftUICore.SwiftUICore._Inset.animatableData") }
+      get { _suiUnimplemented("SwiftUICore.TextInputBorderShape._Inset.animatableData") }
+      set { _suiUnimplemented("SwiftUICore.TextInputBorderShape._Inset.animatableData") }
     }
     @inlinable nonisolated internal func inset(by amount: CoreGraphics::CGFloat) -> TextInputBorderShape._Inset {
             var copy = self
@@ -25753,7 +25725,7 @@ extension TextInputBorderShape : InsettableShape {
 @available(anyAppleOS 27.0, *)
 extension Shape where Self == TextInputBorderShape {
   public static var textInputBorder: TextInputBorderShape {
-    get { _suiUnimplemented("SwiftUICore.SwiftUICore.textInputBorder") }
+    get { _suiUnimplemented("SwiftUICore.Shape.textInputBorder") }
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)

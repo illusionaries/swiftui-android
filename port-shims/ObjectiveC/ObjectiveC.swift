@@ -21,27 +21,17 @@
 // Every body is `fatalError()` on purpose: declarations only. The Android runtime treats
 // NSObject identity as plain Swift object identity.
 public import Swift
+public import Foundation
 
 // MARK: - NSObject  (NSObject.h)
-
-open class NSObject: NSObjectProtocol {
-    public init() { fatalError() }
-
-    public func isEqual(_ object: Any?) -> Bool { fatalError() }
-
-    public var hash: Int { fatalError() }
-
-    public var description: String { fatalError() }
-}
-
-/// The subset of `NSObjectProtocol` that does not need the ObjC runtime.
-public protocol NSObjectProtocol: AnyObject {
-    func isEqual(_ object: Any?) -> Bool
-
-    var hash: Int { get }
-
-    var description: String { get }
-}
+//
+// The Swift SDK for Android's `Foundation` already ships a real `NSObject` root class
+// (corelibs Foundation provides it), so redeclaring one here would make `NSObject`
+// ambiguous in every file that imports both modules. `ObjectiveC.NSObject` is therefore a
+// type alias for `Foundation.NSObject`, exactly as `CoreGraphics.CGFloat` aliases
+// `Foundation.CGFloat` in the CoreGraphics shim.
+public typealias NSObject = Foundation.NSObject
+public typealias NSObjectProtocol = Foundation.NSObjectProtocol
 
 // MARK: - Selector  (NSObject.h)
 

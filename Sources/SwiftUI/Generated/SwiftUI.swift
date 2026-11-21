@@ -67,12 +67,6 @@ import os
   public static func _makeView(modifier: _GraphValue<SwiftUI._HiddenModifier>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._HiddenModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._HiddenModifier._makeViewList(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._HiddenModifier._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._HiddenModifier.body(content:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
@@ -90,10 +84,6 @@ nonisolated public struct _SymmetricallyScaledText : View, ~Swift.Sendable {
   public static func _makeView(view: _GraphValue<SwiftUI._SymmetricallyScaledText>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._SymmetricallyScaledText._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._SymmetricallyScaledText._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._SymmetricallyScaledText._viewListCount(inputs:)") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._SymmetricallyScaledText.body") } }
 }
@@ -181,12 +171,6 @@ extension _TestApp {
   @_Concurrency.MainActor @preconcurrency public var body: some View {
     get { _suiUnimplemented("SwiftUI.Link.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Link._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Link._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Link._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -250,12 +234,6 @@ public struct _IdentifiedViewsKey {
   public static func == (a: SwiftUI._IdentifiedModifier<Identifier>, b: SwiftUI._IdentifiedModifier<Identifier>) -> Swift.Bool { _suiUnimplemented("SwiftUI._IdentifiedModifier.==(a:b:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._IdentifiedModifier._makeViewList(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._IdentifiedModifier._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._IdentifiedModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -746,12 +724,6 @@ nonisolated public struct MenuButton<Label, Content> : View, ~Swift.Sendable whe
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.MenuButton.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.MenuButton._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.MenuButton._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.MenuButton._viewListCount(inputs:)") }
 }
 #else
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `Menu` instead.")
@@ -1601,10 +1573,6 @@ nonisolated public struct Table<Value, Rows, Columns> : View, ~Swift.Sendable wh
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
   // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Table._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Table._viewListCount(inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.Table.body") } }
 }
 #else
@@ -1773,12 +1741,6 @@ nonisolated public struct DefaultDateProgressLabel : View, ~Swift.Sendable {
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DefaultDateProgressLabel.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultDateProgressLabel._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultDateProgressLabel._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultDateProgressLabel._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -2337,10 +2299,6 @@ nonisolated public struct _ScrollableLayoutView<Data, Layout> : View, ~Swift.Sen
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
   // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._ScrollableLayoutView._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._ScrollableLayoutView._viewListCount(inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._ScrollableLayoutView.body") } }
 }
 #else
@@ -2658,13 +2616,7 @@ public struct DefaultTextFieldStyle : SwiftUI.TextFieldStyle, ~Swift.Sendable {
     @_Concurrency.MainActor @preconcurrency public var body: some View {
       get { _suiUnimplemented("SwiftUI.DefaultTextFieldStyle._Body.body") }
     }
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultTextFieldStyle._Body._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultTextFieldStyle._Body._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultTextFieldStyle._Body._viewListCount(inputs:)") }
-}
+  }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -3151,12 +3103,6 @@ nonisolated public struct PreviewModifierContent : View, ~Swift.Sendable {
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias Body = Swift.Never
   // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.PreviewModifierContent._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.PreviewModifierContent._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.PreviewModifierContent._viewListCount(inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.PreviewModifierContent.body") } }
 }
 #else
@@ -3277,12 +3223,6 @@ nonisolated public struct WindowVisibilityToggle<Label> : View, ~Swift.Sendable 
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.WindowVisibilityToggle.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.WindowVisibilityToggle._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.WindowVisibilityToggle._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.WindowVisibilityToggle._viewListCount(inputs:)") }
 }
 #else
 @available(macOS 15.0, *)
@@ -3305,12 +3245,6 @@ nonisolated public struct DefaultWindowVisibilityToggleLabel : View, ~Swift.Send
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DefaultWindowVisibilityToggleLabel.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultWindowVisibilityToggleLabel._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultWindowVisibilityToggleLabel._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultWindowVisibilityToggleLabel._viewListCount(inputs:)") }
 }
 #else
 @available(macOS 15.0, *)
@@ -3402,12 +3336,6 @@ nonisolated public struct TabView<SelectionValue, Content> : View, ~Swift.Sendab
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.TabView.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.TabView._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.TabView._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.TabView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
@@ -3447,14 +3375,6 @@ extension View {
   public static func _makeInputs(modifier: _GraphValue<SwiftUI._SymbolEffectsRemovedModifier>, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUI._SymbolEffectsRemovedModifier._makeInputs(modifier:inputs:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(modifier: _GraphValue<Self>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._SymbolEffectsRemovedModifier._makeView(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._SymbolEffectsRemovedModifier._makeViewList(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._SymbolEffectsRemovedModifier._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._SymbolEffectsRemovedModifier.body(content:)") }
 }
 extension Subview {
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -3706,12 +3626,6 @@ nonisolated public struct _TouchBarModifier<Content> : ViewModifier, ~Swift.Send
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._TouchBarModifier._makeViewList(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._TouchBarModifier._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._TouchBarModifier.body(content:)") }
 }
 #else
 @available(macOS 10.15, *)
@@ -3871,12 +3785,6 @@ public struct MenuStyleConfiguration : ~Swift.Sendable {
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Label._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Label._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Label._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Label.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct Content : View, ~Swift.Sendable {
@@ -3884,12 +3792,6 @@ public struct MenuStyleConfiguration : ~Swift.Sendable {
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Content._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Content._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Content._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Content.body") } }
 }
 }
@@ -3978,12 +3880,6 @@ nonisolated public struct LabeledToolbarItemGroupContent<Content, Label> : View,
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.LabeledToolbarItemGroupContent.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LabeledToolbarItemGroupContent._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LabeledToolbarItemGroupContent._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LabeledToolbarItemGroupContent._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -4024,12 +3920,6 @@ extension SwiftUI.Scene {
   public static func == (a: SwiftUI._FlipForRTLEffect, b: SwiftUI._FlipForRTLEffect) -> Swift.Bool { _suiUnimplemented("SwiftUI._FlipForRTLEffect.==(a:b:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._FlipForRTLEffect._makeViewList(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._FlipForRTLEffect._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._FlipForRTLEffect.body(content:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
@@ -4171,12 +4061,6 @@ nonisolated public struct TextEditor : View, ~Swift.Sendable {
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.TextEditor.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.TextEditor._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.TextEditor._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.TextEditor._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -4208,12 +4092,6 @@ public struct ToggleStyleConfiguration : ~Swift.Sendable {
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ToggleStyleConfiguration.Label._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ToggleStyleConfiguration.Label._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ToggleStyleConfiguration.Label._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ToggleStyleConfiguration.Label.body") } }
 }
   public let label: SwiftUI.ToggleStyleConfiguration.Label
@@ -4266,12 +4144,6 @@ nonisolated public struct _ScrollViewRoot<P> : View where P : SwiftUI._Scrollabl
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI._ScrollViewRoot.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._ScrollViewRoot._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._ScrollViewRoot._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._ScrollViewRoot._viewListCount(inputs:)") }
 }
 @available(macOS, introduced: 11.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.bordered).")
 @available(tvOS, unavailable)
@@ -4442,12 +4314,6 @@ extension SwiftUI.OutlineGroup : View where Parent : View, Leaf : View, Subgroup
   @_Concurrency.MainActor @preconcurrency public var body: some View {
     get { _suiUnimplemented("SwiftUI.OutlineGroup.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.OutlineGroup._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.OutlineGroup._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.OutlineGroup._viewListCount(inputs:)") }
 }
 @available(iOS 15.0, macOS 12.0, *)
 @available(tvOS, unavailable)
@@ -4472,12 +4338,6 @@ nonisolated public struct OutlineSubgroupChildren : View, ~Swift.Sendable {
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.OutlineSubgroupChildren._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.OutlineSubgroupChildren._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.OutlineSubgroupChildren._viewListCount(inputs:)") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.OutlineSubgroupChildren.body") } }
 }
@@ -4942,14 +4802,6 @@ extension Observation.Observable {
   public var projectedValue: SwiftUI.GestureState<Value> {
     get { _suiUnimplemented("SwiftUI.GestureState.projectedValue") }
   }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public static func _makeProperty<V>(in buffer: inout _DynamicPropertyBuffer, container: _GraphValue<V>, fieldOffset: Swift::Int, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUI.GestureState._makeProperty(in:container:fieldOffset:inputs:)") }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public static var _propertyBehaviors: Swift::UInt32 { get { _suiUnimplemented("SwiftUI.GestureState._propertyBehaviors") } }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public static var _propertyStorageSize: Swift::Int? { get { _suiUnimplemented("SwiftUI.GestureState._propertyStorageSize") } }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public mutating func update() { _suiUnimplemented("SwiftUI.GestureState.update()") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.GestureState : @unchecked Swift.Sendable where Value : Swift.Sendable {
@@ -5005,12 +4857,6 @@ nonisolated public struct Slider<Label, ValueLabel> : View, ~Swift.Sendable wher
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Slider.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Slider._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Slider._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Slider._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, *)
@@ -5201,12 +5047,6 @@ nonisolated public struct ProgressView<Label, CurrentValueLabel> : View, ~Swift.
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.ProgressView.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ProgressView._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ProgressView._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ProgressView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -5266,12 +5106,6 @@ extension SwiftUI.LabeledContent : View where Label : View, Content : View {
   @_Concurrency.MainActor @preconcurrency public var body: some View {
     get { _suiUnimplemented("SwiftUI.LabeledContent.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LabeledContent._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LabeledContent._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LabeledContent._viewListCount(inputs:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.LabeledContent where Label == Text, Content : View {
@@ -5480,10 +5314,6 @@ extension ShapeStyle where Self == SwiftUI.PlaceholderTextShapeStyle {
   public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUI.PlaceholderTextShapeStyle._apply(to:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift.Never
-  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
-  public static func _makeView<S>(view: _GraphValue<_ShapeView<S, Self>>, inputs: _ViewInputs) -> _ViewOutputs where S : Shape { _suiUnimplemented("SwiftUI.PlaceholderTextShapeStyle._makeView(view:inputs:)") }
-  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
-  public func resolve(in environment: EnvironmentValues) -> Swift.Never { _suiUnimplemented("SwiftUI.PlaceholderTextShapeStyle.resolve(in:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @preconcurrency @_Concurrency.MainActor public protocol TabViewStyle {
@@ -5622,12 +5452,6 @@ public struct DisclosureGroupStyleConfiguration : ~Swift.Sendable {
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Label._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Label._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Label._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Label.body") } }
 }
   public let label: SwiftUI.DisclosureGroupStyleConfiguration.Label
@@ -5637,12 +5461,6 @@ public struct DisclosureGroupStyleConfiguration : ~Swift.Sendable {
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Content._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Content._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Content._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Content.body") } }
 }
   public let content: SwiftUI.DisclosureGroupStyleConfiguration.Content
@@ -6414,12 +6232,6 @@ nonisolated public struct Toggle<Label> : View, ~Swift.Sendable where Label : Vi
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Toggle.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Toggle._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Toggle._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Toggle._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6610,8 +6422,6 @@ extension View {
   public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift.Int?) -> Swift.Int? { _suiUnimplemented("SwiftUI._TaskModifier._viewListCount(inputs:body:)") }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._TaskModifier.body(content:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -6629,8 +6439,6 @@ extension View {
   public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift.Int?) -> Swift.Int? { _suiUnimplemented("SwiftUI._TaskValueModifier._viewListCount(inputs:body:)") }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._TaskValueModifier.body(content:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -6660,8 +6468,6 @@ nonisolated public struct _TaskModifier2 : ViewModifier, ~Swift.Sendable {
   public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift.Int?) -> Swift.Int? { _suiUnimplemented("SwiftUI._TaskModifier2._viewListCount(inputs:body:)") }
   @available(macOS 26.4, iOS 26.4, tvOS 26.4, watchOS 26.4, visionOS 26.4, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._TaskModifier2.body(content:)") }
 }
 #else
 @available(iOS 26.4, macOS 26.4, tvOS 26.4, watchOS 26.4, visionOS 26.4, *)
@@ -6685,8 +6491,6 @@ nonisolated public struct _TaskValueModifier2<ID> : ViewModifier, ~Swift.Sendabl
   public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift.Int?) -> Swift.Int? { _suiUnimplemented("SwiftUI._TaskValueModifier2._viewListCount(inputs:body:)") }
   @available(macOS 26.4, iOS 26.4, tvOS 26.4, watchOS 26.4, visionOS 26.4, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._TaskValueModifier2.body(content:)") }
 }
 #else
 @available(iOS 26.4, macOS 26.4, tvOS 26.4, watchOS 26.4, visionOS 26.4, *)
@@ -6796,12 +6600,6 @@ nonisolated public struct TextField<Label> : View, ~Swift.Sendable where Label :
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.TextField.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.TextField._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.TextField._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.TextField._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -7446,12 +7244,6 @@ extension SwiftUI.EditableCollectionContent : View where Content : View {
   @_Concurrency.MainActor @preconcurrency public var body: some View {
     get { _suiUnimplemented("SwiftUI.EditableCollectionContent.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.EditableCollectionContent._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.EditableCollectionContent._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.EditableCollectionContent._viewListCount(inputs:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -7632,10 +7424,6 @@ extension ShapeStyle where Self == SwiftUI.LinkShapeStyle {
   public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUI.LinkShapeStyle._apply(to:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift.Never
-  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
-  public static func _makeView<S>(view: _GraphValue<_ShapeView<S, Self>>, inputs: _ViewInputs) -> _ViewOutputs where S : Shape { _suiUnimplemented("SwiftUI.LinkShapeStyle._makeView(view:inputs:)") }
-  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
-  public func resolve(in environment: EnvironmentValues) -> Swift.Never { _suiUnimplemented("SwiftUI.LinkShapeStyle.resolve(in:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -8133,10 +7921,6 @@ public struct _SystemShapeStyle : ShapeStyle {
   @available(watchOS, unavailable, introduced: 10.0)
   @available(visionOS, unavailable)
   public typealias Resolved = Swift.Never
-  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
-  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUI._SystemShapeStyle._apply(to:)") }
-  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
-  public func resolve(in environment: EnvironmentValues) -> Swift.Never { _suiUnimplemented("SwiftUI._SystemShapeStyle.resolve(in:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 12.0, *)
@@ -8255,12 +8039,6 @@ extension View {
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._HoverRegionModifier._makeViewList(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._HoverRegionModifier._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._HoverRegionModifier.body(content:)") }
 }
 #else
 @available(iOS 13.4, macOS 10.15, *)
@@ -8405,12 +8183,6 @@ nonisolated public struct List<SelectionValue, Content> : View, ~Swift.Sendable 
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.List.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.List._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.List._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.List._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8941,10 +8713,6 @@ public struct FileDialogBrowserOptions : Swift.OptionSet {
   public static var _propertyStorageSize: Swift.Int? {
     get { _suiUnimplemented("SwiftUI.SceneStorage._propertyStorageSize") }
   }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public static var _propertyBehaviors: Swift::UInt32 { get { _suiUnimplemented("SwiftUI.SceneStorage._propertyBehaviors") } }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public mutating func update() { _suiUnimplemented("SwiftUI.SceneStorage.update()") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.SceneStorage : @unchecked Swift.Sendable where Value : Swift.Sendable {
@@ -9000,12 +8768,6 @@ nonisolated public struct Menu<Label, Content> : View, ~Swift.Sendable where Lab
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Menu.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Menu._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Menu._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Menu._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 17.0, *)
@@ -9343,13 +9105,7 @@ extension SectionConfiguration {
     @_Concurrency.MainActor @preconcurrency public var body: some View {
       get { _suiUnimplemented("SwiftUI.SectionConfiguration.Actions.body") }
     }
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.SectionConfiguration.Actions._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.SectionConfiguration.Actions._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.SectionConfiguration.Actions._viewListCount(inputs:)") }
-}
+  }
 }
 @available(iOS 17.0, macOS 14.0, *)
 @available(tvOS, unavailable)
@@ -9421,10 +9177,6 @@ nonisolated public func fullScreenCover<Content>(isPresented: Binding<Swift.Bool
   public static var _propertyStorageSize: Swift.Int? {
     get { _suiUnimplemented("SwiftUI.AppStorage._propertyStorageSize") }
   }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public static var _propertyBehaviors: Swift::UInt32 { get { _suiUnimplemented("SwiftUI.AppStorage._propertyBehaviors") } }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public mutating func update() { _suiUnimplemented("SwiftUI.AppStorage.update()") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.AppStorage : Swift.Sendable where Value : Swift.Sendable {
@@ -10092,8 +9844,6 @@ public struct ContentHoverEffect<Effect> : CustomHoverEffect, ~Swift.Sendable wh
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func body(content: SwiftUI.ContentHoverEffect<Effect>.Content) -> Swift.Never { _suiUnimplemented("SwiftUI.ContentHoverEffect.body(content:)") }
   
-  // port: synthesized witness for CustomHoverEffect (R7); Apple implements it with an internal member
-  public static func _makeCustomHoverEffect(effect: _GraphValue<Self>, inputs: _CustomHoverEffectInputs, body: @escaping (_CustomHoverEffectInputs) -> _CustomHoverEffectOutputs) -> _CustomHoverEffectOutputs { _suiUnimplemented("SwiftUI.ContentHoverEffect._makeCustomHoverEffect(effect:inputs:body:)") }
 }
 #else
 @available(visionOS 26.0, *)
@@ -10265,10 +10015,6 @@ extension SwiftUI.TableColumnContent {
     get { _suiUnimplemented("SwiftUI.UIApplicationDelegateAdaptor.wrappedValue") }
   }
   @_Concurrency.MainActor @preconcurrency public init(_ delegateType: DelegateType.Type = DelegateType.self) { _suiUnimplemented("SwiftUI.UIApplicationDelegateAdaptor.init(_:)") }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public static var _propertyBehaviors: Swift::UInt32 { get { _suiUnimplemented("SwiftUI.UIApplicationDelegateAdaptor._propertyBehaviors") } }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public mutating func update() { _suiUnimplemented("SwiftUI.UIApplicationDelegateAdaptor.update()") }
 }
 @available(iOS 14.0, tvOS 14.0, *)
 @available(watchOS, unavailable)
@@ -10917,10 +10663,6 @@ public static var all: SwiftUI.FrameResizeDirection.Set { get { _suiUnimplemente
   }
   public init() where Value == Swift.Bool { _suiUnimplemented("SwiftUI.FocusState.init()") }
   public init<T>() where Value == T?, T : Swift.Hashable { _suiUnimplemented("SwiftUI.FocusState.init()") }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public static var _propertyBehaviors: Swift::UInt32 { get { _suiUnimplemented("SwiftUI.FocusState._propertyBehaviors") } }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public mutating func update() { _suiUnimplemented("SwiftUI.FocusState.update()") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -11087,13 +10829,7 @@ nonisolated public func onModifierKeysChanged(mask: EventModifiers = .all, initi
     @_Concurrency.MainActor @preconcurrency public var body: some View {
       get { _suiUnimplemented("SwiftUI.AutomaticTextEditorStyle.Body.body") }
     }
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.AutomaticTextEditorStyle.Body._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.AutomaticTextEditorStyle.Body._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.AutomaticTextEditorStyle.Body._viewListCount(inputs:)") }
-}
+  }
 }
 #else
 @available(iOS 17.0, macOS 14.0, visionOS 1.0, *)
@@ -11333,10 +11069,6 @@ nonisolated public struct Divider : View, ~Swift.Sendable {
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
   // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Divider._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Divider._viewListCount(inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.Divider.body") } }
 }
 #else
@@ -11440,12 +11172,6 @@ nonisolated public struct TextFieldLink<Label> : View, ~Swift.Sendable where Lab
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.TextFieldLink.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.TextFieldLink._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.TextFieldLink._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.TextFieldLink._viewListCount(inputs:)") }
 }
 #else
 @available(watchOS 9.0, *)
@@ -11750,8 +11476,6 @@ public static var always: SwiftUI.SearchFieldPlacement.NavigationBarDrawerDispla
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for GeometryEffect (R7); Apple implements it with an internal member
-  public static var _affectsLayout: Swift::Bool { get { _suiUnimplemented("SwiftUI._ProjectionEffect._affectsLayout") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
@@ -11771,12 +11495,6 @@ nonisolated public struct SettingsLink<Label> : View, ~Swift.Sendable where Labe
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.SettingsLink.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.SettingsLink._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.SettingsLink._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.SettingsLink._viewListCount(inputs:)") }
 }
 #else
 @available(macOS 14.0, *)
@@ -11800,12 +11518,6 @@ nonisolated public struct DefaultSettingsLinkLabel : View, ~Swift.Sendable {
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DefaultSettingsLinkLabel.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultSettingsLinkLabel._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultSettingsLinkLabel._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultSettingsLinkLabel._viewListCount(inputs:)") }
 }
 #else
 @available(macOS 14.0, *)
@@ -12124,12 +11836,6 @@ public struct _NavigationViewStyleConfiguration : ~Swift.Sendable {
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._NavigationViewStyleConfiguration.Content._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._NavigationViewStyleConfiguration.Content._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._NavigationViewStyleConfiguration.Content._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._NavigationViewStyleConfiguration.Content.body") } }
 }
   public let content: SwiftUI._NavigationViewStyleConfiguration.Content
@@ -12367,12 +12073,6 @@ nonisolated public struct NewDocumentButton<Label> : View, ~Swift.Sendable where
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.NewDocumentButton.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.NewDocumentButton._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.NewDocumentButton._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.NewDocumentButton._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
@@ -12394,12 +12094,6 @@ extension SwiftUI.NewDocumentButton : Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public var body: some View {
     get { _suiUnimplemented("SwiftUI.DefaultNewDocumentButtonLabel.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultNewDocumentButtonLabel._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultNewDocumentButtonLabel._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultNewDocumentButtonLabel._viewListCount(inputs:)") }
 }
 @available(*, unavailable)
 extension SwiftUI.DefaultNewDocumentButtonLabel : Swift.Sendable {
@@ -12775,12 +12469,6 @@ nonisolated public struct _TabContentBodyAdaptor<C> : View, ~Swift.Sendable wher
   }
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias Body = C.Body._IdentifiedView
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._TabContentBodyAdaptor._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._TabContentBodyAdaptor._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._TabContentBodyAdaptor._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -12799,13 +12487,7 @@ nonisolated public struct _TabContentBodyAdaptor<C> : View where C : SwiftUI.Tab
     nonisolated public var body: some View {
       get { _suiUnimplemented("SwiftUI.TabContentBuilder.Content.body") }
     }
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.TabContentBuilder.Content._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.TabContentBuilder.Content._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.TabContentBuilder.Content._viewListCount(inputs:)") }
-}
+  }
   #if compiler(>=5.3) && $InlineAlways
   @export(implementation) @inline(always) public static func buildExpression(_ content: some TabContent<TabValue>) -> some SwiftUI.TabContent<TabValue> {
         content
@@ -13236,12 +12918,6 @@ public struct ButtonStyleConfiguration : ~Swift.Sendable {
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ButtonStyleConfiguration.Label._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ButtonStyleConfiguration.Label._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ButtonStyleConfiguration.Label._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ButtonStyleConfiguration.Label.body") } }
 }
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -13312,12 +12988,6 @@ nonisolated public struct _TextFieldStyleLabel : View, ~Swift.Sendable {
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
   // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._TextFieldStyleLabel._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._TextFieldStyleLabel._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._TextFieldStyleLabel._viewListCount(inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._TextFieldStyleLabel.body") } }
 }
 #else
@@ -13374,12 +13044,6 @@ nonisolated public struct _UIHostingConfigurationBackgroundView<Style> : View, ~
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI._UIHostingConfigurationBackgroundView.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._UIHostingConfigurationBackgroundView._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._UIHostingConfigurationBackgroundView._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._UIHostingConfigurationBackgroundView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, tvOS 16.0, *)
@@ -14246,10 +13910,6 @@ extension SwiftUI.Section : View where Parent : View, Content : View, Footer : V
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift.Int? { _suiUnimplemented("SwiftUI.Section._viewListCount(inputs:)") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Section._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Section._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.Section.body") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14423,12 +14083,6 @@ nonisolated public struct NavigationLink<Label, Destination> : View, ~Swift.Send
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.NavigationLink.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.NavigationLink._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.NavigationLink._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.NavigationLink._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14475,10 +14129,6 @@ extension SwiftUI.NavigationLink {
   public static func _makeView(view: _GraphValue<SwiftUI.ViewThatFits<Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ViewThatFits._makeView(view:inputs:)") }
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ViewThatFits._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ViewThatFits._viewListCount(inputs:)") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ViewThatFits.body") } }
 }
@@ -14615,18 +14265,8 @@ nonisolated public struct _ScrollView<Provider> : View, ~Swift.Sendable where Pr
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._ScrollView.Main._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._ScrollView.Main._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._ScrollView.Main.body") } }
 }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._ScrollView._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._ScrollView._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._ScrollView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14758,12 +14398,6 @@ nonisolated public struct _PagingView<Views> : View, ~Swift.Sendable where Views
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI._PagingView.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._PagingView._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._PagingView._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._PagingView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14860,24 +14494,12 @@ public struct ProgressViewStyleConfiguration : ~Swift.Sendable {
     @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.Label._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.Label._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.Label._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.Label.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct CurrentValueLabel : View, ~Swift.Sendable {
     @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.CurrentValueLabel._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.CurrentValueLabel._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.CurrentValueLabel._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.CurrentValueLabel.body") } }
 }
   public let fractionCompleted: Swift.Double?
@@ -16113,12 +15735,6 @@ nonisolated public struct GroupBox<Label, Content> : View, ~Swift.Sendable where
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.GroupBox.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GroupBox._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.GroupBox._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.GroupBox._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 10.15, *)
@@ -17252,12 +16868,6 @@ nonisolated public struct Form<Content> : View, ~Swift.Sendable where Content : 
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Form.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Form._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Form._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Form._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -17416,12 +17026,6 @@ nonisolated public struct MultiDatePicker<Label> : View, ~Swift.Sendable where L
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.MultiDatePicker.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.MultiDatePicker._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.MultiDatePicker._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.MultiDatePicker._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, *)
@@ -17754,12 +17358,6 @@ nonisolated public struct _DraggingModifier : ViewModifier, ~Swift.Sendable {
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._DraggingModifier._makeViewList(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._DraggingModifier._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._DraggingModifier.body(content:)") }
 }
 #else
 @available(iOS 13.4, macOS 10.15, *)
@@ -17785,12 +17383,6 @@ nonisolated public struct HSplitView<Content> : View, ~Swift.Sendable where Cont
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Body = Swift.Never
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.HSplitView._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.HSplitView._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.HSplitView._viewListCount(inputs:)") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.HSplitView.body") } }
 }
@@ -17820,12 +17412,6 @@ nonisolated public struct VSplitView<Content> : View, ~Swift.Sendable where Cont
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Body = Swift.Never
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.VSplitView._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.VSplitView._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.VSplitView._viewListCount(inputs:)") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.VSplitView.body") } }
 }
@@ -18085,12 +17671,6 @@ nonisolated public struct DisclosureGroup<Label, Content> : View, ~Swift.Sendabl
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DisclosureGroup.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DisclosureGroup._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DisclosureGroup._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DisclosureGroup._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -18165,12 +17745,6 @@ nonisolated public struct Picker<Label, SelectionValue, Content> : View, ~Swift.
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Picker.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Picker._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Picker._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Picker._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -18734,12 +18308,6 @@ nonisolated public struct AsyncImage<Content> : View, ~Swift.Sendable where Cont
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.AsyncImage.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.AsyncImage._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.AsyncImage._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.AsyncImage._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -18790,12 +18358,6 @@ nonisolated public struct _AsyncImageConditionalContent<Content, Placeholder> : 
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI._AsyncImageConditionalContent.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._AsyncImageConditionalContent._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._AsyncImageConditionalContent._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._AsyncImageConditionalContent._viewListCount(inputs:)") }
 }
 #else
 @available(anyAppleOS 27.0, *)
@@ -18912,8 +18474,6 @@ public struct SelectionShapeStyle : ShapeStyle {
   @available(tvOS, unavailable, introduced: 17.0)
   @available(watchOS, unavailable, introduced: 10.0)
   public typealias Resolved = Swift.Never
-  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
-  public func resolve(in environment: EnvironmentValues) -> Swift.Never { _suiUnimplemented("SwiftUI.SelectionShapeStyle.resolve(in:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `menuStyle(.automatic)` instead.")
@@ -19022,12 +18582,6 @@ nonisolated public struct ScrollView<Content> : View, ~Swift.Sendable where Cont
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.ScrollView.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ScrollView._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ScrollView._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ScrollView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -19206,12 +18760,6 @@ nonisolated public struct NavigationStack<Data, Root> : View, ~Swift.Sendable wh
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.NavigationStack.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.NavigationStack._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.NavigationStack._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.NavigationStack._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -19276,12 +18824,6 @@ extension SwiftUI.ButtonBorderShape : Shape {
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Body = _ShapeView<SwiftUI.ButtonBorderShape, ForegroundStyle>
-  // port: synthesized witness for Shape (R7); Apple implements it with an internal member
-  public nonisolated static var role: ShapeRole { get { _suiUnimplemented("SwiftUI.ButtonBorderShape.role") } }
-  // port: synthesized witness for Shape (R7); Apple implements it with an internal member
-  public nonisolated var layoutDirectionBehavior: LayoutDirectionBehavior { get { _suiUnimplemented("SwiftUI.ButtonBorderShape.layoutDirectionBehavior") } }
-  // port: synthesized witness for Shape (R7); Apple implements it with an internal member
-  public nonisolated func sizeThatFits(_ proposal: ProposedViewSize) -> CoreGraphics::CGSize { _suiUnimplemented("SwiftUI.ButtonBorderShape.sizeThatFits(_:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension Shape where Self == SwiftUI.ButtonBorderShape {
@@ -19342,14 +18884,6 @@ extension SwiftUI.ButtonBorderShape : InsettableShape {
 nonisolated public struct AccessibilityAttachmentModifier : ViewModifier, ~Swift.Sendable {
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(modifier: _GraphValue<Self>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.AccessibilityAttachmentModifier._makeView(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.AccessibilityAttachmentModifier._makeViewList(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI.AccessibilityAttachmentModifier._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI.AccessibilityAttachmentModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -19556,12 +19090,6 @@ nonisolated public struct ControlGroup<Content> : View, ~Swift.Sendable where Co
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.ControlGroup.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ControlGroup._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ControlGroup._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ControlGroup._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 17.0, *)
@@ -19580,12 +19108,6 @@ nonisolated public struct LabeledControlGroupContent<Content, Label> : View, ~Sw
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.LabeledControlGroupContent.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LabeledControlGroupContent._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LabeledControlGroupContent._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LabeledControlGroupContent._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 17.0, *)
@@ -19982,10 +19504,6 @@ nonisolated public struct PresentedWindowContent<Data, Content> : View, ~Swift.S
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
   // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.PresentedWindowContent._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.PresentedWindowContent._viewListCount(inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.PresentedWindowContent.body") } }
 }
 #else
@@ -20212,12 +19730,6 @@ public struct FormStyleConfiguration : ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.FormStyleConfiguration.Content._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.FormStyleConfiguration.Content._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.FormStyleConfiguration.Content._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.FormStyleConfiguration.Content.body") } }
 }
   public let content: SwiftUI.FormStyleConfiguration.Content
@@ -20494,12 +20006,6 @@ nonisolated public struct DefaultTabLabel : View, ~Swift.Sendable {
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DefaultTabLabel.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultTabLabel._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultTabLabel._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultTabLabel._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -20735,10 +20241,6 @@ extension SwiftUI.CameraCaptureAccessory : Swift.Sendable {
   public static func _makeView(view: _GraphValue<SwiftUI.EquatableView<Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.EquatableView._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.EquatableView._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.EquatableView._viewListCount(inputs:)") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.EquatableView.body") } }
 }
@@ -21085,12 +20587,6 @@ extension Swift.Never : SwiftUI.CompositorContent {
   @_Concurrency.MainActor @preconcurrency public var body: some View {
     get { _suiUnimplemented("SwiftUI._CompositorContentBodyAdaptor.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._CompositorContentBodyAdaptor._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._CompositorContentBodyAdaptor._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._CompositorContentBodyAdaptor._viewListCount(inputs:)") }
 }
 #else
 @available(macOS 26.0, visionOS 26.0, *)
@@ -21324,12 +20820,6 @@ nonisolated public struct SecureField<Label> : View, ~Swift.Sendable where Label
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.SecureField.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.SecureField._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.SecureField._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.SecureField._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -21754,12 +21244,6 @@ extension FoundationShims.NSUserActivity {
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   @available(*, deprecated, message: "Use visualEffect, scrollTransition, or onGeometryChange instead")
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._ScrollViewBoundsModifier._makeViewList(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._ScrollViewBoundsModifier._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._ScrollViewBoundsModifier.body(content:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -21787,12 +21271,6 @@ extension FoundationShims.NSUserActivity {
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   @available(*, deprecated, message: "Use visualEffect, scrollTransition, or onGeometryChange instead")
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._ScrollViewBoundsModifier2._makeViewList(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._ScrollViewBoundsModifier2._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._ScrollViewBoundsModifier2.body(content:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -22581,12 +22059,6 @@ nonisolated public struct ContentUnavailableView<Label, Description, Actions> : 
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.ContentUnavailableView.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ContentUnavailableView._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ContentUnavailableView._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ContentUnavailableView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -22636,35 +22108,17 @@ public struct SearchUnavailableContent : ~Swift.Sendable {
     nonisolated public var body: some View {
       get { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Label.body") }
     }
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Label._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Label._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Label._viewListCount(inputs:)") }
-}
+  }
   nonisolated public struct Description : View, ~Swift.Sendable {
     nonisolated public var body: some View {
       get { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Description.body") }
     }
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Description._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Description._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Description._viewListCount(inputs:)") }
-}
+  }
   nonisolated public struct Actions : View, ~Swift.Sendable {
     nonisolated public var body: some View {
       get { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Actions.body") }
     }
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Actions._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Actions._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Actions._viewListCount(inputs:)") }
-}
+  }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -22772,12 +22226,6 @@ nonisolated public struct _DefaultFocusModifier : ViewModifier, ~Swift.Sendable 
   public static func _makeView(modifier: _GraphValue<SwiftUI._DefaultFocusModifier>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._DefaultFocusModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 11.0, iOS 16.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._DefaultFocusModifier._makeViewList(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._DefaultFocusModifier._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._DefaultFocusModifier.body(content:)") }
 }
 #else
 @available(iOS 16.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -22976,12 +22424,6 @@ nonisolated public struct _DigitalCrownModifier : ViewModifier, ~Swift.Sendable 
       @available(tvOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._DigitalCrownModifier._makeViewList(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._DigitalCrownModifier._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._DigitalCrownModifier.body(content:)") }
 }
 #else
 @available(watchOS 6.0, *)
@@ -23201,10 +22643,6 @@ extension View {
   public static func _makeViewList(modifier: _GraphValue<SwiftUI._GridCellSizeModifier>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._GridCellSizeModifier._makeViewList(modifier:inputs:body:)") }
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._GridCellSizeModifier._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._GridCellSizeModifier.body(content:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen nonisolated public struct _GridAnchorModifier : ViewModifier {
@@ -23215,10 +22653,6 @@ extension View {
   public static func _makeViewList(modifier: _GraphValue<SwiftUI._GridAnchorModifier>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._GridAnchorModifier._makeViewList(modifier:inputs:body:)") }
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._GridAnchorModifier._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._GridAnchorModifier.body(content:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen nonisolated public struct _GridAlignmentModifier : ViewModifier {
@@ -23229,10 +22663,6 @@ extension View {
   public static func _makeViewList(modifier: _GraphValue<SwiftUI._GridAlignmentModifier>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._GridAlignmentModifier._makeViewList(modifier:inputs:body:)") }
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._GridAlignmentModifier._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._GridAlignmentModifier.body(content:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen nonisolated public struct _GridUnsizedAxesModifier : ViewModifier {
@@ -23243,10 +22673,6 @@ extension View {
   public static func _makeViewList(modifier: _GraphValue<SwiftUI._GridUnsizedAxesModifier>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._GridUnsizedAxesModifier._makeViewList(modifier:inputs:body:)") }
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._GridUnsizedAxesModifier._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._GridUnsizedAxesModifier.body(content:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen nonisolated public struct GridLayout : _VariadicView.UnaryViewRoot {
@@ -23273,10 +22699,6 @@ extension SwiftUI.GridLayout : Layout {
   nonisolated public func explicitAlignment(of guide: VerticalAlignment, in bounds: CoreGraphics.CGRect, proposal: ProposedViewSize, subviews: SwiftUI.GridLayout.Subviews, cache: inout SwiftUI.GridLayout.Cache) -> CoreGraphics.CGFloat? { _suiUnimplemented("SwiftUI.GridLayout.explicitAlignment(of:in:proposal:subviews:cache:)") }
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias AnimatableData = EmptyAnimatableData
-  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
-  public static var layoutProperties: LayoutProperties { get { _suiUnimplemented("SwiftUI.GridLayout.layoutProperties") } }
-  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
-  public static func _makeLayoutView(root: _GraphValue<Self>, inputs: _ViewInputs, body: (_Graph, _ViewInputs) -> _ViewListOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GridLayout._makeLayoutView(root:inputs:body:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.GridLayout {
@@ -23594,12 +23016,6 @@ public struct DoubleColumnNavigationViewStyle : SwiftUI.NavigationViewStyle {
   @_Concurrency.MainActor @preconcurrency public var body: some View {
     get { _suiUnimplemented("SwiftUI.HelpLink.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.HelpLink._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.HelpLink._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.HelpLink._viewListCount(inputs:)") }
 }
 #else
 @available(macOS 14.0, *)
@@ -23633,12 +23049,6 @@ nonisolated public struct ShareLink<Data, PreviewImage, PreviewIcon, Label> : Vi
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.ShareLink.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ShareLink._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ShareLink._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ShareLink._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -23678,12 +23088,6 @@ nonisolated public struct DefaultShareLinkLabel : View, ~Swift.Sendable {
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DefaultShareLinkLabel.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultShareLinkLabel._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultShareLinkLabel._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultShareLinkLabel._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -24678,12 +24082,6 @@ extension View {
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.ScrollViewReader.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ScrollViewReader._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ScrollViewReader._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ScrollViewReader._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -25011,12 +24409,6 @@ nonisolated public struct Gauge<Label, CurrentValueLabel, BoundsLabel, MarkedVal
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Gauge.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Gauge._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Gauge._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Gauge._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 7.0, *)
@@ -25118,12 +24510,6 @@ nonisolated public struct DatePicker<Label> : View, ~Swift.Sendable where Label 
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DatePicker.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DatePicker._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DatePicker._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DatePicker._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, watchOS 10.0, *)
@@ -25482,10 +24868,6 @@ nonisolated public struct _OverlayLayout : _VariadicView.UnaryViewRoot, Animatab
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for Animatable (R7); Apple implements it with an internal member
-  public var animatableData: EmptyAnimatableData { get { _suiUnimplemented("SwiftUI._OverlayLayout.animatableData") } set { _suiUnimplemented("SwiftUI._OverlayLayout.animatableData") } }
-  // port: synthesized witness for Animatable (R7); Apple implements it with an internal member
-  public static func _makeAnimatable(value: inout _GraphValue<Self>, inputs: _GraphInputs) { _suiUnimplemented("SwiftUI._OverlayLayout._makeAnimatable(value:inputs:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI._OverlayLayout : Layout {
@@ -25496,16 +24878,6 @@ extension SwiftUI._OverlayLayout : Layout {
   nonisolated public func sizeThatFits(proposal: ProposedViewSize, subviews: SwiftUI._OverlayLayout.Subviews, cache: inout Swift.Void) -> CoreGraphics.CGSize { _suiUnimplemented("SwiftUI._OverlayLayout.sizeThatFits(proposal:subviews:cache:)") }
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Cache = Swift.Void
-  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
-  public func makeCache(subviews: LayoutSubviews) -> Swift.Void { _suiUnimplemented("SwiftUI._OverlayLayout.makeCache(subviews:)") }
-  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
-  public func updateCache(_ cache: inout Swift.Void, subviews: LayoutSubviews) { _suiUnimplemented("SwiftUI._OverlayLayout.updateCache(_:subviews:)") }
-  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
-  public func spacing(subviews: LayoutSubviews, cache: inout Swift.Void) -> ViewSpacing { _suiUnimplemented("SwiftUI._OverlayLayout.spacing(subviews:cache:)") }
-  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
-  public func explicitAlignment(of guide: HorizontalAlignment, in bounds: CoreGraphics::CGRect, proposal: ProposedViewSize, subviews: LayoutSubviews, cache: inout Swift.Void) -> CoreGraphics::CGFloat? { _suiUnimplemented("SwiftUI._OverlayLayout.explicitAlignment(of:in:proposal:subviews:cache:)") }
-  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
-  public static func _makeLayoutView(root: _GraphValue<Self>, inputs: _ViewInputs, body: (_Graph, _ViewInputs) -> _ViewListOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._OverlayLayout._makeLayoutView(root:inputs:body:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension View {
@@ -25760,10 +25132,6 @@ extension Group : SwiftUI.TableColumnContent where Content : SwiftUI.TableColumn
   public static var _propertyStorageSize: Swift.Int? {
     get { _suiUnimplemented("SwiftUI.FocusedValue._propertyStorageSize") }
   }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public static var _propertyBehaviors: Swift::UInt32 { get { _suiUnimplemented("SwiftUI.FocusedValue._propertyBehaviors") } }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public mutating func update() { _suiUnimplemented("SwiftUI.FocusedValue.update()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -25825,10 +25193,6 @@ extension Group : SwiftUI.TableColumnContent where Content : SwiftUI.TableColumn
   public static var _propertyStorageSize: Swift.Int? {
     get { _suiUnimplemented("SwiftUI.FocusedBinding._propertyStorageSize") }
   }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public static var _propertyBehaviors: Swift::UInt32 { get { _suiUnimplemented("SwiftUI.FocusedBinding._propertyBehaviors") } }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public mutating func update() { _suiUnimplemented("SwiftUI.FocusedBinding.update()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -26003,12 +25367,6 @@ public struct GaugeStyleConfiguration : ~Swift.Sendable {
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.Label._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.Label._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.Label._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.Label.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct CurrentValueLabel : View, ~Swift.Sendable {
@@ -26016,12 +25374,6 @@ public struct GaugeStyleConfiguration : ~Swift.Sendable {
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.CurrentValueLabel._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.CurrentValueLabel._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.CurrentValueLabel._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.CurrentValueLabel.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct MinimumValueLabel : View, ~Swift.Sendable {
@@ -26029,12 +25381,6 @@ public struct GaugeStyleConfiguration : ~Swift.Sendable {
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MinimumValueLabel._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MinimumValueLabel._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MinimumValueLabel._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MinimumValueLabel.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct MaximumValueLabel : View, ~Swift.Sendable {
@@ -26042,12 +25388,6 @@ public struct GaugeStyleConfiguration : ~Swift.Sendable {
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MaximumValueLabel._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MaximumValueLabel._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MaximumValueLabel._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MaximumValueLabel.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct MarkedValueLabel : View, ~Swift.Sendable {
@@ -26055,12 +25395,6 @@ public struct GaugeStyleConfiguration : ~Swift.Sendable {
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MarkedValueLabel._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MarkedValueLabel._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MarkedValueLabel._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MarkedValueLabel.body") } }
 }
   public var value: Swift.Double
@@ -26126,12 +25460,6 @@ nonisolated public struct Stepper<Label> : View, ~Swift.Sendable where Label : V
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Stepper.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Stepper._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Stepper._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Stepper._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, watchOS 9.0, *)
@@ -26289,10 +25617,6 @@ extension SwiftUI.Stepper {
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
   // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._ShadowView._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._ShadowView._viewListCount(inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._ShadowView.body") } }
 }
 #else
@@ -26367,10 +25691,6 @@ nonisolated public func tableColumnHeaders(_ visibility: Visibility) -> Swift.Ne
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.FetchRequest : DynamicProperty {
   @_Concurrency.MainActor @preconcurrency public mutating func update() { _suiUnimplemented("SwiftUI.FetchRequest.update()") }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public static func _makeProperty<V>(in buffer: inout _DynamicPropertyBuffer, container: _GraphValue<V>, fieldOffset: Swift::Int, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUI.FetchRequest._makeProperty(in:container:fieldOffset:inputs:)") }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public static var _propertyStorageSize: Swift::Int? { get { _suiUnimplemented("SwiftUI.FetchRequest._propertyStorageSize") } }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.FetchRequest {
@@ -26587,12 +25907,6 @@ public struct ControlGroupStyleConfiguration : ~Swift.Sendable {
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Content._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Content._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Content._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Content.body") } }
 }
   public let content: SwiftUI.ControlGroupStyleConfiguration.Content
@@ -26602,12 +25916,6 @@ public struct ControlGroupStyleConfiguration : ~Swift.Sendable {
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Label._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Label._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Label._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Label.body") } }
 }
   @available(iOS 16.0, macOS 13.0, *)
@@ -26850,12 +26158,6 @@ nonisolated public struct NavigationSplitView<Sidebar, Content, Detail> : View, 
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.NavigationSplitView.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.NavigationSplitView._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.NavigationSplitView._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.NavigationSplitView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -26942,12 +26244,6 @@ nonisolated public struct EditButton : View, ~Swift.Sendable {
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.EditButton.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.EditButton._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.EditButton._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.EditButton._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, *)
@@ -27169,12 +26465,6 @@ nonisolated public struct NavigationView<Content> : View, ~Swift.Sendable where 
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "use NavigationStack or NavigationSplitView instead")
   public typealias Body = Swift.Never
   // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.NavigationView._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.NavigationView._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.NavigationView._viewListCount(inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.NavigationView.body") } }
 }
 #else
@@ -27283,10 +26573,6 @@ public struct PageIndexViewStyle : SwiftUI.IndexViewStyle {
   public init(for technologies: AccessibilityTechnologies) where Value == Swift.Bool { _suiUnimplemented("SwiftUI.AccessibilityFocusState.init(for:)") }
   public init<T>() where Value == T?, T : Swift.Hashable { _suiUnimplemented("SwiftUI.AccessibilityFocusState.init()") }
   public init<T>(for technologies: AccessibilityTechnologies) where Value == T?, T : Swift.Hashable { _suiUnimplemented("SwiftUI.AccessibilityFocusState.init(for:)") }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public static var _propertyBehaviors: Swift::UInt32 { get { _suiUnimplemented("SwiftUI.AccessibilityFocusState._propertyBehaviors") } }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public mutating func update() { _suiUnimplemented("SwiftUI.AccessibilityFocusState.update()") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.AccessibilityFocusState : Swift.Sendable where Value : Swift.Sendable {
@@ -27536,12 +26822,6 @@ public struct GroupBoxStyleConfiguration : ~Swift.Sendable {
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Label._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Label._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Label._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Label.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct Content : View, ~Swift.Sendable {
@@ -27550,12 +26830,6 @@ public struct GroupBoxStyleConfiguration : ~Swift.Sendable {
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Content._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Content._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Content._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Content.body") } }
 }
   public let label: SwiftUI.GroupBoxStyleConfiguration.Label
@@ -28446,12 +27720,6 @@ public struct _MenuButtonStyleConfiguration : ~Swift.Sendable {
     @available(visionOS, unavailable)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Label._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Label._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Label._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Label.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct Content : View, ~Swift.Sendable {
@@ -28461,12 +27729,6 @@ public struct _MenuButtonStyleConfiguration : ~Swift.Sendable {
     @available(visionOS, unavailable)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Content._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Content._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Content._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Content.body") } }
 }
   public var label: SwiftUI._MenuButtonStyleConfiguration.Label
@@ -28597,12 +27859,6 @@ nonisolated public struct PasteButton : View, ~Swift.Sendable {
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.PasteButton.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.PasteButton._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.PasteButton._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.PasteButton._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 10.15, *)
@@ -28877,12 +28133,6 @@ nonisolated public struct _FocusableModifier : ViewModifier, ~Swift.Sendable {
   public static func _makeView(modifier: _GraphValue<SwiftUI._FocusableModifier>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._FocusableModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 10.15, iOS 13.4, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._FocusableModifier._makeViewList(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._FocusableModifier._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._FocusableModifier.body(content:)") }
 }
 #else
 @available(iOS 13.4, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -28985,10 +28235,6 @@ extension SwiftUI.TimelineView : View where Content : View {
   @_disfavoredOverload nonisolated public init(_ schedule: Schedule, @ContentBuilder content: @escaping (SwiftUI.TimelineView<Schedule, Content>.Context) -> Content) { _suiUnimplemented("SwiftUI.TimelineView.init(_:content:)") }
   nonisolated public static func _makeView(view: _GraphValue<SwiftUI.TimelineView<Schedule, Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.TimelineView._makeView(view:inputs:)") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.TimelineView._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.TimelineView._viewListCount(inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.TimelineView.body") } }
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -29062,12 +28308,6 @@ nonisolated public struct Button<Label> : View, ~Swift.Sendable where Label : Vi
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Button.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Button._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Button._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Button._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -29173,12 +28413,6 @@ nonisolated public struct DefaultButtonLabel : View, ~Swift.Sendable {
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DefaultButtonLabel.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultButtonLabel._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultButtonLabel._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultButtonLabel._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -29666,12 +28900,6 @@ nonisolated public struct DocumentLaunchView<Actions, DocumentView> : View, ~Swi
   nonisolated public init(_ title: Text? = nil, for contentTypes: [UniformTypeIdentifiers.UTType], @ContentBuilder _ actions: () -> Actions, @ContentBuilder onDocumentOpen: @escaping (Foundation.URL) -> DocumentView, @ContentBuilder backgroundAccessoryView: @escaping (SwiftUI.DocumentLaunchGeometryProxy) -> some View) { _suiUnimplemented("SwiftUI.DocumentLaunchView.init(_:for:_:onDocumentOpen:backgroundAccessoryView:)") }
   nonisolated public init(_ title: Text? = nil, for contentTypes: [UniformTypeIdentifiers.UTType], @ContentBuilder _ actions: () -> Actions, @ContentBuilder onDocumentOpen: @escaping (Foundation.URL) -> DocumentView, @ContentBuilder overlayAccessoryView: @escaping (SwiftUI.DocumentLaunchGeometryProxy) -> some View) { _suiUnimplemented("SwiftUI.DocumentLaunchView.init(_:for:_:onDocumentOpen:overlayAccessoryView:)") }
   nonisolated public init(_ title: Text? = nil, for contentTypes: [UniformTypeIdentifiers.UTType], @ContentBuilder _ actions: () -> Actions, @ContentBuilder onDocumentOpen: @escaping (Foundation.URL) -> DocumentView) { _suiUnimplemented("SwiftUI.DocumentLaunchView.init(_:for:_:onDocumentOpen:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DocumentLaunchView._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DocumentLaunchView._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DocumentLaunchView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 18.0, *)
@@ -29858,12 +29086,6 @@ nonisolated public struct DefaultDocumentGroupLaunchActions : View, ~Swift.Senda
     get { _suiUnimplemented("SwiftUI.DefaultDocumentGroupLaunchActions.body") }
   }
   nonisolated public init() { _suiUnimplemented("SwiftUI.DefaultDocumentGroupLaunchActions.init()") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultDocumentGroupLaunchActions._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultDocumentGroupLaunchActions._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultDocumentGroupLaunchActions._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
@@ -29967,10 +29189,6 @@ nonisolated public struct LazyHGrid<Content> : View, ~Swift.Sendable where Conte
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
   // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LazyHGrid._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LazyHGrid._viewListCount(inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LazyHGrid.body") } }
 }
 #else
@@ -29989,10 +29207,6 @@ nonisolated public struct LazyVGrid<Content> : View, ~Swift.Sendable where Conte
   public static func _makeView(view: _GraphValue<SwiftUI.LazyVGrid<Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LazyVGrid._makeView(view:inputs:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LazyVGrid._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LazyVGrid._viewListCount(inputs:)") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LazyVGrid.body") } }
 }
@@ -30123,10 +29337,6 @@ extension SwiftUI.SectionedFetchRequest : DynamicProperty {
     get { _suiUnimplemented("SwiftUI.SectionedFetchRequest._propertyBehaviors") }
   }
   @_Concurrency.MainActor @preconcurrency public func update() { _suiUnimplemented("SwiftUI.SectionedFetchRequest.update()") }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public static func _makeProperty<V>(in buffer: inout _DynamicPropertyBuffer, container: _GraphValue<V>, fieldOffset: Swift::Int, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUI.SectionedFetchRequest._makeProperty(in:container:fieldOffset:inputs:)") }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public static var _propertyStorageSize: Swift::Int? { get { _suiUnimplemented("SwiftUI.SectionedFetchRequest._propertyStorageSize") } }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.SectionedFetchRequest {
@@ -30161,12 +29371,6 @@ nonisolated public struct _WKStoryboardContent : View, ~Swift.Sendable {
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI._WKStoryboardContent.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._WKStoryboardContent._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._WKStoryboardContent._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._WKStoryboardContent._viewListCount(inputs:)") }
 }
 #else
 @available(watchOS 6.0, *)
@@ -30289,24 +29493,12 @@ public struct LabeledContentStyleConfiguration : ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Label._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Label._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Label._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Label.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct Content : View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Content._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Content._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Content._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Content.body") } }
 }
   public let label: SwiftUI.LabeledContentStyleConfiguration.Label
@@ -30392,10 +29584,6 @@ public struct WindowBackgroundShapeStyle : ShapeStyle {
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   @available(visionOS, unavailable)
   public typealias Resolved = Swift.Never
-  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
-  public static func _makeView<S>(view: _GraphValue<_ShapeView<S, Self>>, inputs: _ViewInputs) -> _ViewOutputs where S : Shape { _suiUnimplemented("SwiftUI.WindowBackgroundShapeStyle._makeView(view:inputs:)") }
-  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
-  public func resolve(in environment: EnvironmentValues) -> Swift.Never { _suiUnimplemented("SwiftUI.WindowBackgroundShapeStyle.resolve(in:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 17.0, *)
 @available(watchOS, unavailable)
@@ -30626,8 +29814,6 @@ nonisolated public struct WindowDragGesture : Gesture, ~Swift.Sendable {
   nonisolated public var body: some Gesture<SwiftUI.WindowDragGesture.Value> {
     get { _suiUnimplemented("SwiftUI.WindowDragGesture.body") }
   }
-  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
-  public nonisolated static func _makeGesture(gesture: _GraphValue<Self>, inputs: _GestureInputs) -> _GestureOutputs<Swift.Never> { _suiUnimplemented("SwiftUI.WindowDragGesture._makeGesture(gesture:inputs:)") }
 }
 #else
 @available(macOS 15.0, *)
@@ -30651,12 +29837,6 @@ nonisolated public struct RenameButton<Label> : View, ~Swift.Sendable where Labe
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.RenameButton.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.RenameButton._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.RenameButton._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.RenameButton._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -30739,12 +29919,6 @@ nonisolated public struct Label<Title, Icon> : View, ~Swift.Sendable where Title
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Label.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Label._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Label._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Label._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -31098,12 +30272,6 @@ nonisolated public struct ColorPicker<Label> : View, ~Swift.Sendable where Label
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.ColorPicker.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ColorPicker._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ColorPicker._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ColorPicker._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -31166,8 +30334,6 @@ extension SwiftUI.ColorPicker where Label == Text {
   nonisolated public static var _propertyStorageSize: Swift.Int? {
     get { _suiUnimplemented("SwiftUI.FocusedObject._propertyStorageSize") }
   }
-  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
-  public mutating func update() { _suiUnimplemented("SwiftUI.FocusedObject.update()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -31452,12 +30618,6 @@ nonisolated public struct _DisclosureIndicator : View, ~Swift.Sendable {
   nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI._DisclosureIndicator.body") }
   }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._DisclosureIndicator._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._DisclosureIndicator._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._DisclosureIndicator._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, *)
@@ -32121,12 +31281,6 @@ public struct DatePickerStyleConfiguration : ~Swift.Sendable {
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
       // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DatePickerStyleConfiguration.Label._makeView(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DatePickerStyleConfiguration.Label._makeViewList(view:inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
-    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DatePickerStyleConfiguration.Label._viewListCount(inputs:)") }
-    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.DatePickerStyleConfiguration.Label.body") } }
 }
   public let label: SwiftUI.DatePickerStyleConfiguration.Label
@@ -32186,12 +31340,6 @@ nonisolated public struct _DatePickerStyleLabel : View, ~Swift.Sendable {
   @available(macOS 10.15, iOS 13.0, watchOS 10.0, *)
   @available(tvOS, unavailable)
   public typealias Body = Swift.Never
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._DatePickerStyleLabel._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._DatePickerStyleLabel._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._DatePickerStyleLabel._viewListCount(inputs:)") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._DatePickerStyleLabel.body") } }
 }
@@ -33310,21 +32458,9 @@ extension SwiftUI._SizeFittingRoot : Swift.Sendable {}
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI._SizeFittingRoot : Swift.BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-extension SwiftUI._AligningContentProvider.AligningContentProviderLayout : Animatable {  // port: synthesized witness for Animatable (R7); Apple implements it with an internal member
-  public var animatableData: Swift.Never { get { _suiUnimplemented("SwiftUI._AligningContentProvider.AligningContentProviderLayout.animatableData") } set { _suiUnimplemented("SwiftUI._AligningContentProvider.AligningContentProviderLayout.animatableData") } }
-  // port: synthesized witness for Animatable (R7); Apple implements it with an internal member
-  public static func _makeAnimatable(value: inout _GraphValue<Self>, inputs: _GraphInputs) { _suiUnimplemented("SwiftUI._AligningContentProvider.AligningContentProviderLayout._makeAnimatable(value:inputs:)") }
-}
+extension SwiftUI._AligningContentProvider.AligningContentProviderLayout : Animatable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-extension SwiftUI._AligningContentProvider.AligningContentProviderLayout : ViewModifier {  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(modifier: _GraphValue<Self>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._AligningContentProvider.AligningContentProviderLayout._makeView(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._AligningContentProvider.AligningContentProviderLayout._makeViewList(modifier:inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._AligningContentProvider.AligningContentProviderLayout._viewListCount(inputs:body:)") }
-  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
-  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._AligningContentProvider.AligningContentProviderLayout.body(content:)") }
-}
+extension SwiftUI._AligningContentProvider.AligningContentProviderLayout : ViewModifier {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI._PagingViewConfig.Direction : Swift.Equatable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -33350,12 +32486,6 @@ extension SwiftUI.DismissSearchAction : Swift.Sendable {}
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI._PullDownButton : View {  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._PullDownButton._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._PullDownButton._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._PullDownButton._viewListCount(inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._PullDownButton.body") } }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -33399,10 +32529,6 @@ extension SwiftUI.TimelineView.Context.Cadence : Swift.Hashable {}
 extension SwiftUI.OpenSettingsAction : Swift.Sendable {}
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.Grid : View {  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Grid._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Grid._viewListCount(inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.Grid.body") } }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -33470,21 +32596,9 @@ extension SwiftUI.SectionedFetchResults : Swift.Sendable {}
 extension SwiftUI.SectionedFetchResults.Section : Swift.Sendable {}
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.LabelStyleConfiguration.Title : View {  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Title._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Title._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Title._viewListCount(inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Title.body") } }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.LabelStyleConfiguration.Icon : View {  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Icon._makeView(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Icon._makeViewList(view:inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
-  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Icon._viewListCount(inputs:)") }
-  // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Icon.body") } }
 }

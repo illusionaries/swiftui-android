@@ -245,6 +245,17 @@ INLINABLE_ATTRS = {"inlinable"}
 #: Extra modifiers that can precede a parameter's external name.
 PARAM_MODIFIERS = MODIFIERS | {"inout", "__owned", "__shared", "isolated", "each"}
 
+#: Module names that can qualify a type path in the retargeted interfaces. Used to strip
+#: repeated module qualification (`SwiftUICore::SwiftUICore::Text` -> `Text`).
+MODULE_NAMES = {
+    "SwiftUICore", "SwiftUI", "Swift", "_Concurrency", "_StringProcessing",
+    "Accessibility", "Combine", "CoreData", "CoreFoundation", "CoreGraphics", "CoreMedia",
+    "CoreText", "CoreTransferable", "Darwin", "DataDetection", "DeveloperToolsSupport",
+    "Dispatch", "Foundation", "FoundationNetworking", "FoundationShims", "ObjectiveC",
+    "Observation", "OSLog", "QuartzCore", "Spatial", "Symbols", "UIKit",
+    "UniformTypeIdentifiers", "os", "simd",
+}
+
 #: Modifiers that must be preserved when a protocol requirement is turned into a witness.
 WITNESS_MODIFIERS = {
     "static", "nonisolated", "mutating", "nonmutating",
@@ -616,6 +627,7 @@ def normalize_type_path(raw: str) -> str:
     """
     text = raw.strip()
     text = _WHERE_RE.split(text)[0]
+    text = text.replace("::", ".")
     # Drop an inheritance clause at the top level.
     depth = 0
     cut = len(text)
@@ -628,11 +640,12 @@ def normalize_type_path(raw: str) -> str:
             cut = index
             break
     text = text[:cut].strip()
-    text = text.replace("::", ".")
     text = _strip_generics(text)
     parts = [part for part in text.strip().split(".") if part]
-    if len(parts) > 1:
-        parts = parts[1:]  # drop a leading module qualifier
+    # Drop leading module qualifiers (the retargeter may qualify a name more than once, e.g.
+    # `SwiftUICore::SwiftUICore::Text`, and Apple's printer always qualifies foreign modules).
+    while len(parts) > 1 and parts[0] in MODULE_NAMES:
+        parts = parts[1:]
     return ".".join(parts)
 
 
