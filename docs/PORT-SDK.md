@@ -66,7 +66,7 @@ Derived from the retargeted interfaces: `SwiftUI` is the module applications imp
 | `UniformTypeIdentifiers` | shim | `UniformTypeIdentifiers.framework` (Clang only) | — → 28 | 17 | `UTType`. |
 | `DataDetection`, `CoreMedia`, `Darwin`, `OSLog`, `simd` | import-only shims | — | 8 each | 0 | The interfaces `import` them but reference nothing; they exist so the import resolves. |
 
-Shim totals: **1,653 lines of Swift**, 23 modules, 851 public declarations.
+Shim totals: **1,653 lines of Swift**, 18 modules, 554 public declarations.
 
 Not modules of their own: `Foundation`, `Observation`, `Dispatch`, `_Concurrency`,
 `_StringProcessing`, `_SwiftConcurrencyShims`, `Android` all come from the official
