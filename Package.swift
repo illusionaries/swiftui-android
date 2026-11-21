@@ -252,7 +252,7 @@ let package = Package(
             // types, and each only makes sense in one build mode.
             exclude: includeGeneratedPort
                 ? ["AtlasScene.swift", "DemoTheme.swift", "NodeBuilders.swift"]
-                : ["SwiftUIHostScene.swift", "AppEntry.swift"],
+                : ["SwiftUIHostScene.swift"],
             swiftSettings: includeGeneratedPort ? swift5Mode + [.define("PORT_RENDERER")] : swift5Mode
         ),
         .testTarget(
