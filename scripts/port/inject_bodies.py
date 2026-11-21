@@ -245,6 +245,12 @@ INLINABLE_ATTRS = {"inlinable"}
 #: Extra modifiers that can precede a parameter's external name.
 PARAM_MODIFIERS = MODIFIERS | {"inout", "__owned", "__shared", "isolated", "each"}
 
+#: Modifiers that must be preserved when a protocol requirement is turned into a witness.
+WITNESS_MODIFIERS = {
+    "static", "nonisolated", "mutating", "nonmutating",
+    "consuming", "borrowing", "prefix", "postfix", "infix",
+}
+
 #: `Never` conformances the standard library declares (`Never` conforms to these in Swift 6.4).
 STDLIB_NEVER_CONFORMANCES = {
     "Equatable", "Hashable", "Comparable", "Sendable",
@@ -534,8 +540,12 @@ class Member:
     result_type_span: tuple[int, int] | None = None
     #: span of an `@_opaqueReturnTypeOf(...)` right-hand side (R3)
     opaque_typealias_span: tuple[int, int] | None = None
-    #: span of the `let`/`var` keyword (R2 rewrites `let` -> `var`)
+    #: span of the declaration keyword (`func`, `var`, `init`, ...)
     keyword_span: tuple[int, int] | None = None
+    #: attributes/modifiers that preceded the keyword, as parsed from the source
+    prefix: list[tuple[str, str]] = field(default_factory=list)
+    #: offset of the `{` that opens the body / accessor block, if the declaration has one
+    block_start: int | None = None
 
 
 @dataclass
@@ -547,6 +557,8 @@ class Container:
     members: list[Member] = field(default_factory=list)
     children: list["Container"] = field(default_factory=list)
     conformances: list[str] = field(default_factory=list)
+    #: True for `@propertyWrapper` types (their attribute spellings are not source-legal here)
+    is_property_wrapper: bool = False
 
 
 # ---------------------------------------------------------------------------
@@ -868,7 +880,7 @@ class Parser:
             container.members.append(Member("import", "import", start, self.tokens[self.i - 1].end))
             return
         if keyword in TYPE_KEYWORDS:
-            self.parse_type(container, keyword, start)
+            self.parse_type(container, keyword, prefix, start)
             return
         if keyword in ("func", "init", "subscript"):
             container.members.append(self.parse_callable(container, keyword, prefix, start))
@@ -908,7 +920,9 @@ class Parser:
         self.i += 1
         return self.consume_to_declaration_end()
 
-    def parse_type(self, container: Container, keyword: str, start: int) -> None:
+    def parse_type(
+        self, container: Container, keyword: str, prefix: list[tuple[str, str]], start: int
+    ) -> None:
         self.i += 1  # keyword
         if keyword == "extension":
             if self.at_end():
@@ -932,13 +946,22 @@ class Parser:
             name = normalize_type_path(header)
             conformances = self.parse_conformances(header)
             path = name
-            child = Container(kind="extension", path=path, start=start, conformances=conformances)
+            child = Container(
+                kind="extension",
+                path=path,
+                start=start,
+                conformances=conformances,
+                is_property_wrapper=any(
+                    kind == "attr" and name_ == "propertyWrapper" for kind, name_ in prefix
+                ),
+            )
         else:
             name_token = self.tokens[self.i]
             if name_token.kind != "id":
                 raise ParseError(self.text, name_token.start, f"expected a type name after {keyword}")
             name = name_token.text
             self.i += 1
+            header_start = name_token.end
             while not self.at_end() and self.tokens[self.i].text != "{":
                 token = self.tokens[self.i]
                 if token.text in ("(", "["):
@@ -953,7 +976,16 @@ class Parser:
             if self.at_end():
                 raise ParseError(self.text, start, f"{keyword} {name} without a body")
             path = f"{container.path}.{name}" if container.path else name
-            child = Container(kind=keyword, path=path, start=start)
+            header_end = self.tokens[self.i - 1].end
+            child = Container(
+                kind=keyword,
+                path=path,
+                start=start,
+                conformances=self.parse_conformances(self.text[header_start:header_end]),
+                is_property_wrapper=any(
+                    kind == "attr" and name_ == "propertyWrapper" for kind, name_ in prefix
+                ),
+            )
 
         container.children.append(child)
         self.i += 1  # past '{'
@@ -980,6 +1012,7 @@ class Parser:
     def parse_callable(
         self, container: Container, kind: str, prefix: list[tuple[str, str]], start: int
     ) -> Member:
+        keyword_token = self.tokens[self.i]
         self.i += 1  # keyword
         labels = ""
         if kind == "func":
@@ -1043,7 +1076,9 @@ class Parser:
 
         accessors: list[Accessor] = []
         has_body = False
+        block_start: int | None = None
         if not self.at_end() and self.tokens[self.i].text == "{":
+            block_start = self.tokens[self.i].start
             if kind == "subscript":
                 accessors = self.parse_accessors()
             else:
@@ -1060,6 +1095,9 @@ class Parser:
             has_body=has_body,
             accessors=accessors,
             result_type_span=result_span,
+            keyword_span=(keyword_token.start, keyword_token.end),
+            prefix=prefix,
+            block_start=block_start,
         )
 
     def parameter_labels(self, params_start: int, params_end_index: int) -> str:
@@ -1148,7 +1186,9 @@ class Parser:
 
         accessors: list[Accessor] = []
         has_body = False
+        block_start: int | None = None
         if not self.at_end() and self.tokens[self.i].text == "{":
+            block_start = self.tokens[self.i].start
             accessors = self.parse_accessors()
             has_body = bool(accessors)
         end = self.tokens[self.i - 1].end
@@ -1163,6 +1203,8 @@ class Parser:
             accessors=accessors,
             result_type_span=result_span,
             keyword_span=(keyword_token.start, keyword_token.end),
+            prefix=prefix,
+            block_start=block_start,
         )
         return member
 
@@ -1220,9 +1262,13 @@ class Parser:
             end=token.end,
             has_body=has_body,
             inlinable=any(k == "attr" and v in INLINABLE_ATTRS for k, v in prefix),
+            keyword_span=(token.start, token.end),
+            prefix=prefix,
         )
 
     def parse_typealias(self, prefix: list[tuple[str, str]], start: int) -> Member:
+        keyword_token = self.tokens[self.i]
+        keyword_start, keyword_end = keyword_token.start, keyword_token.end
         self.i += 1  # 'typealias'
         name_token = self.tok()
         if name_token is None or name_token.kind != "id":
@@ -1248,6 +1294,8 @@ class Parser:
             end=end,
             inlinable=any(k == "attr" and v in INLINABLE_ATTRS for k, v in prefix),
             opaque_typealias_span=opaque_span,
+            keyword_span=(keyword_start, keyword_end),
+            prefix=prefix,
         )
 
 
@@ -1275,6 +1323,75 @@ def apply_edits(text: str, edits: list[Edit]) -> str:
         position = edit.end
     result.append(text[position:])
     return "".join(result)
+
+
+def skip_tokens(tokens: list[Token], index: int) -> int:
+    """``index`` points at `(`, `[` or `<`; return the index just past its match."""
+    openers = {"(": ")", "[": "]", "<": ">"}
+    pairs = {"(": ")", "[": "]", "<": ">"}
+    opener = tokens[index].text
+    depth = 0
+    while index < len(tokens):
+        token = tokens[index]
+        if token.text == "-" and index + 1 < len(tokens) and tokens[index + 1].text == ">":
+            index += 2  # `->` is not a closing angle bracket
+            continue
+        if token.text == opener:
+            depth += 1
+        elif token.text == pairs[opener]:
+            depth -= 1
+            if depth == 0:
+                return index + 1
+        index += 1
+    return index
+
+
+def strip_attribute_prefixes(text: str, names: set[str]) -> tuple[str, int]:
+    """Remove attributes whose name is in ``names`` (property wrappers, `@_projectedValueProperty`).
+
+    Apple's interfaces spell wrapper-backed members as ``@Module.Wrapper public var x: T``.
+    In source that is a *property wrapper* declaration: the compiler synthesises `$x` storage
+    by querying the wrapper type. The port does not use Apple's wrappers (their projections are
+    already omitted, R5), and the synthesis recurses through the generated wrapper types, so the
+    attribute spelling is removed and the declaration keeps the wrapped-value type Apple printed.
+    """
+    tokens = tokenize(text)
+    removals: list[Edit] = []
+    index = 0
+    while index < len(tokens):
+        if tokens[index].text != "@":
+            index += 1
+            continue
+        start = index
+        index += 1
+        if index >= len(tokens):
+            break
+        name = tokens[index].text
+        index += 1
+        while index < len(tokens):
+            if tokens[index].text == "." and index + 1 < len(tokens) and tokens[index + 1].kind == "id":
+                name = tokens[index + 1].text
+                index += 2
+                continue
+            if (
+                tokens[index].text == ":"
+                and index + 2 < len(tokens)
+                and tokens[index + 1].text == ":"
+                and tokens[index + 2].kind == "id"
+            ):
+                name = tokens[index + 2].text
+                index += 3
+                continue
+            break
+        if index < len(tokens) and tokens[index].text == "<":
+            index = skip_tokens(tokens, index)
+        if index < len(tokens) and tokens[index].text == "(":
+            index = skip_tokens(tokens, index)
+        if name in names:
+            removals.append(Edit(tokens[start].start, tokens[index - 1].end, ""))
+    if not removals:
+        return text, 0
+    return apply_edits(text, removals), len(removals)
 
 
 # ---------------------------------------------------------------------------
@@ -1305,6 +1422,8 @@ class ModuleStats:
     self_qualifiers_removed: int = 0
     synthesized_projections_omitted: int = 0
     overridden: int = 0
+    synthesized_witnesses: int = 0
+    wrapper_attributes_removed: int = 0
 
     def as_dict(self) -> dict[str, int]:
         return {
@@ -1318,6 +1437,8 @@ class ModuleStats:
             "self_qualifiers_removed": self.self_qualifiers_removed,
             "synthesized_projections_omitted": self.synthesized_projections_omitted,
             "overridden": self.overridden,
+            "synthesized_witnesses": self.synthesized_witnesses,
+            "wrapper_attributes_removed": self.wrapper_attributes_removed,
         }
 
 
@@ -1436,20 +1557,23 @@ class Generator:
         self.entries.append(BodyEntry(symbol, self.module, kind, inlined))
 
     def note_seam(self, member: Member, symbol: str) -> None:
+        self.note_seam_name(member.name, symbol)
+
+    def note_seam_name(self, name: str, symbol: str) -> None:
         category: str | None = None
-        if member.kind in ("var", "let", "func") and member.name == "body":
+        if name == "body":
             category = "body"
-        elif member.name.startswith("_makeView("):
+        elif name.startswith("_makeView("):
             category = "_makeView(view:inputs:)"
-        elif member.name.startswith("_makeViewList("):
+        elif name.startswith("_makeViewList("):
             category = "_makeViewList(view:inputs:)"
-        elif member.name.startswith("_viewListCount("):
+        elif name.startswith("_viewListCount("):
             category = "_viewListCount(inputs:)"
         if category:
             self.seams.append((category, symbol))
 
     # -- edit generation --------------------------------------------------
-    def generate_edits(self) -> None:
+    def generate_edits(self, shared: "SharedModel") -> None:
         assert self.root is not None
 
         def visit(container: Container, protocol_requirements: bool) -> None:
@@ -1501,6 +1625,7 @@ class Generator:
                 visit(child, child.kind == "protocol")
 
         visit(self.root, False)
+        self.synthesize_witnesses(shared)
         missing = sorted(self.implemented - self.override_hits)
         if missing:
             raise GenerationError(
@@ -1580,6 +1705,10 @@ class Generator:
 
     def maybe_rewrite_opaque(self, container: Container, member: Member, message: str) -> None:
         if member.result_type_span is None:
+            return
+        # A declaration with a real (Apple `@inlinable`) body infers its own opaque type; never
+        # rewrite it, or the body would no longer match its declared return type.
+        if member.has_body or any(accessor.has_body for accessor in member.accessors):
             return
         if "some" not in self.span_text(member.result_type_span):
             return
@@ -1670,6 +1799,80 @@ class Generator:
             if member.inlinable:
                 self.stats.inlinable_bodies_preserved += 1
                 self.record_body(symbol, "var", True)
+
+    # -- synthesized conformance witnesses (R7) ----------------------------
+    def synthesize_witnesses(self, shared: "SharedModel") -> None:
+        """Add witnesses Apple implements with internal (interface-invisible) members.
+
+        A `.swiftinterface` only prints `public`, `package` and `@usableFromInline internal`
+        members. Apple implements many conformance witnesses as plain `internal` members
+        (e.g. `ZStack.body`, `ZStackLayout.sizeThatFits(proposal:subviews:cache:)`), so they are
+        absent from the interface and the type no longer conforms when that interface is
+        compiled as source. This pass copies each missing requirement out of the local protocol
+        declaration, gives it an injected body, and emits it as `public` (outside library
+        evolution Swift requires the witness of a public protocol to be public).
+        """
+        assert self.root is not None
+
+        def visit(container: Container) -> None:
+            if container.kind not in ("module", "protocol") and container.conformances:
+                self.synthesize_for_container(container, shared)
+            for child in container.children:
+                visit(child)
+
+        visit(self.root)
+
+    def synthesize_for_container(self, container: Container, shared: "SharedModel") -> None:
+        path = container.path
+        substitutions: dict[str, str] = {}
+        for member in container.members:
+            if member.kind == "typealias" and member.keyword_span is not None:
+                text = self.body[member.start:member.end]
+                equals = text.find("=")
+                if equals >= 0:
+                    substitutions[member.name] = text[equals + 1:].strip()
+        closing_indent = self.indent_at(container.end - 1) if container.end else ""
+        body_indent = closing_indent + "  "
+
+        for conformance in container.conformances:
+            protocol_path = shared.resolve(conformance)
+            if protocol_path is None:
+                continue  # declared in another module; its witnesses are that module's problem
+            merged = shared.substitutions_for(protocol_path, substitutions)
+            for requirement in shared.requirements(protocol_path):
+                if requirement.name in shared.implemented.get(path, set()):
+                    continue
+                if requirement.name in shared.synthesized.get(path, set()):
+                    continue
+                if shared.has_default(protocol_path, requirement.name):
+                    continue
+                symbol = f"{self.module}.{path}.{requirement.name}"
+                self.note_seam_name(requirement.name, symbol)
+                if symbol in self.implemented:
+                    shared.synthesized.setdefault(path, set()).add(requirement.name)
+                    self.override_hits.add(symbol)
+                    self.stats.overridden += 1
+                    self.add_comment(
+                        container.end - 1,
+                        f"{symbol} is implemented by the engine (port-impl/implemented.txt); "
+                        "witness not synthesized (R6)",
+                    )
+                    continue
+                declaration = build_witness(requirement, merged, symbol)
+                if declaration is None:
+                    shared.unsupported.append(f"{symbol} (requirement of {protocol_path})")
+                    continue
+                block = (
+                    f"{body_indent}// port: synthesized witness for {protocol_path} (R7); "
+                    "Apple implements it with an internal member\n"
+                    f"{body_indent}{declaration}\n"
+                )
+                self.edits.append(Edit(container.end - 1, container.end - 1, block))
+                shared.synthesized.setdefault(path, set()).add(requirement.name)
+                self.stats.synthesized_witnesses += 1
+                self.stats.bodies_injected += 1
+                kind = "var" if requirement.kind in ("var", "let") else requirement.kind
+                self.record_body(symbol, kind, False)
 
     # -- module qualification (R1) ----------------------------------------
     def strip_qualifiers(self, text: str) -> str:
@@ -1777,7 +1980,8 @@ class Generator:
         ]
         return "\n".join(lines)
 
-    def render(self) -> str:
+    def parse(self) -> None:
+        """Load and parse the interface, and collect the facts the edit pass needs."""
         body = self.load()
         parser = Parser(body, preprocess_conditionals(body))
         root = parser.parse()
@@ -1790,10 +1994,14 @@ class Generator:
         }
         self.collect_never_conformances(root)
         self.collect_opaque_typealiases(root)
-        self.generate_edits()
-        edited = apply_edits(body, self.edits)
+
+    def render_source(self, attribute_names: set[str] | None = None) -> str:
+        edited = apply_edits(self.body, self.edits)
         edited = self.strip_qualifiers(edited)
         edited = self.drop_imports(edited)
+        if attribute_names:
+            edited, removed = strip_attribute_prefixes(edited, attribute_names)
+            self.stats.wrapper_attributes_removed += removed
         return "".join([self.banner(), edited])
 
     def manifest(self) -> dict:
@@ -1821,6 +2029,194 @@ class Generator:
 
 
 # ---------------------------------------------------------------------------
+# Cross-file model for synthesized witnesses (R7)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class Requirement:
+    """One protocol requirement, in the spelling the protocol declaration used."""
+
+    kind: str
+    name: str
+    text: str
+    accessors: list[Accessor]
+    keyword_offset: int
+    block_offset: int | None
+    modifiers: list[str]
+
+
+def walk_containers(container: Container):
+    yield container
+    for child in container.children:
+        yield from walk_containers(child)
+
+
+def build_witness(requirement: Requirement, substitutions: dict[str, str], symbol: str) -> str | None:
+    """Render a witness declaration for ``requirement`` with an injected body.
+
+    ``Self.X`` is replaced by the type's own ``typealias X`` (or the protocol's associated-type
+    default). Unknown associated types become `Swift.Never`, which is the port's bottom type.
+    Returns ``None`` for requirements the port cannot spell (e.g. exotic accessor sets).
+    """
+    text = requirement.text
+    end = requirement.block_offset if requirement.block_offset is not None else len(text)
+    signature = text[requirement.keyword_offset:end].rstrip()
+
+    def replace_associated(match: re.Match) -> str:
+        return substitutions.get(match.group(1), "Swift.Never")
+
+    signature = re.sub(r"\bSelf\.(\w+)", replace_associated, signature)
+    kept = [modifier for modifier in requirement.modifiers if modifier in WITNESS_MODIFIERS]
+    head = "public " + "".join(modifier + " " for modifier in kept)
+    if requirement.kind in ("func", "init"):
+        return f'{head}{signature} {{ _suiUnimplemented("{symbol}") }}'
+    keywords = [accessor.keyword for accessor in requirement.accessors]
+    if not keywords or any(keyword not in ("get", "set", "_modify") for keyword in keywords):
+        return None
+    accessor_bodies = "".join(
+        f' {keyword} {{ _suiUnimplemented("{symbol}") }}' for keyword in keywords
+    )
+    return f"{head}{signature} {{{accessor_bodies} }}"
+
+
+class SharedModel:
+    """Cross-file facts used to synthesise missing conformance witnesses (R7).
+
+    Both generated files are one module, so requirements declared in either file can be
+    witnessed by types declared in either file. This model indexes protocols, their
+    inheritance, protocol-extension default implementations and the members every type already
+    has (in declarations *and* extensions).
+    """
+
+    def __init__(self, generators: list["Generator"]) -> None:
+        self.protocols: dict[str, tuple[Container, str, str]] = {}
+        self.protocol_by_name: dict[str, list[str]] = {}
+        self.associated_defaults: dict[str, dict[str, str]] = {}
+        self.inheritance: dict[str, list[str]] = {}
+        self.defaults: dict[str, set[str]] = {}
+        self.implemented: dict[str, set[str]] = {}
+        self.synthesized: dict[str, set[str]] = {}
+        self.unsupported: list[str] = []
+        self.attribute_names: set[str] = {"_projectedValueProperty"}
+        self._requirements: dict[str, list[Requirement]] = {}
+
+        for generator in generators:
+            for container in walk_containers(generator.root):
+                if container.kind == "module":
+                    continue
+                if container.is_property_wrapper:
+                    self.attribute_names.add(container.path.split(".")[-1])
+                self.implemented.setdefault(container.path, set()).update(
+                    member.name for member in container.members if member.kind != "import"
+                )
+                if container.kind == "protocol":
+                    self.protocols[container.path] = (container, generator.module, generator.body)
+                    simple = container.path.split(".")[-1]
+                    self.protocol_by_name.setdefault(simple, []).append(container.path)
+
+        for path, (container, _, body) in self.protocols.items():
+            inherited: list[str] = []
+            for conformance in container.conformances:
+                resolved = self.resolve(conformance)
+                if resolved and resolved != path:
+                    inherited.append(resolved)
+            self.inheritance[path] = inherited
+            defaults: dict[str, str] = {}
+            for member in container.members:
+                if member.kind == "typealias" and member.keyword_span is not None:
+                    text = body[member.start:member.end]
+                    equals = text.find("=")
+                    if equals >= 0 and member.name:
+                        defaults[member.name] = text[equals + 1:].strip()
+                elif member.kind == "associatedtype":
+                    match = re.match(
+                        r"associatedtype\s+(\w+)(?:\s*:[^=]*)?(?:=\s*(.+))?$",
+                        body[member.start:member.end].strip(),
+                        re.S,
+                    )
+                    if match and match.group(1) and match.group(2):
+                        defaults[match.group(1)] = match.group(2).strip()
+            self.associated_defaults[path] = defaults
+
+        for generator in generators:
+            for container in walk_containers(generator.root):
+                if container.kind == "extension" and container.path in self.protocols:
+                    self.defaults.setdefault(container.path, set()).update(
+                        member.name for member in container.members if member.kind != "import"
+                    )
+
+    def resolve(self, path: str) -> str | None:
+        candidates = self.protocol_by_name.get(path.split(".")[-1])
+        if not candidates:
+            return None
+        return sorted(candidates)[0]
+
+    def ancestors(self, protocol_path: str) -> list[str]:
+        seen: set[str] = set()
+        stack = list(self.inheritance.get(protocol_path, []))
+        result: list[str] = []
+        while stack:
+            path = stack.pop()
+            if path in seen:
+                continue
+            seen.add(path)
+            result.append(path)
+            stack.extend(self.inheritance.get(path, []))
+        return result
+
+    def substitutions_for(self, protocol_path: str, local: dict[str, str]) -> dict[str, str]:
+        merged = dict(self.associated_defaults.get(protocol_path, {}))
+        for ancestor in self.ancestors(protocol_path):
+            for name, value in self.associated_defaults.get(ancestor, {}).items():
+                merged.setdefault(name, value)
+        merged.update(local)  # the type's own typealiases win
+        return merged
+
+    def has_default(self, protocol_path: str, name: str) -> bool:
+        if name in self.defaults.get(protocol_path, set()):
+            return True
+        return any(
+            name in self.defaults.get(ancestor, set()) for ancestor in self.ancestors(protocol_path)
+        )
+
+    def requirements(self, protocol_path: str) -> list[Requirement]:
+        cached = self._requirements.get(protocol_path)
+        if cached is not None:
+            return cached
+        result: list[Requirement] = []
+        seen: set[tuple[str, str]] = set()
+        for path in [protocol_path] + self.ancestors(protocol_path):
+            container, _, body = self.protocols[path]
+            for member in container.members:
+                if member.kind not in ("func", "var", "let", "init", "subscript"):
+                    continue
+                if member.keyword_span is None:
+                    continue
+                key = (member.kind, member.name)
+                if key in seen:
+                    continue
+                seen.add(key)
+                result.append(
+                    Requirement(
+                        kind=member.kind,
+                        name=member.name,
+                        text=body[member.start:member.end],
+                        accessors=member.accessors,
+                        keyword_offset=member.keyword_span[0] - member.start,
+                        block_offset=(
+                            member.block_start - member.start
+                            if member.block_start is not None
+                            else None
+                        ),
+                        modifiers=[value for kind, value in member.prefix if kind == "mod"],
+                    )
+                )
+        self._requirements[protocol_path] = result
+        return result
+
+
+# ---------------------------------------------------------------------------
 # Driver
 # ---------------------------------------------------------------------------
 
@@ -1844,13 +2240,19 @@ def load_implemented() -> set[str]:
     return symbols
 
 
-def generate() -> tuple[dict[str, str], list[Generator]]:
-    """Return ``({file_stem: source}, generators)``."""
+def generate() -> tuple[dict[str, str], list[Generator], "SharedModel"]:
+    """Return ``({file_stem: source}, generators, shared)``."""
     implemented = load_implemented()
     generators = [Generator(spec, implemented) for spec in MODULE_SPECS]
-    sources: dict[str, str] = {}
     for generator in generators:
-        sources[generator.spec.file_stem] = generator.render()
+        generator.parse()
+    shared = SharedModel(generators)
+    for generator in generators:
+        generator.generate_edits(shared)
+    sources = {
+        generator.spec.file_stem: generator.render_source(shared.attribute_names)
+        for generator in generators
+    }
 
     # Apple's two interfaces are compiled as one module: a type declared in both would collide.
     owners: dict[str, tuple[str, str]] = {}
@@ -1868,10 +2270,10 @@ def generate() -> tuple[dict[str, str], list[Generator]]:
             "the two interfaces declare the same type; the port's single-module layout cannot "
             "represent that without a rename (report, do not rename):\n  " + "\n  ".join(collisions)
         )
-    return sources, generators
+    return sources, generators, shared
 
 
-def build_manifest(generators: list[Generator]) -> dict:
+def build_manifest(generators: list[Generator], shared: "SharedModel") -> dict:
     manifests = [generator.manifest() for generator in generators]
     modules = {manifest["module"]: manifest["stats"] for manifest in manifests}
     totals = {key: sum(manifest["stats"][key] for manifest in manifests) for key in modules[manifests[0]["module"]]}
@@ -1901,6 +2303,13 @@ def build_manifest(generators: list[Generator]) -> dict:
         "seams": {**seams, "total": sum(entry["count"] for entry in seams.values())},
         "overridden": {"count": len(overridden), "symbols": overridden},
         "synthesized_projections_omitted": {"count": len(projections), "symbols": projections},
+        "synthesized_witnesses": {
+            "count": totals["synthesized_witnesses"],
+        },
+        "unsupported_requirements": {
+            "count": len(shared.unsupported),
+            "symbols": sorted(shared.unsupported),
+        },
         "bodies": bodies,
     }
 
@@ -1943,10 +2352,18 @@ def main(argv: list[str]) -> int:
         help="do not write anything; exit 1 if the generated files or manifest are stale",
     )
     argument_parser.add_argument("--quiet", action="store_true", help="only print errors")
+    argument_parser.add_argument(
+        "--gen-dir", default=None,
+        help="directory holding the retargeted <Module>.swiftmodule interfaces "
+             "(default: build/port-sdk/gen)",
+    )
     arguments = argument_parser.parse_args(argv)
+    if arguments.gen_dir:
+        global GEN_DIR
+        GEN_DIR = os.path.abspath(arguments.gen_dir)
 
-    sources, generators = generate()
-    manifest = build_manifest(generators)
+    sources, generators, shared = generate()
+    manifest = build_manifest(generators, shared)
 
     if arguments.check:
         problems = check_outputs(sources, manifest)
@@ -1975,8 +2392,17 @@ def main(argv: list[str]) -> int:
             f"static storage {stats['static_storage_rewrites']}  "
             f"module qualifiers removed {stats['self_qualifiers_removed']}  "
             f"projections omitted {stats['synthesized_projections_omitted']}  "
-            f"overridden {stats['overridden']}"
+            f"overridden {stats['overridden']}  "
+            f"synthesized witnesses {stats['synthesized_witnesses']}"
         )
+        if shared.unsupported:
+            print(
+                f"  WARNING: {len(shared.unsupported)} protocol requirements could not be "
+                "synthesized (see manifest unsupported_requirements):",
+                file=sys.stderr,
+            )
+            for symbol in shared.unsupported[:10]:
+                print(f"    - {symbol}", file=sys.stderr)
         seams = manifest["seams"]
         print(
             "  seams: "

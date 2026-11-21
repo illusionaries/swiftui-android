@@ -84,11 +84,44 @@ import sys
 
 TARGET = "aarch64-unknown-linux-android28"
 
+
+def compiler_version_stamp() -> str:
+    """Version stamp of the toolchain on PATH, in the format the interface loader expects."""
+    import subprocess
+    try:
+        raw = subprocess.run(["swift", "--version"], capture_output=True, text=True, timeout=60).stdout
+        import re as _re
+        match = _re.search(r"Swift version ([0-9][0-9.]*)", raw)
+        if match:
+            return f"Apple Swift version {match.group(1)} (retargeted)"
+    except Exception:  # noqa: BLE001 - best-effort; the fallback matches the pinned SDK
+        pass
+    return "Apple Swift version 6.4.3 (retargeted)"
+
+
+def compiler_version_stamp() -> str:
+    """`Apple Swift version X.Y.Z (retargeted)` for the toolchain on PATH."""
+    import re
+    import subprocess
+    try:
+        raw = subprocess.run(["swift", "--version"], capture_output=True, text=True, timeout=60).stdout
+        match = re.search(r"Swift version ([0-9][0-9.]*)", raw)
+        if match:
+            return f"Apple Swift version {match.group(1)} (retargeted)"
+    except Exception:  # noqa: BLE001 - fall back to a best-effort stamp
+        pass
+    return "Apple Swift version 6.4.3 (retargeted)"
+
 # ---- R5 ------------------------------------------------------------------
 # Modules the Port SDK provides (retargeted or shimmed). A qualified reference such as
 # `QuartzCore::CALayer` makes the corresponding module importable in Swift, but the
 # module must also be imported for the name to be visible while the interface is
 # recompiled, so references to these are turned into imports.
+# The Swift SDK for Android's C-library overlay module. It is the platform's equivalent
+# of `Darwin`/`Glibc` and supplies the C globals Apple's interfaces call unqualified
+# (`exp2`, ...). Added to every retargeted interface (R5b).
+PLATFORM_MODULE = "Android"
+
 PROVIDED_MODULES = (
     "Accessibility", "Combine", "CoreData", "CoreGraphics", "CoreFoundation",
     "CoreMedia", "CoreText", "CoreTransferable", "DeveloperToolsSupport", "Dispatch",
@@ -153,6 +186,43 @@ OBJC_ATTR = re.compile(r"@objc(?![A-Za-z0-9_])(?:\([^)]*\))?\s*|@nonobjc\s*")
 BITWISE_COPYABLE_RE = re.compile(r"\s*,\s*BitwiseCopyable\b|\bBitwiseCopyable\s*,\s*|\bBitwiseCopyable\b")
 
 
+# A line that consists solely of attributes (and nothing else): `@available(...)`,
+# `@_originallyDefinedIn(...)`, possibly several of them.
+ATTRIBUTE_ONLY_LINE = re.compile(
+    r"^[ \t]*(?:@[A-Za-z_][\w.]*(?:\(.*\))?[ \t]*)+$"
+)
+
+
+def _is_attribute_only(line: str) -> bool:
+    return bool(ATTRIBUTE_ONLY_LINE.match(line.rstrip("\n")))
+
+
+def drop_dangling_attributes(text: str) -> str:
+    """Remove attribute-only lines that no longer qualify anything.
+
+    R9/R12 delete declarations; the `@available(...)` / `@_originallyDefinedIn(...)` lines
+    that qualified them are then left in front of a closing brace, a `#else`/`#endif`, or
+    the end of the file. Only lines consisting solely of attributes are removed, so a
+    declaration that begins with an attribute on the same line is preserved.
+    """
+    lines = text.splitlines(keepends=True)
+    out = []
+    index = 0
+    while index < len(lines):
+        if _is_attribute_only(lines[index]):
+            probe = index
+            while probe < len(lines) and _is_attribute_only(lines[probe]):
+                probe += 1
+            following = lines[probe].strip() if probe < len(lines) else ""
+            if following == "" or following.startswith("}") or following.startswith("#else") \
+                    or following.startswith("#endif"):
+                index = probe
+                continue
+        out.append(lines[index])
+        index += 1
+    return "".join(out)
+
+
 def main() -> int:
     paths = []
     extra_imports = ""
@@ -180,9 +250,12 @@ def main() -> int:
         flags = re.sub(r"\s+", " ", flags).strip()
         return "// swift-module-flags: " + flags
 
+    # The loader compares this stamp against the consuming compiler and refuses to build the
+    # module when they differ ("this SDK is not supported by the compiler"). The declarations do
+    # not depend on it, but the string must still name the toolchain that will read it.
     text = re.sub(
         r"^// swift-compiler-version: .*$",
-        "// swift-compiler-version: cross-compiled",
+        "// swift-compiler-version: " + compiler_version_stamp(),
         text,
         count=1,
         flags=re.M,
@@ -222,6 +295,8 @@ def main() -> int:
     imported = set(re.findall(r"^(?:@_exported )?(?:public )?import (\w+)", text, re.M))
     referenced = set(re.findall(r"(?<![\w.])([A-Z]\w*)(?:::|(?=\.)[.])", text))
     needed = sorted((referenced & set(PROVIDED_MODULES)) - imported - {module_name})
+    if PLATFORM_MODULE not in imported:
+        needed = [PLATFORM_MODULE] + needed
     added = "\n".join(f"import {m}" for m in needed)
     if extra_imports:
         added = (added + "\n" + extra_imports).strip()
@@ -237,11 +312,11 @@ def main() -> int:
     text = text.replace("@available(macOS, unavailable)\n", "")
 
     # ---- R9: BitwiseCopyable conformance clauses ---------------------------
-    # A conformance-only extension (`extension X : BitwiseCopyable {}`) is dropped
-    # whole; a clause inside a conformance list is removed from the list.
+    # A conformance-only extension (`extension X : BitwiseCopyable {}`) is dropped whole;
+    # a clause inside a conformance list is removed from that list.
     mod = r"(?:[A-Za-z_]\w*(?:::|\\.))*"
     text = re.sub(
-        r"(?:^@[^\n]*\n)*^extension [^\n{]*:\s*" + mod + r"BitwiseCopyable\s*\{\s*\}\s*$\n?",
+        r"^[ \t]*extension [^\n{]*:\s*" + mod + r"BitwiseCopyable\s*\{\s*\}[ \t]*$\n?",
         "",
         text,
         flags=re.M,
@@ -249,15 +324,28 @@ def main() -> int:
     text = re.sub(r",\s*" + mod + r"BitwiseCopyable\b", "", text)
     text = re.sub(r"([:,(])\s*" + mod + r"BitwiseCopyable\s*,\s*", r"\1 ", text)
     text = re.sub(r":\s*" + mod + r"BitwiseCopyable\s*(?=[{,\s])", " ", text)
-    # A trailing block of attributes whose declaration was the dropped conformance.
-    text = re.sub(r"(?:^@[^\n]*\n)+\s*$", "", text)
 
     # ---- R12: opaque-return-type aliases -----------------------------------
     text = re.sub(
-        r"(?:^\s*@[^\n]*\n)*^\s*[^\n]*\btypealias \w+ = @_opaqueReturnTypeOf\([^\n]*__[^\n]*$\n?",
+        r"^[ \t]*[^\n]*\btypealias \w+ = @_opaqueReturnTypeOf\([^\n]*__[^\n]*$\n?",
         "",
         text,
         flags=re.M,
+    )
+
+    # R9 and R12 delete a declaration; the `@available` / `@_originallyDefinedIn` lines
+    # that used to qualify it are now dangling before a `}` / `#else` / `#endif` / EOF.
+    text = drop_dangling_attributes(text)
+
+    # ---- R13: `[Type]()` default arguments ---------------------------------
+    # With `MemberImportVisibility` the empty-array construction written as `[CGFloat]()`
+    # is rejected when `CGFloat` is a typealias declared in another module (it parses as
+    # an array literal of the metatype). `Array<CGFloat>()` is the identical expression and
+    # type-checks, so only the spelling changes.
+    text = re.sub(
+        r"\[(CGFloat|CGPoint|CGSize|CGRect|CGVector|CGAffineTransform)\](?=\()",
+        r"Array<\1>",
+        text,
     )
 
     # ---- R7: ObjC annotations ----------------------------------------------

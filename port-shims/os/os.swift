@@ -46,13 +46,7 @@ public struct OSLogInterpolation: StringInterpolationProtocol, Sendable {
 
     public mutating func appendLiteral(_ literal: String) { fatalError() }
 
-    public mutating func appendInterpolation(_ argument: String) { fatalError() }
-
-    public mutating func appendInterpolation(_ value: Int) { fatalError() }
-
-    public mutating func appendInterpolation(_ value: Double) { fatalError() }
-
-    public mutating func appendInterpolation(_ value: Bool) { fatalError() }
+    public mutating func appendInterpolation<T>(_ argument: T) { fatalError() }
 }
 
 /// `OSLogType` — Android has no unified-logging equivalent; the port's diagnostics go to
@@ -73,5 +67,14 @@ public func os_log(_ message: OSLogMessage,
                    log: OSLog = .default,
                    type: OSLogType = .default,
                    _ args: any CVarArg...) {
+    // Diagnostics are emitted by the Android runtime; the shim stays silent.
+}
+
+/// Apple's level+log+message overload (os.swiftinterface line 1676). SwiftUICore calls
+/// `os_log(.fault, log: Log.runtimeIssuesLog, """…""")`, which only this shape accepts.
+@_disfavoredOverload
+public func os_log(_ logLevel: OSLogType = .default,
+                   log logObject: OSLog = .default,
+                   _ message: OSLogMessage) {
     // Diagnostics are emitted by the Android runtime; the shim stays silent.
 }

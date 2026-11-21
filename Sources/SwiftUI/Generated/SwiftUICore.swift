@@ -34,6 +34,12 @@
 // `@inlinable` bodies are Apple's real code and are never modified. The
 // `_suiUnimplemented` seam is defined by Sources/SwiftUI/Engine/PortRuntime.swift,
 // which is compiled into this same module.
+import Android
+import CoreGraphics
+import CoreText
+import FoundationShims
+import ObjectiveC
+import QuartzCore
 import CoreGraphics
 import Accessibility
 import Combine
@@ -1061,6 +1067,8 @@ extension Transition where Self == OffsetTransition {
   @export(implementation) @_Concurrency::MainActor @preconcurrency public static func offset(x: CoreGraphics::CGFloat = 0, y: CoreGraphics::CGFloat = 0) -> Self {
         offset(CGSize(width: x, height: y))
     }
+  // port: synthesized witness for Transition (R7); Apple implements it with an internal member
+  public func body(content: PlaceholderContentView<Self>, phase: TransitionPhase) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.body(content:phase:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -1075,9 +1083,6 @@ nonisolated public struct OffsetTransition : Transition, ~Swift::Sendable {
 nonisolated public func body(content: OffsetTransition.Content, phase: TransitionPhase) -> Swift.Never { _suiUnimplemented("SwiftUICore.OffsetTransition.body(content:phase:)") }
   
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition) { _suiUnimplemented("SwiftUICore.OffsetTransition._makeContentTransition(transition:)") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -1091,8 +1096,6 @@ nonisolated public struct OffsetTransition : Transition {
   nonisolated public func body(content: OffsetTransition.Content, phase: TransitionPhase) -> some View
   
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition)
-  @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI16OffsetTransitionV4body7content5phaseQrAA22PlaceholderContentViewVyACG_AA0D5PhaseOtF", 0) __
 }
 #endif
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -2633,6 +2636,8 @@ extension TimelineSchedule where Self == PeriodicTimelineSchedule {
   @export(implementation) public static func periodic(from startDate: Foundation::Date, by interval: Foundation::TimeInterval) -> PeriodicTimelineSchedule {
         .init(from: startDate, by: interval)
     }
+  // port: synthesized witness for TimelineSchedule (R7); Apple implements it with an internal member
+  public func entries(from startDate: Foundation::Date, mode: TimelineScheduleMode) -> = Foundation::Date { _suiUnimplemented("SwiftUICore.SwiftUICore.entries(from:mode:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2927,6 +2932,8 @@ extension TextVariantPreference where Self == FixedTextVariant {
   public static var fixed: FixedTextVariant {
     get { _suiUnimplemented("SwiftUICore.SwiftUICore.fixed") }
   }
+  // port: synthesized witness for TextVariantPreference (R7); Apple implements it with an internal member
+  public var _preference: _TextVariantPreference<Self> { get { _suiUnimplemented("SwiftUICore.SwiftUICore._preference") } }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -4482,9 +4489,6 @@ nonisolated public struct MoveTransition : Transition, ~Swift::Sendable {
 nonisolated public func body(content: MoveTransition.Content, phase: TransitionPhase) -> Swift.Never { _suiUnimplemented("SwiftUICore.MoveTransition.body(content:phase:)") }
   
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition) { _suiUnimplemented("SwiftUICore.MoveTransition._makeContentTransition(transition:)") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -4498,8 +4502,6 @@ nonisolated public struct MoveTransition : Transition {
   nonisolated public func body(content: MoveTransition.Content, phase: TransitionPhase) -> some View
   
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition)
-  @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI14MoveTransitionV4body7content5phaseQrAA22PlaceholderContentViewVyACG_AA0D5PhaseOtF", 0) __
 }
 #endif
 extension CoreGraphics::CGSize {
@@ -4701,6 +4703,8 @@ extension ArrangementViewStyle where Self == SplitArrangementViewStyle {
   @export(implementation) nonisolated public static var split: SplitArrangementViewStyle {
     get { .init() }
   }
+  // port: synthesized witness for ArrangementViewStyle (R7); Apple implements it with an internal member
+  public func makeBody(configuration: ArrangementViewStyleConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.makeBody(configuration:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(anyAppleOS 27.1, *)
@@ -4710,9 +4714,6 @@ nonisolated public struct SplitArrangementViewStyle : ArrangementViewStyle, ~Swi
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SplitArrangementViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUICore.SplitArrangementViewStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(anyAppleOS 27.1, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(anyAppleOS 27.1, *)
@@ -4721,8 +4722,6 @@ nonisolated public struct SplitArrangementViewStyle : ArrangementViewStyle {
   nonisolated public func axes(_ axes: Axis.Set) -> SplitArrangementViewStyle
   nonisolated public func makeBody(configuration: SplitArrangementViewStyle.Configuration) -> some View
   
-  @available(anyAppleOS 27.1, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI25SplitArrangementViewStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
 }
 #endif
 extension View {
@@ -4768,6 +4767,8 @@ extension GeometryEffect {
   public static var _affectsLayout: Swift::Bool {
     get { _suiUnimplemented("SwiftUICore.SwiftUICore._affectsLayout") }
   }
+  // port: synthesized witness for GeometryEffect (R7); Apple implements it with an internal member
+  public nonisolated func effectValue(size: CoreGraphics::CGSize) -> ProjectionTransform { _suiUnimplemented("SwiftUICore.SwiftUICore.effectValue(size:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -5465,9 +5466,6 @@ nonisolated public func body(content: OpacityTransition.Content, phase: Transiti
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
 public static var properties: TransitionProperties { get { _suiUnimplemented("SwiftUICore.OpacityTransition.properties") } }
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition) { _suiUnimplemented("SwiftUICore.OpacityTransition._makeContentTransition(transition:)") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -5481,8 +5479,6 @@ nonisolated public struct OpacityTransition : Transition {
   
   public static let properties: TransitionProperties
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition)
-  @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI17OpacityTransitionV4body7content5phaseQrAA22PlaceholderContentViewVyACG_AA0D5PhaseOtF", 0) __
 }
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -5760,9 +5756,6 @@ nonisolated public func body(content: AsymmetricTransition<Insertion, Removal>.C
     get { _suiUnimplemented("SwiftUICore.AsymmetricTransition.properties") }
   }
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition) { _suiUnimplemented("SwiftUICore.AsymmetricTransition._makeContentTransition(transition:)") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -5780,8 +5773,6 @@ nonisolated public struct AsymmetricTransition<Insertion, Removal> : Transition 
     get
   }
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition)
-  @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI20AsymmetricTransitionV4body7content5phaseQrAA22PlaceholderContentViewVyACyxq_GG_AA0D5PhaseOtF", 0) __<Insertion, Removal>
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6268,10 +6259,6 @@ public struct AutomaticHoverEffect : CustomHoverEffect, ~Swift::Sendable {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func body(content: AutomaticHoverEffect.Content) -> Swift.Never { _suiUnimplemented("SwiftUICore.AutomaticHoverEffect.body(content:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
-    @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
@@ -6283,9 +6270,6 @@ public struct AutomaticHoverEffect : CustomHoverEffect {
   public init()
   public func body(content: AutomaticHoverEffect.Content) -> some CustomHoverEffect
   
-  @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
-    @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI20AutomaticHoverEffectV4body7contentQrAA05EmptydE0V_tF", 0) __
 }
 #endif
 @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
@@ -6309,10 +6293,6 @@ public struct HighlightHoverEffect : CustomHoverEffect, ~Swift::Sendable {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func body(content: HighlightHoverEffect.Content) -> Swift.Never { _suiUnimplemented("SwiftUICore.HighlightHoverEffect.body(content:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
-    @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
@@ -6324,9 +6304,6 @@ public struct HighlightHoverEffect : CustomHoverEffect {
   public init()
   public func body(content: HighlightHoverEffect.Content) -> some CustomHoverEffect
   
-  @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
-    @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI20HighlightHoverEffectV4body7contentQrAA05EmptydE0V_tF", 0) __
 }
 #endif
 @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
@@ -6350,10 +6327,6 @@ public struct LiftHoverEffect : CustomHoverEffect, ~Swift::Sendable {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func body(content: LiftHoverEffect.Content) -> Swift.Never { _suiUnimplemented("SwiftUICore.LiftHoverEffect.body(content:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
-    @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
@@ -6365,9 +6338,6 @@ public struct LiftHoverEffect : CustomHoverEffect {
   public init()
   public func body(content: LiftHoverEffect.Content) -> some CustomHoverEffect
   
-  @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
-    @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI15LiftHoverEffectV4body7contentQrAA05EmptydE0V_tF", 0) __
 }
 #endif
 @available(visionOS 1.0, *)
@@ -6384,6 +6354,8 @@ public protocol DepthAlignmentID {
 @available(tvOS, unavailable)
 extension DepthAlignmentID {
   public static func _combineExplicit(childValue: CoreGraphics::CGFloat, _ n: Swift::Int, into parentValue: inout CoreGraphics::CGFloat?) { _suiUnimplemented("SwiftUICore.SwiftUICore._combineExplicit(childValue:_:into:)") }
+  // port: synthesized witness for DepthAlignmentID (R7); Apple implements it with an internal member
+  public static func defaultValue(in context: ViewDimensions3D) -> CoreGraphics::CGFloat { _suiUnimplemented("SwiftUICore.SwiftUICore.defaultValue(in:)") }
 }
 @available(visionOS 1.0, *)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 1.0)
@@ -6423,7 +6395,6 @@ public static var back: DepthAlignment { get { _suiUnimplemented("SwiftUICore.Sw
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text {
-  @_semantics("swiftui.init_with_localization") public init(_ key: LocalizedStringKey, tableName: Swift::String? = nil, bundle: Foundation::Bundle? = nil, comment: Swift::StaticString? = nil) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:tableName:bundle:comment:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6838,6 +6809,8 @@ extension TextSelectability where Self == EnabledTextSelectability {
   @export(implementation) public static var enabled: EnabledTextSelectability {
     get { .init() }
   }
+  // port: synthesized witness for TextSelectability (R7); Apple implements it with an internal member
+  public static var allowsSelection: Swift::Bool { get { _suiUnimplemented("SwiftUICore.SwiftUICore.allowsSelection") } }
 }
 @available(iOS 15.0, macOS 12.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -6912,8 +6885,6 @@ extension Text {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension LocalizedStringKey.StringInterpolation {
-  @available(iOS 16.0, macOS 13, tvOS 16.0, watchOS 9.0, *)
-  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(_ resource: FoundationShims.LocalizedStringResource) { _suiUnimplemented("SwiftUICore.SwiftUICore.appendInterpolation(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 11.0, tvOS 17.0, watchOS 10.0, *)
@@ -7645,6 +7616,8 @@ public protocol AXChartDescriptorRepresentable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AXChartDescriptorRepresentable {
   public func updateChartDescriptor(_ descriptor: Accessibility::AXChartDescriptor) { _suiUnimplemented("SwiftUICore.SwiftUICore.updateChartDescriptor(_:)") }
+  // port: synthesized witness for AXChartDescriptorRepresentable (R7); Apple implements it with an internal member
+  public func makeChartDescriptor() -> Accessibility::AXChartDescriptor { _suiUnimplemented("SwiftUICore.SwiftUICore.makeChartDescriptor()") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8735,26 +8708,22 @@ public static var quinary: HierarchicalShapeStyle { get { _suiUnimplemented("Swi
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ShapeStyle {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@export(implementation) public var secondary: Swift.Never {
+  @export(implementation) public var secondary: some ShapeStyle {
     get {
         HierarchicalShapeStyleModifier(base: self, level: 1)
     }
   }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@export(implementation) public var tertiary: Swift.Never {
+  @export(implementation) public var tertiary: some ShapeStyle {
     get {
         HierarchicalShapeStyleModifier(base: self, level: 2)
     }
   }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@export(implementation) public var quaternary: Swift.Never {
+  @export(implementation) public var quaternary: some ShapeStyle {
     get {
         HierarchicalShapeStyleModifier(base: self, level: 3)
     }
   }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@export(implementation) public var quinary: Swift.Never {
+  @export(implementation) public var quinary: some ShapeStyle {
     get {
         HierarchicalShapeStyleModifier(base: self, level: 4)
     }
@@ -9945,7 +9914,6 @@ extension View {
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension LocalizedStringKey.StringInterpolation {
-  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(accessibilityName color: Color) { _suiUnimplemented("SwiftUICore.SwiftUICore.appendInterpolation(accessibilityName:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -9991,7 +9959,6 @@ extension Text {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension LocalizedStringKey.StringInterpolation {
-  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(_ image: Image) { _suiUnimplemented("SwiftUICore.SwiftUICore.appendInterpolation(_:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -10029,9 +9996,6 @@ extension Text {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension LocalizedStringKey.StringInterpolation {
-  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(_ date: Foundation::Date, style: Text.DateStyle) { _suiUnimplemented("SwiftUICore.SwiftUICore.appendInterpolation(_:style:)") }
-  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(_ dates: Swift::ClosedRange<Foundation::Date>) { _suiUnimplemented("SwiftUICore.SwiftUICore.appendInterpolation(_:)") }
-  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(_ interval: Foundation::DateInterval) { _suiUnimplemented("SwiftUICore.SwiftUICore.appendInterpolation(_:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -10039,7 +10003,6 @@ extension LocalizedStringKey.StringInterpolation {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension LocalizedStringKey.StringInterpolation {
-  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(timerInterval: Swift::ClosedRange<Foundation::Date>, pauseTime: Foundation::Date? = nil, countsDown: Swift::Bool = true, showsHours: Swift::Bool = true) { _suiUnimplemented("SwiftUICore.SwiftUICore.appendInterpolation(timerInterval:pauseTime:countsDown:showsHours:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension Text.DateStyle : Swift::Equatable {
@@ -11099,6 +11062,8 @@ public struct _IdentifiedViewProxy {
 extension _BenchmarkHost {
   public func viewForIdentifier<I, V>(_ identifier: I, _ type: V.Type) -> V? where I : Swift::Hashable, V : View { _suiUnimplemented("SwiftUICore.SwiftUICore.viewForIdentifier(_:_:)") }
   public func stateForIdentifier<I, S, V>(_ id: I, type stateType: S.Type, in viewType: V.Type) -> Binding<S>? where I : Swift::Hashable, V : View { _suiUnimplemented("SwiftUICore.SwiftUICore.stateForIdentifier(_:type:in:)") }
+  // port: synthesized witness for _BenchmarkHost (R7); Apple implements it with an internal member
+  public func _renderForTest(interval: Swift::Double) { _suiUnimplemented("SwiftUICore.SwiftUICore._renderForTest(interval:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -11167,9 +11132,6 @@ nonisolated public struct SlideTransition : Transition, ~Swift::Sendable {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func body(content: SlideTransition.Content, phase: TransitionPhase) -> Swift.Never { _suiUnimplemented("SwiftUICore.SlideTransition.body(content:phase:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -11181,8 +11143,6 @@ nonisolated public struct SlideTransition : Transition {
   nonisolated public init()
   nonisolated public func body(content: SlideTransition.Content, phase: TransitionPhase) -> some View
   
-  @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI15SlideTransitionV4body7content5phaseQrAA22PlaceholderContentViewVyACG_AA0D5PhaseOtF", 0) __
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -11396,7 +11356,7 @@ extension ShapeStyle {
   public var miterLimit: CoreGraphics::CGFloat
   public var dash: [CoreGraphics::CGFloat]
   public var dashPhase: CoreGraphics::CGFloat
-  public init(lineWidth: CoreGraphics::CGFloat = 1, lineCap: CoreGraphics::CGLineCap = .butt, lineJoin: CoreGraphics::CGLineJoin = .miter, miterLimit: CoreGraphics::CGFloat = 10, dash: [CoreGraphics::CGFloat] = [CGFloat](), dashPhase: CoreGraphics::CGFloat = 0) { _suiUnimplemented("SwiftUICore.StrokeStyle.init(lineWidth:lineCap:lineJoin:miterLimit:dash:dashPhase:)") }
+  public init(lineWidth: CoreGraphics::CGFloat = 1, lineCap: CoreGraphics::CGLineCap = .butt, lineJoin: CoreGraphics::CGLineJoin = .miter, miterLimit: CoreGraphics::CGFloat = 10, dash: [CoreGraphics::CGFloat] = Array<CGFloat>(), dashPhase: CoreGraphics::CGFloat = 0) { _suiUnimplemented("SwiftUICore.StrokeStyle.init(lineWidth:lineCap:lineJoin:miterLimit:dash:dashPhase:)") }
   public static func == (a: StrokeStyle, b: StrokeStyle) -> Swift::Bool { _suiUnimplemented("SwiftUICore.StrokeStyle.==(a:b:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -11897,14 +11857,9 @@ extension View {
 @available(visionOS, unavailable)
 @_Concurrency::MainActor @preconcurrency public struct GlassEffectContainer<Content> : View where Content : View {
   @_Concurrency::MainActor @preconcurrency public init(spacing: CoreGraphics::CGFloat? = nil, @ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUICore.GlassEffectContainer.init(spacing:?:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency::MainActor @preconcurrency public var body: Swift.Never {
+  @_Concurrency::MainActor @preconcurrency public var body: some View {
     get { _suiUnimplemented("SwiftUICore.GlassEffectContainer.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, *)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Font {
@@ -12497,13 +12452,10 @@ extension AttributedTextFormatting {
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Swift::Optional : AttributedTextFormattingDefinition where Wrapped : AttributedTextFormattingDefinition {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-public var body: Swift.Never {
+  public var body: some AttributedTextFormattingDefinition<Wrapped.Scope> {
     get { _suiUnimplemented("SwiftUICore.Swift.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public typealias Body = Swift.Never
+  @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public typealias Scope = Wrapped.Scope
 }
@@ -13053,9 +13005,6 @@ nonisolated public struct OverlayArrangementViewStyle : ArrangementViewStyle, ~S
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: OverlayArrangementViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUICore.OverlayArrangementViewStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(anyAppleOS 27.1, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(anyAppleOS 27.1, *)
@@ -13064,8 +13013,6 @@ nonisolated public struct OverlayArrangementViewStyle : ArrangementViewStyle {
   nonisolated public func axes(_ axes: Axis.Set) -> OverlayArrangementViewStyle
   nonisolated public func makeBody(configuration: OverlayArrangementViewStyle.Configuration) -> some View
   
-  @available(anyAppleOS 27.1, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI27OverlayArrangementViewStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
 }
 #endif
 extension View {
@@ -13730,9 +13677,6 @@ extension Rectangle : InsettableShape {
     @usableFromInline
     internal typealias InsetShape = Rectangle._Inset
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias InsetShape = Swift.Never
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -13780,9 +13724,6 @@ extension RoundedRectangle : InsettableShape {
     @usableFromInline
     internal typealias InsetShape = RoundedRectangle._Inset
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias InsetShape = Swift.Never
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -13825,9 +13766,6 @@ extension UnevenRoundedRectangle : InsettableShape {
     @usableFromInline
     internal typealias InsetShape = UnevenRoundedRectangle._Inset
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias InsetShape = Swift.Never
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -13882,9 +13820,6 @@ extension Capsule : InsettableShape {
     @usableFromInline
     internal typealias InsetShape = Capsule._Inset
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias InsetShape = Swift.Never
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -13930,9 +13865,6 @@ extension Ellipse : InsettableShape {
     @usableFromInline
     internal typealias InsetShape = Ellipse._Inset
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias InsetShape = Swift.Never
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -13978,9 +13910,6 @@ extension Circle : InsettableShape {
     @usableFromInline
     internal typealias InsetShape = Circle._Inset
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias InsetShape = Swift.Never
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14316,6 +14245,8 @@ extension PreferenceKey {
         return _DelayedPreferenceView(transform: transform)
     }
   
+  // port: synthesized witness for PreferenceKey (R7); Apple implements it with an internal member
+  public static func reduce(value: inout Swift.Never, nextValue: () -> Swift.Never) { _suiUnimplemented("SwiftUICore.SwiftUICore.reduce(value:nextValue:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14409,6 +14340,8 @@ extension _Detachable {
   public static var detachedProperties: _DetachableProperties {
     get { _suiUnimplemented("SwiftUICore.SwiftUICore.detachedProperties") }
   }
+  // port: synthesized witness for _Detachable (R7); Apple implements it with an internal member
+  public static func matches<K>(key: K.Type) -> Swift::Bool where K : PreferenceKey { _suiUnimplemented("SwiftUICore.SwiftUICore.matches(key:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14809,9 +14742,6 @@ nonisolated public struct PushTransition : Transition, ~Swift::Sendable {
 nonisolated public func body(content: PushTransition.Content, phase: TransitionPhase) -> Swift.Never { _suiUnimplemented("SwiftUICore.PushTransition.body(content:phase:)") }
   
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition) { _suiUnimplemented("SwiftUICore.PushTransition._makeContentTransition(transition:)") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -14825,8 +14755,6 @@ nonisolated public struct PushTransition : Transition {
   nonisolated public func body(content: PushTransition.Content, phase: TransitionPhase) -> some View
   
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition)
-  @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI14PushTransitionV4body7content5phaseQrAA22PlaceholderContentViewVyACG_AA0D5PhaseOtF", 0) __
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -16316,6 +16244,8 @@ extension TextRenderer {
   @export(implementation) public var displayPadding: EdgeInsets {
     get { EdgeInsets() }
   }
+  // port: synthesized witness for TextRenderer (R7); Apple implements it with an internal member
+  public func draw(layout: Text.Layout, in ctx: inout GraphicsContext) { _suiUnimplemented("SwiftUICore.SwiftUICore.draw(layout:in:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -16993,13 +16923,9 @@ extension View {
 @available(anyAppleOS 27.1, *)
 nonisolated public struct ArrangementView<Primary, Secondary> : View, ~Swift::Sendable where Primary : View, Secondary : View {
   nonisolated public init(@ContentBuilder primary: () -> Primary, @ContentBuilder secondary: () -> Secondary) { _suiUnimplemented("SwiftUICore.ArrangementView.init(?:?:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUICore.ArrangementView.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(anyAppleOS 27.1, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(anyAppleOS 27.1, *)
@@ -17008,8 +16934,6 @@ nonisolated public struct ArrangementView<Primary, Secondary> : View where Prima
   nonisolated public var body: some View {
     get
   }
-  @available(anyAppleOS 27.1, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI15ArrangementViewV4bodyQrvp", 0) __<Primary, Secondary>
 }
 #endif
 @available(anyAppleOS 27.1, *)
@@ -17314,9 +17238,6 @@ extension Transition where Self == SymbolEffectTransition {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
 @_Concurrency::MainActor @preconcurrency public static var properties: TransitionProperties { get { _suiUnimplemented("SwiftUICore.SymbolEffectTransition.properties") } }
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition) { _suiUnimplemented("SwiftUICore.SymbolEffectTransition._makeContentTransition(transition:)") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
@@ -17338,8 +17259,6 @@ extension Transition where Self == SymbolEffectTransition {
   
   @_Concurrency::MainActor @preconcurrency public static let properties: TransitionProperties
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition)
-  @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI22SymbolEffectTransitionV4body7content5phaseQrAA22PlaceholderContentViewVyACG_AA0E5PhaseOtF", 0) __
 }
 #endif
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
@@ -18529,9 +18448,6 @@ extension ContainerRelativeShape : InsettableShape {
     @usableFromInline
     internal typealias InsetShape = ContainerRelativeShape._Inset
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias InsetShape = Swift.Never
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -18754,13 +18670,9 @@ nonisolated(unsafe) public static var shared: _ImpossibleActor { get { _suiUnimp
 nonisolated public struct PhaseAnimator<Phase, Content> : View, ~Swift::Sendable where Phase : Swift::Equatable, Content : View {
   nonisolated public init(_ phases: some Sequence<Phase>, trigger: some Equatable, @ContentBuilder content: @escaping (Phase) -> Content, animation: @escaping (Phase) -> Animation? = { _ in .default }) { _suiUnimplemented("SwiftUICore.PhaseAnimator.init(_:trigger:?:animation:)") }
   nonisolated public init(_ phases: some Sequence<Phase>, @ContentBuilder content: @escaping (Phase) -> Content, animation: @escaping (Phase) -> Animation? = { _ in .default }) { _suiUnimplemented("SwiftUICore.PhaseAnimator.init(_:?:animation:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUICore.PhaseAnimator.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -18774,8 +18686,6 @@ nonisolated public struct PhaseAnimator<Phase, Content> : View where Phase : Swi
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI13PhaseAnimatorV4bodyQrvp", 0) __<Phase, Content>
 }
 #endif
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -19372,9 +19282,6 @@ nonisolated public struct AutomaticArrangementViewStyle : ArrangementViewStyle, 
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: AutomaticArrangementViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUICore.AutomaticArrangementViewStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(anyAppleOS 27.1, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(anyAppleOS 27.1, *)
@@ -19382,8 +19289,6 @@ nonisolated public struct AutomaticArrangementViewStyle : ArrangementViewStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: AutomaticArrangementViewStyle.Configuration) -> some View
   
-  @available(anyAppleOS 27.1, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI29AutomaticArrangementViewStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -21443,6 +21348,8 @@ public struct NamedCoordinateSpace : CoordinateSpaceProtocol, Swift::Equatable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension CoordinateSpaceProtocol where Self == NamedCoordinateSpace {
   public static func named(_ name: some Hashable) -> NamedCoordinateSpace { _suiUnimplemented("SwiftUICore.SwiftUICore.named(_:)") }
+  // port: synthesized witness for CoordinateSpaceProtocol (R7); Apple implements it with an internal member
+  public var coordinateSpace: CoordinateSpace { get { _suiUnimplemented("SwiftUICore.SwiftUICore.coordinateSpace") } }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -21559,13 +21466,9 @@ extension Group {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.2)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.2)
 nonisolated public struct GroupElementsOfContent<Subviews, Content> : View, ~Swift::Sendable where Subviews : View, Content : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUICore.GroupElementsOfContent.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -21578,8 +21481,6 @@ nonisolated public struct GroupElementsOfContent<Subviews, Content> : View where
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI22GroupElementsOfContentV4bodyQrvp", 0) __<Subviews, Content>
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -22619,8 +22520,6 @@ extension ForEach where Data == Swift::Range<Swift::Int>, ID == Swift::Int {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ForEach where Data == Swift::Range<Swift::Int>, ID == Swift::Int, Content : View {
-  @usableFromInline
-  @_semantics("swiftui.requires_constant_range") internal init(_ data: Swift::Range<Swift::Int>, @ContentBuilder content: @escaping (Swift::Int) -> Content) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:?:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -23714,6 +23613,8 @@ extension ShapeView {
             content, style: StrokeStyle(lineWidth: lineWidth),
             antialiased: antialiased)
     }
+  // port: synthesized witness for ShapeView (R7); Apple implements it with an internal member
+  public nonisolated var shape: Swift.Never { get { _suiUnimplemented("SwiftUICore.SwiftUICore.shape") } }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -24225,9 +24126,6 @@ public static var upUp: BlurReplaceTransition.Configuration { get { _suiUnimplem
 @_Concurrency::MainActor @preconcurrency public func body(content: BlurReplaceTransition.Content, phase: TransitionPhase) -> Swift.Never { _suiUnimplemented("SwiftUICore.BlurReplaceTransition.body(content:phase:)") }
   
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition) { _suiUnimplemented("SwiftUICore.BlurReplaceTransition._makeContentTransition(transition:)") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -24246,8 +24144,6 @@ public static var upUp: BlurReplaceTransition.Configuration { get { _suiUnimplem
   @_Concurrency::MainActor @preconcurrency public func body(content: BlurReplaceTransition.Content, phase: TransitionPhase) -> some View
   
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition)
-  @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI21BlurReplaceTransitionV4body7content5phaseQrAA22PlaceholderContentViewVyACG_AA0E5PhaseOtF", 0) __
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -24949,9 +24845,6 @@ nonisolated public struct ScaleTransition : Transition, ~Swift::Sendable {
 nonisolated public func body(content: ScaleTransition.Content, phase: TransitionPhase) -> Swift.Never { _suiUnimplemented("SwiftUICore.ScaleTransition.body(content:phase:)") }
   
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition) { _suiUnimplemented("SwiftUICore.ScaleTransition._makeContentTransition(transition:)") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -24966,8 +24859,6 @@ nonisolated public struct ScaleTransition : Transition {
   nonisolated public func body(content: ScaleTransition.Content, phase: TransitionPhase) -> some View
   
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition)
-  @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI15ScaleTransitionV4body7content5phaseQrAA22PlaceholderContentViewVyACG_AA0D5PhaseOtF", 0) __
 }
 #endif
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -25075,10 +24966,6 @@ nonisolated package struct SafeAreaPaddingModifier : ViewModifier, ~Swift::Senda
 @usableFromInline
   nonisolated package func body(content: SafeAreaPaddingModifier.Content) -> Swift.Never { _suiUnimplemented("SwiftUICore.SafeAreaPaddingModifier.body(content:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  @usableFromInline
-  package typealias Body = Swift.Never
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -25093,9 +24980,6 @@ nonisolated package struct SafeAreaPaddingModifier : ViewModifier {
   @usableFromInline
   nonisolated package func body(content: SafeAreaPaddingModifier.Content) -> some View
   
-  @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  @usableFromInline
-  package typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI23SafeAreaPaddingModifierV4body7contentQrAA05_ViewF8_ContentVyACG_tF", 0) __
 }
 #endif
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -25144,13 +25028,9 @@ extension Group {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.2)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 2.2)
 nonisolated public struct GroupSectionsOfContent<Sections, Content> : View, ~Swift::Sendable where Sections : View, Content : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUICore.GroupSectionsOfContent.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -25163,8 +25043,6 @@ nonisolated public struct GroupSectionsOfContent<Sections, Content> : View where
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI22GroupSectionsOfContentV4bodyQrvp", 0) __<Sections, Content>
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -25871,9 +25749,6 @@ extension TextInputBorderShape : InsettableShape {
     @usableFromInline
     internal typealias InsetShape = TextInputBorderShape._Inset
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(anyAppleOS 27.0, *)
-  public typealias InsetShape = Swift.Never
 }
 @available(anyAppleOS 27.0, *)
 extension Shape where Self == TextInputBorderShape {
@@ -25991,6 +25866,11 @@ extension EventModifiers : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image.ResizingMode : Swift::Equatable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -26003,7 +25883,22 @@ extension Image.ResizingMode : Swift::Hashable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Alignment : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26016,6 +25911,11 @@ extension ScrollPhase : Swift::Hashable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ScrollPhase : Swift::Sendable {}
+@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26034,6 +25934,11 @@ extension TransitionPhase : Swift::Hashable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension TransitionPhase : Swift::Sendable {}
+@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension HorizontalDirection : Swift::Equatable {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -26043,7 +25948,9 @@ extension HorizontalDirection : Swift::RawRepresentable {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension HorizontalDirection : Swift::Sendable {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension HorizontalDirection.Set : Swift::Sendable {}
+@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension VerticalDirection : Swift::Equatable {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -26053,13 +25960,20 @@ extension VerticalDirection : Swift::RawRepresentable {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension VerticalDirection : Swift::Sendable {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension VerticalDirection.Set : Swift::Sendable {}
+@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _OffsetEffect : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 14.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 11.0)
@@ -26072,6 +25986,16 @@ extension _ColorMonochromeEffect._Resolved : Animatable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 14.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 7.0)
 extension _ColorMonochromeEffect._Resolved : ViewModifier {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26101,7 +26025,17 @@ extension Edge : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Edge.Set : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26131,7 +26065,17 @@ extension HorizontalEdge : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension HorizontalEdge.Set : Swift::Sendable {}
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26161,15 +26105,36 @@ extension VerticalEdge : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension VerticalEdge.Set : Swift::Sendable {}
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _FixedSizeLayout : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _FixedSizeLayout : Animatable {}
 extension _FixedSizeLayout : ViewModifier {}
+@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Color.ResolvedHDR : ShapeStyle {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -26178,6 +26143,11 @@ extension Color.ResolvedHDR : ShapeStyle {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _RotationEffect : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26190,7 +26160,22 @@ extension _ForegroundColorModifier : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Namespace.ID : Swift::Sendable {}
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 27.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 27.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26252,7 +26237,17 @@ extension Axis : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Axis.Set : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26276,13 +26271,29 @@ extension _PaddingLayout : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EdgeInsets : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension GraphicsContext.BlendMode : Swift::Sendable {}
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26313,6 +26324,11 @@ extension _ColorMatrixEffect : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _ColorMatrixEffect : Swift::Sendable {}
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26336,6 +26352,11 @@ extension _ContrastEffect : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image.Orientation : Swift::RawRepresentable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -26343,12 +26364,22 @@ extension Image.Orientation : Swift::RawRepresentable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image.Orientation : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension MatchedGeometryProperties : Swift::Sendable {}
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26372,6 +26403,11 @@ extension Font.Weight : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Spacer : View {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -26379,6 +26415,11 @@ extension Spacer : View {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Spacer : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26391,6 +26432,11 @@ extension _TextBaselineRelativeSpacer : View {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _TextBaselineRelativeSpacer : Swift::Sendable {}
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26408,6 +26454,11 @@ extension _HSpacer : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _VSpacer : View {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -26415,6 +26466,11 @@ extension _VSpacer : View {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _VSpacer : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26450,7 +26506,17 @@ extension _BlurEffect : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ProjectionTransform : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26469,6 +26535,11 @@ extension _ColorInvertEffect : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _ColorInvertEffect : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26504,6 +26575,11 @@ extension _ForegroundLayerViewModifier : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _ForegroundLayerColorMatrixEffect : ViewModifier {}
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -26511,8 +26587,14 @@ extension _ForegroundLayerColorMatrixEffect : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _ForegroundLayerColorMatrixEffect : Swift::Sendable {}
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(anyAppleOS 27.1, *)
 extension ReservedRegion.QueryOptions : Swift::Sendable {}
+@available(anyAppleOS 27.1, *)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26536,7 +26618,17 @@ extension _GrayscaleEffect : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _Rotation3DEffect : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 27.0)
@@ -26561,6 +26653,11 @@ extension _OpacityEffect : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _OpacityEffect : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26603,6 +26700,11 @@ extension _BrightnessEffect : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _BrightnessEffect : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26621,12 +26723,22 @@ extension _GeometryGroupEffect : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _GeometryGroupEffect : Swift::Sendable {}
+@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension UnitPoint : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26657,10 +26769,30 @@ extension _SafeAreaIgnoringLayout : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _SafeAreaIgnoringLayout : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 18.4, macOS 15.4, tvOS 18.4, watchOS 11.4, visionOS 2.4, *)
 extension _AlphaThresholdEffect._Resolved : Animatable {}
 @available(iOS 18.4, macOS 15.4, tvOS 18.4, watchOS 11.4, visionOS 2.4, *)
 extension _AlphaThresholdEffect._Resolved : ViewModifier {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26679,12 +26811,18 @@ extension _CompositingGroupEffect : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _CompositingGroupEffect : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(anyAppleOS 27.0, *)
 extension _ConditionalCompositingGroupEffect : Animatable {}
 @available(anyAppleOS 27.0, *)
 extension _ConditionalCompositingGroupEffect : ViewModifier {}
 @available(anyAppleOS 27.0, *)
 extension _ConditionalCompositingGroupEffect : Swift::Sendable {}
+@available(anyAppleOS 27.0, *)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 26.0)
@@ -26703,6 +26841,11 @@ extension _PositionLayout : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 extension _PositionLayout : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 26.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26727,6 +26870,11 @@ extension AccessibilityHeadingLevel : Swift::RawRepresentable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AccessibilityHeadingLevel : Swift::Sendable {}
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26751,6 +26899,11 @@ extension _AccessibilityIgnoresInvertColorsViewModifier : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 27.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
 extension _AccessibilityIgnoresInvertColorsViewModifier : Swift::Sendable {}
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 27.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 27.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 26.0)
@@ -26780,6 +26933,11 @@ extension FillStyle : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension BlendMode : Swift::Equatable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -26804,6 +26962,15 @@ extension Image.Interpolation : Swift::Hashable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 extension _TransformEffect : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 26.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
 @available(watchOS, unavailable)
 extension Shader : ShapeStyle {}
@@ -26818,7 +26985,17 @@ extension GraphicsContext.ClipOptions : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension GraphicsContext.ShadowOptions : Swift::Sendable {}
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26830,19 +27007,39 @@ extension GraphicsContext.BlurOptions : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension GraphicsContext.FilterOptions : Swift::Sendable {}
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension GraphicsContext.GradientOptions : Swift::Sendable {}
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ContentMode : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26861,6 +27058,11 @@ extension _AspectRatioLayout : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _AspectRatioLayout : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26872,7 +27074,17 @@ extension Foundation::AttributeScopes.SwiftUIAttributes.FontAttribute : Swift::S
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Foundation::AttributeScopes.SwiftUIAttributes.ForegroundColorAttribute : Swift::Sendable {}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26884,7 +27096,17 @@ extension Foundation::AttributeScopes.SwiftUIAttributes.BackgroundColorAttribute
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Foundation::AttributeScopes.SwiftUIAttributes.StrikethroughStyleAttribute : Swift::Sendable {}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26896,7 +27118,17 @@ extension Foundation::AttributeScopes.SwiftUIAttributes.UnderlineStyleAttribute 
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Foundation::AttributeScopes.SwiftUIAttributes.KerningAttribute : Swift::Sendable {}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26908,13 +27140,28 @@ extension Foundation::AttributeScopes.SwiftUIAttributes.TrackingAttribute : Swif
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Foundation::AttributeScopes.SwiftUIAttributes.BaselineOffsetAttribute : Swift::Sendable {}
+@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Foundation::AttributeScopes.SwiftUIAttributes.AdaptiveImageGlyphAttribute : Swift::Sendable {}
+@available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26945,6 +27192,11 @@ extension _BackgroundPreferenceModifier : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ProposedViewSize : Swift::Sendable {}
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26990,6 +27242,11 @@ extension UserInterfaceSizeClass : Swift::Hashable {}
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
 @available(visionOS, unavailable)
 extension GlassEffectContainer : Swift::Sendable {}
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27014,6 +27271,16 @@ extension _ForegroundStyleModifier2 : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _ForegroundStyleModifier3 : ViewModifier {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27049,6 +27316,11 @@ extension _LuminanceToAlphaEffect : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _MapGesture : Gesture {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -27056,6 +27328,46 @@ extension _MapGesture : Gesture {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Path.Element : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27079,6 +27391,11 @@ extension _VAlignment : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _AlignmentLayout : Animatable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -27092,6 +27409,11 @@ extension _AlignmentLayout : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _AlignmentLayout : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 27.0)
@@ -27115,13 +27437,28 @@ extension HorizontalAlignment : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension VerticalAlignment : Swift::Sendable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AlignmentKey : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, visionOS 26.0, watchOS 26.0, *)
 extension _TagTraitWritingModifier : ViewModifier {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -27179,6 +27516,7 @@ extension SemanticRequirement : Swift::Equatable {}
 extension SemanticRequirement : Swift::Hashable {}
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension SemanticRequirement : Swift::Sendable {}
+@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27202,6 +27540,11 @@ extension _FrameLayout : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _FlexFrameLayout : Animatable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -27215,6 +27558,11 @@ extension _FlexFrameLayout : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _FlexFrameLayout : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27226,7 +27574,22 @@ extension _TextRendererViewModifier : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text.Layout.DrawingOptions : Swift::Sendable {}
+@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(anyAppleOS 27.1, *)
 extension ArrangementViewStyleConfiguration.Primary : Swift::Sendable {}
 @available(anyAppleOS 27.1, *)
@@ -27244,6 +27607,21 @@ extension _DeviceVariant : Swift::Hashable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EmptyView : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27282,6 +27660,11 @@ extension Prominence : Swift::Hashable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ColorMatrix : Swift::Sendable {}
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27306,30 +27689,55 @@ extension _BackdropEffectPlaceholder : View {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _BackdropEffectPlaceholder : Swift::Sendable {}
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EmptyAnimatableData : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 18.0, macOS 15.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension MeshGradient : View {}
+@available(iOS 18.0, macOS 15.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EmptyModifier : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.2)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.2)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.2)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.2)
 extension Visibility : Swift::Sendable {}
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.2)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.2)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.2)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.2)
 @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 27.0)
@@ -27348,6 +27756,11 @@ extension AccessibilityZoomGestureAction.Direction : Swift::Hashable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 27.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
 extension AccessibilityZoomGestureAction.Direction : Swift::Sendable {}
+@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 27.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 27.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27371,13 +27784,28 @@ extension _SaturationEffect : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension TextAlignment : Swift::Sendable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Angle : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27396,12 +27824,18 @@ extension _SafeAreaRegionsIgnoringLayout : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _SafeAreaRegionsIgnoringLayout : Swift::Sendable {}
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(anyAppleOS 27.0, *)
 extension _AligningSafeAreaRegionsIgnoringLayout2 : Animatable {}
 @available(anyAppleOS 27.0, *)
 extension _AligningSafeAreaRegionsIgnoringLayout2 : ViewModifier {}
 @available(anyAppleOS 27.0, *)
 extension _AligningSafeAreaRegionsIgnoringLayout2 : Swift::Sendable {}
+@available(anyAppleOS 27.0, *)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27420,6 +27854,11 @@ extension RoundedCornerStyle : Swift::Hashable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension RectangleCornerRadii : Swift::Sendable {}
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 26.0)
@@ -27432,6 +27871,11 @@ extension _AllowsHitTestingModifier : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 extension _AllowsHitTestingModifier : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 26.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27493,6 +27937,11 @@ extension _ClipEffect : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SafeAreaRegions : Swift::Sendable {}
+@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27528,7 +27977,17 @@ extension GestureMask : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _ScaleEffect : Swift::Sendable {}
+@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
+@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
+@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
+@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Edge.Corner : Swift::RawRepresentable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)

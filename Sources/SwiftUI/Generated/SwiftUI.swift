@@ -34,6 +34,12 @@
 // `@inlinable` bodies are Apple's real code and are never modified. The
 // `_suiUnimplemented` seam is defined by Sources/SwiftUI/Engine/PortRuntime.swift,
 // which is compiled into this same module.
+import Android
+import Accessibility
+import FoundationNetworking
+import FoundationShims
+import ObjectiveC
+import QuartzCore
 import Combine
 import CoreData
 import CoreFoundation
@@ -61,6 +67,12 @@ import os
   public static func _makeView(modifier: _GraphValue<SwiftUI._HiddenModifier>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._HiddenModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._HiddenModifier._makeViewList(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._HiddenModifier._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._HiddenModifier.body(content:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
@@ -78,6 +90,12 @@ nonisolated public struct _SymmetricallyScaledText : View, ~Swift.Sendable {
   public static func _makeView(view: _GraphValue<SwiftUI._SymmetricallyScaledText>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._SymmetricallyScaledText._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._SymmetricallyScaledText._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._SymmetricallyScaledText._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._SymmetricallyScaledText.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -160,13 +178,15 @@ extension _TestApp {
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_Concurrency.MainActor @preconcurrency public struct Link<Label> : View, ~Swift.Sendable where Label : View {
   @_Concurrency.MainActor @preconcurrency public init(destination: Foundation.URL, @ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUI.Link.init(destination:label:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var body: some View {
     get { _suiUnimplemented("SwiftUI.Link.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Link._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Link._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Link._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -175,8 +195,6 @@ extension _TestApp {
   @_Concurrency.MainActor @preconcurrency public var body: some View {
     get
   }
-  @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI4LinkV4bodyQrvp", 0) __<Label>
 }
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -232,6 +250,12 @@ public struct _IdentifiedViewsKey {
   public static func == (a: SwiftUI._IdentifiedModifier<Identifier>, b: SwiftUI._IdentifiedModifier<Identifier>) -> Swift.Bool { _suiUnimplemented("SwiftUI._IdentifiedModifier.==(a:b:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._IdentifiedModifier._makeViewList(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._IdentifiedModifier._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._IdentifiedModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -719,16 +743,15 @@ nonisolated public func accessibilityLabeledPair<ID>(role: SwiftUI.Accessibility
 @available(visionOS, unavailable)
 nonisolated public struct MenuButton<Label, Content> : View, ~Swift.Sendable where Label : View, Content : View {
   nonisolated public init(label: Label, @ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUI.MenuButton.init(label:content:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.MenuButton.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `Menu` instead.")
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.MenuButton._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.MenuButton._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.MenuButton._viewListCount(inputs:)") }
 }
 #else
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `Menu` instead.")
@@ -740,11 +763,6 @@ nonisolated public struct MenuButton<Label, Content> : View where Label : View, 
   nonisolated public var body: some View {
     get
   }
-  @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `Menu` instead.")
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI10MenuButtonV4bodyQrvp", 0) __<Label, Content>
 }
 #endif
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `Menu` instead.")
@@ -881,16 +899,9 @@ extension UIKit.UISceneSessionActivationRequest {
 @available(visionOS, unavailable)
 nonisolated public struct Settings<Content> : SwiftUI.Scene, ~Swift.Sendable where Content : View {
   nonisolated public init(@ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUI.Settings.init(content:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.Settings.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(macOS 11.0, *)
@@ -902,11 +913,6 @@ nonisolated public struct Settings<Content> : SwiftUI.Scene where Content : View
   nonisolated public var body: some SwiftUI.Scene {
     get
   }
-  @available(macOS 11.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI8SettingsV4bodyQrvp", 0) __<Content>
 }
 #endif
 extension View {
@@ -1017,6 +1023,8 @@ nonisolated public func listStyle<S>(_ style: S) -> Swift.Never where S : SwiftU
   public typealias Body = Swift.Never
   @inlinable @_Concurrency.MainActor @preconcurrency public init() {}
   @_Concurrency.MainActor @preconcurrency public static func _makeWidgetControlConfiguration(control: _GraphValue<SwiftUI.EmptyControlWidgetConfiguration>, inputs: SwiftUI._WidgetInputs) -> SwiftUI._WidgetOutputs { _suiUnimplemented("SwiftUI.EmptyControlWidgetConfiguration._makeWidgetControlConfiguration(control:inputs:)") }
+  // port: synthesized witness for ControlWidgetConfiguration (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.EmptyControlWidgetConfiguration.body") } }
 }
 #else
 @available(iOS 18.0, macOS 26.0, watchOS 26.0, *)
@@ -1153,6 +1161,8 @@ extension _ConditionalContent : SwiftUI.TableColumnContent where TrueContent : S
   @available(tvOS, unavailable, introduced: 13.0)
   @available(watchOS, unavailable, introduced: 6.0)
   public typealias TableColumnBody = Swift.Never
+  // port: synthesized witness for TableColumnContent (R7); Apple implements it with an internal member
+  public nonisolated var tableColumnBody: Swift.Never { get { _suiUnimplemented("SwiftUI._ConditionalContent.tableColumnBody") } }
 }
 @available(iOS 17.4, macOS 14.4, visionOS 1.1, *)
 @available(tvOS, unavailable)
@@ -1167,6 +1177,8 @@ extension Swift.Optional : SwiftUI.TableColumnContent where Wrapped : SwiftUI.Ta
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias TableColumnBody = Swift.Never
+  // port: synthesized witness for TableColumnContent (R7); Apple implements it with an internal member
+  public nonisolated var tableColumnBody: Swift.Never { get { _suiUnimplemented("SwiftUI.Optional.tableColumnBody") } }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension View {
@@ -1360,20 +1372,6 @@ public func _body(configuration: SwiftUI._NavigationViewStyleConfiguration) -> S
   @available(watchOS, unavailable)
   public func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUI.ColumnNavigationViewStyle._columnBasedBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS, introduced: 12.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView")
-  @available(iOS, introduced: 15.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView")
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView")
-  public typealias _Body = Swift.Never
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS, introduced: 12.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView")
-  @available(iOS, introduced: 15.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView")
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView")
-  public typealias _Body2 = Swift.Never
 }
 #else
 @available(iOS, introduced: 15.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView")
@@ -1391,18 +1389,6 @@ public struct ColumnNavigationViewStyle : SwiftUI.NavigationViewStyle {
   @available(watchOS, unavailable)
   public func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> some View
   
-  @available(macOS, introduced: 12.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView")
-  @available(iOS, introduced: 15.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView")
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView")
-  public typealias _Body = @_opaqueReturnTypeOf("$s7SwiftUI25ColumnNavigationViewStyleV5_body13configurationQrAA01_deF13ConfigurationV_tF", 0) __
-  @available(macOS, introduced: 12.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView")
-  @available(iOS, introduced: 15.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView")
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView")
-  public typealias _Body2 = @_opaqueReturnTypeOf("$s7SwiftUI25ColumnNavigationViewStyleV16_columnBasedBody13configurationQrAA01_deF13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -1427,9 +1413,6 @@ nonisolated public struct DefaultButtonStyle : SwiftUI.PrimitiveButtonStyle, ~Sw
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.DefaultButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultButtonStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -1437,8 +1420,6 @@ nonisolated public struct DefaultButtonStyle : SwiftUI.PrimitiveButtonStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.DefaultButtonStyle.Configuration) -> some View
   
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI18DefaultButtonStyleV8makeBody13configurationQrAA09PrimitivedE13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 13.0, watchOS 6.0, *)
@@ -1599,10 +1580,6 @@ nonisolated public struct ButtonToggleStyle : SwiftUI.ToggleStyle, ~Swift.Sendab
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.ButtonToggleStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.ButtonToggleStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 12.0, iOS 15.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 15.0, macOS 12.0, watchOS 9.0, *)
@@ -1611,9 +1588,6 @@ nonisolated public struct ButtonToggleStyle : SwiftUI.ToggleStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.ButtonToggleStyle.Configuration) -> some View
   
-  @available(macOS 12.0, iOS 15.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI17ButtonToggleStyleV8makeBody13configurationQrAA0dE13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -1626,6 +1600,12 @@ nonisolated public struct Table<Value, Rows, Columns> : View, ~Swift.Sendable wh
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Table._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Table._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.Table.body") } }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -1721,15 +1701,9 @@ extension SwiftUI.Table {
 @available(watchOS, unavailable)
 nonisolated public struct TableOutlineGroupContent<Data> : SwiftUI.TableRowContent, ~Swift.Sendable where Data : Swift.RandomAccessCollection, Data.Element : Swift.Identifiable {
   public typealias TableRowValue = Data.Element
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var tableRowBody: Swift.Never {
+  nonisolated public var tableRowBody: some SwiftUI.TableRowContent {
     get { _suiUnimplemented("SwiftUI.TableOutlineGroupContent.tableRowBody") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias TableRowBody = Swift.Never
 }
 #else
 @available(iOS 17.0, macOS 14.0, *)
@@ -1740,10 +1714,6 @@ nonisolated public struct TableOutlineGroupContent<Data> : SwiftUI.TableRowConte
   nonisolated public var tableRowBody: some SwiftUI.TableRowContent {
     get
   }
-  @available(macOS 14.0, iOS 17.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias TableRowBody = @_opaqueReturnTypeOf("$s7SwiftUI24TableOutlineGroupContentV12tableRowBodyQrvp", 0) __<Data>
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -1752,15 +1722,9 @@ nonisolated public struct TableOutlineGroupContent<Data> : SwiftUI.TableRowConte
 @available(watchOS, unavailable)
 nonisolated public struct TableForEachContent<Data> : SwiftUI.TableRowContent, ~Swift.Sendable where Data : Swift.RandomAccessCollection, Data.Element : Swift.Identifiable {
   public typealias TableRowValue = Data.Element
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var tableRowBody: Swift.Never {
+  nonisolated public var tableRowBody: some SwiftUI.TableRowContent {
     get { _suiUnimplemented("SwiftUI.TableForEachContent.tableRowBody") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 12.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias TableRowBody = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -1771,10 +1735,6 @@ nonisolated public struct TableForEachContent<Data> : SwiftUI.TableRowContent wh
   nonisolated public var tableRowBody: some SwiftUI.TableRowContent {
     get
   }
-  @available(macOS 12.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias TableRowBody = @_opaqueReturnTypeOf("$s7SwiftUI19TableForEachContentV12tableRowBodyQrvp", 0) __<Data>
 }
 #endif
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
@@ -1795,10 +1755,6 @@ nonisolated public struct GlassButtonStyle : SwiftUI.PrimitiveButtonStyle, ~Swif
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.GlassButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.GlassButtonStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, *)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
@@ -1809,21 +1765,20 @@ nonisolated public struct GlassButtonStyle : SwiftUI.PrimitiveButtonStyle {
   nonisolated public init(_ glass: Glass)
   nonisolated public func makeBody(configuration: SwiftUI.GlassButtonStyle.Configuration) -> some View
   
-  @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, *)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI16GlassButtonStyleV8makeBody13configurationQrAA09PrimitivedE13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 nonisolated public struct DefaultDateProgressLabel : View, ~Swift.Sendable {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DefaultDateProgressLabel.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultDateProgressLabel._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultDateProgressLabel._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultDateProgressLabel._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -1831,8 +1786,6 @@ nonisolated public struct DefaultDateProgressLabel : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI24DefaultDateProgressLabelV4bodyQrvp", 0) __
 }
 #endif
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -1860,9 +1813,6 @@ nonisolated public struct DefaultLabelStyle : SwiftUI.LabelStyle, ~Swift.Sendabl
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.DefaultLabelStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultLabelStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -1870,8 +1820,6 @@ nonisolated public struct DefaultLabelStyle : SwiftUI.LabelStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.DefaultLabelStyle.Configuration) -> some View
   
-  @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI17DefaultLabelStyleV8makeBody13configurationQrAA0dE13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -2054,9 +2002,6 @@ nonisolated public struct BorderlessButtonStyle : SwiftUI.PrimitiveButtonStyle, 
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.BorderlessButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderlessButtonStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 17.0, watchOS 8.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 17.0, watchOS 8.0, *)
@@ -2064,8 +2009,6 @@ nonisolated public struct BorderlessButtonStyle : SwiftUI.PrimitiveButtonStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.BorderlessButtonStyle.Configuration) -> some View
   
-  @available(macOS 10.15, iOS 13.0, tvOS 17.0, watchOS 8.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI21BorderlessButtonStyleV8makeBody13configurationQrAA09PrimitivedE13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -2393,6 +2336,12 @@ nonisolated public struct _ScrollableLayoutView<Data, Layout> : View, ~Swift.Sen
   public static func _makeView(view: _GraphValue<SwiftUI._ScrollableLayoutView<Data, Layout>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._ScrollableLayoutView._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._ScrollableLayoutView._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._ScrollableLayoutView._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._ScrollableLayoutView.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -2421,16 +2370,9 @@ extension SwiftUI._ScrollableLayoutView : SwiftUI._ScrollableContentProvider {
 nonisolated public struct MenuBarExtra<Label, Content> : SwiftUI.Scene, ~Swift.Sendable where Label : View, Content : View {
   nonisolated public init(isInserted: Binding<Swift.Bool>, @ContentBuilder content: () -> Content, @ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUI.MenuBarExtra.init(isInserted:content:label:)") }
   nonisolated public init(@ContentBuilder content: () -> Content, @ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUI.MenuBarExtra.init(content:label:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.MenuBarExtra.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(macOS 13.0, *)
@@ -2443,11 +2385,6 @@ nonisolated public struct MenuBarExtra<Label, Content> : SwiftUI.Scene where Lab
   nonisolated public var body: some SwiftUI.Scene {
     get
   }
-  @available(macOS 13.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI12MenuBarExtraV4bodyQrvp", 0) __<Label, Content>
 }
 #endif
 @available(macOS 13.0, *)
@@ -2638,9 +2575,6 @@ extension SwiftUI.NavigationSplitViewStyle where Self == SwiftUI.BalancedNavigat
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.BalancedNavigationSplitViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BalancedNavigationSplitViewStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -2648,8 +2582,6 @@ extension SwiftUI.NavigationSplitViewStyle where Self == SwiftUI.BalancedNavigat
   @_Concurrency.MainActor @preconcurrency public init()
   @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.BalancedNavigationSplitViewStyle.Configuration) -> some View
   
-  @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI32BalancedNavigationSplitViewStyleV8makeBody13configurationQrAA0defG13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -2665,9 +2597,6 @@ nonisolated public struct ColumnsFormStyle : SwiftUI.FormStyle, ~Swift.Sendable 
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.ColumnsFormStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.ColumnsFormStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -2675,8 +2604,6 @@ nonisolated public struct ColumnsFormStyle : SwiftUI.FormStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.ColumnsFormStyle.Configuration) -> some View
   
-  @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI16ColumnsFormStyleV8makeBody13configurationQrAA0dE13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 15.0, macOS 12.0, *)
@@ -2728,14 +2655,16 @@ public struct DefaultTextFieldStyle : SwiftUI.TextFieldStyle, ~Swift.Sendable {
   public init() { _suiUnimplemented("SwiftUI.DefaultTextFieldStyle.init()") }
   public func _body(configuration: SwiftUI.TextField<SwiftUI.DefaultTextFieldStyle._Label>) -> SwiftUI.DefaultTextFieldStyle._Body { _suiUnimplemented("SwiftUI.DefaultTextFieldStyle._body(configuration:)") }
   @_Concurrency.MainActor @preconcurrency public struct _Body : View, ~Swift.Sendable {
-        // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+    @_Concurrency.MainActor @preconcurrency public var body: some View {
       get { _suiUnimplemented("SwiftUI.DefaultTextFieldStyle._Body.body") }
     }
-        // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-    public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultTextFieldStyle._Body._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultTextFieldStyle._Body._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultTextFieldStyle._Body._viewListCount(inputs:)") }
+}
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -2746,8 +2675,6 @@ public struct DefaultTextFieldStyle : SwiftUI.TextFieldStyle {
     @_Concurrency.MainActor @preconcurrency public var body: some View {
       get
     }
-    @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-    public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI21DefaultTextFieldStyleV5_BodyV4bodyQrvp", 0) __
   }
 }
 #endif
@@ -2802,13 +2729,9 @@ nonisolated public struct WindowGroup<Content> : SwiftUI.Scene, ~Swift.Sendable 
   @available(watchOS, introduced: 7.0, deprecated: 11.0, renamed: "init(_:makeContent:)", message: "Use the initializer which takes an escaping content builder instead.")
   @available(visionOS, introduced: 1.0, deprecated: 2.0, renamed: "init(_:makeContent:)", message: "Use the initializer which takes an escaping content builder instead.")
   @_disfavoredOverload nonisolated public init<S>(_ title: S, @ContentBuilder content: () -> Content) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.WindowGroup.init(_:content:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.WindowGroup.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -2864,8 +2787,6 @@ nonisolated public struct WindowGroup<Content> : SwiftUI.Scene where Content : V
   nonisolated public var body: some SwiftUI.Scene {
     get
   }
-  @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI11WindowGroupV4bodyQrvp", 0) __<Content>
 }
 #endif
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, visionOS 26.0, *)
@@ -3146,6 +3067,8 @@ extension Gesture {
   public static func _makeGesture(gesture: _GraphValue<SwiftUI.SequenceGesture<First, Second>>, inputs: _GestureInputs) -> _GestureOutputs<SwiftUI.SequenceGesture<First, Second>.Value> { _suiUnimplemented("SwiftUI.SequenceGesture._makeGesture(gesture:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.SequenceGesture.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -3227,6 +3150,14 @@ extension SwiftUI.PreviewModifier where Self.Context == () {
 nonisolated public struct PreviewModifierContent : View, ~Swift.Sendable {
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.PreviewModifierContent._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.PreviewModifierContent._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.PreviewModifierContent._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.PreviewModifierContent.body") } }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -3343,16 +3274,15 @@ extension View {
 @available(visionOS, unavailable)
 nonisolated public struct WindowVisibilityToggle<Label> : View, ~Swift.Sendable where Label : View {
   nonisolated public init(windowID: Swift.String) where Label == SwiftUI.DefaultWindowVisibilityToggleLabel { _suiUnimplemented("SwiftUI.WindowVisibilityToggle.init(windowID:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.WindowVisibilityToggle.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 15.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.WindowVisibilityToggle._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.WindowVisibilityToggle._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.WindowVisibilityToggle._viewListCount(inputs:)") }
 }
 #else
 @available(macOS 15.0, *)
@@ -3364,11 +3294,6 @@ nonisolated public struct WindowVisibilityToggle<Label> : View where Label : Vie
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 15.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI22WindowVisibilityToggleV4bodyQrvp", 0) __<Label>
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -3377,16 +3302,15 @@ nonisolated public struct WindowVisibilityToggle<Label> : View where Label : Vie
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 nonisolated public struct DefaultWindowVisibilityToggleLabel : View, ~Swift.Sendable {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DefaultWindowVisibilityToggleLabel.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 15.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultWindowVisibilityToggleLabel._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultWindowVisibilityToggleLabel._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultWindowVisibilityToggleLabel._viewListCount(inputs:)") }
 }
 #else
 @available(macOS 15.0, *)
@@ -3397,11 +3321,6 @@ nonisolated public struct DefaultWindowVisibilityToggleLabel : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 15.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI34DefaultWindowVisibilityToggleLabelV4bodyQrvp", 0) __
 }
 #endif
 @available(watchOS 7.0, *)
@@ -3480,13 +3399,15 @@ nonisolated public struct TabView<SelectionValue, Content> : View, ~Swift.Sendab
   nonisolated public init(selection: Binding<SelectionValue>?, @ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUI.TabView.init(selection:content:)") }
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   nonisolated public init<C>(selection: Binding<SelectionValue>, @SwiftUI.TabContentBuilder<SelectionValue> content: () -> C) where Content == SwiftUI.TabContentBuilder<SelectionValue>.Content<C>, C : SwiftUI.TabContent { _suiUnimplemented("SwiftUI.TabView.init(selection:?:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.TabView.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.TabView._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.TabView._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.TabView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
@@ -3501,8 +3422,6 @@ nonisolated public struct TabView<SelectionValue, Content> : View where Selectio
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI7TabViewV4bodyQrvp", 0) __<SelectionValue, Content>
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
@@ -3528,6 +3447,14 @@ extension View {
   public static func _makeInputs(modifier: _GraphValue<SwiftUI._SymbolEffectsRemovedModifier>, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUI._SymbolEffectsRemovedModifier._makeInputs(modifier:inputs:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(modifier: _GraphValue<Self>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._SymbolEffectsRemovedModifier._makeView(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._SymbolEffectsRemovedModifier._makeViewList(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._SymbolEffectsRemovedModifier._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._SymbolEffectsRemovedModifier.body(content:)") }
 }
 extension Subview {
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -3652,11 +3579,6 @@ extension SwiftUI.DisclosureGroupStyle where Self == SwiftUI.AutomaticDisclosure
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AutomaticDisclosureGroupStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AutomaticDisclosureGroupStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, *)
@@ -3666,10 +3588,6 @@ extension SwiftUI.DisclosureGroupStyle where Self == SwiftUI.AutomaticDisclosure
   @_Concurrency.MainActor @preconcurrency public init()
   @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AutomaticDisclosureGroupStyle.Configuration) -> some View
   
-  @available(macOS 13.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI29AutomaticDisclosureGroupStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -3788,6 +3706,12 @@ nonisolated public struct _TouchBarModifier<Content> : ViewModifier, ~Swift.Send
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._TouchBarModifier._makeViewList(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._TouchBarModifier._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._TouchBarModifier.body(content:)") }
 }
 #else
 @available(macOS 10.15, *)
@@ -3902,6 +3826,8 @@ extension ModifiedContent where Modifier == SwiftUI.AccessibilityAttachmentModif
   public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift.Int? { _suiUnimplemented("SwiftUI.SubscriptionView._viewListCount(inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.SubscriptionView.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -3944,12 +3870,28 @@ public struct MenuStyleConfiguration : ~Swift.Sendable {
     @available(macOS 11.0, iOS 14.0, tvOS 17.0, *)
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Label._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Label._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Label._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Label.body") } }
+}
   @_Concurrency.MainActor @preconcurrency public struct Content : View, ~Swift.Sendable {
     @available(macOS 11.0, iOS 14.0, tvOS 17.0, *)
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Content._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Content._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Content._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Content.body") } }
+}
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 17.0, *)
@@ -4012,6 +3954,8 @@ nonisolated public struct ToolbarItemGroup<Content> : SwiftUI.ToolbarContent, ~S
   public static func _makeContent(content: _GraphValue<SwiftUI.ToolbarItemGroup<Content>>, inputs: _GraphInputs, resolved: inout SwiftUI._ToolbarItemList) { _suiUnimplemented("SwiftUI.ToolbarItemGroup._makeContent(content:inputs:resolved:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ToolbarContent (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ToolbarItemGroup.body") } }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -4031,13 +3975,15 @@ extension SwiftUI.ToolbarItemGroup {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 nonisolated public struct LabeledToolbarItemGroupContent<Content, Label> : View, ~Swift.Sendable where Content : View, Label : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.LabeledToolbarItemGroupContent.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LabeledToolbarItemGroupContent._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LabeledToolbarItemGroupContent._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LabeledToolbarItemGroupContent._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -4045,8 +3991,6 @@ nonisolated public struct LabeledToolbarItemGroupContent<Content, Label> : View 
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI30LabeledToolbarItemGroupContentV4bodyQrvp", 0) __<Content, Label>
 }
 #endif
 @available(visionOS 2.0, *)
@@ -4080,6 +4024,12 @@ extension SwiftUI.Scene {
   public static func == (a: SwiftUI._FlipForRTLEffect, b: SwiftUI._FlipForRTLEffect) -> Swift.Bool { _suiUnimplemented("SwiftUI._FlipForRTLEffect.==(a:b:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._FlipForRTLEffect._makeViewList(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._FlipForRTLEffect._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._FlipForRTLEffect.body(content:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
@@ -4218,15 +4168,15 @@ nonisolated public struct TextEditor : View, ~Swift.Sendable {
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   nonisolated public init(text: Binding<Foundation.AttributedString>, selection: Binding<SwiftUI.AttributedTextSelection>? = nil) { _suiUnimplemented("SwiftUI.TextEditor.init(text:selection:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.TextEditor.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.TextEditor._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.TextEditor._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.TextEditor._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -4243,10 +4193,6 @@ nonisolated public struct TextEditor : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI10TextEditorV4bodyQrvp", 0) __
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -4261,9 +4207,17 @@ public struct ToggleStyleConfiguration : ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public struct Label : View, ~Swift.Sendable {
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ToggleStyleConfiguration.Label._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ToggleStyleConfiguration.Label._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ToggleStyleConfiguration.Label._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ToggleStyleConfiguration.Label.body") } }
+}
   public let label: SwiftUI.ToggleStyleConfiguration.Label
-public var isOn: Swift.Bool {
+    public var isOn: Swift.Bool {
     get { _suiUnimplemented("SwiftUI.ToggleStyleConfiguration.isOn") }
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     nonmutating set { _suiUnimplemented("SwiftUI.ToggleStyleConfiguration.isOn") }
@@ -4283,12 +4237,15 @@ public struct ToggleStyleConfiguration {
     public typealias Body = Swift.Never
   }
   public let label: SwiftUI.ToggleStyleConfiguration.Label
-public var isOn: Swift.Bool {
+    public var isOn: Swift.Bool {
     get
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     nonmutating set
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     nonmutating _modify
+  }
+  public var $isOn: Binding<Swift.Bool> {
+    get
   }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   public var isMixed: Swift.Bool
@@ -4306,13 +4263,15 @@ extension SwiftUI._ScrollableContentProvider {
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 nonisolated public struct _ScrollViewRoot<P> : View where P : SwiftUI._ScrollableContentProvider {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI._ScrollViewRoot.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._ScrollViewRoot._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._ScrollViewRoot._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._ScrollViewRoot._viewListCount(inputs:)") }
 }
 @available(macOS, introduced: 11.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.bordered).")
 @available(tvOS, unavailable)
@@ -4333,12 +4292,6 @@ nonisolated public struct BorderedButtonMenuStyle : SwiftUI.MenuStyle, ~Swift.Se
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.BorderedButtonMenuStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderedButtonMenuStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS, introduced: 11.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.bordered).")
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(macOS, introduced: 11.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.bordered).")
@@ -4349,24 +4302,15 @@ nonisolated public struct BorderedButtonMenuStyle : SwiftUI.MenuStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.BorderedButtonMenuStyle.Configuration) -> some View
   
-  @available(macOS, introduced: 11.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.bordered).")
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI23BorderedButtonMenuStyleV8makeBody13configurationQrAA0eF13ConfigurationV_tF", 0) __
 }
 #endif
 extension AttributedTextFormatting {
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public struct Transferable : CoreTransferable.Transferable, Swift.Sendable {
     public init(text: Foundation.AttributedString, in environment: EnvironmentValues) { _suiUnimplemented("SwiftUI.AttributedTextFormatting.Transferable.init(text:in:)") }
-        // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-public static var transferRepresentation: Swift.Never {
+    public static var transferRepresentation: some CoreTransferable.TransferRepresentation {
       get { _suiUnimplemented("SwiftUI.AttributedTextFormatting.Transferable.transferRepresentation") }
     }
-        // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-    public typealias Representation = Swift.Never
   }
 }
 extension Foundation.AttributedString {
@@ -4495,15 +4439,15 @@ extension SwiftUI.OutlineGroup where Parent : View, Parent == Leaf, Subgroup == 
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.OutlineGroup : View where Parent : View, Leaf : View, Subgroup : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var body: some View {
     get { _suiUnimplemented("SwiftUI.OutlineGroup.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.OutlineGroup._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.OutlineGroup._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.OutlineGroup._viewListCount(inputs:)") }
 }
 @available(iOS 15.0, macOS 12.0, *)
 @available(tvOS, unavailable)
@@ -4528,6 +4472,14 @@ nonisolated public struct OutlineSubgroupChildren : View, ~Swift.Sendable {
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.OutlineSubgroupChildren._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.OutlineSubgroupChildren._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.OutlineSubgroupChildren._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.OutlineSubgroupChildren.body") } }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -4563,6 +4515,8 @@ nonisolated public struct TableColumn<RowValue, Sort, Content, Label> : SwiftUI.
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias TableColumnBody = Swift.Never
+  // port: synthesized witness for TableColumnContent (R7); Apple implements it with an internal member
+  public nonisolated var tableColumnBody: Swift.Never { get { _suiUnimplemented("SwiftUI.TableColumn.tableColumnBody") } }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -4665,10 +4619,6 @@ nonisolated public struct GlassProminentButtonStyle : SwiftUI.PrimitiveButtonSty
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.GlassProminentButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.GlassProminentButtonStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, *)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
@@ -4677,9 +4627,6 @@ nonisolated public struct GlassProminentButtonStyle : SwiftUI.PrimitiveButtonSty
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.GlassProminentButtonStyle.Configuration) -> some View
   
-  @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, *)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI25GlassProminentButtonStyleV8makeBody13configurationQrAA09PrimitiveeF13ConfigurationV_tF", 0) __
 }
 #endif
 extension View {
@@ -4755,15 +4702,9 @@ extension SwiftUI.DynamicTableRowContent {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct ItemProviderTableRowModifier : SwiftUI._TableRowContentModifier, ~Swift.Sendable {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get { _suiUnimplemented("SwiftUI.ItemProviderTableRowModifier.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 12.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -4773,10 +4714,6 @@ extension SwiftUI.DynamicTableRowContent {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get
   }
-  @available(macOS 12.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI28ItemProviderTableRowModifierV4bodyQrvp", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -4784,15 +4721,9 @@ extension SwiftUI.DynamicTableRowContent {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct OnInsertTableRowModifier : SwiftUI._TableRowContentModifier, ~Swift.Sendable {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get { _suiUnimplemented("SwiftUI.OnInsertTableRowModifier.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 12.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -4802,10 +4733,6 @@ extension SwiftUI.DynamicTableRowContent {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get
   }
-  @available(macOS 12.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI24OnInsertTableRowModifierV4bodyQrvp", 0) __
 }
 #endif
 @available(iOS 26.0, tvOS 27.0, visionOS 26.0, *)
@@ -4898,6 +4825,8 @@ public struct TextInputAutocapitalization : Swift.Sendable {
   @available(macOS 10.15, iOS 13.0, watchOS 6.0, *)
   @available(tvOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.DragGesture.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, *)
@@ -5013,6 +4942,14 @@ extension Observation.Observable {
   public var projectedValue: SwiftUI.GestureState<Value> {
     get { _suiUnimplemented("SwiftUI.GestureState.projectedValue") }
   }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public static func _makeProperty<V>(in buffer: inout _DynamicPropertyBuffer, container: _GraphValue<V>, fieldOffset: Swift::Int, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUI.GestureState._makeProperty(in:container:fieldOffset:inputs:)") }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public static var _propertyBehaviors: Swift::UInt32 { get { _suiUnimplemented("SwiftUI.GestureState._propertyBehaviors") } }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public static var _propertyStorageSize: Swift::Int? { get { _suiUnimplemented("SwiftUI.GestureState._propertyStorageSize") } }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public mutating func update() { _suiUnimplemented("SwiftUI.GestureState.update()") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.GestureState : @unchecked Swift.Sendable where Value : Swift.Sendable {
@@ -5065,14 +5002,15 @@ extension Gesture {
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, *)
 @available(tvOS, unavailable)
 nonisolated public struct Slider<Label, ValueLabel> : View, ~Swift.Sendable where Label : View, ValueLabel : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Slider.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, watchOS 6.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Slider._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Slider._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Slider._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, *)
@@ -5081,9 +5019,6 @@ nonisolated public struct Slider<Label, ValueLabel> : View where Label : View, V
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 13.0, watchOS 6.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI6SliderV4bodyQrvp", 0) __<Label, ValueLabel>
 }
 #endif
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, *)
@@ -5263,13 +5198,15 @@ public struct DefaultWindowToolbarStyle : SwiftUI.WindowToolbarStyle {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 nonisolated public struct ProgressView<Label, CurrentValueLabel> : View, ~Swift.Sendable where Label : View, CurrentValueLabel : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.ProgressView.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ProgressView._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ProgressView._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ProgressView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -5277,8 +5214,6 @@ nonisolated public struct ProgressView<Label, CurrentValueLabel> : View where La
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI12ProgressViewV4bodyQrvp", 0) __<Label, CurrentValueLabel>
 }
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -5328,13 +5263,15 @@ public struct LabeledContent<Label, Content> {
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.LabeledContent : View where Label : View, Content : View {
   nonisolated public init(@ContentBuilder content: () -> Content, @ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUI.LabeledContent.init(content:label:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var body: some View {
     get { _suiUnimplemented("SwiftUI.LabeledContent.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LabeledContent._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LabeledContent._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LabeledContent._viewListCount(inputs:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.LabeledContent where Label == Text, Content : View {
@@ -5363,14 +5300,10 @@ extension SwiftUI.LabeledContent where Label == SwiftUI.LabeledContentStyleConfi
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension Color : CoreTransferable.Transferable {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  public static var transferRepresentation: Swift.Never {
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  public static var transferRepresentation: some CoreTransferable.TransferRepresentation {
     get { _suiUnimplemented("SwiftUI.Color.transferRepresentation") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Representation = Swift.Never
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension View {
@@ -5407,6 +5340,8 @@ public struct _IndexViewStyleConfiguration {
   @available(macOS 11.0, iOS 14.0, watchOS 9.0, visionOS 1.0, *)
   @available(tvOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for WidgetConfiguration (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.EmptyWidgetConfiguration.body") } }
 }
 @available(iOS 16.0, macOS 13.0, *)
 @available(tvOS, unavailable)
@@ -5430,6 +5365,8 @@ extension SwiftUI.Section : SwiftUI.TableRowContent where Parent : SwiftUI.Table
     }
   @_disfavoredOverload nonisolated public init<V, S>(_ title: S, @SwiftUI.TableRowBuilder<V> content: () -> Content) where Parent == SwiftUI.TableHeaderRowContent<V, Text>, Footer == SwiftUI.EmptyTableRowContent<V>, V == Content.TableRowValue, S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.Section.init(_:?:)") }
   @_disfavoredOverload nonisolated public init<V>(@SwiftUI.TableRowBuilder<V> content: () -> Content) where Parent == SwiftUI.EmptyTableRowContent<V>, Footer == SwiftUI.EmptyTableRowContent<V>, V == Content.TableRowValue { _suiUnimplemented("SwiftUI.Section.init(?:)") }
+  // port: synthesized witness for TableRowContent (R7); Apple implements it with an internal member
+  public var tableRowBody: Swift.Never { get { _suiUnimplemented("SwiftUI.Section.tableRowBody") } }
 }
 @available(iOS 17.0, macOS 14.0, visionOS 1.0, *)
 @available(tvOS, unavailable)
@@ -5479,19 +5416,13 @@ nonisolated public struct EmptyTableRowContent<Value> where Value : Swift.Identi
 @available(watchOS, unavailable)
 nonisolated public struct TableHeaderRowContent<Value, Content> : SwiftUI.TableRowContent, ~Swift.Sendable where Value : Swift.Identifiable, Content : View {
   public typealias TableRowValue = Value
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var tableRowBody: Swift.Never {
+  nonisolated public var tableRowBody: some SwiftUI.TableRowContent {
     get { _suiUnimplemented("SwiftUI.TableHeaderRowContent.tableRowBody") }
   }
   @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public static func _containsOutlineSymbol(inputs: SwiftUI._TableRowInputs) -> Swift.Bool { _suiUnimplemented("SwiftUI.TableHeaderRowContent._containsOutlineSymbol(inputs:)") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias TableRowBody = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, *)
@@ -5506,10 +5437,6 @@ nonisolated public struct TableHeaderRowContent<Value, Content> : SwiftUI.TableR
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public static func _containsOutlineSymbol(inputs: SwiftUI._TableRowInputs) -> Swift.Bool
-  @available(macOS 13.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias TableRowBody = @_opaqueReturnTypeOf("$s7SwiftUI21TableHeaderRowContentV05tableE4BodyQrvp", 0) __<Value, Content>
 }
 #endif
 extension View {
@@ -5553,6 +5480,10 @@ extension ShapeStyle where Self == SwiftUI.PlaceholderTextShapeStyle {
   public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUI.PlaceholderTextShapeStyle._apply(to:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift.Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public static func _makeView<S>(view: _GraphValue<_ShapeView<S, Self>>, inputs: _ViewInputs) -> _ViewOutputs where S : Shape { _suiUnimplemented("SwiftUI.PlaceholderTextShapeStyle._makeView(view:inputs:)") }
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift.Never { _suiUnimplemented("SwiftUI.PlaceholderTextShapeStyle.resolve(in:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @preconcurrency @_Concurrency.MainActor public protocol TabViewStyle {
@@ -5690,16 +5621,32 @@ public struct DisclosureGroupStyleConfiguration : ~Swift.Sendable {
     @available(tvOS, unavailable)
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Label._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Label._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Label._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Label.body") } }
+}
   public let label: SwiftUI.DisclosureGroupStyleConfiguration.Label
   @_Concurrency.MainActor @preconcurrency public struct Content : View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, *)
     @available(tvOS, unavailable)
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Content._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Content._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Content._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Content.body") } }
+}
   public let content: SwiftUI.DisclosureGroupStyleConfiguration.Content
-public var isExpanded: Swift.Bool {
+    public var isExpanded: Swift.Bool {
     get { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.isExpanded") }
     @available(macOS 13.0, iOS 16.0, *)
     @available(tvOS, unavailable)
@@ -5732,7 +5679,7 @@ public struct DisclosureGroupStyleConfiguration {
     public typealias Body = Swift.Never
   }
   public let content: SwiftUI.DisclosureGroupStyleConfiguration.Content
-public var isExpanded: Swift.Bool {
+    public var isExpanded: Swift.Bool {
     get
     @available(macOS 13.0, iOS 16.0, *)
     @available(tvOS, unavailable)
@@ -5742,6 +5689,9 @@ public var isExpanded: Swift.Bool {
     @available(tvOS, unavailable)
     @available(watchOS, unavailable, introduced: 6.0)
     nonmutating _modify
+  }
+  public var $isExpanded: Binding<Swift.Bool> {
+    get
   }
 }
 #endif
@@ -5853,9 +5803,6 @@ nonisolated public struct AutomaticLabeledContentStyle : SwiftUI.LabeledContentS
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.AutomaticLabeledContentStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AutomaticLabeledContentStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -5863,8 +5810,6 @@ nonisolated public struct AutomaticLabeledContentStyle : SwiftUI.LabeledContentS
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.AutomaticLabeledContentStyle.Configuration) -> some View
   
-  @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI28AutomaticLabeledContentStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -6144,9 +6089,6 @@ nonisolated public struct LinearProgressViewStyle : SwiftUI.ProgressViewStyle, ~
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.LinearProgressViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.LinearProgressViewStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -6160,8 +6102,6 @@ nonisolated public struct LinearProgressViewStyle : SwiftUI.ProgressViewStyle {
   nonisolated public init(tint: Color)
   nonisolated public func makeBody(configuration: SwiftUI.LinearProgressViewStyle.Configuration) -> some View
   
-  @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI23LinearProgressViewStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -6450,9 +6390,6 @@ nonisolated public struct CircularProgressViewStyle : SwiftUI.ProgressViewStyle,
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.CircularProgressViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.CircularProgressViewStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -6466,8 +6403,6 @@ nonisolated public struct CircularProgressViewStyle : SwiftUI.ProgressViewStyle 
   nonisolated public init(tint: Color)
   nonisolated public func makeBody(configuration: SwiftUI.CircularProgressViewStyle.Configuration) -> some View
   
-  @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI25CircularProgressViewStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -6476,13 +6411,15 @@ nonisolated public struct Toggle<Label> : View, ~Swift.Sendable where Label : Vi
   nonisolated public init(isOn: Binding<Swift.Bool>, @ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUI.Toggle.init(isOn:label:)") }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   nonisolated public init<C>(sources: C, isOn: Swift.KeyPath<C.Element, Binding<Swift.Bool>>, @ContentBuilder label: () -> Label) where C : Swift.RandomAccessCollection { _suiUnimplemented("SwiftUI.Toggle.init(sources:isOn:label:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Toggle.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Toggle._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Toggle._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Toggle._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6493,8 +6430,6 @@ nonisolated public struct Toggle<Label> : View where Label : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI6ToggleV4bodyQrvp", 0) __<Label>
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6675,6 +6610,8 @@ extension View {
   public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift.Int?) -> Swift.Int? { _suiUnimplemented("SwiftUI._TaskModifier._viewListCount(inputs:body:)") }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._TaskModifier.body(content:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -6692,6 +6629,8 @@ extension View {
   public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift.Int?) -> Swift.Int? { _suiUnimplemented("SwiftUI._TaskValueModifier._viewListCount(inputs:body:)") }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._TaskValueModifier.body(content:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -6721,6 +6660,8 @@ nonisolated public struct _TaskModifier2 : ViewModifier, ~Swift.Sendable {
   public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift.Int?) -> Swift.Int? { _suiUnimplemented("SwiftUI._TaskModifier2._viewListCount(inputs:body:)") }
   @available(macOS 26.4, iOS 26.4, tvOS 26.4, watchOS 26.4, visionOS 26.4, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._TaskModifier2.body(content:)") }
 }
 #else
 @available(iOS 26.4, macOS 26.4, tvOS 26.4, watchOS 26.4, visionOS 26.4, *)
@@ -6744,6 +6685,8 @@ nonisolated public struct _TaskValueModifier2<ID> : ViewModifier, ~Swift.Sendabl
   public static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift.Int?) -> Swift.Int? { _suiUnimplemented("SwiftUI._TaskValueModifier2._viewListCount(inputs:body:)") }
   @available(macOS 26.4, iOS 26.4, tvOS 26.4, watchOS 26.4, visionOS 26.4, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._TaskValueModifier2.body(content:)") }
 }
 #else
 @available(iOS 26.4, macOS 26.4, tvOS 26.4, watchOS 26.4, visionOS 26.4, *)
@@ -6774,6 +6717,8 @@ nonisolated public struct RotationGesture : Gesture, ~Swift.Sendable {
   @available(watchOS, unavailable)
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, renamed: "RotateGesture")
   public typealias Body = Swift.Never
+  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.RotationGesture.body") } }
 }
 #else
 @available(iOS, introduced: 13.0, deprecated: 100000.0, renamed: "RotateGesture")
@@ -6814,6 +6759,8 @@ nonisolated public struct RotateGesture : Gesture, ~Swift.Sendable {
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.RotateGesture.body") } }
 }
 #else
 @available(iOS 17.0, macOS 14.0, *)
@@ -6846,13 +6793,15 @@ extension SwiftUI.RotateGesture {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 nonisolated public struct TextField<Label> : View, ~Swift.Sendable where Label : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.TextField.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.TextField._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.TextField._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.TextField._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6860,8 +6809,6 @@ nonisolated public struct TextField<Label> : View where Label : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI9TextFieldV4bodyQrvp", 0) __<Label>
 }
 #endif
 extension SwiftUI.TextField where Label == Text {
@@ -7355,12 +7302,6 @@ nonisolated public struct LinkButtonStyle : SwiftUI.PrimitiveButtonStyle, ~Swift
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.LinkButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.LinkButtonStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(macOS 10.15, *)
@@ -7371,11 +7312,6 @@ nonisolated public struct LinkButtonStyle : SwiftUI.PrimitiveButtonStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.LinkButtonStyle.Configuration) -> some View
   
-  @available(macOS 10.15, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI15LinkButtonStyleV8makeBody13configurationQrAA09PrimitivedE13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -7507,13 +7443,15 @@ public struct EditableCollectionContent<Content, Data> {
 #endif
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.EditableCollectionContent : View where Content : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var body: some View {
     get { _suiUnimplemented("SwiftUI.EditableCollectionContent.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.EditableCollectionContent._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.EditableCollectionContent._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.EditableCollectionContent._viewListCount(inputs:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -7694,6 +7632,10 @@ extension ShapeStyle where Self == SwiftUI.LinkShapeStyle {
   public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUI.LinkShapeStyle._apply(to:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift.Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public static func _makeView<S>(view: _GraphValue<_ShapeView<S, Self>>, inputs: _ViewInputs) -> _ViewOutputs where S : Shape { _suiUnimplemented("SwiftUI.LinkShapeStyle._makeView(view:inputs:)") }
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift.Never { _suiUnimplemented("SwiftUI.LinkShapeStyle.resolve(in:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -8154,13 +8096,9 @@ extension LayoutSubview {
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 nonisolated public struct DefaultToolbarItem : SwiftUI.ToolbarContent, ~Swift.Sendable {
   nonisolated public init(kind: SwiftUI.ToolbarDefaultItemKind, placement: SwiftUI.ToolbarItemPlacement = .automatic) { _suiUnimplemented("SwiftUI.DefaultToolbarItem.init(kind:placement:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.ToolbarContent {
     get { _suiUnimplemented("SwiftUI.DefaultToolbarItem.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -8169,8 +8107,6 @@ nonisolated public struct DefaultToolbarItem : SwiftUI.ToolbarContent {
   nonisolated public var body: some SwiftUI.ToolbarContent {
     get
   }
-  @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI18DefaultToolbarItemV4bodyQrvp", 0) __
 }
 #endif
 @available(macOS, introduced: 10.15, deprecated: 13.0, message: "Use `HierarchicalShapeStyle` instead.")
@@ -8197,6 +8133,10 @@ public struct _SystemShapeStyle : ShapeStyle {
   @available(watchOS, unavailable, introduced: 10.0)
   @available(visionOS, unavailable)
   public typealias Resolved = Swift.Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUI._SystemShapeStyle._apply(to:)") }
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift.Never { _suiUnimplemented("SwiftUI._SystemShapeStyle.resolve(in:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 12.0, *)
@@ -8212,6 +8152,8 @@ nonisolated public struct TableRow<Value> : SwiftUI.TableRowContent, ~Swift.Send
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public static func _containsOutlineSymbol(inputs: SwiftUI._TableRowInputs) -> Swift.Bool { _suiUnimplemented("SwiftUI.TableRow._containsOutlineSymbol(inputs:)") }
+  // port: synthesized witness for TableRowContent (R7); Apple implements it with an internal member
+  public var tableRowBody: Swift.Never { get { _suiUnimplemented("SwiftUI.TableRow.tableRowBody") } }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -8276,15 +8218,9 @@ extension View {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct _TypeSelectEquivalentTableRowModifier : SwiftUI._TableRowContentModifier, ~Swift.Sendable {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get { _suiUnimplemented("SwiftUI._TypeSelectEquivalentTableRowModifier.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, *)
@@ -8294,10 +8230,6 @@ extension View {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get
   }
-  @available(macOS 13.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI37_TypeSelectEquivalentTableRowModifierV4bodyQrvp", 0) __
 }
 #endif
 @available(iOS 13.4, macOS 10.15, *)
@@ -8323,6 +8255,12 @@ extension View {
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._HoverRegionModifier._makeViewList(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._HoverRegionModifier._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._HoverRegionModifier.body(content:)") }
 }
 #else
 @available(iOS 13.4, macOS 10.15, *)
@@ -8464,13 +8402,15 @@ nonisolated public struct List<SelectionValue, Content> : View, ~Swift.Sendable 
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   @_disfavoredOverload nonisolated public init(selection: Binding<SelectionValue>, @ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUI.List.init(selection:content:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.List.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.List._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.List._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.List._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8487,8 +8427,6 @@ nonisolated public struct List<SelectionValue, Content> : View where SelectionVa
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI4ListV4bodyQrvp", 0) __<SelectionValue, Content>
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8772,6 +8710,8 @@ nonisolated public struct ToolbarItem<ID, Content> : SwiftUI.ToolbarContent, ~Sw
   public static func _makeContent(content: _GraphValue<SwiftUI.ToolbarItem<ID, Content>>, inputs: _GraphInputs, resolved: inout SwiftUI._ToolbarItemList) { _suiUnimplemented("SwiftUI.ToolbarItem._makeContent(content:inputs:resolved:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ToolbarContent (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ToolbarItem.body") } }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -9001,6 +8941,10 @@ public struct FileDialogBrowserOptions : Swift.OptionSet {
   public static var _propertyStorageSize: Swift.Int? {
     get { _suiUnimplemented("SwiftUI.SceneStorage._propertyStorageSize") }
   }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public static var _propertyBehaviors: Swift::UInt32 { get { _suiUnimplemented("SwiftUI.SceneStorage._propertyBehaviors") } }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public mutating func update() { _suiUnimplemented("SwiftUI.SceneStorage.update()") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.SceneStorage : @unchecked Swift.Sendable where Value : Swift.Sendable {
@@ -9053,14 +8997,15 @@ internal class SceneStorageTransformBox {
 @available(iOS 14.0, macOS 11.0, tvOS 17.0, *)
 @available(watchOS, unavailable)
 nonisolated public struct Menu<Label, Content> : View, ~Swift.Sendable where Label : View, Content : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Menu.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, tvOS 17.0, *)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Menu._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Menu._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Menu._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 17.0, *)
@@ -9069,9 +9014,6 @@ nonisolated public struct Menu<Label, Content> : View where Label : View, Conten
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 11.0, iOS 14.0, tvOS 17.0, *)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI4MenuV4bodyQrvp", 0) __<Label, Content>
 }
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 17.0, *)
@@ -9242,15 +9184,9 @@ extension SwiftUI.TableRowContent {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct _HoverTableRowModifier : SwiftUI._TableRowContentModifier, ~Swift.Sendable {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get { _suiUnimplemented("SwiftUI._HoverTableRowModifier.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(macOS 13.0, *)
@@ -9260,10 +9196,6 @@ extension SwiftUI.TableRowContent {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get
   }
-  @available(macOS 13.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI22_HoverTableRowModifierV4bodyQrvp", 0) __
 }
 #endif
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -9408,14 +9340,16 @@ extension SectionConfiguration {
     get { _suiUnimplemented("SwiftUI.SectionConfiguration.actions") }
   }
   @_Concurrency.MainActor @preconcurrency public struct Actions : View {
-        // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+    @_Concurrency.MainActor @preconcurrency public var body: some View {
       get { _suiUnimplemented("SwiftUI.SectionConfiguration.Actions.body") }
     }
-        // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-    public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.SectionConfiguration.Actions._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.SectionConfiguration.Actions._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.SectionConfiguration.Actions._viewListCount(inputs:)") }
+}
 }
 @available(iOS 17.0, macOS 14.0, *)
 @available(tvOS, unavailable)
@@ -9434,11 +9368,6 @@ nonisolated public struct PaletteControlGroupStyle : SwiftUI.ControlGroupStyle, 
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.PaletteControlGroupStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.PaletteControlGroupStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 17.0, macOS 14.0, *)
@@ -9448,10 +9377,6 @@ nonisolated public struct PaletteControlGroupStyle : SwiftUI.ControlGroupStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.PaletteControlGroupStyle.Configuration) -> some View
   
-  @available(macOS 14.0, iOS 17.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI24PaletteControlGroupStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -9496,6 +9421,10 @@ nonisolated public func fullScreenCover<Content>(isPresented: Binding<Swift.Bool
   public static var _propertyStorageSize: Swift.Int? {
     get { _suiUnimplemented("SwiftUI.AppStorage._propertyStorageSize") }
   }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public static var _propertyBehaviors: Swift::UInt32 { get { _suiUnimplemented("SwiftUI.AppStorage._propertyBehaviors") } }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public mutating func update() { _suiUnimplemented("SwiftUI.AppStorage.update()") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.AppStorage : Swift.Sendable where Value : Swift.Sendable {
@@ -9689,7 +9618,7 @@ extension SwiftUI.DocumentGroup where Document : SwiftUI.ReferenceFileDocument {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct ReferenceFileDocumentConfiguration<Document> : ~Swift.Sendable where Document : SwiftUI.ReferenceFileDocument {
-@_Concurrency.MainActor @preconcurrency public var document: Document {
+    @_Concurrency.MainActor @preconcurrency public var document: Document {
     get { _suiUnimplemented("SwiftUI.ReferenceFileDocumentConfiguration.document") }
     @available(macOS, introduced: 11.0, deprecated: 100000.0, message: "Use Document protocol and URLDocumentConfiguration instead.")
     @available(iOS, introduced: 14.0, deprecated: 100000.0, message: "Use Document protocol and URLDocumentConfiguration instead.")
@@ -9713,7 +9642,7 @@ extension SwiftUI.DocumentGroup where Document : SwiftUI.ReferenceFileDocument {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct ReferenceFileDocumentConfiguration<Document> where Document : SwiftUI.ReferenceFileDocument {
-@_Concurrency.MainActor @preconcurrency public var document: Document {
+    @_Concurrency.MainActor @preconcurrency public var document: Document {
     get
     @available(macOS, introduced: 11.0, deprecated: 100000.0, message: "Use Document protocol and URLDocumentConfiguration instead.")
     @available(iOS, introduced: 14.0, deprecated: 100000.0, message: "Use Document protocol and URLDocumentConfiguration instead.")
@@ -9725,6 +9654,9 @@ extension SwiftUI.DocumentGroup where Document : SwiftUI.ReferenceFileDocument {
     @available(tvOS, unavailable, introduced: 13.0)
     @available(watchOS, unavailable, introduced: 6.0)
     _modify
+  }
+  @_Concurrency.MainActor @preconcurrency public var $document: ObservedObject<Document>.Wrapper {
+    get
   }
   @_Concurrency.MainActor @preconcurrency public var fileURL: Foundation.URL?
   @_Concurrency.MainActor @preconcurrency public var isEditable: Swift.Bool
@@ -9823,12 +9755,6 @@ public struct RoundedBorderTextFieldStyle : SwiftUI.TextFieldStyle, ~Swift.Senda
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func _body(configuration: SwiftUI.TextField<SwiftUI.RoundedBorderTextFieldStyle._Label>) -> Swift.Never { _suiUnimplemented("SwiftUI.RoundedBorderTextFieldStyle._body(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use BorderedTextFieldStyle with `textInputBorderShape(.roundedRectangle)`")
-  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use BorderedTextFieldStyle with `textInputBorderShape(.roundedRectangle)`")
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias _Body = Swift.Never
 }
 #else
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use BorderedTextFieldStyle with `textInputBorderShape(.roundedRectangle)`")
@@ -9839,11 +9765,6 @@ public struct RoundedBorderTextFieldStyle : SwiftUI.TextFieldStyle {
   public init()
   public func _body(configuration: SwiftUI.TextField<SwiftUI.RoundedBorderTextFieldStyle._Label>) -> some View
   
-  @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use BorderedTextFieldStyle with `textInputBorderShape(.roundedRectangle)`")
-  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use BorderedTextFieldStyle with `textInputBorderShape(.roundedRectangle)`")
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias _Body = @_opaqueReturnTypeOf("$s7SwiftUI27RoundedBorderTextFieldStyleV5_body13configurationQrAA0eF0VyAA01_efG5LabelVG_tF", 0) __
 }
 #endif
 @available(anyAppleOS 27.0, *)
@@ -9859,9 +9780,6 @@ public struct BorderedTextFieldStyle : SwiftUI.TextFieldStyle, ~Swift.Sendable {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func _body(configuration: SwiftUI.TextField<SwiftUI.BorderedTextFieldStyle._Label>) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderedTextFieldStyle._body(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(anyAppleOS 27.0, *)
-  public typealias _Body = Swift.Never
 }
 #else
 @available(anyAppleOS 27.0, *)
@@ -9869,8 +9787,6 @@ public struct BorderedTextFieldStyle : SwiftUI.TextFieldStyle {
   public init()
   public func _body(configuration: SwiftUI.TextField<SwiftUI.BorderedTextFieldStyle._Label>) -> some View
   
-  @available(anyAppleOS 27.0, *)
-  public typealias _Body = @_opaqueReturnTypeOf("$s7SwiftUI22BorderedTextFieldStyleV5_body13configurationQrAA0dE0VyAA01_deF5LabelVG_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -10139,6 +10055,8 @@ nonisolated public struct _SceneModifier_Content<Modifier> : SwiftUI.Scene, ~Swi
   public static func _makeScene(scene: _GraphValue<SwiftUI._SceneModifier_Content<Modifier>>, inputs: SwiftUI._SceneInputs) -> SwiftUI._SceneOutputs { _suiUnimplemented("SwiftUI._SceneModifier_Content._makeScene(scene:inputs:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for Scene (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._SceneModifier_Content.body") } }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -10174,11 +10092,8 @@ public struct ContentHoverEffect<Effect> : CustomHoverEffect, ~Swift.Sendable wh
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func body(content: SwiftUI.ContentHoverEffect<Effect>.Content) -> Swift.Never { _suiUnimplemented("SwiftUI.ContentHoverEffect.body(content:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(visionOS 26.0, *)
-      @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for CustomHoverEffect (R7); Apple implements it with an internal member
+  public static func _makeCustomHoverEffect(effect: _GraphValue<Self>, inputs: _CustomHoverEffectInputs, body: @escaping (_CustomHoverEffectInputs) -> _CustomHoverEffectOutputs) -> _CustomHoverEffectOutputs { _suiUnimplemented("SwiftUI.ContentHoverEffect._makeCustomHoverEffect(effect:inputs:body:)") }
 }
 #else
 @available(visionOS 26.0, *)
@@ -10187,10 +10102,6 @@ public func body(content: SwiftUI.ContentHoverEffect<Effect>.Content) -> Swift.N
 public struct ContentHoverEffect<Effect> : CustomHoverEffect where Effect : HoverEffectContent {
   public func body(content: SwiftUI.ContentHoverEffect<Effect>.Content) -> some CustomHoverEffect
   
-  @available(visionOS 26.0, *)
-      @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI18ContentHoverEffectV4body7contentQrAA05EmptydE0V_tF", 0) __<Effect>
 }
 #endif
 @available(macOS 26.0, visionOS 1.0, *)
@@ -10247,16 +10158,10 @@ extension ModifiedContent where Modifier == SwiftUI.AccessibilityAttachmentModif
   @_Concurrency.MainActor @preconcurrency internal init() { _suiUnimplemented("SwiftUI.TupleWidget.init()") }
   @usableFromInline
   @_Concurrency.MainActor @preconcurrency internal init(_ value: T) { _suiUnimplemented("SwiftUI.TupleWidget.init(_:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@usableFromInline
-  @_Concurrency.MainActor @preconcurrency internal var body: Swift.Never {
+  @usableFromInline
+  @_Concurrency.MainActor @preconcurrency internal var body: some SwiftUI.WidgetConfiguration {
     get { _suiUnimplemented("SwiftUI.TupleWidget.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, watchOS 9.0, visionOS 1.0, *)
-  @usableFromInline
-  @available(tvOS, unavailable)
-  internal typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, watchOS 9.0, visionOS 1.0, *)
@@ -10271,10 +10176,6 @@ extension ModifiedContent where Modifier == SwiftUI.AccessibilityAttachmentModif
   @_Concurrency.MainActor @preconcurrency internal var body: some SwiftUI.WidgetConfiguration {
     get
   }
-  @available(macOS 11.0, iOS 14.0, watchOS 9.0, visionOS 1.0, *)
-  @usableFromInline
-  @available(tvOS, unavailable)
-  internal typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI11TupleWidgetV4bodyQrvp", 0) __<T>
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -10364,6 +10265,10 @@ extension SwiftUI.TableColumnContent {
     get { _suiUnimplemented("SwiftUI.UIApplicationDelegateAdaptor.wrappedValue") }
   }
   @_Concurrency.MainActor @preconcurrency public init(_ delegateType: DelegateType.Type = DelegateType.self) { _suiUnimplemented("SwiftUI.UIApplicationDelegateAdaptor.init(_:)") }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public static var _propertyBehaviors: Swift::UInt32 { get { _suiUnimplemented("SwiftUI.UIApplicationDelegateAdaptor._propertyBehaviors") } }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public mutating func update() { _suiUnimplemented("SwiftUI.UIApplicationDelegateAdaptor.update()") }
 }
 @available(iOS 14.0, tvOS 14.0, *)
 @available(watchOS, unavailable)
@@ -10438,15 +10343,9 @@ extension SwiftUI.TableRowContent {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct _ContextMenuTableRowModifier<MenuItems> : SwiftUI._TableRowContentModifier, ~Swift.Sendable where MenuItems : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get { _suiUnimplemented("SwiftUI._ContextMenuTableRowModifier.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, *)
@@ -10456,10 +10355,6 @@ extension SwiftUI.TableRowContent {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get
   }
-  @available(macOS 13.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI28_ContextMenuTableRowModifierV4bodyQrvp", 0) __<MenuItems>
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -10467,15 +10362,9 @@ extension SwiftUI.TableRowContent {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct _ContextMenuPreviewTableRowModifier<MenuItems, Preview> : SwiftUI._TableRowContentModifier, ~Swift.Sendable where MenuItems : View, Preview : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get { _suiUnimplemented("SwiftUI._ContextMenuPreviewTableRowModifier.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, *)
@@ -10485,10 +10374,6 @@ extension SwiftUI.TableRowContent {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get
   }
-  @available(macOS 13.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI35_ContextMenuPreviewTableRowModifierV4bodyQrvp", 0) __<MenuItems, Preview>
 }
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -10505,6 +10390,8 @@ extension SwiftUI.AccessibilityRotorContent {
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension Swift.Never : SwiftUI.AccessibilityRotorContent {
+  // port: synthesized witness for AccessibilityRotorContent (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.Never.body") } }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -10780,7 +10667,9 @@ public struct PrimitiveButtonStyleConfiguration : ~Swift.Sendable {
     nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift.Int? { _suiUnimplemented("SwiftUI.PrimitiveButtonStyleConfiguration.Label._viewListCount(inputs:)") }
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.PrimitiveButtonStyleConfiguration.Label.body") } }
+}
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
   public let role: SwiftUI.ButtonRole?
   public let label: SwiftUI.PrimitiveButtonStyleConfiguration.Label
@@ -10843,10 +10732,6 @@ nonisolated public struct AutomaticControlGroupStyle : SwiftUI.ControlGroupStyle
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.AutomaticControlGroupStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AutomaticControlGroupStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 12.0, iOS 15.0, tvOS 17.0, *)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 17.0, *)
@@ -10856,9 +10741,6 @@ nonisolated public struct AutomaticControlGroupStyle : SwiftUI.ControlGroupStyle
   nonisolated internal init()
   nonisolated public func makeBody(configuration: SwiftUI.AutomaticControlGroupStyle.Configuration) -> some View
   
-  @available(macOS 12.0, iOS 15.0, tvOS 17.0, *)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI26AutomaticControlGroupStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
 }
 #endif
 extension EnvironmentValues {
@@ -10885,11 +10767,6 @@ nonisolated public struct DefaultGroupBoxStyle : SwiftUI.GroupBoxStyle, ~Swift.S
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.DefaultGroupBoxStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultGroupBoxStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -10899,10 +10776,6 @@ nonisolated public struct DefaultGroupBoxStyle : SwiftUI.GroupBoxStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.DefaultGroupBoxStyle.Configuration) -> some View
   
-  @available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI20DefaultGroupBoxStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -11044,6 +10917,10 @@ public static var all: SwiftUI.FrameResizeDirection.Set { get { _suiUnimplemente
   }
   public init() where Value == Swift.Bool { _suiUnimplemented("SwiftUI.FocusState.init()") }
   public init<T>() where Value == T?, T : Swift.Hashable { _suiUnimplemented("SwiftUI.FocusState.init()") }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public static var _propertyBehaviors: Swift::UInt32 { get { _suiUnimplemented("SwiftUI.FocusState._propertyBehaviors") } }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public mutating func update() { _suiUnimplemented("SwiftUI.FocusState.update()") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -11207,16 +11084,16 @@ nonisolated public func onModifierKeysChanged(mask: EventModifiers = .all, initi
   @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AutomaticTextEditorStyle.Configuration) -> SwiftUI.AutomaticTextEditorStyle.Body { _suiUnimplemented("SwiftUI.AutomaticTextEditorStyle.makeBody(configuration:)") }
   @_Concurrency.MainActor @preconcurrency public init() { _suiUnimplemented("SwiftUI.AutomaticTextEditorStyle.init()") }
   @_Concurrency.MainActor @preconcurrency public struct Body : View, ~Swift.Sendable {
-        // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+    @_Concurrency.MainActor @preconcurrency public var body: some View {
       get { _suiUnimplemented("SwiftUI.AutomaticTextEditorStyle.Body.body") }
     }
-        // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, visionOS 1.0, *)
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.AutomaticTextEditorStyle.Body._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.AutomaticTextEditorStyle.Body._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.AutomaticTextEditorStyle.Body._viewListCount(inputs:)") }
+}
 }
 #else
 @available(iOS 17.0, macOS 14.0, visionOS 1.0, *)
@@ -11229,10 +11106,6 @@ nonisolated public func onModifierKeysChanged(mask: EventModifiers = .all, initi
     @_Concurrency.MainActor @preconcurrency public var body: some View {
       get
     }
-    @available(macOS 14.0, iOS 17.0, visionOS 1.0, *)
-    @available(tvOS, unavailable)
-    @available(watchOS, unavailable)
-    public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI24AutomaticTextEditorStyleV4BodyV4bodyQrvp", 0) __
   }
 }
 #endif
@@ -11278,9 +11151,6 @@ nonisolated public struct PlainButtonStyle : SwiftUI.PrimitiveButtonStyle, ~Swif
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.PlainButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.PlainButtonStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -11288,8 +11158,6 @@ nonisolated public struct PlainButtonStyle : SwiftUI.PrimitiveButtonStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.PlainButtonStyle.Configuration) -> some View
   
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI16PlainButtonStyleV8makeBody13configurationQrAA09PrimitivedE13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 17.0, macOS 14.0, *)
@@ -11308,19 +11176,13 @@ extension SwiftUI.OutlineGroup where ID == Data.Element.ID, Parent : SwiftUI.Tab
 @available(watchOS, unavailable)
 extension SwiftUI.OutlineGroup : SwiftUI.TableRowContent where ID == Data.Element.ID, Parent : SwiftUI.TableRowContent, Parent == Leaf, Leaf == Subgroup, Data.Element == Parent.TableRowValue {
   public typealias TableRowValue = Leaf.TableRowValue
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var tableRowBody: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var tableRowBody: some SwiftUI.TableRowContent {
     get { _suiUnimplemented("SwiftUI.OutlineGroup.tableRowBody") }
   }
   @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   nonisolated public static func _containsOutlineSymbol(inputs: SwiftUI._TableRowInputs) -> Swift.Bool { _suiUnimplemented("SwiftUI.OutlineGroup._containsOutlineSymbol(inputs:)") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias TableRowBody = Swift.Never
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 public struct SubmitLabel : Swift.Sendable {
@@ -11470,6 +11332,12 @@ nonisolated public struct Divider : View, ~Swift.Sendable {
   public static func _makeView(view: _GraphValue<SwiftUI.Divider>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Divider._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Divider._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Divider._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.Divider.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -11495,10 +11363,6 @@ nonisolated public struct ButtonMenuStyle : SwiftUI.MenuStyle, ~Swift.Sendable {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.ButtonMenuStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.ButtonMenuStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 17.0, *)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 17.0, *)
@@ -11507,9 +11371,6 @@ nonisolated public struct ButtonMenuStyle : SwiftUI.MenuStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.ButtonMenuStyle.Configuration) -> some View
   
-  @available(macOS 13.0, iOS 16.0, tvOS 17.0, *)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI15ButtonMenuStyleV8makeBody13configurationQrAA0dE13ConfigurationV_tF", 0) __
 }
 #endif
 @available(tvOS 16.0, *)
@@ -11576,15 +11437,15 @@ public static var suppressed: SwiftUI.SceneLaunchBehavior { get { _suiUnimplemen
 @available(tvOS, unavailable)
 @available(visionOS, unavailable)
 nonisolated public struct TextFieldLink<Label> : View, ~Swift.Sendable where Label : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.TextFieldLink.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(watchOS 9.0, *)
-      @available(tvOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.TextFieldLink._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.TextFieldLink._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.TextFieldLink._viewListCount(inputs:)") }
 }
 #else
 @available(watchOS 9.0, *)
@@ -11594,10 +11455,6 @@ nonisolated public struct TextFieldLink<Label> : View where Label : View {
   nonisolated public var body: some View {
     get
   }
-  @available(watchOS 9.0, *)
-      @available(tvOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI13TextFieldLinkV4bodyQrvp", 0) __<Label>
 }
 #endif
 @available(watchOS 9.0, *)
@@ -11691,15 +11548,9 @@ public struct PencilHoverPose : Swift.Hashable {
   @_Concurrency.MainActor @preconcurrency public init() { _suiUnimplemented("SwiftUI.LimitedAvailabilityWidget.init()") }
   @usableFromInline
   @_Concurrency.MainActor @preconcurrency internal init<W>(_ widget: W) where W : SwiftUI.Widget { _suiUnimplemented("SwiftUI.LimitedAvailabilityWidget.init(_:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI.WidgetConfiguration {
     get { _suiUnimplemented("SwiftUI.LimitedAvailabilityWidget.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.1, watchOS 9.1, *)
-  @usableFromInline
-  @available(tvOS, unavailable)
-  internal typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.1, macOS 13.0, watchOS 9.1, *)
@@ -11714,10 +11565,6 @@ public struct PencilHoverPose : Swift.Hashable {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI.WidgetConfiguration {
     get
   }
-  @available(macOS 13.0, iOS 16.1, watchOS 9.1, *)
-  @usableFromInline
-  @available(tvOS, unavailable)
-  internal typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI25LimitedAvailabilityWidgetV4bodyQrvp", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -11732,6 +11579,8 @@ public struct PencilHoverPose : Swift.Hashable {
   @available(macOS 13.0, iOS 16.1, watchOS 9.1, *)
   @available(tvOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for WidgetConfiguration (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LimitedAvailabilityConfiguration.body") } }
 }
 #else
 @available(iOS 16.1, macOS 13.0, watchOS 9.1, *)
@@ -11841,9 +11690,6 @@ extension SwiftUI.NavigationSplitViewStyle where Self == SwiftUI.ProminentDetail
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.ProminentDetailNavigationSplitViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.ProminentDetailNavigationSplitViewStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -11851,8 +11697,6 @@ extension SwiftUI.NavigationSplitViewStyle where Self == SwiftUI.ProminentDetail
   @_Concurrency.MainActor @preconcurrency public init()
   @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.ProminentDetailNavigationSplitViewStyle.Configuration) -> some View
   
-  @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI39ProminentDetailNavigationSplitViewStyleV8makeBody13configurationQrAA0efgH13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -11906,6 +11750,8 @@ public static var always: SwiftUI.SearchFieldPlacement.NavigationBarDrawerDispla
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for GeometryEffect (R7); Apple implements it with an internal member
+  public static var _affectsLayout: Swift::Bool { get { _suiUnimplemented("SwiftUI._ProjectionEffect._affectsLayout") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension View {
@@ -11922,16 +11768,15 @@ extension View {
 nonisolated public struct SettingsLink<Label> : View, ~Swift.Sendable where Label : View {
   nonisolated public init() where Label == SwiftUI.DefaultSettingsLinkLabel { _suiUnimplemented("SwiftUI.SettingsLink.init()") }
   nonisolated public init(@ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUI.SettingsLink.init(label:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.SettingsLink.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.SettingsLink._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.SettingsLink._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.SettingsLink._viewListCount(inputs:)") }
 }
 #else
 @available(macOS 14.0, *)
@@ -11944,11 +11789,6 @@ nonisolated public struct SettingsLink<Label> : View where Label : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 14.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI12SettingsLinkV4bodyQrvp", 0) __<Label>
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -11957,16 +11797,15 @@ nonisolated public struct SettingsLink<Label> : View where Label : View {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 nonisolated public struct DefaultSettingsLinkLabel : View, ~Swift.Sendable {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DefaultSettingsLinkLabel.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultSettingsLinkLabel._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultSettingsLinkLabel._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultSettingsLinkLabel._viewListCount(inputs:)") }
 }
 #else
 @available(macOS 14.0, *)
@@ -11977,11 +11816,6 @@ nonisolated public struct DefaultSettingsLinkLabel : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 14.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI24DefaultSettingsLinkLabelV4bodyQrvp", 0) __
 }
 #endif
 @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
@@ -12005,11 +11839,6 @@ nonisolated public struct AccessoryBarButtonStyle : SwiftUI.PrimitiveButtonStyle
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.AccessoryBarButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AccessoryBarButtonStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(macOS 14.0, *)
@@ -12019,10 +11848,6 @@ nonisolated public struct AccessoryBarButtonStyle : SwiftUI.PrimitiveButtonStyle
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.AccessoryBarButtonStyle.Configuration) -> some View
   
-  @available(macOS 14.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI23AccessoryBarButtonStyleV8makeBody13configurationQrAA09PrimitiveeF13ConfigurationV_tF", 0) __
 }
 #endif
 @available(macOS 14.0, *)
@@ -12042,11 +11867,6 @@ nonisolated public struct AccessoryBarActionButtonStyle : SwiftUI.PrimitiveButto
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.AccessoryBarActionButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AccessoryBarActionButtonStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(macOS 14.0, *)
@@ -12056,10 +11876,6 @@ nonisolated public struct AccessoryBarActionButtonStyle : SwiftUI.PrimitiveButto
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.AccessoryBarActionButtonStyle.Configuration) -> some View
   
-  @available(macOS 14.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI29AccessoryBarActionButtonStyleV8makeBody13configurationQrAA09PrimitivefG13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -12276,9 +12092,6 @@ nonisolated public struct IconOnlyLabelStyle : SwiftUI.LabelStyle, ~Swift.Sendab
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.IconOnlyLabelStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.IconOnlyLabelStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -12286,8 +12099,6 @@ nonisolated public struct IconOnlyLabelStyle : SwiftUI.LabelStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.IconOnlyLabelStyle.Configuration) -> some View
   
-  @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI18IconOnlyLabelStyleV8makeBody13configurationQrAA0eF13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
@@ -12312,7 +12123,15 @@ public struct _NavigationViewStyleConfiguration : ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public struct Content : View, ~Swift.Sendable {
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._NavigationViewStyleConfiguration.Content._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._NavigationViewStyleConfiguration.Content._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._NavigationViewStyleConfiguration.Content._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._NavigationViewStyleConfiguration.Content.body") } }
+}
   public let content: SwiftUI._NavigationViewStyleConfiguration.Content
 }
 #else
@@ -12378,6 +12197,8 @@ nonisolated public struct MagnificationGesture : Gesture, ~Swift.Sendable {
   @available(watchOS, unavailable)
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, renamed: "MagnifyGesture")
   public typealias Body = Swift.Never
+  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.MagnificationGesture.body") } }
 }
 #else
 @available(iOS, introduced: 13.0, deprecated: 100000.0, renamed: "MagnifyGesture")
@@ -12418,6 +12239,8 @@ nonisolated public struct MagnifyGesture : Gesture, ~Swift.Sendable {
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.MagnifyGesture.body") } }
 }
 #else
 @available(iOS 17.0, macOS 14.0, *)
@@ -12541,15 +12364,15 @@ extension DynamicViewContent {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 nonisolated public struct NewDocumentButton<Label> : View, ~Swift.Sendable where Label : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.NewDocumentButton.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 15.0, iOS 18.0, visionOS 2.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.NewDocumentButton._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.NewDocumentButton._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.NewDocumentButton._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
@@ -12559,10 +12382,6 @@ nonisolated public struct NewDocumentButton<Label> : View where Label : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 15.0, iOS 18.0, visionOS 2.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI17NewDocumentButtonV4bodyQrvp", 0) __<Label>
 }
 #endif
 @available(*, unavailable)
@@ -12572,15 +12391,15 @@ extension SwiftUI.NewDocumentButton : Swift.Sendable {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct DefaultNewDocumentButtonLabel : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var body: some View {
     get { _suiUnimplemented("SwiftUI.DefaultNewDocumentButtonLabel.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 27.0, iOS 27.0, visionOS 27.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultNewDocumentButtonLabel._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultNewDocumentButtonLabel._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultNewDocumentButtonLabel._viewListCount(inputs:)") }
 }
 @available(*, unavailable)
 extension SwiftUI.DefaultNewDocumentButtonLabel : Swift.Sendable {
@@ -12956,6 +12775,12 @@ nonisolated public struct _TabContentBodyAdaptor<C> : View, ~Swift.Sendable wher
   }
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias Body = C.Body._IdentifiedView
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._TabContentBodyAdaptor._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._TabContentBodyAdaptor._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._TabContentBodyAdaptor._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -12971,14 +12796,16 @@ nonisolated public struct _TabContentBodyAdaptor<C> : View where C : SwiftUI.Tab
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_functionBuilder public struct TabContentBuilder<TabValue> : ~Swift.Sendable where TabValue : Swift.Hashable {
   nonisolated public struct Content<C> : View, ~Swift.Sendable where C : SwiftUI.TabContent {
-        // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+    nonisolated public var body: some View {
       get { _suiUnimplemented("SwiftUI.TabContentBuilder.Content.body") }
     }
-        // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-    public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.TabContentBuilder.Content._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.TabContentBuilder.Content._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.TabContentBuilder.Content._viewListCount(inputs:)") }
+}
   #if compiler(>=5.3) && $InlineAlways
   @export(implementation) @inline(always) public static func buildExpression(_ content: some TabContent<TabValue>) -> some SwiftUI.TabContent<TabValue> {
         content
@@ -13041,8 +12868,6 @@ nonisolated public var body: Swift.Never {
     nonisolated public var body: some View {
       get
     }
-    @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-    public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI17TabContentBuilderV0D0V4bodyQrvp", 0) __<TabValue, C>
   }
   #if compiler(>=5.3) && $InlineAlways
   @export(implementation) @inline(always) public static func buildExpression(_ content: some TabContent<TabValue>) -> some SwiftUI.TabContent<TabValue> {
@@ -13381,10 +13206,6 @@ public struct ContentMarginPlacement {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AccessoryCircularCapacityGaugeStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AccessoryCircularCapacityGaugeStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -13393,9 +13214,6 @@ public struct ContentMarginPlacement {
   @_Concurrency.MainActor @preconcurrency public init()
   @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AccessoryCircularCapacityGaugeStyle.Configuration) -> some View
   
-  @available(macOS 13.0, iOS 16.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI35AccessoryCircularCapacityGaugeStyleV8makeBody13configurationQrAA0fG13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -13417,7 +13235,15 @@ public struct ButtonStyleConfiguration : ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public struct Label : View, ~Swift.Sendable {
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ButtonStyleConfiguration.Label._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ButtonStyleConfiguration.Label._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ButtonStyleConfiguration.Label._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ButtonStyleConfiguration.Label.body") } }
+}
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
   public let role: SwiftUI.ButtonRole?
   public let label: SwiftUI.ButtonStyleConfiguration.Label
@@ -13461,11 +13287,6 @@ nonisolated public struct CircularGaugeStyle : SwiftUI.GaugeStyle, ~Swift.Sendab
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.CircularGaugeStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.CircularGaugeStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(watchOS 7.0, *)
-      @available(tvOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(watchOS 7.0, *)
@@ -13477,10 +13298,6 @@ nonisolated public struct CircularGaugeStyle : SwiftUI.GaugeStyle {
   nonisolated public init(tint: Gradient)
   nonisolated public func makeBody(configuration: SwiftUI.CircularGaugeStyle.Configuration) -> some View
   
-  @available(watchOS 7.0, *)
-      @available(tvOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI18CircularGaugeStyleV8makeBody13configurationQrAA0dE13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -13494,6 +13311,14 @@ public protocol TextFieldStyle {
 nonisolated public struct _TextFieldStyleLabel : View, ~Swift.Sendable {
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._TextFieldStyleLabel._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._TextFieldStyleLabel._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._TextFieldStyleLabel._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._TextFieldStyleLabel.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -13546,14 +13371,15 @@ extension SwiftUI.UIHostingConfiguration where Background == EmptyView {
 @available(iOS 16.0, tvOS 16.0, *)
 @available(watchOS, unavailable)
 nonisolated public struct _UIHostingConfigurationBackgroundView<Style> : View, ~Swift.Sendable where Style : ShapeStyle {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI._UIHostingConfigurationBackgroundView.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(iOS 16.0, tvOS 16.0, *)
-    @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._UIHostingConfigurationBackgroundView._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._UIHostingConfigurationBackgroundView._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._UIHostingConfigurationBackgroundView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, tvOS 16.0, *)
@@ -13562,9 +13388,6 @@ nonisolated public struct _UIHostingConfigurationBackgroundView<Style> : View wh
   nonisolated public var body: some View {
     get
   }
-  @available(iOS 16.0, tvOS 16.0, *)
-    @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI37_UIHostingConfigurationBackgroundViewV4bodyQrvp", 0) __<Style>
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -14422,6 +14245,12 @@ extension SwiftUI.Section : View where Parent : View, Content : View, Footer : V
   public typealias Body = Swift.Never
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   nonisolated public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift.Int? { _suiUnimplemented("SwiftUI.Section._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Section._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Section._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.Section.body") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.Section where Parent == EmptyView {
@@ -14591,13 +14420,15 @@ nonisolated public struct NavigationLink<Label, Destination> : View, ~Swift.Send
   @export(implementation) nonisolated public init(@ContentBuilder destination: () -> Destination, @ContentBuilder label: () -> Label) {
         self.init(destination: destination(), label: label)
     }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.NavigationLink.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.NavigationLink._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.NavigationLink._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.NavigationLink._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14608,8 +14439,6 @@ nonisolated public struct NavigationLink<Label, Destination> : View where Label 
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI14NavigationLinkV4bodyQrvp", 0) __<Label, Destination>
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14646,6 +14475,12 @@ extension SwiftUI.NavigationLink {
   public static func _makeView(view: _GraphValue<SwiftUI.ViewThatFits<Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ViewThatFits._makeView(view:inputs:)") }
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ViewThatFits._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ViewThatFits._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ViewThatFits.body") } }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -14773,17 +14608,25 @@ nonisolated public struct _ScrollView<Provider> : View, ~Swift.Sendable where Pr
   public var contentProvider: Provider
   public var config: SwiftUI._ScrollViewConfig
   nonisolated public init(contentProvider: Provider, config: SwiftUI._ScrollViewConfig = _ScrollViewConfig()) { _suiUnimplemented("SwiftUI._ScrollView.init(contentProvider:config:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI._ScrollView.body") }
   }
   nonisolated public struct Main : View, ~Swift.Sendable {
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias Body = Swift.Never
-  }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = Swift.Never
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._ScrollView.Main._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._ScrollView.Main._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._ScrollView.Main.body") } }
+}
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._ScrollView._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._ScrollView._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._ScrollView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14798,8 +14641,6 @@ nonisolated public struct _ScrollView<Provider> : View where Provider : SwiftUI.
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias Body = Swift.Never
   }
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI11_ScrollViewV4bodyQrvp", 0) __<Provider>
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14914,13 +14755,15 @@ nonisolated public struct _PagingView<Views> : View, ~Swift.Sendable where Views
   public var scrollViewConfig: SwiftUI._ScrollViewConfig
   nonisolated public init(config: SwiftUI._PagingViewConfig = _PagingViewConfig(), page: Binding<Views.Index>? = nil, views: Views) { _suiUnimplemented("SwiftUI._PagingView.init(config:page:views:)") }
   nonisolated public init(direction: SwiftUI._PagingViewConfig.Direction, page: Binding<Views.Index>? = nil, views: Views) { _suiUnimplemented("SwiftUI._PagingView.init(direction:page:views:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI._PagingView.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._PagingView._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._PagingView._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._PagingView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14934,8 +14777,6 @@ nonisolated public struct _PagingView<Views> : View where Views : Swift.RandomAc
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI11_PagingViewV4bodyQrvp", 0) __<Views>
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -15018,11 +14859,27 @@ public struct ProgressViewStyleConfiguration : ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public struct Label : View, ~Swift.Sendable {
     @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.Label._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.Label._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.Label._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.Label.body") } }
+}
   @_Concurrency.MainActor @preconcurrency public struct CurrentValueLabel : View, ~Swift.Sendable {
     @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.CurrentValueLabel._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.CurrentValueLabel._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.CurrentValueLabel._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.CurrentValueLabel.body") } }
+}
   public let fractionCompleted: Swift.Double?
   public var label: SwiftUI.ProgressViewStyleConfiguration.Label?
   public var currentValueLabel: SwiftUI.ProgressViewStyleConfiguration.CurrentValueLabel?
@@ -16049,6 +15906,8 @@ nonisolated public struct TableColumnForEach<Data, ID, RowValue, Sort, Content> 
   nonisolated public init(_ data: Data, id: Swift.KeyPath<Data.Element, ID>, @SwiftUI.TableColumnBuilder<SwiftUI.TableColumnForEach<Data, ID, RowValue, Sort, Content>.TableRowValue, SwiftUI.TableColumnForEach<Data, ID, RowValue, Sort, Content>.TableColumnSortComparator> content: @escaping (Data.Element) -> Content) { _suiUnimplemented("SwiftUI.TableColumnForEach.init(_:id:?:)") }
   @_semantics("swiftui.requires_constant_range") nonisolated public init(_ data: Swift.Range<Swift.Int>, @SwiftUI.TableColumnBuilder<SwiftUI.TableColumnForEach<Swift.Range<Swift.Int>, Swift.Int, RowValue, Sort, Content>.TableRowValue, SwiftUI.TableColumnForEach<Swift.Range<Swift.Int>, Swift.Int, RowValue, Sort, Content>.TableColumnSortComparator> content: @escaping (Swift.Int) -> Content) where Data == Swift.Range<Swift.Int>, ID == Swift.Int { _suiUnimplemented("SwiftUI.TableColumnForEach.init(_:?:)") }
   public static func _makeContent(content: _GraphValue<SwiftUI.TableColumnForEach<Data, ID, RowValue, Sort, Content>>, inputs: SwiftUI._TableColumnInputs) -> SwiftUI._TableColumnOutputs { _suiUnimplemented("SwiftUI.TableColumnForEach._makeContent(content:inputs:)") }
+  // port: synthesized witness for TableColumnContent (R7); Apple implements it with an internal member
+  public nonisolated var tableColumnBody: Swift.Never { get { _suiUnimplemented("SwiftUI.TableColumnForEach.tableColumnBody") } }
 }
 #else
 @available(iOS 17.4, macOS 14.4, visionOS 1.1, *)
@@ -16127,6 +15986,8 @@ nonisolated public struct AnyTabContent<SelectionValue> : SwiftUI.TabContent, ~S
   public typealias Body = SwiftUI.AnyTabContent<SelectionValue>
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias _IdentifiedView = AnyView
+  // port: synthesized witness for TabContent (R7); Apple implements it with an internal member
+  public var body: SwiftUI.AnyTabContent<SelectionValue> { get { _suiUnimplemented("SwiftUI.AnyTabContent.body") } }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -16172,12 +16033,6 @@ nonisolated public struct CheckboxToggleStyle : SwiftUI.ToggleStyle, ~Swift.Send
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.CheckboxToggleStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.CheckboxToggleStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(macOS 10.15, *)
@@ -16188,11 +16043,6 @@ nonisolated public struct CheckboxToggleStyle : SwiftUI.ToggleStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.CheckboxToggleStyle.Configuration) -> some View
   
-  @available(macOS 10.15, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI19CheckboxToggleStyleV8makeBody13configurationQrAA0dE13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -16218,11 +16068,6 @@ nonisolated public struct RoundedBorderTextEditorStyle : SwiftUI.TextEditorStyle
 nonisolated public func makeBody(configuration: SwiftUI.RoundedBorderTextEditorStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.RoundedBorderTextEditorStyle.makeBody(configuration:)") }
   
   nonisolated public init() { _suiUnimplemented("SwiftUI.RoundedBorderTextEditorStyle.init()") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(visionOS 1.0, *)
-      @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(visionOS 1.0, *)
@@ -16232,10 +16077,6 @@ nonisolated public struct RoundedBorderTextEditorStyle : SwiftUI.TextEditorStyle
   nonisolated public func makeBody(configuration: SwiftUI.RoundedBorderTextEditorStyle.Configuration) -> some View
   
   nonisolated public init()
-  @available(visionOS 1.0, *)
-      @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI28RoundedBorderTextEditorStyleV8makeBody13configurationQrAA0efG13ConfigurationV_tF", 0) __
 }
 #endif
 @available(visionOS 1.0, *)
@@ -16269,15 +16110,15 @@ nonisolated public struct GroupBox<Label, Content> : View, ~Swift.Sendable where
   @export(implementation) nonisolated public init(@ContentBuilder content: () -> Content, @ContentBuilder label: () -> Label) {
         self.init(label: label(), content: content)
     }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.GroupBox.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GroupBox._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.GroupBox._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.GroupBox._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 10.15, *)
@@ -16293,10 +16134,6 @@ nonisolated public struct GroupBox<Label, Content> : View where Label : View, Co
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI8GroupBoxV4bodyQrvp", 0) __<Label, Content>
 }
 #endif
 @available(iOS 14.0, macOS 11.0, *)
@@ -16408,11 +16245,6 @@ nonisolated public struct InsetTableStyle : SwiftUI.TableStyle, ~Swift.Sendable 
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.InsetTableStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.InsetTableStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 12.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -16425,10 +16257,6 @@ nonisolated public struct InsetTableStyle : SwiftUI.TableStyle {
   nonisolated public init(alternatesRowBackgrounds: Swift.Bool)
   nonisolated public func makeBody(configuration: SwiftUI.InsetTableStyle.Configuration) -> some View
   
-  @available(macOS 12.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI15InsetTableStyleV8makeBody13configurationQrAA0dE13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -16545,10 +16373,6 @@ extension SwiftUI.TabsPickerStyle : Swift.Sendable {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.LinearCapacityGaugeStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.LinearCapacityGaugeStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -16557,9 +16381,6 @@ extension SwiftUI.TabsPickerStyle : Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public init()
   @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.LinearCapacityGaugeStyle.Configuration) -> some View
   
-  @available(macOS 13.0, iOS 16.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI24LinearCapacityGaugeStyleV8makeBody13configurationQrAA0eF13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -16686,16 +16507,9 @@ nonisolated public struct AlertScene<Actions, Message> : SwiftUI.Scene, ~Swift.S
     }
   @usableFromInline
   nonisolated internal init<T>(_ title: Text, _item data: Binding<T?>, @ContentBuilder actions: (T) -> Actions, @ContentBuilder message: (T) -> Message) { _suiUnimplemented("SwiftUI.AlertScene.init(_:_item:actions:message:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.AlertScene.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 15.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(macOS 15.0, *)
@@ -16817,11 +16631,6 @@ nonisolated public struct AlertScene<Actions, Message> : SwiftUI.Scene where Act
   nonisolated public var body: some SwiftUI.Scene {
     get
   }
-  @available(macOS 15.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI10AlertSceneV4bodyQrvp", 0) __<Actions, Message>
 }
 #endif
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, visionOS 2.0, *)
@@ -16920,6 +16729,8 @@ nonisolated public struct AnyCompositorContent : SwiftUI.CompositorContent, ~Swi
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias _ViewRepresentation = AnyView
+  // port: synthesized witness for CompositorContent (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.AnyCompositorContent.body") } }
 }
 #else
 @available(macOS 26.0, visionOS 26.0, *)
@@ -17438,13 +17249,15 @@ public static func buildBlock() -> Swift.Never { _suiUnimplemented("SwiftUI.Slid
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 nonisolated public struct Form<Content> : View, ~Swift.Sendable where Content : View {
   nonisolated public init(@ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUI.Form.init(content:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Form.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Form._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Form._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Form._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -17453,8 +17266,6 @@ nonisolated public struct Form<Content> : View where Content : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI4FormV4bodyQrvp", 0) __<Content>
 }
 #endif
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -17492,6 +17303,8 @@ nonisolated public struct EmptyCommands : SwiftUI.Commands, ~Swift.Sendable {
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for Commands (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.EmptyCommands.body") } }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -17600,15 +17413,15 @@ extension SwiftUI.Scene {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 nonisolated public struct MultiDatePicker<Label> : View, ~Swift.Sendable where Label : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.MultiDatePicker.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(iOS 16.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.MultiDatePicker._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.MultiDatePicker._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.MultiDatePicker._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, *)
@@ -17618,10 +17431,6 @@ nonisolated public struct MultiDatePicker<Label> : View where Label : View {
   nonisolated public var body: some View {
     get
   }
-  @available(iOS 16.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI15MultiDatePickerV4bodyQrvp", 0) __<Label>
 }
 #endif
 @available(iOS 16.0, *)
@@ -17945,6 +17754,12 @@ nonisolated public struct _DraggingModifier : ViewModifier, ~Swift.Sendable {
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._DraggingModifier._makeViewList(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._DraggingModifier._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._DraggingModifier.body(content:)") }
 }
 #else
 @available(iOS 13.4, macOS 10.15, *)
@@ -17970,6 +17785,14 @@ nonisolated public struct HSplitView<Content> : View, ~Swift.Sendable where Cont
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.HSplitView._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.HSplitView._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.HSplitView._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.HSplitView.body") } }
 }
 #else
 @available(macOS 10.15, *)
@@ -17997,6 +17820,14 @@ nonisolated public struct VSplitView<Content> : View, ~Swift.Sendable where Cont
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.VSplitView._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.VSplitView._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.VSplitView._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.VSplitView.body") } }
 }
 #else
 @available(macOS 10.15, *)
@@ -18024,12 +17855,6 @@ nonisolated public struct VSplitView<Content> : View where Content : View {
   @_Concurrency.MainActor @preconcurrency public static var _viewListOptions: Swift.Int {
     get { _suiUnimplemented("SwiftUI._SplitViewContainer._viewListOptions") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(macOS 10.15, *)
@@ -18042,11 +17867,6 @@ nonisolated public struct VSplitView<Content> : View where Content : View {
   @_Concurrency.MainActor @preconcurrency public static var _viewListOptions: Swift.Int {
     get
   }
-  @available(macOS 10.15, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI19_SplitViewContainerV4body8childrenQrAA09_VariadicD9_ChildrenV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -18059,12 +17879,6 @@ public struct PullDownMenuButtonStyle : SwiftUI.MenuButtonStyle, ~Swift.Sendable
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func _body(configuration: SwiftUI.PullDownMenuButtonStyle._Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.PullDownMenuButtonStyle._body(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `BorderedButtonMenuStyle` instead.")
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias _Body = Swift.Never
 }
 #else
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `BorderedButtonMenuStyle` instead.")
@@ -18075,11 +17889,6 @@ public struct PullDownMenuButtonStyle : SwiftUI.MenuButtonStyle {
   public init()
   public func _body(configuration: SwiftUI.PullDownMenuButtonStyle._Configuration) -> some View
   
-  @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `BorderedButtonMenuStyle` instead.")
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias _Body = @_opaqueReturnTypeOf("$s7SwiftUI23PullDownMenuButtonStyleV5_body13configurationQrAA01_efG13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -18092,12 +17901,6 @@ public struct BorderlessPullDownMenuButtonStyle : SwiftUI.MenuButtonStyle, ~Swif
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func _body(configuration: SwiftUI.BorderlessPullDownMenuButtonStyle._Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderlessPullDownMenuButtonStyle._body(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `BorderlessButtonMenuStyle` instead.")
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias _Body = Swift.Never
 }
 #else
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `BorderlessButtonMenuStyle` instead.")
@@ -18108,11 +17911,6 @@ public struct BorderlessPullDownMenuButtonStyle : SwiftUI.MenuButtonStyle {
   public init()
   public func _body(configuration: SwiftUI.BorderlessPullDownMenuButtonStyle._Configuration) -> some View
   
-  @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `BorderlessButtonMenuStyle` instead.")
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias _Body = @_opaqueReturnTypeOf("$s7SwiftUI33BorderlessPullDownMenuButtonStyleV5_body13configurationQrAA01_fgH13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -18125,12 +17923,6 @@ public struct BorderlessButtonMenuButtonStyle : SwiftUI.MenuButtonStyle, ~Swift.
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func _body(configuration: SwiftUI.BorderlessButtonMenuButtonStyle._Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderlessButtonMenuButtonStyle._body(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `BorderlessButtonMenuStyle` instead.")
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias _Body = Swift.Never
 }
 #else
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `BorderlessButtonMenuStyle` instead.")
@@ -18141,11 +17933,6 @@ public struct BorderlessButtonMenuButtonStyle : SwiftUI.MenuButtonStyle {
   public init()
   public func _body(configuration: SwiftUI.BorderlessButtonMenuButtonStyle._Configuration) -> some View
   
-  @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `BorderlessButtonMenuStyle` instead.")
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias _Body = @_opaqueReturnTypeOf("$s7SwiftUI020BorderlessButtonMenuD5StyleV5_body13configurationQrAA01_edF13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -18158,12 +17945,6 @@ public struct _TexturedPullDownMenuButtonStyle : SwiftUI.MenuButtonStyle, ~Swift
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func _body(configuration: SwiftUI._TexturedPullDownMenuButtonStyle._Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI._TexturedPullDownMenuButtonStyle._body(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `TexturedButtonMenuStyle` instead.")
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias _Body = Swift.Never
 }
 #else
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `TexturedButtonMenuStyle` instead.")
@@ -18174,11 +17955,6 @@ public struct _TexturedPullDownMenuButtonStyle : SwiftUI.MenuButtonStyle {
   public init()
   public func _body(configuration: SwiftUI._TexturedPullDownMenuButtonStyle._Configuration) -> some View
   
-  @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `TexturedButtonMenuStyle` instead.")
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias _Body = @_opaqueReturnTypeOf("$s7SwiftUI32_TexturedPullDownMenuButtonStyleV5_body13configurationQrAA01_fgH13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -18187,15 +17963,9 @@ public struct _TexturedPullDownMenuButtonStyle : SwiftUI.MenuButtonStyle {
 @available(watchOS, unavailable)
 nonisolated public struct TextEditingCommands : SwiftUI.Commands, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.TextEditingCommands.init()") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Commands {
     get { _suiUnimplemented("SwiftUI.TextEditingCommands.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -18206,10 +17976,6 @@ nonisolated public struct TextEditingCommands : SwiftUI.Commands {
   nonisolated public var body: some SwiftUI.Commands {
     get
   }
-  @available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI19TextEditingCommandsV4bodyQrvp", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -18218,15 +17984,9 @@ nonisolated public struct TextEditingCommands : SwiftUI.Commands {
 @available(watchOS, unavailable)
 nonisolated public struct TextFormattingCommands : SwiftUI.Commands, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.TextFormattingCommands.init()") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Commands {
     get { _suiUnimplemented("SwiftUI.TextFormattingCommands.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -18237,10 +17997,6 @@ nonisolated public struct TextFormattingCommands : SwiftUI.Commands {
   nonisolated public var body: some SwiftUI.Commands {
     get
   }
-  @available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI22TextFormattingCommandsV4bodyQrvp", 0) __
 }
 #endif
 @available(iOS 17.0, macOS 14.0, *)
@@ -18326,15 +18082,15 @@ public func hoverEffectPhaseOverride(_ override: SwiftUI.HoverEffectPhaseOverrid
 nonisolated public struct DisclosureGroup<Label, Content> : View, ~Swift.Sendable where Label : View, Content : View {
   nonisolated public init(@ContentBuilder content: @escaping () -> Content, @ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUI.DisclosureGroup.init(content:label:)") }
   nonisolated public init(isExpanded: Binding<Swift.Bool>, @ContentBuilder content: @escaping () -> Content, @ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUI.DisclosureGroup.init(isExpanded:content:label:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DisclosureGroup.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DisclosureGroup._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DisclosureGroup._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DisclosureGroup._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -18346,10 +18102,6 @@ nonisolated public struct DisclosureGroup<Label, Content> : View where Label : V
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI15DisclosureGroupV4bodyQrvp", 0) __<Label, Content>
 }
 #endif
 @available(iOS 14.0, macOS 11.0, *)
@@ -18410,13 +18162,15 @@ public struct PlainWindowStyle : SwiftUI.WindowStyle {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 nonisolated public struct Picker<Label, SelectionValue, Content> : View, ~Swift.Sendable where Label : View, SelectionValue : Swift.Hashable, Content : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Picker.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Picker._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Picker._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Picker._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -18424,8 +18178,6 @@ nonisolated public struct Picker<Label, SelectionValue, Content> : View where La
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI6PickerV4bodyQrvp", 0) __<Label, SelectionValue, Content>
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -18740,8 +18492,7 @@ extension SwiftUI.Tab : SwiftUI.TabContent where Value : Swift.Hashable, Content
   nonisolated public init(value: Value, role: SwiftUI.TabRole?, @ContentBuilder content: () -> Content, @ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUI.Tab.init(value:role:content:label:)") }
   nonisolated public init<V>(value: V, @ContentBuilder content: () -> Content, @ContentBuilder label: () -> Label) where Value == V?, V : Swift.Hashable { _suiUnimplemented("SwiftUI.Tab.init(value:content:label:)") }
   nonisolated public init<V>(value: V, role: SwiftUI.TabRole?, @ContentBuilder content: () -> Content, @ContentBuilder label: () -> Label) where Value == V?, V : Swift.Hashable { _suiUnimplemented("SwiftUI.Tab.init(value:role:content:label:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var _identifiedView: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var _identifiedView: some View {
     get { _suiUnimplemented("SwiftUI.Tab._identifiedView") }
   }
   @_Concurrency.MainActor @preconcurrency public var body: SwiftUI.Tab<Value, Content, Label> {
@@ -18749,9 +18500,6 @@ extension SwiftUI.Tab : SwiftUI.TabContent where Value : Swift.Hashable, Content
   }
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias Body = SwiftUI.Tab<Value, Content, Label>
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public typealias _IdentifiedView = Swift.Never
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.Tab where Value == Swift.Never, Content : View, Label : View {
@@ -18801,13 +18549,9 @@ nonisolated public func tabViewSidebarBottomBar<Content>(@ContentBuilder content
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 nonisolated public struct AssistiveAccess<Content> : SwiftUI.Scene, ~Swift.Sendable where Content : View {
   nonisolated public init(@ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUI.AssistiveAccess.init(content:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.AssistiveAccess.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -18816,8 +18560,6 @@ nonisolated public struct AssistiveAccess<Content> : SwiftUI.Scene where Content
   nonisolated public var body: some SwiftUI.Scene {
     get
   }
-  @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI15AssistiveAccessV4bodyQrvp", 0) __<Content>
 }
 #endif
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -18915,6 +18657,8 @@ extension _ConditionalContent : SwiftUI.TableRowContent where TrueContent : Swif
   nonisolated public static func _containsOutlineSymbol(inputs: SwiftUI._TableRowInputs) -> Swift.Bool { _suiUnimplemented("SwiftUI._ConditionalContent._containsOutlineSymbol(inputs:)") }
   @usableFromInline
   internal init(storage: _ConditionalContent<TrueContent, FalseContent>.Storage) { _suiUnimplemented("SwiftUI._ConditionalContent.init(storage:)") }
+  // port: synthesized witness for TableRowContent (R7); Apple implements it with an internal member
+  public var tableRowBody: Swift.Never { get { _suiUnimplemented("SwiftUI._ConditionalContent.tableRowBody") } }
 }
 @available(iOS 16.0, macOS 13.0, *)
 @available(tvOS, unavailable)
@@ -18928,6 +18672,8 @@ extension Swift.Optional : SwiftUI.TableRowContent where Wrapped : SwiftUI.Table
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   nonisolated public static func _containsOutlineSymbol(inputs: SwiftUI._TableRowInputs) -> Swift.Bool { _suiUnimplemented("SwiftUI.Optional._containsOutlineSymbol(inputs:)") }
+  // port: synthesized witness for TableRowContent (R7); Apple implements it with an internal member
+  public var tableRowBody: Swift.Never { get { _suiUnimplemented("SwiftUI.Optional.tableRowBody") } }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension View {
@@ -18985,13 +18731,15 @@ nonisolated public struct AsyncImage<Content> : View, ~Swift.Sendable where Cont
   nonisolated public init<I, P>(request: FoundationNetworking.URLRequest?, scale: CoreGraphics.CGFloat = 1, @ContentBuilder content: @escaping (Image) -> I, @ContentBuilder placeholder: @escaping () -> P) where Content == SwiftUI._AsyncImageConditionalContent<I, P>, I : View, P : View { _suiUnimplemented("SwiftUI.AsyncImage.init(request:scale:content:placeholder:)") }
   @available(anyAppleOS 27.0, *)
   nonisolated public init(request: FoundationNetworking.URLRequest?, scale: CoreGraphics.CGFloat = 1, transaction: Transaction = Transaction(), @ContentBuilder content: @escaping (SwiftUI.AsyncImagePhase) -> Content) { _suiUnimplemented("SwiftUI.AsyncImage.init(request:scale:transaction:content:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.AsyncImage.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.AsyncImage._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.AsyncImage._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.AsyncImage._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -19016,8 +18764,6 @@ nonisolated public struct AsyncImage<Content> : View where Content : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI10AsyncImageV4bodyQrvp", 0) __<Content>
 }
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -19041,13 +18787,15 @@ extension View {
 #if compiler(>=5.3) && $TildeSendable
 @available(anyAppleOS 27.0, *)
 nonisolated public struct _AsyncImageConditionalContent<Content, Placeholder> : View, ~Swift.Sendable where Content : View, Placeholder : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI._AsyncImageConditionalContent.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(anyAppleOS 27.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._AsyncImageConditionalContent._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._AsyncImageConditionalContent._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._AsyncImageConditionalContent._viewListCount(inputs:)") }
 }
 #else
 @available(anyAppleOS 27.0, *)
@@ -19055,8 +18803,6 @@ nonisolated public struct _AsyncImageConditionalContent<Content, Placeholder> : 
   nonisolated public var body: some View {
     get
   }
-  @available(anyAppleOS 27.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI29_AsyncImageConditionalContentV4bodyQrvp", 0) __<Content, Placeholder>
 }
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -19166,6 +18912,8 @@ public struct SelectionShapeStyle : ShapeStyle {
   @available(tvOS, unavailable, introduced: 17.0)
   @available(watchOS, unavailable, introduced: 10.0)
   public typealias Resolved = Swift.Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift.Never { _suiUnimplemented("SwiftUI.SelectionShapeStyle.resolve(in:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `menuStyle(.automatic)` instead.")
@@ -19177,12 +18925,6 @@ public struct DefaultMenuButtonStyle : SwiftUI.MenuButtonStyle, ~Swift.Sendable 
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func _body(configuration: SwiftUI.DefaultMenuButtonStyle._Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultMenuButtonStyle._body(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `menuStyle(.automatic)` instead.")
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias _Body = Swift.Never
 }
 #else
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `menuStyle(.automatic)` instead.")
@@ -19193,11 +18935,6 @@ public struct DefaultMenuButtonStyle : SwiftUI.MenuButtonStyle {
   public init()
   public func _body(configuration: SwiftUI.DefaultMenuButtonStyle._Configuration) -> some View
   
-  @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `menuStyle(.automatic)` instead.")
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias _Body = @_opaqueReturnTypeOf("$s7SwiftUI22DefaultMenuButtonStyleV5_body13configurationQrAA01_deF13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 14.5, macOS 11.3, tvOS 14.5, watchOS 7.4, *)
@@ -19215,9 +18952,6 @@ nonisolated public struct TitleAndIconLabelStyle : SwiftUI.LabelStyle, ~Swift.Se
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.TitleAndIconLabelStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.TitleAndIconLabelStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.3, iOS 14.5, tvOS 14.5, watchOS 7.4, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.5, macOS 11.3, tvOS 14.5, watchOS 7.4, *)
@@ -19225,8 +18959,6 @@ nonisolated public struct TitleAndIconLabelStyle : SwiftUI.LabelStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.TitleAndIconLabelStyle.Configuration) -> some View
   
-  @available(macOS 11.3, iOS 14.5, tvOS 14.5, watchOS 7.4, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI22TitleAndIconLabelStyleV8makeBody13configurationQrAA0fG13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -19242,16 +18974,9 @@ nonisolated public struct UtilityWindow<Content> : SwiftUI.Scene, ~Swift.Sendabl
             Text(titleResource), id: id, content: content)
     }
   @_disfavoredOverload nonisolated public init<S>(_ title: S, id: Swift.String, @ContentBuilder content: () -> Content) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.UtilityWindow.init(_:id:content:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.UtilityWindow.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 15.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(macOS 15.0, *)
@@ -19269,22 +18994,13 @@ nonisolated public struct UtilityWindow<Content> : SwiftUI.Scene where Content :
   nonisolated public var body: some SwiftUI.Scene {
     get
   }
-  @available(macOS 15.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI13UtilityWindowV4bodyQrvp", 0) __<Content>
 }
 #endif
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension Image : CoreTransferable.Transferable {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-public static var transferRepresentation: Swift.Never {
+  public static var transferRepresentation: some CoreTransferable.TransferRepresentation {
     get { _suiUnimplemented("SwiftUI.Image.transferRepresentation") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Representation = Swift.Never
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -19303,13 +19019,15 @@ nonisolated public struct ScrollView<Content> : View, ~Swift.Sendable where Cont
   @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "Use the ScrollView(_:content:) initializer and the scrollIndicators(:_) modifier")
   @available(watchOS, introduced: 6.0, deprecated: 100000.0, message: "Use the ScrollView(_:content:) initializer and the scrollIndicators(:_) modifier")
   nonisolated public init(_ axes: Axis.Set = .vertical, showsIndicators: Swift.Bool = true, @ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUI.ScrollView.init(_:showsIndicators:content:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.ScrollView.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ScrollView._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ScrollView._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ScrollView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -19331,8 +19049,6 @@ nonisolated public struct ScrollView<Content> : View where Content : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI10ScrollViewV4bodyQrvp", 0) __<Content>
 }
 #endif
 extension SwiftUI.ScrollView {
@@ -19362,9 +19078,6 @@ extension SwiftUI.NavigationSplitViewStyle where Self == SwiftUI.AutomaticNaviga
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AutomaticNavigationSplitViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AutomaticNavigationSplitViewStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -19372,8 +19085,6 @@ extension SwiftUI.NavigationSplitViewStyle where Self == SwiftUI.AutomaticNaviga
   @_Concurrency.MainActor @preconcurrency public init()
   @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AutomaticNavigationSplitViewStyle.Configuration) -> some View
   
-  @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI33AutomaticNavigationSplitViewStyleV8makeBody13configurationQrAA0defG13ConfigurationV_tF", 0) __
 }
 #endif
 extension View {
@@ -19492,13 +19203,15 @@ nonisolated public struct NavigationStack<Data, Root> : View, ~Swift.Sendable wh
   nonisolated public init(@ContentBuilder root: () -> Root) where Data == SwiftUI.NavigationPath { _suiUnimplemented("SwiftUI.NavigationStack.init(root:)") }
   nonisolated public init(path: Binding<SwiftUI.NavigationPath>, @ContentBuilder root: () -> Root) where Data == SwiftUI.NavigationPath { _suiUnimplemented("SwiftUI.NavigationStack.init(path:root:)") }
   nonisolated public init(path: Binding<Data>, @ContentBuilder root: () -> Root) where Data : Swift.MutableCollection, Data : Swift.RandomAccessCollection, Data : Swift.RangeReplaceableCollection, Data.Element : Swift.Hashable { _suiUnimplemented("SwiftUI.NavigationStack.init(path:root:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.NavigationStack.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.NavigationStack._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.NavigationStack._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.NavigationStack._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -19509,8 +19222,6 @@ nonisolated public struct NavigationStack<Data, Root> : View where Root : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI15NavigationStackV4bodyQrvp", 0) __<Data, Root>
 }
 #endif
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -19526,9 +19237,6 @@ nonisolated public struct GroupedFormStyle : SwiftUI.FormStyle, ~Swift.Sendable 
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.GroupedFormStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.GroupedFormStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -19536,8 +19244,6 @@ nonisolated public struct GroupedFormStyle : SwiftUI.FormStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.GroupedFormStyle.Configuration) -> some View
   
-  @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI16GroupedFormStyleV8makeBody13configurationQrAA0dE13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -19570,6 +19276,12 @@ extension SwiftUI.ButtonBorderShape : Shape {
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Body = _ShapeView<SwiftUI.ButtonBorderShape, ForegroundStyle>
+  // port: synthesized witness for Shape (R7); Apple implements it with an internal member
+  public nonisolated static var role: ShapeRole { get { _suiUnimplemented("SwiftUI.ButtonBorderShape.role") } }
+  // port: synthesized witness for Shape (R7); Apple implements it with an internal member
+  public nonisolated var layoutDirectionBehavior: LayoutDirectionBehavior { get { _suiUnimplemented("SwiftUI.ButtonBorderShape.layoutDirectionBehavior") } }
+  // port: synthesized witness for Shape (R7); Apple implements it with an internal member
+  public nonisolated func sizeThatFits(_ proposal: ProposedViewSize) -> CoreGraphics::CGSize { _suiUnimplemented("SwiftUI.ButtonBorderShape.sizeThatFits(_:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension Shape where Self == SwiftUI.ButtonBorderShape {
@@ -19624,15 +19336,20 @@ extension SwiftUI.ButtonBorderShape : InsettableShape {
     @usableFromInline
     internal typealias InsetShape = SwiftUI.ButtonBorderShape._Inset
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias InsetShape = Swift.Never
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 nonisolated public struct AccessibilityAttachmentModifier : ViewModifier, ~Swift.Sendable {
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(modifier: _GraphValue<Self>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.AccessibilityAttachmentModifier._makeView(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.AccessibilityAttachmentModifier._makeViewList(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI.AccessibilityAttachmentModifier._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI.AccessibilityAttachmentModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -19666,20 +19383,6 @@ public func _body(configuration: SwiftUI._NavigationViewStyleConfiguration) -> S
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
   public func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultNavigationViewStyle._columnBasedBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS, introduced: 10.15, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView instead")
-  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  public typealias _Body = Swift.Never
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS, introduced: 10.15, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView instead")
-  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  public typealias _Body2 = Swift.Never
 }
 #else
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
@@ -19694,18 +19397,6 @@ public struct DefaultNavigationViewStyle : SwiftUI.NavigationViewStyle {
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
   public func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> some View
   
-  @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView instead")
-  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  public typealias _Body = @_opaqueReturnTypeOf("$s7SwiftUI26DefaultNavigationViewStyleV5_body13configurationQrAA01_deF13ConfigurationV_tF", 0) __
-  @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView instead")
-  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  public typealias _Body2 = @_opaqueReturnTypeOf("$s7SwiftUI26DefaultNavigationViewStyleV16_columnBasedBody13configurationQrAA01_deF13ConfigurationV_tF", 0) __
 }
 #endif
 @available(visionOS 2.0, *)
@@ -19862,14 +19553,15 @@ extension SwiftUI.DragConfiguration : Swift.CustomDebugStringConvertible {
 @available(watchOS, unavailable)
 nonisolated public struct ControlGroup<Content> : View, ~Swift.Sendable where Content : View {
   nonisolated public init(@ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUI.ControlGroup.init(content:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.ControlGroup.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 12.0, iOS 15.0, tvOS 17.0, *)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ControlGroup._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ControlGroup._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ControlGroup._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 17.0, *)
@@ -19879,23 +19571,21 @@ nonisolated public struct ControlGroup<Content> : View where Content : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 12.0, iOS 15.0, tvOS 17.0, *)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI12ControlGroupV4bodyQrvp", 0) __<Content>
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 17.0, *)
 @available(watchOS, unavailable)
 nonisolated public struct LabeledControlGroupContent<Content, Label> : View, ~Swift.Sendable where Content : View, Label : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.LabeledControlGroupContent.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 17.0, *)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LabeledControlGroupContent._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LabeledControlGroupContent._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LabeledControlGroupContent._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 17.0, *)
@@ -19904,9 +19594,6 @@ nonisolated public struct LabeledControlGroupContent<Content, Label> : View wher
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 13.0, iOS 16.0, tvOS 17.0, *)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI26LabeledControlGroupContentV4bodyQrvp", 0) __<Content, Label>
 }
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 17.0, *)
@@ -20015,9 +19702,6 @@ public subscript<K>(type: K.Type) -> Swift.Never where K : Foundation.Attributed
     }
     @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
     public typealias Element = Foundation.AttributeContainer
-        // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-    public typealias Iterator = Swift.Never
   }
   #else
   public struct Attributes<Text> : Swift.Sequence {
@@ -20031,8 +19715,6 @@ public subscript<K>(type: K.Type) -> Swift.Never where K : Foundation.Attributed
     }
     @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
     public typealias Element = Foundation.AttributeContainer
-    @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-    public typealias Iterator = @_opaqueReturnTypeOf("$s7SwiftUI23AttributedTextSelectionV10AttributesV12makeIteratorQryF", 0) __<Text>
   }
   #endif
 }
@@ -20235,10 +19917,6 @@ extension SwiftUI.GaugeStyle where Self == SwiftUI.AccessoryLinearGaugeStyle {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AccessoryLinearGaugeStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AccessoryLinearGaugeStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -20247,9 +19925,6 @@ extension SwiftUI.GaugeStyle where Self == SwiftUI.AccessoryLinearGaugeStyle {
   @_Concurrency.MainActor @preconcurrency public init()
   @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AccessoryLinearGaugeStyle.Configuration) -> some View
   
-  @available(macOS 13.0, iOS 16.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI25AccessoryLinearGaugeStyleV8makeBody13configurationQrAA0eF13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 16.0, macOS 13.0, *)
@@ -20306,6 +19981,12 @@ nonisolated public struct PresentedWindowContent<Data, Content> : View, ~Swift.S
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.PresentedWindowContent._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.PresentedWindowContent._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.PresentedWindowContent.body") } }
 }
 #else
 @available(iOS 16.0, macOS 13.0, *)
@@ -20334,10 +20015,6 @@ nonisolated public struct DefaultMenuStyle : SwiftUI.MenuStyle, ~Swift.Sendable 
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.DefaultMenuStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultMenuStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, tvOS 17.0, *)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 17.0, *)
@@ -20346,9 +20023,6 @@ nonisolated public struct DefaultMenuStyle : SwiftUI.MenuStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.DefaultMenuStyle.Configuration) -> some View
   
-  @available(macOS 11.0, iOS 14.0, tvOS 17.0, *)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI16DefaultMenuStyleV8makeBody13configurationQrAA0dE13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 26.0, *)
@@ -20537,7 +20211,15 @@ public struct FormStyleConfiguration : ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public struct Content : View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.FormStyleConfiguration.Content._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.FormStyleConfiguration.Content._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.FormStyleConfiguration.Content._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.FormStyleConfiguration.Content.body") } }
+}
   public let content: SwiftUI.FormStyleConfiguration.Content
 }
 #else
@@ -20767,15 +20449,13 @@ public struct TabSection<Header, Content, Footer, SelectionValue> {
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.TabSection : SwiftUI.TabContent where Header : View, Content : SwiftUI.TabContent, Footer : View, SelectionValue == Content.TabValue {
   public typealias TabValue = Content.TabValue
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var _identifiedView: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var _identifiedView: some View {
     get { _suiUnimplemented("SwiftUI.TabSection._identifiedView") }
   }
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias Body = SwiftUI.TabSection<Header, Content, Footer, SelectionValue>
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public typealias _IdentifiedView = Swift.Never
+  // port: synthesized witness for TabContent (R7); Apple implements it with an internal member
+  public var body: SwiftUI.TabSection<Header, Content, Footer, SelectionValue> { get { _suiUnimplemented("SwiftUI.TabSection.body") } }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.TabSection where Content : SwiftUI.TabContent, SelectionValue : Swift.Hashable {
@@ -20811,13 +20491,15 @@ extension SwiftUI.TabSection where Content : SwiftUI.TabContent, SelectionValue 
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 nonisolated public struct DefaultTabLabel : View, ~Swift.Sendable {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DefaultTabLabel.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultTabLabel._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultTabLabel._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultTabLabel._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -20825,8 +20507,6 @@ nonisolated public struct DefaultTabLabel : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI15DefaultTabLabelV4bodyQrvp", 0) __
 }
 #endif
 @available(watchOS 7.0, *)
@@ -20873,11 +20553,6 @@ nonisolated public struct NavigationControlGroupStyle : SwiftUI.ControlGroupStyl
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.NavigationControlGroupStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.NavigationControlGroupStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 12.0, iOS 15.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 15.0, macOS 12.0, *)
@@ -20887,10 +20562,6 @@ nonisolated public struct NavigationControlGroupStyle : SwiftUI.ControlGroupStyl
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.NavigationControlGroupStyle.Configuration) -> some View
   
-  @available(macOS 12.0, iOS 15.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI27NavigationControlGroupStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
 }
 #endif
 @available(watchOS 10.0, *)
@@ -20944,15 +20615,9 @@ nonisolated public struct VerticalPageTabViewStyle : SwiftUI.TabViewStyle {
 @available(watchOS, unavailable)
 nonisolated public struct ToolbarCommands : SwiftUI.Commands, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.ToolbarCommands.init()") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Commands {
     get { _suiUnimplemented("SwiftUI.ToolbarCommands.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -20963,10 +20628,6 @@ nonisolated public struct ToolbarCommands : SwiftUI.Commands {
   nonisolated public var body: some SwiftUI.Commands {
     get
   }
-  @available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI15ToolbarCommandsV4bodyQrvp", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -20975,15 +20636,9 @@ nonisolated public struct ToolbarCommands : SwiftUI.Commands {
 @available(watchOS, unavailable)
 nonisolated public struct SidebarCommands : SwiftUI.Commands, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.SidebarCommands.init()") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Commands {
     get { _suiUnimplemented("SwiftUI.SidebarCommands.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -20994,10 +20649,6 @@ nonisolated public struct SidebarCommands : SwiftUI.Commands {
   nonisolated public var body: some SwiftUI.Commands {
     get
   }
-  @available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI15SidebarCommandsV4bodyQrvp", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -21006,15 +20657,9 @@ nonisolated public struct SidebarCommands : SwiftUI.Commands {
 @available(watchOS, unavailable)
 nonisolated public struct InspectorCommands : SwiftUI.Commands, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.InspectorCommands.init()") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Commands {
     get { _suiUnimplemented("SwiftUI.InspectorCommands.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 17.0, macOS 14.0, *)
@@ -21025,10 +20670,6 @@ nonisolated public struct InspectorCommands : SwiftUI.Commands {
   nonisolated public var body: some SwiftUI.Commands {
     get
   }
-  @available(macOS 14.0, iOS 17.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI17InspectorCommandsV4bodyQrvp", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -21038,16 +20679,9 @@ nonisolated public struct InspectorCommands : SwiftUI.Commands {
 @available(visionOS, unavailable)
 nonisolated public struct ImportFromDevicesCommands : SwiftUI.Commands, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.ImportFromDevicesCommands.init()") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Commands {
     get { _suiUnimplemented("SwiftUI.ImportFromDevicesCommands.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 12.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(macOS 12.0, *)
@@ -21059,11 +20693,6 @@ nonisolated public struct ImportFromDevicesCommands : SwiftUI.Commands {
   nonisolated public var body: some SwiftUI.Commands {
     get
   }
-  @available(macOS 12.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI25ImportFromDevicesCommandsV4bodyQrvp", 0) __
 }
 #endif
 @available(iOS 27.0, *)
@@ -21074,17 +20703,9 @@ nonisolated public struct ImportFromDevicesCommands : SwiftUI.Commands {
 nonisolated public struct ExternalNonInteractiveAccessory<Content> : SwiftUI.SceneAccessoryContent where Content : View {
   nonisolated public init(@ContentBuilder content: @escaping () -> Content) { _suiUnimplemented("SwiftUI.ExternalNonInteractiveAccessory.init(content:)") }
   nonisolated public init(isEnabled: Binding<Swift.Bool>, @ContentBuilder content: @escaping () -> Content) { _suiUnimplemented("SwiftUI.ExternalNonInteractiveAccessory.init(isEnabled:content:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.SceneAccessoryContent {
     get { _suiUnimplemented("SwiftUI.ExternalNonInteractiveAccessory.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(iOS 27.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(macCatalyst, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 @available(*, unavailable)
 extension SwiftUI.ExternalNonInteractiveAccessory : Swift.Sendable {
@@ -21097,17 +20718,9 @@ extension SwiftUI.ExternalNonInteractiveAccessory : Swift.Sendable {
 nonisolated public struct CameraCaptureAccessory<Content> : SwiftUI.SceneAccessoryContent where Content : View {
   nonisolated public init(@ContentBuilder content: @escaping () -> Content) { _suiUnimplemented("SwiftUI.CameraCaptureAccessory.init(content:)") }
   nonisolated public init(isEnabled: Binding<Swift.Bool>, @ContentBuilder content: @escaping () -> Content) { _suiUnimplemented("SwiftUI.CameraCaptureAccessory.init(isEnabled:content:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.SceneAccessoryContent {
     get { _suiUnimplemented("SwiftUI.CameraCaptureAccessory.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(iOS 27.1, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(macCatalyst, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 @available(*, unavailable)
 extension SwiftUI.CameraCaptureAccessory : Swift.Sendable {
@@ -21122,6 +20735,12 @@ extension SwiftUI.CameraCaptureAccessory : Swift.Sendable {
   public static func _makeView(view: _GraphValue<SwiftUI.EquatableView<Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.EquatableView._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.EquatableView._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.EquatableView._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.EquatableView.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -21215,9 +20834,6 @@ nonisolated public struct DefaultProgressViewStyle : SwiftUI.ProgressViewStyle, 
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.DefaultProgressViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultProgressViewStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -21225,8 +20841,6 @@ nonisolated public struct DefaultProgressViewStyle : SwiftUI.ProgressViewStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.DefaultProgressViewStyle.Configuration) -> some View
   
-  @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI24DefaultProgressViewStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 15.0, macOS 12.0, watchOS 8.0, *)
@@ -21380,15 +20994,12 @@ nonisolated public struct _LimitedAvailabilityCompositorContent : SwiftUI.Compos
   internal var storage: SwiftUI.AnyCompositorContent
   @usableFromInline
   nonisolated internal init<C>(_ content: C) where C : SwiftUI.CompositorContent { _suiUnimplemented("SwiftUI._LimitedAvailabilityCompositorContent.init(_:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.CompositorContent {
     get { _suiUnimplemented("SwiftUI._LimitedAvailabilityCompositorContent.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 26.0, visionOS 26.0, *)
+  @available(macOS 26.0, visionOS 26.0, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
   @available(macOS 26.0, visionOS 26.0, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
@@ -21409,7 +21020,6 @@ nonisolated public struct _LimitedAvailabilityCompositorContent : SwiftUI.Compos
   @available(macOS 26.0, visionOS 26.0, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI37_LimitedAvailabilityCompositorContentV4bodyQrvp", 0) __
   @available(macOS 26.0, visionOS 26.0, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
@@ -21472,15 +21082,15 @@ extension Swift.Never : SwiftUI.CompositorContent {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct _CompositorContentBodyAdaptor<C> : View, ~Swift.Sendable where C : SwiftUI.CompositorContent {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var body: some View {
     get { _suiUnimplemented("SwiftUI._CompositorContentBodyAdaptor.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 26.0, visionOS 26.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._CompositorContentBodyAdaptor._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._CompositorContentBodyAdaptor._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._CompositorContentBodyAdaptor._viewListCount(inputs:)") }
 }
 #else
 @available(macOS 26.0, visionOS 26.0, *)
@@ -21490,10 +21100,6 @@ extension Swift.Never : SwiftUI.CompositorContent {
   @_Concurrency.MainActor @preconcurrency public var body: some View {
     get
   }
-  @available(macOS 26.0, visionOS 26.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI29_CompositorContentBodyAdaptorV4bodyQrvp", 0) __<C>
 }
 #endif
 @available(iOS 27.0, macOS 15.0, *)
@@ -21636,16 +21242,10 @@ nonisolated public struct CommandMenu<Content> : SwiftUI.Commands, ~Swift.Sendab
     }
   nonisolated public init(_ name: Text, @ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUI.CommandMenu.init(_:content:)") }
   @_disfavoredOverload nonisolated public init<S>(_ name: S, @ContentBuilder content: () -> Content) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.CommandMenu.init(_:content:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Commands {
     get { _suiUnimplemented("SwiftUI.CommandMenu.body") }
   }
   nonisolated public func _resolve(into resolved: inout SwiftUI._ResolvedCommands) { _suiUnimplemented("SwiftUI.CommandMenu._resolve(into:)") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -21665,10 +21265,6 @@ nonisolated public struct CommandMenu<Content> : SwiftUI.Commands where Content 
     get
   }
   nonisolated public func _resolve(into resolved: inout SwiftUI._ResolvedCommands)
-  @available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI11CommandMenuV4bodyQrvp", 0) __<Content>
 }
 #endif
 @available(iOS 14.0, macOS 11.0, watchOS 9.0, visionOS 1.0, *)
@@ -21725,13 +21321,15 @@ extension SwiftUI.List where SelectionValue == Swift.Never {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 nonisolated public struct SecureField<Label> : View, ~Swift.Sendable where Label : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.SecureField.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.SecureField._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.SecureField._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.SecureField._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -21739,8 +21337,6 @@ nonisolated public struct SecureField<Label> : View where Label : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI11SecureFieldV4bodyQrvp", 0) __<Label>
 }
 #endif
 extension SwiftUI.SecureField where Label == Text {
@@ -21819,13 +21415,6 @@ nonisolated public struct BorderlessButtonMenuStyle : SwiftUI.MenuStyle, ~Swift.
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.BorderlessButtonMenuStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderlessButtonMenuStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS, introduced: 11.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.borderless).")
-  @available(iOS, introduced: 14.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.borderless).")
-  @available(tvOS, introduced: 17.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.borderless).")
-  @available(watchOS, unavailable)
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.borderless).")
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS, introduced: 14.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.borderless).")
@@ -21840,12 +21429,6 @@ nonisolated public struct BorderlessButtonMenuStyle : SwiftUI.MenuStyle {
   nonisolated public init(showsMenuIndicator: Swift.Bool)
   nonisolated public func makeBody(configuration: SwiftUI.BorderlessButtonMenuStyle.Configuration) -> some View
   
-  @available(macOS, introduced: 11.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.borderless).")
-  @available(iOS, introduced: 14.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.borderless).")
-  @available(tvOS, introduced: 17.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.borderless).")
-  @available(watchOS, unavailable)
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.borderless).")
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI25BorderlessButtonMenuStyleV8makeBody13configurationQrAA0eF13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 18.0, macOS 26.0, watchOS 26.0, *)
@@ -21986,6 +21569,8 @@ extension EnvironmentValues {
 @available(iOS 27.0, macOS 27.0, tvOS 27.0, watchOS 27.0, visionOS 27.0, *)
 extension EmptyView : SwiftUI.ToolbarContent {
   public static func _makeToolbar(content: _GraphValue<EmptyView>, inputs: SwiftUI._ToolbarInputs) -> SwiftUI._ToolbarOutputs { _suiUnimplemented("SwiftUI.EmptyView._makeToolbar(content:inputs:)") }
+  // port: synthesized witness for ToolbarContent (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.EmptyView.body") } }
 }
 @available(iOS 27.0, macOS 27.0, tvOS 27.0, watchOS 27.0, visionOS 27.0, *)
 extension EmptyView : SwiftUI.CustomizableToolbarContent {
@@ -22050,10 +21635,6 @@ nonisolated public struct MenuControlGroupStyle : SwiftUI.ControlGroupStyle, ~Sw
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.MenuControlGroupStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.MenuControlGroupStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.3, iOS 16.4, tvOS 17.0, *)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.4, macOS 13.3, tvOS 17.0, *)
@@ -22062,9 +21643,6 @@ nonisolated public struct MenuControlGroupStyle : SwiftUI.ControlGroupStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.MenuControlGroupStyle.Configuration) -> some View
   
-  @available(macOS 13.3, iOS 16.4, tvOS 17.0, *)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI21MenuControlGroupStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 16.4, macOS 13.3, *)
@@ -22086,11 +21664,6 @@ nonisolated public struct CompactMenuControlGroupStyle : SwiftUI.ControlGroupSty
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.CompactMenuControlGroupStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.CompactMenuControlGroupStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.3, iOS 16.4, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.4, macOS 13.3, *)
@@ -22100,10 +21673,6 @@ nonisolated public struct CompactMenuControlGroupStyle : SwiftUI.ControlGroupSty
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.CompactMenuControlGroupStyle.Configuration) -> some View
   
-  @available(macOS 13.3, iOS 16.4, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI28CompactMenuControlGroupStyleV8makeBody13configurationQrAA0efG13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -22185,6 +21754,12 @@ extension FoundationShims.NSUserActivity {
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   @available(*, deprecated, message: "Use visualEffect, scrollTransition, or onGeometryChange instead")
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._ScrollViewBoundsModifier._makeViewList(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._ScrollViewBoundsModifier._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._ScrollViewBoundsModifier.body(content:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -22212,6 +21787,12 @@ extension FoundationShims.NSUserActivity {
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   @available(*, deprecated, message: "Use visualEffect, scrollTransition, or onGeometryChange instead")
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._ScrollViewBoundsModifier2._makeViewList(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._ScrollViewBoundsModifier2._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._ScrollViewBoundsModifier2.body(content:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -22264,9 +21845,6 @@ public struct PlainTextFieldStyle : SwiftUI.TextFieldStyle, ~Swift.Sendable {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func _body(configuration: SwiftUI.TextField<SwiftUI.PlainTextFieldStyle._Label>) -> Swift.Never { _suiUnimplemented("SwiftUI.PlainTextFieldStyle._body(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias _Body = Swift.Never
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -22274,8 +21852,6 @@ public struct PlainTextFieldStyle : SwiftUI.TextFieldStyle {
   public init()
   public func _body(configuration: SwiftUI.TextField<SwiftUI.PlainTextFieldStyle._Label>) -> some View
   
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias _Body = @_opaqueReturnTypeOf("$s7SwiftUI19PlainTextFieldStyleV5_body13configurationQrAA0dE0VyAA01_deF5LabelVG_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -22325,9 +21901,6 @@ nonisolated public struct BorderedButtonStyle : SwiftUI.PrimitiveButtonStyle, ~S
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.BorderedButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderedButtonStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 15.0, tvOS 13.0, watchOS 7.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 15.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
@@ -22339,8 +21912,6 @@ nonisolated public struct BorderedButtonStyle : SwiftUI.PrimitiveButtonStyle {
   nonisolated public init(tint: Color)
   nonisolated public func makeBody(configuration: SwiftUI.BorderedButtonStyle.Configuration) -> some View
   
-  @available(macOS 10.15, iOS 15.0, tvOS 13.0, watchOS 7.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI19BorderedButtonStyleV8makeBody13configurationQrAA09PrimitivedE13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -22527,11 +22098,6 @@ nonisolated public struct PlainTextEditorStyle : SwiftUI.TextEditorStyle, ~Swift
 nonisolated public func makeBody(configuration: SwiftUI.PlainTextEditorStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.PlainTextEditorStyle.makeBody(configuration:)") }
   
   nonisolated public init() { _suiUnimplemented("SwiftUI.PlainTextEditorStyle.init()") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, visionOS 1.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 17.0, macOS 14.0, visionOS 1.0, *)
@@ -22541,10 +22107,6 @@ nonisolated public struct PlainTextEditorStyle : SwiftUI.TextEditorStyle {
   nonisolated public func makeBody(configuration: SwiftUI.PlainTextEditorStyle.Configuration) -> some View
   
   nonisolated public init()
-  @available(macOS 14.0, iOS 17.0, visionOS 1.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI20PlainTextEditorStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 17.0, macOS 14.0, visionOS 1.0, *)
@@ -22571,10 +22133,8 @@ extension SwiftUI.DatePickerStyle where Self == SwiftUI.WheelDatePickerStyle {
 @available(iOS 16.0, *)
   @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.WheelDatePickerStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.WheelDatePickerStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(iOS 13.0, watchOS 10.0, *)
+  @available(iOS 13.0, watchOS 10.0, *)
     @available(tvOS, unavailable)
-  public typealias Body = Swift.Never
   @available(iOS 13.0, watchOS 10.0, *)
     @available(tvOS, unavailable)
   public typealias _Body = EmptyView
@@ -22589,7 +22149,6 @@ extension SwiftUI.DatePickerStyle where Self == SwiftUI.WheelDatePickerStyle {
   
   @available(iOS 13.0, watchOS 10.0, *)
     @available(tvOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI20WheelDatePickerStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
   @available(iOS 13.0, watchOS 10.0, *)
     @available(tvOS, unavailable)
   public typealias _Body = EmptyView
@@ -22692,6 +22251,8 @@ nonisolated public struct LongPressGesture : Gesture, ~Swift.Sendable {
   public typealias Value = Swift.Bool
   @available(macOS 10.15, iOS 13.0, tvOS 14.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LongPressGesture.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 14.0, *)
@@ -23017,13 +22578,15 @@ nonisolated public func confirmationDialog<A, M, T>(_ title: Text, isPresented: 
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 nonisolated public struct ContentUnavailableView<Label, Description, Actions> : View, ~Swift.Sendable where Label : View, Description : View, Actions : View {
   nonisolated public init(@ContentBuilder label: () -> Label, @ContentBuilder description: () -> Description = { EmptyView() }, @ContentBuilder actions: () -> Actions = { EmptyView() }) { _suiUnimplemented("SwiftUI.ContentUnavailableView.init(label:description:actions:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.ContentUnavailableView.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ContentUnavailableView._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ContentUnavailableView._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ContentUnavailableView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -23032,8 +22595,6 @@ nonisolated public struct ContentUnavailableView<Label, Description, Actions> : 
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI22ContentUnavailableViewV4bodyQrvp", 0) __<Label, Description, Actions>
 }
 #endif
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -23072,32 +22633,38 @@ extension SwiftUI.ContentUnavailableView where Label == SwiftUI.SearchUnavailabl
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 public struct SearchUnavailableContent : ~Swift.Sendable {
   nonisolated public struct Label : View, ~Swift.Sendable {
-        // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+    nonisolated public var body: some View {
       get { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Label.body") }
     }
-        // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-    public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Label._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Label._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Label._viewListCount(inputs:)") }
+}
   nonisolated public struct Description : View, ~Swift.Sendable {
-        // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+    nonisolated public var body: some View {
       get { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Description.body") }
     }
-        // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-    public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Description._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Description._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Description._viewListCount(inputs:)") }
+}
   nonisolated public struct Actions : View, ~Swift.Sendable {
-        // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+    nonisolated public var body: some View {
       get { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Actions.body") }
     }
-        // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-    public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Actions._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Actions._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Actions._viewListCount(inputs:)") }
+}
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -23106,22 +22673,16 @@ public struct SearchUnavailableContent {
     nonisolated public var body: some View {
       get
     }
-    @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-    public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI24SearchUnavailableContentV5LabelV4bodyQrvp", 0) __
   }
   nonisolated public struct Description : View {
     nonisolated public var body: some View {
       get
     }
-    @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-    public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI24SearchUnavailableContentV11DescriptionV4bodyQrvp", 0) __
   }
   nonisolated public struct Actions : View {
     nonisolated public var body: some View {
       get
     }
-    @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
-    public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI24SearchUnavailableContentV7ActionsV4bodyQrvp", 0) __
   }
 }
 #endif
@@ -23211,6 +22772,12 @@ nonisolated public struct _DefaultFocusModifier : ViewModifier, ~Swift.Sendable 
   public static func _makeView(modifier: _GraphValue<SwiftUI._DefaultFocusModifier>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._DefaultFocusModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 11.0, iOS 16.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._DefaultFocusModifier._makeViewList(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._DefaultFocusModifier._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._DefaultFocusModifier.body(content:)") }
 }
 #else
 @available(iOS 16.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -23274,15 +22841,9 @@ extension EnvironmentValues {
 nonisolated public struct _ControlWidgetAdaptor<Base> : SwiftUI.Widget, ~Swift.Sendable where Base : SwiftUI.ControlWidget {
   nonisolated public init() { _suiUnimplemented("SwiftUI._ControlWidgetAdaptor.init()") }
   nonisolated public init(_ base: Base) { _suiUnimplemented("SwiftUI._ControlWidgetAdaptor.init(_:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.WidgetConfiguration {
     get { _suiUnimplemented("SwiftUI._ControlWidgetAdaptor.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 26.0, iOS 18.0, watchOS 26.0, *)
-  @available(tvOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 18.0, macOS 26.0, watchOS 26.0, *)
@@ -23294,10 +22855,6 @@ nonisolated public struct _ControlWidgetAdaptor<Base> : SwiftUI.Widget where Bas
   nonisolated public var body: some SwiftUI.WidgetConfiguration {
     get
   }
-  @available(macOS 26.0, iOS 18.0, watchOS 26.0, *)
-  @available(tvOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI21_ControlWidgetAdaptorV4bodyQrvp", 0) __<Base>
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -23350,6 +22907,8 @@ nonisolated public struct _ModifiersGesture<Content> : Gesture, ~Swift.Sendable 
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Value = Content.Value
+  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._ModifiersGesture.body") } }
 }
 #else
 @available(macOS 10.15, *)
@@ -23387,11 +22946,6 @@ nonisolated public struct CardButtonStyle : SwiftUI.PrimitiveButtonStyle, ~Swift
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.CardButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.CardButtonStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(tvOS 14.0, *)
-      @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(tvOS 14.0, *)
@@ -23401,10 +22955,6 @@ nonisolated public struct CardButtonStyle : SwiftUI.PrimitiveButtonStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.CardButtonStyle.Configuration) -> some View
   
-  @available(tvOS 14.0, *)
-      @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI15CardButtonStyleV8makeBody13configurationQrAA09PrimitivedE13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 16.0, macOS 13.0, *)
@@ -23426,6 +22976,12 @@ nonisolated public struct _DigitalCrownModifier : ViewModifier, ~Swift.Sendable 
       @available(tvOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._DigitalCrownModifier._makeViewList(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._DigitalCrownModifier._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._DigitalCrownModifier.body(content:)") }
 }
 #else
 @available(watchOS 6.0, *)
@@ -23484,7 +23040,7 @@ extension SwiftUI.DocumentGroup where Document : SwiftUI.FileDocument {
 @available(watchOS, unavailable)
 @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Conform your type to Document and use URLDocumentConfiguration instead.")
 public struct FileDocumentConfiguration<Document> : ~Swift.Sendable where Document : SwiftUI.FileDocument {
-public var document: Document {
+    public var document: Document {
     get { _suiUnimplemented("SwiftUI.FileDocumentConfiguration.document") }
     @available(macOS, introduced: 11.0, deprecated: 100000.0, message: "Conform your type to Document and use URLDocumentConfiguration instead.")
     @available(iOS, introduced: 14.0, deprecated: 100000.0, message: "Conform your type to Document and use URLDocumentConfiguration instead.")
@@ -23511,7 +23067,7 @@ public var document: Document {
 @available(watchOS, unavailable)
 @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Conform your type to Document and use URLDocumentConfiguration instead.")
 public struct FileDocumentConfiguration<Document> where Document : SwiftUI.FileDocument {
-public var document: Document {
+    public var document: Document {
     get
     @available(macOS, introduced: 11.0, deprecated: 100000.0, message: "Conform your type to Document and use URLDocumentConfiguration instead.")
     @available(iOS, introduced: 14.0, deprecated: 100000.0, message: "Conform your type to Document and use URLDocumentConfiguration instead.")
@@ -23525,6 +23081,9 @@ public var document: Document {
     @available(watchOS, unavailable, introduced: 6.0)
     @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Conform your type to Document and use URLDocumentConfiguration instead.")
     nonmutating _modify
+  }
+  public var $document: Binding<Document> {
+    get
   }
   public var fileURL: Foundation.URL?
   public var isEditable: Swift.Bool
@@ -23642,6 +23201,10 @@ extension View {
   public static func _makeViewList(modifier: _GraphValue<SwiftUI._GridCellSizeModifier>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._GridCellSizeModifier._makeViewList(modifier:inputs:body:)") }
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._GridCellSizeModifier._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._GridCellSizeModifier.body(content:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen nonisolated public struct _GridAnchorModifier : ViewModifier {
@@ -23652,6 +23215,10 @@ extension View {
   public static func _makeViewList(modifier: _GraphValue<SwiftUI._GridAnchorModifier>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._GridAnchorModifier._makeViewList(modifier:inputs:body:)") }
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._GridAnchorModifier._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._GridAnchorModifier.body(content:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen nonisolated public struct _GridAlignmentModifier : ViewModifier {
@@ -23662,6 +23229,10 @@ extension View {
   public static func _makeViewList(modifier: _GraphValue<SwiftUI._GridAlignmentModifier>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._GridAlignmentModifier._makeViewList(modifier:inputs:body:)") }
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._GridAlignmentModifier._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._GridAlignmentModifier.body(content:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen nonisolated public struct _GridUnsizedAxesModifier : ViewModifier {
@@ -23672,6 +23243,10 @@ extension View {
   public static func _makeViewList(modifier: _GraphValue<SwiftUI._GridUnsizedAxesModifier>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._GridUnsizedAxesModifier._makeViewList(modifier:inputs:body:)") }
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._GridUnsizedAxesModifier._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._GridUnsizedAxesModifier.body(content:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @frozen nonisolated public struct GridLayout : _VariadicView.UnaryViewRoot {
@@ -23698,6 +23273,10 @@ extension SwiftUI.GridLayout : Layout {
   nonisolated public func explicitAlignment(of guide: VerticalAlignment, in bounds: CoreGraphics.CGRect, proposal: ProposedViewSize, subviews: SwiftUI.GridLayout.Subviews, cache: inout SwiftUI.GridLayout.Cache) -> CoreGraphics.CGFloat? { _suiUnimplemented("SwiftUI.GridLayout.explicitAlignment(of:in:proposal:subviews:cache:)") }
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias AnimatableData = EmptyAnimatableData
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public static var layoutProperties: LayoutProperties { get { _suiUnimplemented("SwiftUI.GridLayout.layoutProperties") } }
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public static func _makeLayoutView(root: _GraphValue<Self>, inputs: _ViewInputs, body: (_Graph, _ViewInputs) -> _ViewListOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GridLayout._makeLayoutView(root:inputs:body:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.GridLayout {
@@ -23989,20 +23568,6 @@ public func _body(configuration: SwiftUI._NavigationViewStyleConfiguration) -> S
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
   public func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUI.DoubleColumnNavigationViewStyle._columnBasedBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS, introduced: 10.15, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView instead")
-  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(watchOS, unavailable)
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  public typealias _Body = Swift.Never
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS, introduced: 10.15, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView instead")
-  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(watchOS, unavailable)
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  public typealias _Body2 = Swift.Never
 }
 #else
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
@@ -24017,18 +23582,6 @@ public struct DoubleColumnNavigationViewStyle : SwiftUI.NavigationViewStyle {
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
   public func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> some View
   
-  @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView instead")
-  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(watchOS, unavailable)
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  public typealias _Body = @_opaqueReturnTypeOf("$s7SwiftUI31DoubleColumnNavigationViewStyleV5_body13configurationQrAA01_efG13ConfigurationV_tF", 0) __
-  @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView instead")
-  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  @available(watchOS, unavailable)
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  public typealias _Body2 = @_opaqueReturnTypeOf("$s7SwiftUI31DoubleColumnNavigationViewStyleV16_columnBasedBody13configurationQrAA01_efG13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -24038,15 +23591,15 @@ public struct DoubleColumnNavigationViewStyle : SwiftUI.NavigationViewStyle {
 @_Concurrency.MainActor @preconcurrency public struct HelpLink : View, ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public init(action: @escaping () -> Swift.Void) { _suiUnimplemented("SwiftUI.HelpLink.init(action:)") }
   @_Concurrency.MainActor @preconcurrency public init(destination: Foundation.URL) { _suiUnimplemented("SwiftUI.HelpLink.init(destination:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
+  @_Concurrency.MainActor @preconcurrency public var body: some View {
     get { _suiUnimplemented("SwiftUI.HelpLink.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.HelpLink._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.HelpLink._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.HelpLink._viewListCount(inputs:)") }
 }
 #else
 @available(macOS 14.0, *)
@@ -24058,10 +23611,6 @@ public struct DoubleColumnNavigationViewStyle : SwiftUI.NavigationViewStyle {
   @_Concurrency.MainActor @preconcurrency public var body: some View {
     get
   }
-  @available(macOS 14.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI8HelpLinkV4bodyQrvp", 0) __
 }
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -24081,14 +23630,15 @@ nonisolated public func toolbar<Content>(id: Swift.String, @ContentBuilder conte
 @available(tvOS, unavailable)
 nonisolated public struct ShareLink<Data, PreviewImage, PreviewIcon, Label> : View, ~Swift.Sendable where Data : Swift.RandomAccessCollection, PreviewImage : CoreTransferable.Transferable, PreviewIcon : CoreTransferable.Transferable, Label : View, Data.Element : CoreTransferable.Transferable {
   nonisolated public init(items: Data, subject: Text? = nil, message: Text? = nil, preview: @escaping (Data.Element) -> SwiftUI.SharePreview<PreviewImage, PreviewIcon>, @ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUI.ShareLink.init(items:subject:message:preview:label:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.ShareLink.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ShareLink._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ShareLink._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ShareLink._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -24098,9 +23648,6 @@ nonisolated public struct ShareLink<Data, PreviewImage, PreviewIcon, Label> : Vi
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 13.0, iOS 16.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI9ShareLinkV4bodyQrvp", 0) __<Data, PreviewImage, PreviewIcon, Label>
 }
 #endif
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -24128,14 +23675,15 @@ extension SwiftUI.ShareLink where PreviewImage == Swift.Never, PreviewIcon == Sw
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
 @available(tvOS, unavailable)
 nonisolated public struct DefaultShareLinkLabel : View, ~Swift.Sendable {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DefaultShareLinkLabel.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultShareLinkLabel._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultShareLinkLabel._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultShareLinkLabel._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -24144,9 +23692,6 @@ nonisolated public struct DefaultShareLinkLabel : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 13.0, iOS 16.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI21DefaultShareLinkLabelV4bodyQrvp", 0) __
 }
 #endif
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -24412,15 +23957,9 @@ nonisolated public struct ImmersiveSpace<Content, Data> : SwiftUI.Scene, ~Swift.
   nonisolated public init(for type: Data.Type, @SwiftUI.ImmersiveSpaceContentBuilder content: @escaping (Binding<Data?>) -> Content) { _suiUnimplemented("SwiftUI.ImmersiveSpace.init(for:content:)") }
   nonisolated public init(id: Swift.String, for type: Data.Type = Data.self, @SwiftUI.ImmersiveSpaceContentBuilder content: @escaping (Binding<Data>) -> Content, defaultValue: @escaping () -> Data) { _suiUnimplemented("SwiftUI.ImmersiveSpace.init(id:for:content:defaultValue:)") }
   nonisolated public init(for type: Data.Type = Data.self, @SwiftUI.ImmersiveSpaceContentBuilder content: @escaping (Binding<Data>) -> Content, defaultValue: @escaping () -> Data) { _suiUnimplemented("SwiftUI.ImmersiveSpace.init(for:content:defaultValue:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.ImmersiveSpace.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(visionOS 1.0, *)
-      @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(visionOS 1.0, *)
@@ -24440,10 +23979,6 @@ nonisolated public struct ImmersiveSpace<Content, Data> : SwiftUI.Scene where Co
   nonisolated public var body: some SwiftUI.Scene {
     get
   }
-  @available(visionOS 1.0, *)
-      @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI14ImmersiveSpaceV4bodyQrvp", 0) __<Content, Data>
 }
 #endif
 @available(visionOS 1.0, *)
@@ -24501,10 +24036,8 @@ extension SwiftUI.DatePickerStyle where Self == SwiftUI.DefaultDatePickerStyle {
 @available(iOS 16.0, macOS 13.0, *)
   @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.DefaultDatePickerStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultDatePickerStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, watchOS 10.0, *)
+  @available(macOS 10.15, iOS 13.0, watchOS 10.0, *)
   @available(tvOS, unavailable)
-  public typealias Body = Swift.Never
   @available(macOS 10.15, iOS 13.0, watchOS 10.0, *)
   @available(tvOS, unavailable)
   public typealias _Body = EmptyView
@@ -24519,7 +24052,6 @@ extension SwiftUI.DatePickerStyle where Self == SwiftUI.DefaultDatePickerStyle {
   
   @available(macOS 10.15, iOS 13.0, watchOS 10.0, *)
   @available(tvOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI22DefaultDatePickerStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
   @available(macOS 10.15, iOS 13.0, watchOS 10.0, *)
   @available(tvOS, unavailable)
   public typealias _Body = EmptyView
@@ -24562,12 +24094,10 @@ nonisolated public struct StepperFieldDatePickerStyle : SwiftUI.DatePickerStyle,
 @available(macOS 13.0, *)
   nonisolated public func makeBody(configuration: SwiftUI.StepperFieldDatePickerStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.StepperFieldDatePickerStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, *)
+  @available(macOS 10.15, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
   @available(macOS 10.15, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
@@ -24588,7 +24118,6 @@ nonisolated public struct StepperFieldDatePickerStyle : SwiftUI.DatePickerStyle 
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI27StepperFieldDatePickerStyleV8makeBody13configurationQrAA0efG13ConfigurationV_tF", 0) __
   @available(macOS 10.15, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
@@ -24607,12 +24136,10 @@ nonisolated public struct FieldDatePickerStyle : SwiftUI.DatePickerStyle, ~Swift
 @available(macOS 13.0, *)
   nonisolated public func makeBody(configuration: SwiftUI.FieldDatePickerStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.FieldDatePickerStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, *)
+  @available(macOS 10.15, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
   @available(macOS 10.15, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
@@ -24633,7 +24160,6 @@ nonisolated public struct FieldDatePickerStyle : SwiftUI.DatePickerStyle {
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI20FieldDatePickerStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
   @available(macOS 10.15, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
@@ -24651,11 +24177,9 @@ nonisolated public struct GraphicalDatePickerStyle : SwiftUI.DatePickerStyle, ~S
 @available(iOS 16.0, macOS 13.0, *)
   nonisolated public func makeBody(configuration: SwiftUI.GraphicalDatePickerStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.GraphicalDatePickerStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 14.0, *)
+  @available(macOS 10.15, iOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
   @available(macOS 10.15, iOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
@@ -24673,7 +24197,6 @@ nonisolated public struct GraphicalDatePickerStyle : SwiftUI.DatePickerStyle {
   @available(macOS 10.15, iOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI24GraphicalDatePickerStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
   @available(macOS 10.15, iOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
@@ -24698,11 +24221,6 @@ nonisolated public struct AutomaticTableStyle : SwiftUI.TableStyle, ~Swift.Senda
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.AutomaticTableStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AutomaticTableStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 12.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -24713,10 +24231,6 @@ nonisolated public struct AutomaticTableStyle : SwiftUI.TableStyle {
   nonisolated internal init()
   nonisolated public func makeBody(configuration: SwiftUI.AutomaticTableStyle.Configuration) -> some View
   
-  @available(macOS 12.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI19AutomaticTableStyleV8makeBody13configurationQrAA0dE13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -24727,10 +24241,6 @@ nonisolated public struct AutomaticTableStyle : SwiftUI.TableStyle {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AccessoryLinearCapacityGaugeStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AccessoryLinearCapacityGaugeStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -24739,9 +24249,6 @@ nonisolated public struct AutomaticTableStyle : SwiftUI.TableStyle {
   @_Concurrency.MainActor @preconcurrency public init()
   @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AccessoryLinearCapacityGaugeStyle.Configuration) -> some View
   
-  @available(macOS 13.0, iOS 16.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI33AccessoryLinearCapacityGaugeStyleV8makeBody13configurationQrAA0fG13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -24766,9 +24273,6 @@ nonisolated public struct DefaultToggleStyle : SwiftUI.ToggleStyle, ~Swift.Senda
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.DefaultToggleStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultToggleStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -24776,8 +24280,6 @@ nonisolated public struct DefaultToggleStyle : SwiftUI.ToggleStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.DefaultToggleStyle.Configuration) -> some View
   
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI18DefaultToggleStyleV8makeBody13configurationQrAA0dE13ConfigurationV_tF", 0) __
 }
 #endif
 @available(watchOS 9.0, *)
@@ -25147,6 +24649,8 @@ nonisolated public struct ToolbarTitleMenu<Content> : SwiftUI.ToolbarContent, Sw
   public static func _makeToolbar(content: _GraphValue<SwiftUI.ToolbarTitleMenu<Content>>, inputs: SwiftUI._ToolbarInputs) -> SwiftUI._ToolbarOutputs { _suiUnimplemented("SwiftUI.ToolbarTitleMenu._makeToolbar(content:inputs:)") }
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ToolbarContent (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ToolbarTitleMenu.body") } }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, tvOS 16.0, *)
@@ -25171,13 +24675,15 @@ extension View {
   @inlinable nonisolated public init(@ContentBuilder content: @escaping (SwiftUI.ScrollViewProxy) -> Content) {
         self.content = content
     }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.ScrollViewReader.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ScrollViewReader._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ScrollViewReader._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ScrollViewReader._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -25189,8 +24695,6 @@ nonisolated public var body: Swift.Never {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI16ScrollViewReaderV4bodyQrvp", 0) __<Content>
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -25504,14 +25008,15 @@ nonisolated public struct Gauge<Label, CurrentValueLabel, BoundsLabel, MarkedVal
   nonisolated public init<V>(value: V, in bounds: Swift.ClosedRange<V> = 0...1, @ContentBuilder label: () -> Label, @ContentBuilder currentValueLabel: () -> CurrentValueLabel, @ContentBuilder minimumValueLabel: () -> BoundsLabel, @ContentBuilder maximumValueLabel: () -> BoundsLabel) where MarkedValueLabels == EmptyView, V : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUI.Gauge.init(value:in:label:currentValueLabel:minimumValueLabel:maximumValueLabel:)") }
   nonisolated public init<V>(value: V, in bounds: Swift.ClosedRange<V> = 0...1, @ContentBuilder label: () -> Label, @ContentBuilder currentValueLabel: () -> CurrentValueLabel, @ContentBuilder markedValueLabels: () -> MarkedValueLabels) where BoundsLabel == EmptyView, V : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUI.Gauge.init(value:in:label:currentValueLabel:markedValueLabels:)") }
   nonisolated public init<V>(value: V, in bounds: Swift.ClosedRange<V> = 0...1, @ContentBuilder label: () -> Label, @ContentBuilder currentValueLabel: () -> CurrentValueLabel, @ContentBuilder minimumValueLabel: () -> BoundsLabel, @ContentBuilder maximumValueLabel: () -> BoundsLabel, @ContentBuilder markedValueLabels: () -> MarkedValueLabels) where V : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUI.Gauge.init(value:in:label:currentValueLabel:minimumValueLabel:maximumValueLabel:markedValueLabels:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Gauge.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, watchOS 7.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Gauge._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Gauge._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Gauge._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 7.0, *)
@@ -25525,9 +25030,6 @@ nonisolated public struct Gauge<Label, CurrentValueLabel, BoundsLabel, MarkedVal
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 13.0, iOS 16.0, watchOS 7.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI5GaugeV4bodyQrvp", 0) __<Label, CurrentValueLabel, BoundsLabel, MarkedValueLabels>
 }
 #endif
 @available(macOS 11.0, *)
@@ -25613,14 +25115,15 @@ public static var automatic: SwiftUI.ToolbarVerticalCompressionBehavior { get { 
 @available(tvOS, unavailable)
 nonisolated public struct DatePicker<Label> : View, ~Swift.Sendable where Label : View {
   public typealias Components = SwiftUI.DatePickerComponents
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DatePicker.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, watchOS 10.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DatePicker._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DatePicker._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DatePicker._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, watchOS 10.0, *)
@@ -25630,9 +25133,6 @@ nonisolated public struct DatePicker<Label> : View where Label : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 13.0, watchOS 10.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI10DatePickerV4bodyQrvp", 0) __<Label>
 }
 #endif
 @available(iOS 13.0, macOS 10.15, watchOS 10.0, *)
@@ -25948,11 +25448,9 @@ nonisolated public struct CompactDatePickerStyle : SwiftUI.DatePickerStyle, ~Swi
 @available(iOS 16.0, macOS 13.0, *)
   nonisolated public func makeBody(configuration: SwiftUI.CompactDatePickerStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.CompactDatePickerStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15.4, iOS 14.0, macCatalyst 13.4, *)
+  @available(macOS 10.15.4, iOS 14.0, macCatalyst 13.4, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
   @available(macOS 10.15.4, iOS 14.0, macCatalyst 13.4, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
@@ -25970,7 +25468,6 @@ nonisolated public struct CompactDatePickerStyle : SwiftUI.DatePickerStyle {
   @available(macOS 10.15.4, iOS 14.0, macCatalyst 13.4, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI22CompactDatePickerStyleV8makeBody13configurationQrAA0deF13ConfigurationV_tF", 0) __
   @available(macOS 10.15.4, iOS 14.0, macCatalyst 13.4, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
@@ -25985,6 +25482,10 @@ nonisolated public struct _OverlayLayout : _VariadicView.UnaryViewRoot, Animatab
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for Animatable (R7); Apple implements it with an internal member
+  public var animatableData: EmptyAnimatableData { get { _suiUnimplemented("SwiftUI._OverlayLayout.animatableData") } set { _suiUnimplemented("SwiftUI._OverlayLayout.animatableData") } }
+  // port: synthesized witness for Animatable (R7); Apple implements it with an internal member
+  public static func _makeAnimatable(value: inout _GraphValue<Self>, inputs: _GraphInputs) { _suiUnimplemented("SwiftUI._OverlayLayout._makeAnimatable(value:inputs:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI._OverlayLayout : Layout {
@@ -25995,6 +25496,16 @@ extension SwiftUI._OverlayLayout : Layout {
   nonisolated public func sizeThatFits(proposal: ProposedViewSize, subviews: SwiftUI._OverlayLayout.Subviews, cache: inout Swift.Void) -> CoreGraphics.CGSize { _suiUnimplemented("SwiftUI._OverlayLayout.sizeThatFits(proposal:subviews:cache:)") }
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Cache = Swift.Void
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public func makeCache(subviews: LayoutSubviews) -> Swift.Void { _suiUnimplemented("SwiftUI._OverlayLayout.makeCache(subviews:)") }
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public func updateCache(_ cache: inout Swift.Void, subviews: LayoutSubviews) { _suiUnimplemented("SwiftUI._OverlayLayout.updateCache(_:subviews:)") }
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public func spacing(subviews: LayoutSubviews, cache: inout Swift.Void) -> ViewSpacing { _suiUnimplemented("SwiftUI._OverlayLayout.spacing(subviews:cache:)") }
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public func explicitAlignment(of guide: HorizontalAlignment, in bounds: CoreGraphics::CGRect, proposal: ProposedViewSize, subviews: LayoutSubviews, cache: inout Swift.Void) -> CoreGraphics::CGFloat? { _suiUnimplemented("SwiftUI._OverlayLayout.explicitAlignment(of:in:proposal:subviews:cache:)") }
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public static func _makeLayoutView(root: _GraphValue<Self>, inputs: _ViewInputs, body: (_Graph, _ViewInputs) -> _ViewListOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._OverlayLayout._makeLayoutView(root:inputs:body:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension View {
@@ -26187,6 +25698,8 @@ extension View {
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias TableColumnBody = Swift.Never
+  // port: synthesized witness for TableColumnContent (R7); Apple implements it with an internal member
+  public nonisolated var tableColumnBody: Swift.Never { get { _suiUnimplemented("SwiftUI.TupleTableColumnContent.tableColumnBody") } }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -26219,6 +25732,8 @@ extension Group : SwiftUI.TableColumnContent where Content : SwiftUI.TableColumn
         self.init(_content: content())
     }
   nonisolated public static func _makeContent(content: _GraphValue<Group<Content>>, inputs: SwiftUI._TableColumnInputs) -> SwiftUI._TableColumnOutputs { _suiUnimplemented("SwiftUI.Group._makeContent(content:inputs:)") }
+  // port: synthesized witness for TableColumnContent (R7); Apple implements it with an internal member
+  public nonisolated var tableColumnBody: Swift.Never { get { _suiUnimplemented("SwiftUI.Group.tableColumnBody") } }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -26245,6 +25760,10 @@ extension Group : SwiftUI.TableColumnContent where Content : SwiftUI.TableColumn
   public static var _propertyStorageSize: Swift.Int? {
     get { _suiUnimplemented("SwiftUI.FocusedValue._propertyStorageSize") }
   }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public static var _propertyBehaviors: Swift::UInt32 { get { _suiUnimplemented("SwiftUI.FocusedValue._propertyBehaviors") } }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public mutating func update() { _suiUnimplemented("SwiftUI.FocusedValue.update()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -26306,6 +25825,10 @@ extension Group : SwiftUI.TableColumnContent where Content : SwiftUI.TableColumn
   public static var _propertyStorageSize: Swift.Int? {
     get { _suiUnimplemented("SwiftUI.FocusedBinding._propertyStorageSize") }
   }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public static var _propertyBehaviors: Swift::UInt32 { get { _suiUnimplemented("SwiftUI.FocusedBinding._propertyBehaviors") } }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public mutating func update() { _suiUnimplemented("SwiftUI.FocusedBinding.update()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -26479,27 +26002,67 @@ public struct GaugeStyleConfiguration : ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, watchOS 7.0, *)
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.Label._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.Label._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.Label._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.Label.body") } }
+}
   @_Concurrency.MainActor @preconcurrency public struct CurrentValueLabel : View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, watchOS 7.0, *)
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.CurrentValueLabel._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.CurrentValueLabel._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.CurrentValueLabel._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.CurrentValueLabel.body") } }
+}
   @_Concurrency.MainActor @preconcurrency public struct MinimumValueLabel : View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, watchOS 7.0, *)
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MinimumValueLabel._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MinimumValueLabel._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MinimumValueLabel._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MinimumValueLabel.body") } }
+}
   @_Concurrency.MainActor @preconcurrency public struct MaximumValueLabel : View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, watchOS 7.0, *)
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MaximumValueLabel._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MaximumValueLabel._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MaximumValueLabel._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MaximumValueLabel.body") } }
+}
   @_Concurrency.MainActor @preconcurrency public struct MarkedValueLabel : View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, watchOS 7.0, *)
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MarkedValueLabel._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MarkedValueLabel._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MarkedValueLabel._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MarkedValueLabel.body") } }
+}
   public var value: Swift.Double
   public var label: SwiftUI.GaugeStyleConfiguration.Label
   public var currentValueLabel: SwiftUI.GaugeStyleConfiguration.CurrentValueLabel?
@@ -26560,14 +26123,15 @@ nonisolated public struct Stepper<Label> : View, ~Swift.Sendable where Label : V
             onEditingChanged: onEditingChanged,
             label: label)
     }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Stepper.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Stepper._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Stepper._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Stepper._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, watchOS 9.0, *)
@@ -26583,9 +26147,6 @@ nonisolated public struct Stepper<Label> : View where Label : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 13.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI7StepperV4bodyQrvp", 0) __<Label>
 }
 #endif
 @available(iOS 13.0, macOS 10.15, watchOS 9.0, *)
@@ -26727,6 +26288,12 @@ extension SwiftUI.Stepper {
   public static func _makeView(view: _GraphValue<SwiftUI._ShadowView<Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._ShadowView._makeView(view:inputs:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._ShadowView._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._ShadowView._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._ShadowView.body") } }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -26800,6 +26367,10 @@ nonisolated public func tableColumnHeaders(_ visibility: Visibility) -> Swift.Ne
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.FetchRequest : DynamicProperty {
   @_Concurrency.MainActor @preconcurrency public mutating func update() { _suiUnimplemented("SwiftUI.FetchRequest.update()") }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public static func _makeProperty<V>(in buffer: inout _DynamicPropertyBuffer, container: _GraphValue<V>, fieldOffset: Swift::Int, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUI.FetchRequest._makeProperty(in:container:fieldOffset:inputs:)") }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public static var _propertyStorageSize: Swift::Int? { get { _suiUnimplemented("SwiftUI.FetchRequest._propertyStorageSize") } }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.FetchRequest {
@@ -27015,14 +26586,30 @@ public struct ControlGroupStyleConfiguration : ~Swift.Sendable {
     @available(macOS 12.0, iOS 15.0, tvOS 17.0, *)
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Content._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Content._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Content._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Content.body") } }
+}
   public let content: SwiftUI.ControlGroupStyleConfiguration.Content
   @available(iOS 16.0, macOS 13.0, *)
   @_Concurrency.MainActor @preconcurrency public struct Label : View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, tvOS 17.0, *)
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Label._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Label._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Label._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Label.body") } }
+}
   @available(iOS 16.0, macOS 13.0, *)
   public let label: SwiftUI.ControlGroupStyleConfiguration.Label
 }
@@ -27260,13 +26847,15 @@ nonisolated public struct NavigationSplitView<Sidebar, Content, Detail> : View, 
   nonisolated public init(columnVisibility: Binding<SwiftUI.NavigationSplitViewVisibility>, @ContentBuilder sidebar: () -> Sidebar, @ContentBuilder content: () -> Content, @ContentBuilder detail: () -> Detail) { _suiUnimplemented("SwiftUI.NavigationSplitView.init(columnVisibility:sidebar:content:detail:)") }
   nonisolated public init(@ContentBuilder sidebar: () -> Sidebar, @ContentBuilder detail: () -> Detail) where Content == EmptyView { _suiUnimplemented("SwiftUI.NavigationSplitView.init(sidebar:detail:)") }
   nonisolated public init(columnVisibility: Binding<SwiftUI.NavigationSplitViewVisibility>, @ContentBuilder sidebar: () -> Sidebar, @ContentBuilder detail: () -> Detail) where Content == EmptyView { _suiUnimplemented("SwiftUI.NavigationSplitView.init(columnVisibility:sidebar:detail:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.NavigationSplitView.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.NavigationSplitView._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.NavigationSplitView._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.NavigationSplitView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -27278,8 +26867,6 @@ nonisolated public struct NavigationSplitView<Sidebar, Content, Detail> : View w
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI19NavigationSplitViewV4bodyQrvp", 0) __<Sidebar, Content, Detail>
 }
 #endif
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -27352,15 +26939,15 @@ extension ViewBuilder {
 @available(watchOS, unavailable)
 nonisolated public struct EditButton : View, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.EditButton.init()") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.EditButton.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(iOS 13.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.EditButton._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.EditButton._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.EditButton._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, *)
@@ -27371,10 +26958,6 @@ nonisolated public struct EditButton : View {
   nonisolated public var body: some View {
     get
   }
-  @available(iOS 13.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI10EditButtonV4bodyQrvp", 0) __
 }
 #endif
 @available(watchOS 7.0, *)
@@ -27398,11 +26981,6 @@ nonisolated public struct LinearGaugeStyle : SwiftUI.GaugeStyle, ~Swift.Sendable
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.LinearGaugeStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.LinearGaugeStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(watchOS 7.0, *)
-      @available(tvOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(watchOS 7.0, *)
@@ -27416,10 +26994,6 @@ nonisolated public struct LinearGaugeStyle : SwiftUI.GaugeStyle {
   nonisolated public init(tint: Gradient)
   nonisolated public func makeBody(configuration: SwiftUI.LinearGaugeStyle.Configuration) -> some View
   
-  @available(watchOS 7.0, *)
-      @available(tvOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI16LinearGaugeStyleV8makeBody13configurationQrAA0dE13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -27428,6 +27002,8 @@ nonisolated public struct LinearGaugeStyle : SwiftUI.GaugeStyle {
   public static func _makeScene(scene: _GraphValue<SwiftUI._EmptyScene>, inputs: SwiftUI._SceneInputs) -> SwiftUI._SceneOutputs { _suiUnimplemented("SwiftUI._EmptyScene._makeScene(scene:inputs:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for Scene (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._EmptyScene.body") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI._ScrollView.Main {
@@ -27475,16 +27051,10 @@ nonisolated public struct CommandGroup<Content> : SwiftUI.Commands, ~Swift.Senda
   nonisolated public init(before group: SwiftUI.CommandGroupPlacement, @ContentBuilder addition: () -> Content) { _suiUnimplemented("SwiftUI.CommandGroup.init(before:addition:)") }
   nonisolated public init(after group: SwiftUI.CommandGroupPlacement, @ContentBuilder addition: () -> Content) { _suiUnimplemented("SwiftUI.CommandGroup.init(after:addition:)") }
   nonisolated public init(replacing group: SwiftUI.CommandGroupPlacement, @ContentBuilder addition: () -> Content) { _suiUnimplemented("SwiftUI.CommandGroup.init(replacing:addition:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Commands {
     get { _suiUnimplemented("SwiftUI.CommandGroup.body") }
   }
   nonisolated public func _resolve(into resolved: inout SwiftUI._ResolvedCommands) { _suiUnimplemented("SwiftUI.CommandGroup._resolve(into:)") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -27500,10 +27070,6 @@ nonisolated public struct CommandGroup<Content> : SwiftUI.Commands where Content
     get
   }
   nonisolated public func _resolve(into resolved: inout SwiftUI._ResolvedCommands)
-  @available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI12CommandGroupV4bodyQrvp", 0) __<Content>
 }
 #endif
 @available(iOS 14.0, macOS 11.0, *)
@@ -27576,12 +27142,6 @@ public struct SquareBorderTextFieldStyle : SwiftUI.TextFieldStyle, ~Swift.Sendab
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func _body(configuration: SwiftUI.TextField<SwiftUI.SquareBorderTextFieldStyle._Label>) -> Swift.Never { _suiUnimplemented("SwiftUI.SquareBorderTextFieldStyle._body(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use BorderedTextField instead. As of macOS 26, text fields no longer have a rectangular border.")
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias _Body = Swift.Never
 }
 #else
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use BorderedTextField instead. As of macOS 26, text fields no longer have a rectangular border.")
@@ -27592,11 +27152,6 @@ public struct SquareBorderTextFieldStyle : SwiftUI.TextFieldStyle {
   public init()
   public func _body(configuration: SwiftUI.TextField<SwiftUI.SquareBorderTextFieldStyle._Label>) -> some View
   
-  @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use BorderedTextField instead. As of macOS 26, text fields no longer have a rectangular border.")
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias _Body = @_opaqueReturnTypeOf("$s7SwiftUI26SquareBorderTextFieldStyleV5_body13configurationQrAA0eF0VyAA01_efG5LabelVG_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -27613,6 +27168,14 @@ nonisolated public struct NavigationView<Content> : View, ~Swift.Sendable where 
   @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "use NavigationStack or NavigationSplitView instead")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "use NavigationStack or NavigationSplitView instead")
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.NavigationView._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.NavigationView._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.NavigationView._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.NavigationView.body") } }
 }
 #else
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "use NavigationStack or NavigationSplitView instead")
@@ -27658,9 +27221,6 @@ public static var never: SwiftUI.PageIndexViewStyle.BackgroundDisplayMode { get 
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func _makeBody(configuration: SwiftUI.PageIndexViewStyle._Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.PageIndexViewStyle._makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(iOS 14.0, tvOS 14.0, watchOS 8.0, *)
-    public typealias _Body = Swift.Never
 }
 #else
 @available(iOS 14.0, tvOS 14.0, watchOS 8.0, *)
@@ -27676,8 +27236,6 @@ public struct PageIndexViewStyle : SwiftUI.IndexViewStyle {
   public init(backgroundDisplayMode: SwiftUI.PageIndexViewStyle.BackgroundDisplayMode = .automatic)
   public func _makeBody(configuration: SwiftUI.PageIndexViewStyle._Configuration) -> some View
   
-  @available(iOS 14.0, tvOS 14.0, watchOS 8.0, *)
-    public typealias _Body = @_opaqueReturnTypeOf("$s7SwiftUI18PageIndexViewStyleV9_makeBody13configurationQrAA01_deF13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -27725,6 +27283,10 @@ public struct PageIndexViewStyle : SwiftUI.IndexViewStyle {
   public init(for technologies: AccessibilityTechnologies) where Value == Swift.Bool { _suiUnimplemented("SwiftUI.AccessibilityFocusState.init(for:)") }
   public init<T>() where Value == T?, T : Swift.Hashable { _suiUnimplemented("SwiftUI.AccessibilityFocusState.init()") }
   public init<T>(for technologies: AccessibilityTechnologies) where Value == T?, T : Swift.Hashable { _suiUnimplemented("SwiftUI.AccessibilityFocusState.init(for:)") }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public static var _propertyBehaviors: Swift::UInt32 { get { _suiUnimplemented("SwiftUI.AccessibilityFocusState._propertyBehaviors") } }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public mutating func update() { _suiUnimplemented("SwiftUI.AccessibilityFocusState.update()") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.AccessibilityFocusState : Swift.Sendable where Value : Swift.Sendable {
@@ -27897,9 +27459,6 @@ nonisolated public struct BorderedProminentButtonStyle : SwiftUI.PrimitiveButton
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.BorderedProminentButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderedProminentButtonStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -27907,8 +27466,6 @@ nonisolated public struct BorderedProminentButtonStyle : SwiftUI.PrimitiveButton
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.BorderedProminentButtonStyle.Configuration) -> some View
   
-  @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI28BorderedProminentButtonStyleV8makeBody13configurationQrAA09PrimitiveeF13ConfigurationV_tF", 0) __
 }
 #endif
 @available(macOS 15.0, visionOS 2.0, *)
@@ -27978,13 +27535,29 @@ public struct GroupBoxStyleConfiguration : ~Swift.Sendable {
     @available(tvOS, unavailable)
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Label._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Label._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Label._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Label.body") } }
+}
   @_Concurrency.MainActor @preconcurrency public struct Content : View, ~Swift.Sendable {
     @available(macOS 11.0, iOS 14.0, *)
     @available(tvOS, unavailable)
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Content._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Content._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Content._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Content.body") } }
+}
   public let label: SwiftUI.GroupBoxStyleConfiguration.Label
   public let content: SwiftUI.GroupBoxStyleConfiguration.Content
 }
@@ -28440,6 +28013,8 @@ extension ForEach : SwiftUI.TableRowContent where Content : SwiftUI.TableRowCont
         }
     }
   @_disfavoredOverload nonisolated public init<V>(_ data: Swift.Range<Swift.Int>, @SwiftUI.TableRowBuilder<V> content: @escaping (Swift.Int) -> Content) where Data == Swift.Range<Swift.Int>, ID == Swift.Int, V == Content.TableRowValue { _suiUnimplemented("SwiftUI.ForEach.init(_:?:)") }
+  // port: synthesized witness for TableRowContent (R7); Apple implements it with an internal member
+  public var tableRowBody: Swift.Never { get { _suiUnimplemented("SwiftUI.ForEach.tableRowBody") } }
 }
 @available(iOS 16.0, macOS 12.0, *)
 @available(tvOS, unavailable)
@@ -28670,12 +28245,6 @@ nonisolated public struct BorderedTableStyle : SwiftUI.TableStyle, ~Swift.Sendab
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.BorderedTableStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderedTableStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 12.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(macOS 12.0, *)
@@ -28688,11 +28257,6 @@ nonisolated public struct BorderedTableStyle : SwiftUI.TableStyle {
   nonisolated public init(alternatesRowBackgrounds: Swift.Bool)
   nonisolated public func makeBody(configuration: SwiftUI.BorderedTableStyle.Configuration) -> some View
   
-  @available(macOS 12.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI18BorderedTableStyleV8makeBody13configurationQrAA0dE13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -28732,6 +28296,8 @@ nonisolated public struct _ButtonGesture : Gesture, ~Swift.Sendable {
   public typealias Body = Swift.Never
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Value = Swift.Void
+  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._ButtonGesture.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -28879,14 +28445,30 @@ public struct _MenuButtonStyleConfiguration : ~Swift.Sendable {
     @available(watchOS, unavailable)
     @available(visionOS, unavailable)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Label._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Label._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Label._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Label.body") } }
+}
   @_Concurrency.MainActor @preconcurrency public struct Content : View, ~Swift.Sendable {
     @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `MenuStyle.Configuration` instead.")
         @available(tvOS, unavailable)
     @available(watchOS, unavailable)
     @available(visionOS, unavailable)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Content._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Content._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Content._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Content.body") } }
+}
   public var label: SwiftUI._MenuButtonStyleConfiguration.Label
   public var content: SwiftUI._MenuButtonStyleConfiguration.Content
   public init() { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.init()") }
@@ -29012,15 +28594,15 @@ nonisolated public struct PasteButton : View, ~Swift.Sendable {
   nonisolated public init<Payload>(supportedContentTypes: [UniformTypeIdentifiers.UTType], validator: @escaping ([FoundationShims.NSItemProvider]) -> Payload?, payloadAction: @escaping (Payload) -> Swift.Void) { _suiUnimplemented("SwiftUI.PasteButton.init(supportedContentTypes:validator:payloadAction:)") }
   @available(iOS 16.0, macOS 13.0, *)
   nonisolated public init<T>(payloadType: T.Type, onPaste: @escaping ([T]) -> Swift.Void) where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.PasteButton.init(payloadType:onPaste:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.PasteButton.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.PasteButton._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.PasteButton._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.PasteButton._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 10.15, *)
@@ -29037,10 +28619,6 @@ nonisolated public struct PasteButton : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI11PasteButtonV4bodyQrvp", 0) __
 }
 #endif
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Provide `UTType`s as the `supportedContentTypes` instead.")
@@ -29078,15 +28656,9 @@ nonisolated public func fileMover<C>(isPresented: Binding<Swift.Bool>, files: C,
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 nonisolated public struct DocumentGroup<Document, Content> : SwiftUI.Scene, ~Swift.Sendable where Content : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.DocumentGroup.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -29096,10 +28668,6 @@ nonisolated public struct DocumentGroup<Document, Content> : SwiftUI.Scene where
   nonisolated public var body: some SwiftUI.Scene {
     get
   }
-  @available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI13DocumentGroupV4bodyQrvp", 0) __<Document, Content>
 }
 #endif
 @available(iOS 13.0, tvOS 13.0, *)
@@ -29180,6 +28748,8 @@ extension SwiftUI.UIViewRepresentable {
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias TableRowBody = Swift.Never
+  // port: synthesized witness for TableRowContent (R7); Apple implements it with an internal member
+  public var tableRowBody: Swift.Never { get { _suiUnimplemented("SwiftUI.TupleTableRowContent.tableRowBody") } }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -29216,6 +28786,8 @@ extension Group : SwiftUI.TableRowContent where Content : SwiftUI.TableRowConten
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   nonisolated public static func _containsOutlineSymbol(inputs: SwiftUI._TableRowInputs) -> Swift.Bool { _suiUnimplemented("SwiftUI.Group._containsOutlineSymbol(inputs:)") }
+  // port: synthesized witness for TableRowContent (R7); Apple implements it with an internal member
+  public var tableRowBody: Swift.Never { get { _suiUnimplemented("SwiftUI.Group.tableRowBody") } }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.LabelStyle where Self == SwiftUI.TitleOnlyLabelStyle {
@@ -29230,9 +28802,6 @@ nonisolated public struct TitleOnlyLabelStyle : SwiftUI.LabelStyle, ~Swift.Senda
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.TitleOnlyLabelStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.TitleOnlyLabelStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -29240,8 +28809,6 @@ nonisolated public struct TitleOnlyLabelStyle : SwiftUI.LabelStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.TitleOnlyLabelStyle.Configuration) -> some View
   
-  @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI19TitleOnlyLabelStyleV8makeBody13configurationQrAA0eF13ConfigurationV_tF", 0) __
 }
 #endif
 extension View {
@@ -29310,6 +28877,12 @@ nonisolated public struct _FocusableModifier : ViewModifier, ~Swift.Sendable {
   public static func _makeView(modifier: _GraphValue<SwiftUI._FocusableModifier>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._FocusableModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 10.15, iOS 13.4, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._FocusableModifier._makeViewList(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._FocusableModifier._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._FocusableModifier.body(content:)") }
 }
 #else
 @available(iOS 13.4, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -29411,6 +28984,12 @@ extension SwiftUI.TimelineView : View where Content : View {
   @available(visionOS, deprecated, introduced: 1.0, message: "Use TimelineViewDefaultContext for the type of the context parameter passed into TimelineView's content closure to resolve this warning. The new version of this initializer, using TimelineViewDefaultContext, improves compilation performance by using an independent generic type signature, which helps avoid unintended cyclical type dependencies.")
   @_disfavoredOverload nonisolated public init(_ schedule: Schedule, @ContentBuilder content: @escaping (SwiftUI.TimelineView<Schedule, Content>.Context) -> Content) { _suiUnimplemented("SwiftUI.TimelineView.init(_:content:)") }
   nonisolated public static func _makeView(view: _GraphValue<SwiftUI.TimelineView<Schedule, Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.TimelineView._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.TimelineView._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.TimelineView._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.TimelineView.body") } }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 26.0, macOS 26.0, *)
@@ -29425,6 +29004,8 @@ nonisolated public struct ToolbarSpacer : SwiftUI.ToolbarContent, SwiftUI.Custom
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ToolbarContent (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ToolbarSpacer.body") } }
 }
 #else
 @available(iOS 26.0, macOS 26.0, *)
@@ -29456,10 +29037,6 @@ extension SwiftUI.GaugeStyle where Self == SwiftUI.DefaultGaugeStyle {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.DefaultGaugeStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultGaugeStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, watchOS 7.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 7.0, *)
@@ -29468,9 +29045,6 @@ extension SwiftUI.GaugeStyle where Self == SwiftUI.DefaultGaugeStyle {
   @_Concurrency.MainActor @preconcurrency public init()
   @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.DefaultGaugeStyle.Configuration) -> some View
   
-  @available(macOS 13.0, iOS 16.0, watchOS 7.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI17DefaultGaugeStyleV8makeBody13configurationQrAA0dE13ConfigurationV_tF", 0) __
 }
 #endif
 extension View {
@@ -29485,13 +29059,15 @@ extension View {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 nonisolated public struct Button<Label> : View, ~Swift.Sendable where Label : View {
   @preconcurrency nonisolated public init(action: @escaping @_Concurrency.MainActor () -> Swift.Void, @ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUI.Button.init(action:label:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Button.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Button._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Button._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Button._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -29500,8 +29076,6 @@ nonisolated public struct Button<Label> : View where Label : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI6ButtonV4bodyQrvp", 0) __<Label>
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -29596,13 +29170,15 @@ extension SwiftUI.Button where Label == SwiftUI.DefaultButtonLabel {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 nonisolated public struct DefaultButtonLabel : View, ~Swift.Sendable {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DefaultButtonLabel.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultButtonLabel._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultButtonLabel._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultButtonLabel._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -29610,8 +29186,6 @@ nonisolated public struct DefaultButtonLabel : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI18DefaultButtonLabelV4bodyQrvp", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -29942,8 +29516,7 @@ internal struct NavigationSplitViewExtraWidePrimaryColumnTraitKey : _ViewTraitKe
 @available(visionOS, unavailable)
 @available(macCatalyst, unavailable)
 nonisolated public struct DocumentLaunchView<Actions, DocumentView> : View, ~Swift.Sendable where Actions : View, DocumentView : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DocumentLaunchView.body") }
   }
   nonisolated public init(_ title: LocalizedStringKey, for contentTypes: [UniformTypeIdentifiers.UTType], @ContentBuilder _ actions: () -> Actions, @ContentBuilder onDocumentOpen: @escaping (Foundation.URL) -> DocumentView, @ContentBuilder background: () -> some View, @ContentBuilder backgroundAccessoryView: @escaping (SwiftUI.DocumentLaunchGeometryProxy) -> some View, @ContentBuilder overlayAccessoryView: @escaping (SwiftUI.DocumentLaunchGeometryProxy) -> some View) { _suiUnimplemented("SwiftUI.DocumentLaunchView.init(_:for:_:onDocumentOpen:background:backgroundAccessoryView:overlayAccessoryView:)") }
@@ -30093,13 +29666,12 @@ nonisolated public var body: Swift.Never {
   nonisolated public init(_ title: Text? = nil, for contentTypes: [UniformTypeIdentifiers.UTType], @ContentBuilder _ actions: () -> Actions, @ContentBuilder onDocumentOpen: @escaping (Foundation.URL) -> DocumentView, @ContentBuilder backgroundAccessoryView: @escaping (SwiftUI.DocumentLaunchGeometryProxy) -> some View) { _suiUnimplemented("SwiftUI.DocumentLaunchView.init(_:for:_:onDocumentOpen:backgroundAccessoryView:)") }
   nonisolated public init(_ title: Text? = nil, for contentTypes: [UniformTypeIdentifiers.UTType], @ContentBuilder _ actions: () -> Actions, @ContentBuilder onDocumentOpen: @escaping (Foundation.URL) -> DocumentView, @ContentBuilder overlayAccessoryView: @escaping (SwiftUI.DocumentLaunchGeometryProxy) -> some View) { _suiUnimplemented("SwiftUI.DocumentLaunchView.init(_:for:_:onDocumentOpen:overlayAccessoryView:)") }
   nonisolated public init(_ title: Text? = nil, for contentTypes: [UniformTypeIdentifiers.UTType], @ContentBuilder _ actions: () -> Actions, @ContentBuilder onDocumentOpen: @escaping (Foundation.URL) -> DocumentView) { _suiUnimplemented("SwiftUI.DocumentLaunchView.init(_:for:_:onDocumentOpen:)") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(iOS 18.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(macCatalyst, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DocumentLaunchView._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DocumentLaunchView._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DocumentLaunchView._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 18.0, *)
@@ -30258,12 +29830,6 @@ nonisolated public struct DocumentLaunchView<Actions, DocumentView> : View where
   nonisolated public init(_ title: Text? = nil, for contentTypes: [UniformTypeIdentifiers.UTType], @ContentBuilder _ actions: () -> Actions, @ContentBuilder onDocumentOpen: @escaping (Foundation.URL) -> DocumentView, @ContentBuilder backgroundAccessoryView: @escaping (SwiftUI.DocumentLaunchGeometryProxy) -> some View)
   nonisolated public init(_ title: Text? = nil, for contentTypes: [UniformTypeIdentifiers.UTType], @ContentBuilder _ actions: () -> Actions, @ContentBuilder onDocumentOpen: @escaping (Foundation.URL) -> DocumentView, @ContentBuilder overlayAccessoryView: @escaping (SwiftUI.DocumentLaunchGeometryProxy) -> some View)
   nonisolated public init(_ title: Text? = nil, for contentTypes: [UniformTypeIdentifiers.UTType], @ContentBuilder _ actions: () -> Actions, @ContentBuilder onDocumentOpen: @escaping (Foundation.URL) -> DocumentView)
-  @available(iOS 18.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(macCatalyst, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI18DocumentLaunchViewV4bodyQrvp", 0) __<Actions, DocumentView>
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -30288,16 +29854,16 @@ public struct DocumentLaunchGeometryProxy {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 nonisolated public struct DefaultDocumentGroupLaunchActions : View, ~Swift.Sendable {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.DefaultDocumentGroupLaunchActions.body") }
   }
   nonisolated public init() { _suiUnimplemented("SwiftUI.DefaultDocumentGroupLaunchActions.init()") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 15.0, iOS 18.0, visionOS 2.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DefaultDocumentGroupLaunchActions._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DefaultDocumentGroupLaunchActions._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DefaultDocumentGroupLaunchActions._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
@@ -30308,10 +29874,6 @@ nonisolated public struct DefaultDocumentGroupLaunchActions : View {
     get
   }
   nonisolated public init()
-  @available(macOS 15.0, iOS 18.0, visionOS 2.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI33DefaultDocumentGroupLaunchActionsV4bodyQrvp", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -30404,6 +29966,12 @@ nonisolated public struct LazyHGrid<Content> : View, ~Swift.Sendable where Conte
   public static func _makeView(view: _GraphValue<SwiftUI.LazyHGrid<Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LazyHGrid._makeView(view:inputs:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LazyHGrid._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LazyHGrid._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LazyHGrid.body") } }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -30421,6 +29989,12 @@ nonisolated public struct LazyVGrid<Content> : View, ~Swift.Sendable where Conte
   public static func _makeView(view: _GraphValue<SwiftUI.LazyVGrid<Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LazyVGrid._makeView(view:inputs:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LazyVGrid._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LazyVGrid._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LazyVGrid.body") } }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -30549,6 +30123,10 @@ extension SwiftUI.SectionedFetchRequest : DynamicProperty {
     get { _suiUnimplemented("SwiftUI.SectionedFetchRequest._propertyBehaviors") }
   }
   @_Concurrency.MainActor @preconcurrency public func update() { _suiUnimplemented("SwiftUI.SectionedFetchRequest.update()") }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public static func _makeProperty<V>(in buffer: inout _DynamicPropertyBuffer, container: _GraphValue<V>, fieldOffset: Swift::Int, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUI.SectionedFetchRequest._makeProperty(in:container:fieldOffset:inputs:)") }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public static var _propertyStorageSize: Swift::Int? { get { _suiUnimplemented("SwiftUI.SectionedFetchRequest._propertyStorageSize") } }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.SectionedFetchRequest {
@@ -30580,15 +30158,15 @@ extension SwiftUI.SectionedFetchResults where Result : CoreData.NSManagedObject 
 @available(tvOS, unavailable)
 @available(visionOS, unavailable)
 nonisolated public struct _WKStoryboardContent : View, ~Swift.Sendable {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI._WKStoryboardContent.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(watchOS 6.0, *)
-      @available(tvOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._WKStoryboardContent._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._WKStoryboardContent._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._WKStoryboardContent._viewListCount(inputs:)") }
 }
 #else
 @available(watchOS 6.0, *)
@@ -30598,10 +30176,6 @@ nonisolated public struct _WKStoryboardContent : View {
   nonisolated public var body: some View {
     get
   }
-  @available(watchOS 6.0, *)
-      @available(tvOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI20_WKStoryboardContentV4bodyQrvp", 0) __
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -30660,9 +30234,6 @@ nonisolated public struct AutomaticFormStyle : SwiftUI.FormStyle, ~Swift.Sendabl
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.AutomaticFormStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AutomaticFormStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -30670,8 +30241,6 @@ nonisolated public struct AutomaticFormStyle : SwiftUI.FormStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: SwiftUI.AutomaticFormStyle.Configuration) -> some View
   
-  @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI18AutomaticFormStyleV8makeBody13configurationQrAA0dE13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -30680,8 +30249,7 @@ nonisolated public struct AutomaticFormStyle : SwiftUI.FormStyle {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 nonisolated public struct RemoteImmersiveSpace<Content, Data> : SwiftUI.Scene, ~Swift.Sendable where Content : SwiftUI.ImmersiveSpaceContent, Data : Swift.Decodable, Data : Swift.Encodable, Data : Swift.Hashable {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.RemoteImmersiveSpace.body") }
   }
   nonisolated public init<C>(@SwiftUI.CompositorContentBuilder content: @escaping () -> C) where Content == SwiftUI.CompositorContentBuilder.Content<C>, Data == Swift.Never, C : SwiftUI.CompositorContent { _suiUnimplemented("SwiftUI.RemoteImmersiveSpace.init(content:)") }
@@ -30690,12 +30258,6 @@ nonisolated public var body: Swift.Never {
   nonisolated public init<C>(for type: Data.Type, @SwiftUI.CompositorContentBuilder content: @escaping (Binding<Data?>) -> C) where Content == SwiftUI.CompositorContentBuilder.Content<C>, C : SwiftUI.CompositorContent { _suiUnimplemented("SwiftUI.RemoteImmersiveSpace.init(for:content:)") }
   nonisolated public init<C>(id: Swift.String, for type: Data.Type = Data.self, @SwiftUI.CompositorContentBuilder content: @escaping (Binding<Data>) -> C, defaultValue: @escaping () -> Data) where Content == SwiftUI.CompositorContentBuilder.Content<C>, C : SwiftUI.CompositorContent { _suiUnimplemented("SwiftUI.RemoteImmersiveSpace.init(id:for:content:defaultValue:)") }
   nonisolated public init<C>(for type: Data.Type = Data.self, @SwiftUI.CompositorContentBuilder content: @escaping (Binding<Data>) -> C, defaultValue: @escaping () -> Data) where Content == SwiftUI.CompositorContentBuilder.Content<C>, C : SwiftUI.CompositorContent { _suiUnimplemented("SwiftUI.RemoteImmersiveSpace.init(for:content:defaultValue:)") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 26.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(macOS 26.0, *)
@@ -30712,11 +30274,6 @@ nonisolated public struct RemoteImmersiveSpace<Content, Data> : SwiftUI.Scene wh
   nonisolated public init<C>(for type: Data.Type, @SwiftUI.CompositorContentBuilder content: @escaping (Binding<Data?>) -> C) where Content == SwiftUI.CompositorContentBuilder.Content<C>, C : SwiftUI.CompositorContent
   nonisolated public init<C>(id: Swift.String, for type: Data.Type = Data.self, @SwiftUI.CompositorContentBuilder content: @escaping (Binding<Data>) -> C, defaultValue: @escaping () -> Data) where Content == SwiftUI.CompositorContentBuilder.Content<C>, C : SwiftUI.CompositorContent
   nonisolated public init<C>(for type: Data.Type = Data.self, @SwiftUI.CompositorContentBuilder content: @escaping (Binding<Data>) -> C, defaultValue: @escaping () -> Data) where Content == SwiftUI.CompositorContentBuilder.Content<C>, C : SwiftUI.CompositorContent
-  @available(macOS 26.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI20RemoteImmersiveSpaceV4bodyQrvp", 0) __<Content, Data>
 }
 #endif
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -30731,11 +30288,27 @@ public struct LabeledContentStyleConfiguration : ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public struct Label : View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Label._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Label._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Label._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Label.body") } }
+}
   @_Concurrency.MainActor @preconcurrency public struct Content : View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Content._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Content._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Content._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Content.body") } }
+}
   public let label: SwiftUI.LabeledContentStyleConfiguration.Label
   public let content: SwiftUI.LabeledContentStyleConfiguration.Content
 }
@@ -30819,6 +30392,10 @@ public struct WindowBackgroundShapeStyle : ShapeStyle {
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   @available(visionOS, unavailable)
   public typealias Resolved = Swift.Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public static func _makeView<S>(view: _GraphValue<_ShapeView<S, Self>>, inputs: _ViewInputs) -> _ViewOutputs where S : Shape { _suiUnimplemented("SwiftUI.WindowBackgroundShapeStyle._makeView(view:inputs:)") }
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift.Never { _suiUnimplemented("SwiftUI.WindowBackgroundShapeStyle.resolve(in:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 17.0, *)
 @available(watchOS, unavailable)
@@ -30867,6 +30444,8 @@ nonisolated public struct SpatialTapGesture : Gesture, ~Swift.Sendable {
   @available(macOS 13.0, iOS 16.0, watchOS 9.0, visionOS 1.0, *)
   @available(tvOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.SpatialTapGesture.body") } }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, visionOS 1.0, *)
@@ -31044,16 +30623,11 @@ nonisolated public struct WindowDragGesture : Gesture, ~Swift.Sendable {
     public static func == (a: SwiftUI.WindowDragGesture.Value, b: SwiftUI.WindowDragGesture.Value) -> Swift.Bool { _suiUnimplemented("SwiftUI.WindowDragGesture.Value.==(a:b:)") }
   }
   nonisolated public init() { _suiUnimplemented("SwiftUI.WindowDragGesture.init()") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some Gesture<SwiftUI.WindowDragGesture.Value> {
     get { _suiUnimplemented("SwiftUI.WindowDragGesture.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 15.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
+  public nonisolated static func _makeGesture(gesture: _GraphValue<Self>, inputs: _GestureInputs) -> _GestureOutputs<Swift.Never> { _suiUnimplemented("SwiftUI.WindowDragGesture._makeGesture(gesture:inputs:)") }
 }
 #else
 @available(macOS 15.0, *)
@@ -31068,24 +30642,21 @@ nonisolated public struct WindowDragGesture : Gesture {
   nonisolated public var body: some Gesture<SwiftUI.WindowDragGesture.Value> {
     get
   }
-  @available(macOS 15.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI17WindowDragGestureV4bodyQrvp", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 nonisolated public struct RenameButton<Label> : View, ~Swift.Sendable where Label : View {
   nonisolated public init() where Label == SwiftUI.Label<Text, Image> { _suiUnimplemented("SwiftUI.RenameButton.init()") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.RenameButton.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.RenameButton._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.RenameButton._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.RenameButton._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -31094,8 +30665,6 @@ nonisolated public struct RenameButton<Label> : View where Label : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI12RenameButtonV4bodyQrvp", 0) __<Label>
 }
 #endif
 extension View {
@@ -31148,18 +30717,6 @@ public func _body(configuration: SwiftUI._NavigationViewStyleConfiguration) -> S
 @available(iOS 15.0, tvOS 15.0, watchOS 8.0, *)
     public func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUI.StackNavigationViewStyle._columnBasedBody(configuration:)") }
   
-        // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
-  @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
-  @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
-  public typealias _Body = Swift.Never
-        // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
-  @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
-  @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
-  public typealias _Body2 = Swift.Never
 }
 #else
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
@@ -31173,29 +30730,21 @@ public struct StackNavigationViewStyle : SwiftUI.NavigationViewStyle {
   @available(iOS 15.0, tvOS 15.0, watchOS 8.0, *)
     public func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> some View
   
-    @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
-  @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
-  @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
-  public typealias _Body = @_opaqueReturnTypeOf("$s7SwiftUI24StackNavigationViewStyleV5_body13configurationQrAA01_deF13ConfigurationV_tF", 0) __
-    @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
-  @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
-  @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
-  public typealias _Body2 = @_opaqueReturnTypeOf("$s7SwiftUI24StackNavigationViewStyleV16_columnBasedBody13configurationQrAA01_deF13ConfigurationV_tF", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 nonisolated public struct Label<Title, Icon> : View, ~Swift.Sendable where Title : View, Icon : View {
   nonisolated public init(@ContentBuilder title: () -> Title, @ContentBuilder icon: () -> Icon) { _suiUnimplemented("SwiftUI.Label.init(title:icon:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.Label.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.Label._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Label._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Label._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -31204,8 +30753,6 @@ nonisolated public struct Label<Title, Icon> : View where Title : View, Icon : V
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI5LabelV4bodyQrvp", 0) __<Title, Icon>
 }
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -31275,19 +30822,13 @@ nonisolated public func help(_ text: Text) -> Swift.Never { _suiUnimplemented("S
 nonisolated public struct DisclosureTableRow<Label, Content> : SwiftUI.TableRowContent, ~Swift.Sendable where Label : SwiftUI.TableRowContent, Content : SwiftUI.TableRowContent, Label.TableRowValue == Content.TableRowValue {
   public typealias TableRowValue = Label.TableRowValue
   nonisolated public init<Value>(_ value: Value, isExpanded: Binding<Swift.Bool>? = nil, @SwiftUI.TableRowBuilder<Value> content: @escaping () -> Content) where Label == SwiftUI.TableRow<Value>, Value == Content.TableRowValue { _suiUnimplemented("SwiftUI.DisclosureTableRow.init(_:isExpanded:?:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var tableRowBody: Swift.Never {
+  nonisolated public var tableRowBody: some SwiftUI.TableRowContent {
     get { _suiUnimplemented("SwiftUI.DisclosureTableRow.tableRowBody") }
   }
   @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public static func _containsOutlineSymbol(inputs: SwiftUI._TableRowInputs) -> Swift.Bool { _suiUnimplemented("SwiftUI.DisclosureTableRow._containsOutlineSymbol(inputs:)") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 14.0, iOS 17.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias TableRowBody = Swift.Never
 }
 #else
 @available(iOS 17.0, macOS 14.0, *)
@@ -31303,10 +30844,6 @@ nonisolated public struct DisclosureTableRow<Label, Content> : SwiftUI.TableRowC
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public static func _containsOutlineSymbol(inputs: SwiftUI._TableRowInputs) -> Swift.Bool
-  @available(macOS 14.0, iOS 17.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias TableRowBody = @_opaqueReturnTypeOf("$s7SwiftUI18DisclosureTableRowV05tableE4BodyQrvp", 0) __<Label, Content>
 }
 #endif
 @available(iOS 17.0, macOS 14.0, *)
@@ -31362,6 +30899,8 @@ nonisolated public struct ToolbarOverflowMenu<Content> : SwiftUI.ToolbarContent,
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for ToolbarContent (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ToolbarOverflowMenu.body") } }
 }
 #else
 @available(iOS 27.0, visionOS 27.0, *)
@@ -31395,9 +30934,6 @@ nonisolated public struct SwitchToggleStyle : SwiftUI.ToggleStyle, ~Swift.Sendab
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SwiftUI.SwitchToggleStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.SwitchToggleStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 18.0, watchOS 6.0, *)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 18.0, watchOS 6.0, *)
@@ -31411,8 +30947,6 @@ nonisolated public struct SwitchToggleStyle : SwiftUI.ToggleStyle {
   nonisolated public init(tint: Color)
   nonisolated public func makeBody(configuration: SwiftUI.SwitchToggleStyle.Configuration) -> some View
   
-  @available(macOS 10.15, iOS 13.0, tvOS 18.0, watchOS 6.0, *)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI17SwitchToggleStyleV8makeBody13configurationQrAA0dE13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -31561,15 +31095,15 @@ public struct AdaptableTabBarPlacement : Swift.Hashable {
 nonisolated public struct ColorPicker<Label> : View, ~Swift.Sendable where Label : View {
   nonisolated public init(selection: Binding<Color>, supportsOpacity: Swift.Bool = true, @ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUI.ColorPicker.init(selection:supportsOpacity:label:)") }
   nonisolated public init(selection: Binding<CoreGraphics.CGColor>, supportsOpacity: Swift.Bool = true, @ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUI.ColorPicker.init(selection:supportsOpacity:label:)") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI.ColorPicker.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.ColorPicker._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.ColorPicker._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.ColorPicker._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -31581,10 +31115,6 @@ nonisolated public struct ColorPicker<Label> : View where Label : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 11.0, iOS 14.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI11ColorPickerV4bodyQrvp", 0) __<Label>
 }
 #endif
 @available(iOS 14.0, macOS 11.0, *)
@@ -31636,6 +31166,8 @@ extension SwiftUI.ColorPicker where Label == Text {
   nonisolated public static var _propertyStorageSize: Swift.Int? {
     get { _suiUnimplemented("SwiftUI.FocusedObject._propertyStorageSize") }
   }
+  // port: synthesized witness for DynamicProperty (R7); Apple implements it with an internal member
+  public mutating func update() { _suiUnimplemented("SwiftUI.FocusedObject.update()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -31800,15 +31332,9 @@ extension SwiftUI.ToolbarPlacement {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 nonisolated public struct DocumentGroupLaunchScene<Actions> : SwiftUI.Scene, ~Swift.Sendable where Actions : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.DocumentGroupLaunchScene.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(iOS 18.0, visionOS 2.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 18.0, visionOS 2.0, *)
@@ -31818,10 +31344,6 @@ nonisolated public struct DocumentGroupLaunchScene<Actions> : SwiftUI.Scene wher
   nonisolated public var body: some SwiftUI.Scene {
     get
   }
-  @available(iOS 18.0, visionOS 2.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI24DocumentGroupLaunchSceneV4bodyQrvp", 0) __<Actions>
 }
 #endif
 @available(iOS 18.0, visionOS 2.0, *)
@@ -31927,14 +31449,15 @@ extension SwiftUI.DocumentGroupLaunchScene {
 @available(watchOS, unavailable)
 nonisolated public struct _DisclosureIndicator : View, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI._DisclosureIndicator.init()") }
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some View {
     get { _suiUnimplemented("SwiftUI._DisclosureIndicator.body") }
   }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._DisclosureIndicator._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._DisclosureIndicator._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._DisclosureIndicator._viewListCount(inputs:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, *)
@@ -31944,9 +31467,6 @@ nonisolated public struct _DisclosureIndicator : View {
   nonisolated public var body: some View {
     get
   }
-  @available(macOS 10.15, iOS 13.0, tvOS 13.0, *)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI20_DisclosureIndicatorV4bodyQrvp", 0) __
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -31960,6 +31480,8 @@ nonisolated public struct SpatialEventGesture : Gesture, ~Swift.Sendable {
   @available(macOS 15.0, iOS 18.0, watchOS 11.0, visionOS 1.0, *)
   @available(tvOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.SpatialEventGesture.body") } }
 }
 #else
 @available(visionOS 1.0, iOS 18.0, macOS 15.0, watchOS 11.0, *)
@@ -32530,10 +32052,6 @@ extension SwiftUI.Scene {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AccessoryCircularGaugeStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AccessoryCircularGaugeStyle.makeBody(configuration:)") }
   
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, iOS 16.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -32542,9 +32060,6 @@ extension SwiftUI.Scene {
   @_Concurrency.MainActor @preconcurrency public init()
   @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AccessoryCircularGaugeStyle.Configuration) -> some View
   
-  @available(macOS 13.0, iOS 16.0, watchOS 9.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI27AccessoryCircularGaugeStyleV8makeBody13configurationQrAA0eF13ConfigurationV_tF", 0) __
 }
 #endif
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -32559,8 +32074,7 @@ extension SwiftUI.GaugeStyle where Self == SwiftUI.AccessoryCircularGaugeStyle {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 nonisolated public struct Window<Content> : SwiftUI.Scene, ~Swift.Sendable where Content : View {
-    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
-nonisolated public var body: Swift.Never {
+  nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.Window.body") }
   }
   nonisolated public init(_ title: Text, id: Swift.String, @ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUI.Window.init(_:id:content:)") }
@@ -32569,11 +32083,6 @@ nonisolated public var body: Swift.Never {
         self.init(Text(titleResource), id: id, content: content)
     }
   @_disfavoredOverload nonisolated public init<S>(_ title: S, id: Swift.String, @ContentBuilder content: () -> Content) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.Window.init(_:id:content:)") }
-    // port: @_opaqueReturnTypeOf resolved against Apple's binary; the port has no opaque type to name, so Body is Never (R3)
-@available(macOS 13.0, visionOS 26.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
 }
 #else
 @available(macOS 13.0, visionOS 26.0, *)
@@ -32589,10 +32098,6 @@ nonisolated public struct Window<Content> : SwiftUI.Scene where Content : View {
         self.init(Text(titleResource), id: id, content: content)
     }
   @_disfavoredOverload nonisolated public init<S>(_ title: S, id: Swift.String, @ContentBuilder content: () -> Content) where S : Swift.StringProtocol
-  @available(macOS 13.0, visionOS 26.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = @_opaqueReturnTypeOf("$s7SwiftUI6WindowV4bodyQrvp", 0) __<Content>
 }
 #endif
 @available(iOS 13.0, macOS 10.15, watchOS 10.0, *)
@@ -32615,9 +32120,17 @@ public struct DatePickerStyleConfiguration : ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, watchOS 10.0, *)
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.DatePickerStyleConfiguration.Label._makeView(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.DatePickerStyleConfiguration.Label._makeViewList(view:inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.DatePickerStyleConfiguration.Label._viewListCount(inputs:)") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.DatePickerStyleConfiguration.Label.body") } }
+}
   public let label: SwiftUI.DatePickerStyleConfiguration.Label
-public var selection: Foundation.Date {
+    public var selection: Foundation.Date {
     get { _suiUnimplemented("SwiftUI.DatePickerStyleConfiguration.selection") }
     @available(macOS 13.0, iOS 16.0, watchOS 10.0, *)
     @available(tvOS, unavailable)
@@ -32642,7 +32155,7 @@ public struct DatePickerStyleConfiguration {
     public typealias Body = Swift.Never
   }
   public let label: SwiftUI.DatePickerStyleConfiguration.Label
-public var selection: Foundation.Date {
+    public var selection: Foundation.Date {
     get
     @available(macOS 13.0, iOS 16.0, watchOS 10.0, *)
     @available(tvOS, unavailable)
@@ -32650,6 +32163,9 @@ public var selection: Foundation.Date {
     @available(macOS 13.0, iOS 16.0, watchOS 10.0, *)
     @available(tvOS, unavailable)
     nonmutating _modify
+  }
+  public var $selection: Binding<Foundation.Date> {
+    get
   }
   public var minimumDate: Foundation.Date?
   public var maximumDate: Foundation.Date?
@@ -32670,6 +32186,14 @@ nonisolated public struct _DatePickerStyleLabel : View, ~Swift.Sendable {
   @available(macOS 10.15, iOS 13.0, watchOS 10.0, *)
   @available(tvOS, unavailable)
   public typealias Body = Swift.Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._DatePickerStyleLabel._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._DatePickerStyleLabel._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._DatePickerStyleLabel._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._DatePickerStyleLabel.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, watchOS 10.0, *)
@@ -33648,7 +33172,9 @@ extension SwiftUI.EmptyWidgetConfiguration : Swift.BitwiseCopyable {}
 @available(iOS 16.0, macOS 13.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
-extension SwiftUI.EmptyTableRowContent : SwiftUI.TableRowContent {}
+extension SwiftUI.EmptyTableRowContent : SwiftUI.TableRowContent {  // port: synthesized witness for TableRowContent (R7); Apple implements it with an internal member
+  public var tableRowBody: Swift.Never { get { _suiUnimplemented("SwiftUI.EmptyTableRowContent.tableRowBody") } }
+}
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension SwiftUI.PlaceholderTextShapeStyle : Swift.BitwiseCopyable {}
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, *)
@@ -33784,9 +33310,21 @@ extension SwiftUI._SizeFittingRoot : Swift.Sendable {}
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI._SizeFittingRoot : Swift.BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-extension SwiftUI._AligningContentProvider.AligningContentProviderLayout : Animatable {}
+extension SwiftUI._AligningContentProvider.AligningContentProviderLayout : Animatable {  // port: synthesized witness for Animatable (R7); Apple implements it with an internal member
+  public var animatableData: Swift.Never { get { _suiUnimplemented("SwiftUI._AligningContentProvider.AligningContentProviderLayout.animatableData") } set { _suiUnimplemented("SwiftUI._AligningContentProvider.AligningContentProviderLayout.animatableData") } }
+  // port: synthesized witness for Animatable (R7); Apple implements it with an internal member
+  public static func _makeAnimatable(value: inout _GraphValue<Self>, inputs: _GraphInputs) { _suiUnimplemented("SwiftUI._AligningContentProvider.AligningContentProviderLayout._makeAnimatable(value:inputs:)") }
+}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-extension SwiftUI._AligningContentProvider.AligningContentProviderLayout : ViewModifier {}
+extension SwiftUI._AligningContentProvider.AligningContentProviderLayout : ViewModifier {  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(modifier: _GraphValue<Self>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._AligningContentProvider.AligningContentProviderLayout._makeView(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(modifier: _GraphValue<Self>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._AligningContentProvider.AligningContentProviderLayout._makeViewList(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs, body: (_ViewListCountInputs) -> Swift::Int?) -> Swift::Int? { _suiUnimplemented("SwiftUI._AligningContentProvider.AligningContentProviderLayout._viewListCount(inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._AligningContentProvider.AligningContentProviderLayout.body(content:)") }
+}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI._PagingViewConfig.Direction : Swift.Equatable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -33811,7 +33349,15 @@ extension SwiftUI.DismissSearchAction : Swift.Sendable {}
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
-extension SwiftUI._PullDownButton : View {}
+extension SwiftUI._PullDownButton : View {  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI._PullDownButton._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI._PullDownButton._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI._PullDownButton._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._PullDownButton.body") } }
+}
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension SwiftUI.ButtonBorderShape._Inset : Swift.BitwiseCopyable {}
 @available(visionOS 2.0, *)
@@ -33852,9 +33398,17 @@ extension SwiftUI.TimelineView.Context.Cadence : Swift.Hashable {}
 @available(visionOS, unavailable)
 extension SwiftUI.OpenSettingsAction : Swift.Sendable {}
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension SwiftUI.Grid : View {}
+extension SwiftUI.Grid : View {  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.Grid._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.Grid._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.Grid.body") } }
+}
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-extension SwiftUI.GridRow : View {}
+extension SwiftUI.GridRow : View {  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GridRow.body") } }
+}
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI._GridCellSizeModifier : Swift.Sendable {}
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -33888,7 +33442,9 @@ extension SwiftUI.FetchRequest.Configuration : Swift.Sendable {}
 @available(iOS 18.0, macOS 26.0, watchOS 26.0, *)
 @available(tvOS, unavailable)
 @available(visionOS, unavailable)
-extension SwiftUI.EmptyControlWidgetTemplate : SwiftUI.ControlWidgetTemplate {}
+extension SwiftUI.EmptyControlWidgetTemplate : SwiftUI.ControlWidgetTemplate {  // port: synthesized witness for ControlWidgetTemplate (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.EmptyControlWidgetTemplate.body") } }
+}
 @available(iOS 18.0, macOS 26.0, watchOS 26.0, *)
 @available(tvOS, unavailable)
 @available(visionOS, unavailable)
@@ -33913,6 +33469,22 @@ extension SwiftUI.SectionedFetchResults : Swift.Sendable {}
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.SectionedFetchResults.Section : Swift.Sendable {}
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-extension SwiftUI.LabelStyleConfiguration.Title : View {}
+extension SwiftUI.LabelStyleConfiguration.Title : View {  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Title._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Title._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Title._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Title.body") } }
+}
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-extension SwiftUI.LabelStyleConfiguration.Icon : View {}
+extension SwiftUI.LabelStyleConfiguration.Icon : View {  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeView(view: _GraphValue<Self>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Icon._makeView(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _makeViewList(view: _GraphValue<Self>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Icon._makeViewList(view:inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public nonisolated static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Icon._viewListCount(inputs:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Icon.body") } }
+}
