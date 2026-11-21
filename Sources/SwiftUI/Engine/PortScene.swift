@@ -19,8 +19,13 @@ public struct SceneContext {
     /// Points per pixel (Android density), for hairline widths.
     public var displayScale: CGFloat
     public var time: Double
+    /// Text metrics for this frame. The platform backend supplies a canvas-backed measurer;
+    /// the scene installs it before laying out.
+    public var measurer: TextMeasurer
 
-    public init(size: CGSize, safeArea: EdgeInsetsLike, isDark: Bool, displayScale: CGFloat, time: Double) {
+    public init(size: CGSize, safeArea: EdgeInsetsLike, isDark: Bool, displayScale: CGFloat,
+                time: Double, measurer: TextMeasurer = TextMeasurement.current) {
+        self.measurer = measurer
         self.size = size
         self.safeArea = safeArea
         self.isDark = isDark

@@ -81,11 +81,11 @@ public struct FrameSpec: Equatable {
         self.verticalAlignment = verticalAlignment
     }
 
-    static func width(_ value: CGFloat) -> FrameSpec {
+    public static func width(_ value: CGFloat) -> FrameSpec {
         FrameSpec(minWidth: value, idealWidth: value, maxWidth: value)
     }
 
-    static func height(_ value: CGFloat) -> FrameSpec {
+    public static func height(_ value: CGFloat) -> FrameSpec {
         FrameSpec(minHeight: value, idealHeight: value, maxHeight: value)
     }
 }

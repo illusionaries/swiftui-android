@@ -3,7 +3,22 @@ import PackageDescription
 
 // Swift 5 language mode is deliberate: Apple's own interfaces are `-language-mode 5`, and the
 // port must match their isolation semantics rather than invent stricter ones.
+//
+// The `SwiftUI` target compiles Apple's retargeted declarations (Sources/SwiftUI/Generated)
+// plus the port's engine (Sources/SwiftUI/Engine). Those declarations `import Combine`,
+// `Symbols`, and the platform shims, which come from the Port SDK that
+// scripts/port/build-port-sdk.sh produces. `-I` is how a foreign module is consumed.
+let portSDKFlags: [String] = [
+    "-I", "build/port-sdk/gen",
+    "-I", "build/port-sdk/shims",
+    "-enable-experimental-feature", "AnyAppleOSAvailability",
+]
+
 let swift5Mode: [SwiftSetting] = [.swiftLanguageMode(.v5)]
+let portSettings: [SwiftSetting] = [
+    .swiftLanguageMode(.v5),
+    .unsafeFlags(portSDKFlags),
+]
 
 let package = Package(
     name: "SwiftUI",
@@ -22,7 +37,7 @@ let package = Package(
         .target(
             name: "SwiftUI",
             path: "Sources/SwiftUI",
-            swiftSettings: swift5Mode
+            swiftSettings: portSettings
         ),
         .target(
             name: "SwiftUIAndroid",

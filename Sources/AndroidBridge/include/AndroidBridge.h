@@ -29,8 +29,17 @@ typedef struct ABCanvas  ABCanvas;
  *    JNI functions in AndroidBridge.c.
  * ──────────────────────────────────────────────────────────────────────────── */
 
-/* Called once when the host View is created (before the first resize/render). */
-void swiftui_android_start(ABRuntime *rt);
+/* The application target exports exactly one C symbol, `swiftui_app_entry`, which returns a
+ * retained pointer to its root scene (an opaque `PortScene` object on the Swift side).
+ *
+ * It is declared weak so a runtime-only build (tests, tools) still links, and it is resolved
+ * by the linker inside the same shared object — no dlsym, which is unreliable across Android's
+ * JNI linker namespaces. */
+void *swiftui_app_entry(void) __attribute__((weak));
+
+/* Called once when the host View is created (before the first resize/render).
+ * `app_scene` is the result of `swiftui_app_entry()` (NULL when no app is linked). */
+void swiftui_android_start(ABRuntime *rt, void *app_scene);
 
 /* Called from onSizeChanged and whenever window insets change. All values in dp. */
 void swiftui_android_resize(ABRuntime *rt, float width_dp, float height_dp, float density,

@@ -326,6 +326,41 @@ if [ "$CLEAN" = "1" ]; then
   rm -rf "$BUILD_DIR"
 fi
 mkdir -p "$BUILD_DIR" "$JNI_DIR" "$GEN_DIR" "$RES_DIR" "$CLASSES_DIR" "$TMP_DIR"
+
+# ── cross-process lock ────────────────────────────────────────────────────────
+# Several agents/terminals can run this script (or device-test.sh) against the same tree; two
+# concurrent runs delete each other's build/tmp and make `zip` fail halfway through packaging.
+LOCK_DIR="${TMPDIR:-/tmp}/swiftui-android-build-apk-$(printf '%s' "$REPO_ROOT" | shasum | cut -c1-12).lock"
+acquire_build_lock() {
+  local holder waited=0
+  if mkdir "$LOCK_DIR" 2>/dev/null; then
+    printf '%s\n' "$$" > "$LOCK_DIR/pid"
+    return 0
+  fi
+  holder="$(cat "$LOCK_DIR/pid" 2>/dev/null || true)"
+  if [ -n "$holder" ] && kill -0 "$holder" 2>/dev/null; then
+    log "another build-apk.sh is running (pid $holder); waiting for it to finish"
+    while [ -d "$LOCK_DIR" ] && kill -0 "$holder" 2>/dev/null; do
+      sleep 1
+      waited=$((waited + 1))
+      [ "$waited" -gt 600 ] && die "timed out waiting for $LOCK_DIR (pid $holder)" 1
+    done
+    rm -rf "$LOCK_DIR"
+    mkdir "$LOCK_DIR" 2>/dev/null || die "could not acquire $LOCK_DIR" 1
+    printf '%s\n' "$$" > "$LOCK_DIR/pid"
+    return 0
+  fi
+  # Stale lock from a killed run.
+  rm -rf "$LOCK_DIR"
+  mkdir "$LOCK_DIR" 2>/dev/null || die "could not acquire $LOCK_DIR" 1
+  printf '%s\n' "$$" > "$LOCK_DIR/pid"
+}
+release_build_lock() { rm -rf "$LOCK_DIR"; }
+acquire_build_lock
+trap release_build_lock EXIT
+trap 'release_build_lock; exit 130' INT
+trap 'release_build_lock; exit 143' TERM
+
 rm -rf "${JNI_DIR:?}"/* "$GEN_DIR"/* "$RES_DIR"/* "$CLASSES_DIR"/* "$TMP_DIR"/*
 mkdir -p "$TMP_DIR/stage" "$TMP_DIR/dex"
 

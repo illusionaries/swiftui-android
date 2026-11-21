@@ -40,8 +40,15 @@ SWIFT_TC="${SWIFT_TOOLCHAIN:?set SWIFT_TOOLCHAIN}"
 if [ -x "$SWIFT_TC/usr/bin/swift" ]; then
     export PATH="$SWIFT_TC/usr/bin:$PATH"
 fi
-: "${ANDROID_NDK_HOME:?set ANDROID_NDK_HOME}"
+# Prefer the NDK r30 this project was set up against. The session may export an older
+# ANDROID_NDK_HOME (e.g. ndk-bundle 25.x), which SwiftPM rejects for the Android SDK.
+ndk_version() { [ -f "$1/source.properties" ] && grep -E '^Pkg.Revision' "$1/source.properties" | cut -d' ' -f3 | cut -d. -f1 || echo 0; }
+DEFAULT_NDK="${ANDROID_NDK_HOME:?set ANDROID_NDK_HOME}"
+if [ -z "${ANDROID_NDK_HOME:-}" ] || [ "$(ndk_version "$ANDROID_NDK_HOME")" -lt 27 ]; then
+    ANDROID_NDK_HOME="$DEFAULT_NDK"
+fi
 export ANDROID_NDK_HOME
+echo "▸ ndk: $ANDROID_NDK_HOME ($(ndk_version "$ANDROID_NDK_HOME"))"
 
 echo "▸ swift: $(command -v swift) — $(swift --version 2>/dev/null | head -1)"
 

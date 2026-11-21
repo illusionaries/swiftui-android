@@ -1,17 +1,21 @@
-// DemoScene.swift — proof-of-pipeline scene for the Android port.
+// DemoScene.swift — the demo app's scene, built with the port's layout engine.
 //
-// This draws with the port's DisplayList (the same list Apple's SwiftUI declarations will
-// eventually feed). It exists to validate the whole chain on a device: Swift -> C bridge ->
-// android.graphics.Canvas (Skia), including text metrics, touch, and the frame loop.
+// Everything below is expressed as a LayoutNode tree (stacks, spacers, padding, frames,
+// fills, shapes, backgrounds, overlays, shadows) and painted through the same DisplayList
+// pipeline that Apple's declared views will feed once the `_makeView` adapters land.
+//
+// This is the on-device test of Sources/SwiftUI/Engine: measure → place → paint, in dp,
+// rendered by Android's Canvas via the C bridge.
 import Foundation
 import SwiftUI
 
 public final class DemoScene: PortScene {
-    private var tapCount = 0
+    private var taps = 0
     private var width: CGFloat = 0
     private var height: CGFloat = 0
     private var isDark = false
     private var safeArea = EdgeInsetsLike.zero
+    private var tree: LayoutNode?
 
     public init() {}
 
@@ -20,11 +24,85 @@ public final class DemoScene: PortScene {
         height = context.size.height
         isDark = context.isDark
         safeArea = context.safeArea
+        if tree == nil { rebuild() }
+    }
+
+    private var ink: RGBAColor { isDark ? .white : RGBAColor(hex: 0x111114) }
+    private var subtleInk: RGBAColor { isDark ? RGBAColor(hex: 0x9A9AA2) : RGBAColor(hex: 0x6C6C74) }
+    private var surface: RGBAColor { isDark ? RGBAColor(hex: 0x1C1C22) : .white }
+
+    private func rebuild() {
+        let title = LayoutNode.vstack(spacing: 2, horizontalAlignment: 0, [
+            LayoutNode.text("SwiftUI", style: .init(size: 34, weight: .bold, color: ink)),
+            LayoutNode.text("porting Apple's framework to Android",
+                            style: .init(size: 15, color: subtleInk)),
+        ])
+
+        let pill = LayoutNode.padding(EdgeInsetsLike(top: 8, bottom: 8, leading: 14, trailing: 14),
+                                      LayoutNode.text("arm64 · API 35",
+                                                      style: .init(size: 13, weight: .semibold, color: .white)))
+            .withBackground(
+                LayoutNode(.shape(.capsule, fill: .color(RGBAColor(white: 1, alpha: 0.22)), stroke: nil))
+            )
+
+        let heroContent = LayoutNode.vstack(spacing: 6, horizontalAlignment: 0, [
+            LayoutNode.text("Native Swift", style: .init(size: 28, weight: .bold, color: .white)),
+            LayoutNode.text("layout engine → display list → Skia",
+                            style: .init(size: 14, weight: .medium, color: RGBAColor(white: 1, alpha: 0.85))),
+            LayoutNode.spacer(minLength: 10),
+            LayoutNode.hstack(spacing: 0, [pill, LayoutNode.spacer()]),
+        ])
+
+        let hero = LayoutNode.padding(EdgeInsetsLike(top: 24, bottom: 24, leading: 24, trailing: 24), heroContent)
+            .withBackground(
+                LayoutNode.gradient([RGBAColor(hex: 0x5B7CFA), RGBAColor(hex: 0x9B5BFA), RGBAColor(hex: 0xF25BC0)],
+                                    start: CGPoint(x: 0, y: 0), end: CGPoint(x: 1, y: 1))
+            )
+            .withFrame(FrameSpec.height(200))
+            .withCornerRadius(22)
+            .withShadow(dx: 0, dy: 8, blur: 18, color: RGBAColor(hex: 0x000000, alpha: isDark ? 0.55 : 0.16))
+
+        let badge = LayoutNode(.shape(.circle, fill: .color(RGBAColor(hex: 0x0A84FF, alpha: 0.16)), stroke: nil))
+            .withFrame(FrameSpec.width(36).merging(FrameSpec.height(36)))
+            .withOverlay(
+                LayoutNode.text("+", style: .init(size: 20, weight: .semibold, color: RGBAColor(hex: 0x0A84FF)))
+            )
+
+        let tapsRow = LayoutNode.hstack(spacing: 12, [
+            LayoutNode.vstack(spacing: 2, horizontalAlignment: 0, [
+                LayoutNode.text("Taps", style: .init(size: 17, weight: .semibold, color: ink)),
+                LayoutNode.text("\(taps)", style: .init(size: 15, color: subtleInk)),
+            ]),
+            LayoutNode.spacer(),
+            badge,
+        ])
+        .withPadding(EdgeInsetsLike(top: 16, bottom: 16, leading: 20, trailing: 20))
+        .withBackground(LayoutNode(.shape(.roundedRectangle(cornerRadius: 18), fill: .color(surface), stroke: nil)))
+
+        let ladder = LayoutNode.vstack(spacing: 10, horizontalAlignment: 0, [
+            LayoutNode.text("Headline sample", style: .init(size: 22, weight: .semibold, color: ink)),
+            LayoutNode.text("Body text at 17pt with normal weight", style: .init(size: 17, color: ink)),
+            LayoutNode.text("Footnote 13pt secondary", style: .init(size: 13, color: subtleInk)),
+        ])
+
+        let content = LayoutNode.vstack(spacing: 20, horizontalAlignment: 0, [
+            title,
+            hero,
+            tapsRow,
+            ladder,
+            LayoutNode.spacer(),
+        ])
+
+        tree = LayoutNode.padding(
+            EdgeInsetsLike(top: max(20, safeArea.top + 12), bottom: 24, leading: 20, trailing: 20),
+            content
+        )
     }
 
     public func handleTap(at point: CGPoint) -> Bool {
         guard point.x >= 0, point.y >= 0, point.x <= width, point.y <= height else { return false }
-        tapCount += 1
+        taps += 1
+        rebuild()
         return true
     }
 
@@ -32,76 +110,38 @@ public final class DemoScene: PortScene {
         let background = isDark ? RGBAColor(hex: 0x0B0B0F) : RGBAColor(hex: 0xF5F5F7)
         list.append(.fillRect(CGRect(x: 0, y: 0, width: width, height: height), background))
 
-        let inset = max(20, safeArea.top)
-        var y = inset + 8
+        guard let tree else { return }
+        let proposal = ProposedSize(width: width, height: height)
+        let size = tree.measure(proposal)
+        tree.place(in: CGRect(x: 0, y: 0, width: width, height: max(size.height, height)))
+        TextMeasurement.current = context.measurer
+        tree.paint(into: &list)
+    }
+}
 
-        // Title
-        let title = TextStyleDescriptor(size: 34, weight: .bold, color: isDark ? .white : RGBAColor(hex: 0x111114))
-        let titleMetrics = (ascent: CGFloat(-33), descent: CGFloat(8), leading: CGFloat(0))
-        y += -titleMetrics.ascent
-        list.append(.text("SwiftUI", origin: CGPoint(x: 24, y: y), style: title))
-        y += titleMetrics.descent + 6
+// MARK: - Small builders that mirror SwiftUI modifier names
 
-        list.append(.text("porting Apple's framework to Android",
-                          origin: CGPoint(x: 24, y: y),
-                          style: TextStyleDescriptor(size: 15, weight: .regular,
-                                                     color: isDark ? RGBAColor(hex: 0x9A9AA2) : RGBAColor(hex: 0x6C6C74))))
-        y += 36
+extension LayoutNode {
+    func withPadding(_ insets: EdgeInsetsLike) -> LayoutNode { .padding(insets, self) }
+    func withFrame(_ spec: FrameSpec) -> LayoutNode { .frame(spec, self) }
+    func withBackground(_ background: LayoutNode) -> LayoutNode { .background(background, self) }
+    func withOverlay(_ overlay: LayoutNode) -> LayoutNode { .overlay(overlay, self) }
+    func withCornerRadius(_ radius: CGFloat) -> LayoutNode { LayoutNode(.clip(cornerRadius: radius), self) }
+    func withShadow(dx: CGFloat, dy: CGFloat, blur: CGFloat, color: RGBAColor) -> LayoutNode {
+        LayoutNode(.shadow(dx: dx, dy: dy, blur: blur, color: color), self)
+    }
+}
 
-        // Hero card with gradient
-        let card = CGRect(x: 16, y: y, width: width - 32, height: 220)
-        list.append(.shadowRoundRect(card, cornerRadius: 22, dx: 0, dy: 10, blur: 24,
-                                     RGBAColor(hex: 0x000000, alpha: isDark ? 0.5 : 0.12)))
-        list.append(.linearGradient(card, cornerRadius: 22,
-                                    start: CGPoint(x: card.minX, y: card.minY),
-                                    end: CGPoint(x: card.maxX, y: card.maxY),
-                                    stops: [RGBAColor(hex: 0x5B7CFA), RGBAColor(hex: 0x9B5BFA), RGBAColor(hex: 0xF25BC0)]))
-        list.append(.text("Native Swift", origin: CGPoint(x: card.minX + 24, y: card.minY + 56),
-                          style: TextStyleDescriptor(size: 28, weight: .bold, color: .white)))
-        list.append(.text("rendering through Skia Canvas via JNI",
-                          origin: CGPoint(x: card.minX + 24, y: card.minY + 88),
-                          style: TextStyleDescriptor(size: 14, weight: .medium,
-                                                     color: RGBAColor(white: 1, alpha: 0.82))))
-        // Pill row
-        let pill = CGRect(x: card.minX + 24, y: card.minY + 120, width: 148, height: 36)
-        list.append(.fillRoundRect(pill, cornerRadius: 18, RGBAColor(white: 1, alpha: 0.22)))
-        list.append(.text("arm64 · API 35", origin: CGPoint(x: pill.minX + 16, y: pill.minY + 23),
-                          style: TextStyleDescriptor(size: 13, weight: .semibold, color: .white)))
-
-        y = card.maxY + 28
-
-        // Interactive counter row
-        let row = CGRect(x: 16, y: y, width: width - 32, height: 76)
-        let rowFill = isDark ? RGBAColor(hex: 0x1C1C22) : RGBAColor(white: 1)
-        list.append(.fillRoundRect(row, cornerRadius: 18, rowFill))
-        list.append(.text("Taps", origin: CGPoint(x: row.minX + 20, y: row.minY + 30),
-                          style: TextStyleDescriptor(size: 17, weight: .semibold,
-                                                     color: isDark ? .white : RGBAColor(hex: 0x111114))))
-        list.append(.text("\(tapCount)", origin: CGPoint(x: row.minX + 20, y: row.minY + 56),
-                          style: TextStyleDescriptor(size: 15, weight: .regular,
-                                                     color: isDark ? RGBAColor(hex: 0x9A9AA2) : RGBAColor(hex: 0x6C6C74))))
-        // Chevron-ish circle
-        let badge = CGRect(x: row.maxX - 64, y: row.minY + 20, width: 36, height: 36)
-        list.append(.fillOval(badge, RGBAColor(hex: 0x0A84FF, alpha: 0.16)))
-        list.append(.text("+", origin: CGPoint(x: badge.midX - 7, y: badge.midY + 7),
-                          style: TextStyleDescriptor(size: 20, weight: .semibold, color: RGBAColor(hex: 0x0A84FF))))
-
-        y = row.maxY + 24
-
-        // Text scale ladder
-        let ladder: [(String, CGFloat, TextStyleDescriptor.Weight)] = [
-            ("Headline sample", 22, .semibold),
-            ("Body text at 17pt with normal weight", 17, .regular),
-            ("Footnote 13pt secondary", 13, .regular),
-        ]
-        for (index, item) in ladder.enumerated() {
-            let color: RGBAColor = index == 2
-                ? (isDark ? RGBAColor(hex: 0x8E8E93) : RGBAColor(hex: 0x7A7A80))
-                : (isDark ? .white : RGBAColor(hex: 0x111114))
-            list.append(.text(item.0, origin: CGPoint(x: 24, y: y + item.1),
-                              style: TextStyleDescriptor(size: item.1, weight: item.2, color: color)))
-            y += item.1 + 14
-        }
+extension FrameSpec {
+    func merging(_ other: FrameSpec) -> FrameSpec {
+        FrameSpec(minWidth: minWidth ?? other.minWidth,
+                  idealWidth: idealWidth ?? other.idealWidth,
+                  maxWidth: maxWidth ?? other.maxWidth,
+                  minHeight: minHeight ?? other.minHeight,
+                  idealHeight: idealHeight ?? other.idealHeight,
+                  maxHeight: maxHeight ?? other.maxHeight,
+                  horizontalAlignment: other.horizontalAlignment,
+                  verticalAlignment: other.verticalAlignment)
     }
 }
 

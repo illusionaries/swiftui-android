@@ -18,19 +18,12 @@ import SwiftUI
 
 // MARK: - Scene resolution
 
-private typealias SceneEntryPoint = @convention(c) () -> UnsafeMutableRawPointer?
-
-@_silgen_name("dlsym")
-private func c_dlsym(_ handle: UnsafeMutableRawPointer?, _ symbol: UnsafePointer<CChar>) -> UnsafeMutableRawPointer?
-
-private func loadAppScene() -> PortScene? {
-    // The demo app (or any app) exports a single C symbol returning a retained PortScene.
-    // RTLD_DEFAULT: symbols of this process image (both targets live in the same .so).
-    guard let symbol = c_dlsym(UnsafeMutableRawPointer(bitPattern: -2), "swiftui_app_entry") else {
-        return nil
-    }
-    let entry = unsafeBitCast(symbol, to: SceneEntryPoint.self)
-    guard let opaque = entry() else { return nil }
+/// The C bridge resolves the app's exported `swiftui_app_entry` with the linker (weak symbol)
+/// and hands the retained object over here. Doing the lookup there — rather than with
+/// `dlsym(RTLD_DEFAULT)` here — is deliberate: on Android, a JNI library lives in its own
+/// linker namespace, so RTLD_DEFAULT lookups from inside it are not reliable.
+private func loadAppScene(_ opaque: UnsafeMutableRawPointer?) -> PortScene? {
+    guard let opaque else { return nil }
     return Unmanaged<AnyObject>.fromOpaque(opaque).takeRetainedValue() as? PortScene
 }
 
@@ -49,9 +42,10 @@ private final class AndroidRuntime {
     var started = false
     var lastFrameTime: Double = 0
 
-    func makeContext() -> SceneContext {
+    func makeContext(measurer: TextMeasurer) -> SceneContext {
         SceneContext(size: size, safeArea: safeArea, isDark: isDark,
-                     displayScale: density, time: ab_seconds_since_boot())
+                     displayScale: density, time: ab_seconds_since_boot(),
+                     measurer: measurer)
     }
 
     func invalidate() {
@@ -62,7 +56,7 @@ private final class AndroidRuntime {
 // MARK: - Canvas painter
 
 /// Replays a DisplayList into the Android canvas handed over by the C bridge.
-final class AndroidCanvasPainter: DisplayListPainter {
+final class AndroidCanvasPainter: DisplayListPainter, TextMeasurer {
     let canvas: OpaquePointer
     let runtime: OpaquePointer?
 
@@ -80,6 +74,16 @@ final class AndroidCanvasPainter: DisplayListPainter {
         return CGFloat(ab_measure_text(canvas, buffer, length, Float(style.size),
                                        Int32(style.weight.rawValue), style.italic ? 1 : 0,
                                        Float(style.letterSpacing)))
+    }
+
+    // TextMeasurer conformance: the engine speaks `advance`/`metrics`, the painter speaks
+    // `measureText`/`fontMetrics`. Same canvas calls underneath.
+    func advance(_ text: String, style: TextStyleDescriptor) -> CGFloat {
+        measureText(text, style: style)
+    }
+
+    func metrics(style: TextStyleDescriptor) -> (ascent: CGFloat, descent: CGFloat, leading: CGFloat) {
+        fontMetrics(style: style)
     }
 
     func fontMetrics(style: TextStyleDescriptor) -> (ascent: CGFloat, descent: CGFloat, leading: CGFloat) {
@@ -193,10 +197,10 @@ final class AndroidCanvasPainter: DisplayListPainter {
 // MARK: - C entry points
 
 @_cdecl("swiftui_android_start")
-public func swiftuiAndroidStart(_ runtime: OpaquePointer?) {
+public func swiftuiAndroidStart(_ runtime: OpaquePointer?, _ appScene: UnsafeMutableRawPointer?) {
     let state = AndroidRuntime.shared
     state.runtime = runtime
-    state.scene = loadAppScene()
+    state.scene = loadAppScene(appScene)
     state.started = true
 }
 
@@ -212,7 +216,12 @@ public func swiftuiAndroidResize(_ runtime: OpaquePointer?,
     state.safeArea = EdgeInsetsLike(top: CGFloat(safeTop), bottom: CGFloat(safeBottom),
                                     leading: CGFloat(safeLeft), trailing: CGFloat(safeRight))
     state.isDark = state.runtime.map { ab_is_dark_mode($0) } ?? false
-    state.scene?.update(state.makeContext())
+    if let canvas = state.canvas {
+        let measurer = AndroidCanvasPainter(canvas: canvas, runtime: state.runtime)
+        state.scene?.update(state.makeContext(measurer: measurer))
+    } else {
+        state.scene?.update(state.makeContext(measurer: TextMeasurement.current))
+    }
     state.invalidate()
 }
 
@@ -230,9 +239,11 @@ public func swiftuiAndroidRender(_ runtime: OpaquePointer?,
     state.density = CGFloat(density)
     state.isDark = state.runtime.map { ab_is_dark_mode($0) } ?? state.isDark
 
-    let context = state.makeContext()
+    let painter = AndroidCanvasPainter(canvas: canvas, runtime: state.runtime)
+    // Text metrics come from the canvas for this frame, so layout matches rendering exactly.
+    TextMeasurement.current = painter
+    let context = state.makeContext(measurer: painter)
     guard let scene = state.scene else {
-        let painter = AndroidCanvasPainter(canvas: canvas, runtime: state.runtime)
         var list = DisplayList()
         list.bounds = CGRect(x: 0, y: 0, width: context.size.width, height: context.size.height)
         list.append(.fillRect(list.bounds, context.isDark
@@ -246,7 +257,7 @@ public func swiftuiAndroidRender(_ runtime: OpaquePointer?,
     var list = DisplayList()
     list.bounds = CGRect(origin: .zero, size: context.size)
     scene.draw(into: &list, context: context)
-    AndroidCanvasPainter(canvas: canvas, runtime: state.runtime).paint(list)
+    painter.paint(list)
     state.lastFrameTime = context.time
     if scene.isAnimating { state.invalidate() }
 }

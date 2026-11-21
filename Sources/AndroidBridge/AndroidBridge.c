@@ -1084,7 +1084,8 @@ Java_dev_swiftui_android_SwiftUIHostView_nativeCreate(JNIEnv *env, jclass clazz,
     ab_runtime_refresh_configuration(env, rt);
     ab_clear_exception(env);
 
-    swiftui_android_start(rt);
+    /* Weak: absent when the runtime is built without an app target. */
+    swiftui_android_start(rt, swiftui_app_entry ? swiftui_app_entry() : NULL);
     return (jlong)(intptr_t)rt;
 }
 
