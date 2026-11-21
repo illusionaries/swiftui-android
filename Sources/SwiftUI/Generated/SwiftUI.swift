@@ -6215,7 +6215,10 @@ nonisolated public struct CircularProgressViewStyle : SwiftUICore.ProgressViewSt
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 nonisolated public struct Toggle<Label> : SwiftUICore.View, ~Swift.Sendable where Label : SwiftUICore.View {
-  nonisolated public init(isOn: SwiftUICore.Binding<Swift.Bool>, @SwiftUICore.ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUICore.Toggle.init(isOn:label:)") }
+  internal var _portIsOn: Binding<Bool>?
+  internal var _portLabel: Label?
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   nonisolated public init<C>(sources: C, isOn: Swift.KeyPath<C.Element, SwiftUICore.Binding<Swift.Bool>>, @SwiftUICore.ContentBuilder label: () -> Label) where C : Swift.RandomAccessCollection { _suiUnimplemented("SwiftUICore.Toggle.init(sources:isOn:label:)") }
   nonisolated public var body: some SwiftUICore.View {
@@ -28872,7 +28875,7 @@ public struct GridItem : Swift.Sendable {
   public var size: SwiftUICore.GridItem.Size
   public var spacing: CoreGraphics.CGFloat?
   public var alignment: SwiftUICore.Alignment?
-  public init(_ size: SwiftUICore.GridItem.Size = .flexible(), spacing: CoreGraphics.CGFloat? = nil, alignment: SwiftUICore.Alignment? = nil) { _suiUnimplemented("SwiftUICore.GridItem.init(_:spacing:alignment:)") }
+  public init(_ size: SwiftUICore.GridItem.Size = .flexible(), spacing: CoreGraphics.CGFloat? = nil, alignment: SwiftUICore.Alignment? = nil) { self.size = size; self.spacing = spacing; self.alignment = alignment }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, visionOS 26.0, watchOS 26.0, *)
 extension SwiftUICore.GridItem.Size : Swift.Equatable {
@@ -28906,7 +28909,11 @@ nonisolated public struct LazyHGrid<Content> : SwiftUICore.View where Content : 
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 nonisolated public struct LazyVGrid<Content> : SwiftUICore.View, ~Swift.Sendable where Content : SwiftUICore.View {
-  nonisolated public init(columns: [SwiftUICore.GridItem], alignment: SwiftUICore.HorizontalAlignment = .center, spacing: CoreGraphics.CGFloat? = nil, pinnedViews: SwiftUICore.PinnedScrollableViews = .init(), @SwiftUICore.ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUICore.LazyVGrid.init(columns:alignment:spacing:pinnedViews:content:)") }
+  internal var _portColumns: [GridItem] = []
+  internal var _portSpacing: CGFloat?
+  internal var _portContent: Content?
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   public static func _makeView(view: SwiftUICore._GraphValue<SwiftUICore.LazyVGrid<Content>>, inputs: SwiftUICore._ViewInputs) -> SwiftUICore._ViewOutputs { _suiUnimplemented("SwiftUICore.LazyVGrid._makeView(view:inputs:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never

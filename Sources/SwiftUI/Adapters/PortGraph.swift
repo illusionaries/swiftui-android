@@ -67,6 +67,7 @@ public final class PortGraphContext {
         self.environment = environment
         PortStateStore.beginFrame()
         PortScrollStore.beginFrame()
+        PortObjectStore.beginFrame()
         views.removeAll(keepingCapacity: true)
         proposals.removeAll(keepingCapacity: true)
         results.removeAll(keepingCapacity: true)

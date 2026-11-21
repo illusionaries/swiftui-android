@@ -154,3 +154,12 @@ SwiftUICore.LazyState.projectedValue
 SwiftUICore.Axis.Set.horizontal
 SwiftUICore.Axis.Set.vertical
 SwiftUICore.ScrollView.init(_:showsIndicators:content:)
+SwiftUICore.LazyVGrid.init(columns:alignment:spacing:pinnedViews:content:)
+SwiftUICore.Image.init(systemName:)
+SwiftUICore.Toggle.init(isOn:label:)
+SwiftUICore.View.onTapGesture(count:perform:)
+SwiftUICore.Color.accentColor
+SwiftUICore.StateObject.wrappedValue
+SwiftUICore.StateObject.projectedValue
+SwiftUICore.ObservedObject.projectedValue
+SwiftUICore.ObservedObject.Wrapper.subscript(dynamicMember:)

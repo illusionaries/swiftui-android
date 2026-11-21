@@ -248,7 +248,11 @@ let package = Package(
             dependencies: ["SwiftUI"],
             path: "Sources/DemoApp",
             // The SwiftUI-hosted scene only compiles against the generated declarations.
-            exclude: includeGeneratedPort ? [] : ["SwiftUIHostScene.swift"],
+            // The engine-level Atlas scene and the SwiftUI Atlas app define overlapping model
+            // types, and each only makes sense in one build mode.
+            exclude: includeGeneratedPort
+                ? ["AtlasScene.swift", "DemoTheme.swift", "NodeBuilders.swift"]
+                : ["SwiftUIHostScene.swift", "AppEntry.swift"],
             swiftSettings: includeGeneratedPort ? swift5Mode + [.define("PORT_RENDERER")] : swift5Mode
         ),
         .testTarget(

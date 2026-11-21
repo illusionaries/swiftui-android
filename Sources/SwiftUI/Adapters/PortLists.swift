@@ -82,3 +82,58 @@ extension ScrollView: _PortRenderable where Content: View {
         return [LayoutNode.scroll(offset: model.offset, content)]
     }
 }
+
+// MARK: - LazyVGrid
+
+extension LazyVGrid {
+    /// The grid's columns/content are hidden by the interface (see port-impl/storage.txt), so the
+    /// initialiser is supplied here.
+    public init(columns: [GridItem], alignment: HorizontalAlignment = .center,
+                spacing: CGFloat? = nil, pinnedViews: PinnedScrollableViews = .init(),
+                @ContentBuilder content: () -> Content) {
+        self._portColumns = columns
+        self._portSpacing = spacing
+        self._portContent = content()
+    }
+}
+
+extension LazyVGrid: _PortRenderable where Content: View {
+    nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
+        guard let content = _portContent else { return [] }
+        let columns = max(1, _portColumns.count)
+        let spacing = _portSpacing ?? 8
+        let available = proposal.width ?? 0
+        let cellWidth = max(0, (available - spacing * CGFloat(columns - 1)) / CGFloat(columns))
+
+        // The engine has no grid primitive; a grid is rows of equal-width frames, which is
+        // exactly what a VStack of HStacks with fixed cell widths lays out.
+        let items = context.makeNodes(content, proposal: ProposedSize(width: cellWidth, height: nil))
+        var rows: [LayoutNode] = []
+        var index = 0
+        while index < items.count {
+            let slice = Array(items[index ..< min(index + columns, items.count)])
+            let cells = slice.map { item in
+                LayoutNode.frame(FrameSpec.width(cellWidth), item)
+            }
+            let padded = cells.count == columns
+                ? cells
+                : cells + Array(repeating: LayoutNode(.empty), count: columns - cells.count)
+            rows.append(LayoutNode(.stack(axis: .horizontal, spacing: spacing,
+                                          horizontalAlignment: 0, verticalAlignment: 0),
+                                   children: padded))
+            index += columns
+        }
+        return [LayoutNode(.stack(axis: .vertical, spacing: spacing,
+                                  horizontalAlignment: 0, verticalAlignment: 0),
+                           children: rows)]
+    }
+}
+
+// MARK: - Divider
+
+extension Divider: _PortRenderable {
+    nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
+        let color = context.environment.isDark ? RGBAColor(hex: 0x3A3A3C) : RGBAColor(hex: 0xE5E5EA)
+        return [LayoutNode.frame(FrameSpec.height(0.5), LayoutNode.color(color))]
+    }
+}

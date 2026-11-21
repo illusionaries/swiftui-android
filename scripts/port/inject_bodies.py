@@ -1425,7 +1425,16 @@ def strip_attribute_prefixes(text: str, names: set[str]) -> tuple[str, int]:
         if index < len(tokens) and tokens[index].text == "(":
             index = skip_tokens(tokens, index)
         if name in names:
-            removals.append(Edit(tokens[start].start, tokens[index - 1].end, ""))
+            # A property wrapper used as an *attribute on a member* is removed (the port owns the
+            # accessors). The same spelling on a **type declaration** must stay: it is what makes
+            # `@Binding`/`@ObservedObject` usable as attributes by application code.
+            lookahead = index
+            while lookahead < len(tokens) and tokens[lookahead].kind == "ws":
+                lookahead += 1
+            declaring_type = lookahead < len(tokens) and tokens[lookahead].text in (
+                "struct", "class", "actor", "enum")
+            if not declaring_type:
+                removals.append(Edit(tokens[start].start, tokens[index - 1].end, ""))
     if not removals:
         return text, 0
     return apply_edits(text, removals), len(removals)
@@ -3469,6 +3478,41 @@ def strip_self_qualifiers(sources: dict[str, str]) -> int:
     return rewritten
 
 
+# MARK: - Property-wrapper declarations
+#
+# `@Binding`, `@ObservedObject`, … are ordinary property wrappers on Apple's side: application code
+# writes them as attributes, which Swift only allows for types declared `@propertyWrapper`. The
+# generator rebuilds type declarations and drops that spelling, so it is restored here for exactly
+# the wrapper types Apple's interfaces declare.
+PROPERTY_WRAPPER_TYPES = {
+    "Binding", "ObservedObject", "StateObject", "State", "LazyState", "Environment",
+    "EnvironmentObject", "Namespace", "FocusState", "AppStorage", "SceneStorage", "GestureState",
+    "FetchRequest", "SectionedFetchRequest", "ScaledMetric", "EnvironmentValues",
+}
+
+
+def restore_property_wrapper_attributes(sources: dict[str, str]) -> int:
+    restored = 0
+    for file_stem, source in sources.items():
+        lines = source.splitlines(keepends=True)
+        for index, line in enumerate(lines):
+            if "@propertyWrapper" in line:
+                continue
+            body = line.strip()
+            if not (body.startswith(("struct ", "@")) or " struct " in body):
+                continue
+            if not body.endswith("{"):
+                continue
+            for name in PROPERTY_WRAPPER_TYPES:
+                if re.search(rf"\bstruct\s+{name}\b", body):
+                    indent = line[: len(line) - len(line.lstrip())]
+                    lines[index] = indent + "@propertyWrapper " + line[len(indent):]
+                    restored += 1
+                    break
+        sources[file_stem] = "".join(lines)
+    return restored
+
+
 def write_outputs(sources: dict[str, str], manifest: dict) -> None:
     os.makedirs(OUT_DIR, exist_ok=True)
     os.makedirs(os.path.dirname(MANIFEST_PATH), exist_ok=True)
@@ -3524,6 +3568,15 @@ def main(argv: list[str]) -> int:
         missing = sorted(set(overrides) - set())
         if not arguments.quiet:
             print(f"  body overrides: {replaced} applied from port-impl/bodies.txt")
+    # NOTE: restoring `@propertyWrapper` on the wrapper types makes `@Binding`/`@ObservedObject`
+    # usable from application code, but it also requires their `wrappedValue` *declarations* to
+    # stay in the generated file (the engine currently omits them and supplies extensions, which
+    # the attribute machinery does not accept). That pair of changes is the next step for running
+    # the full Atlas app on the ported path; disabled until both halves land together.
+    if False:
+        wrappers = restore_property_wrapper_attributes(sources)
+        if not arguments.quiet:
+            print(f"  property-wrapper declarations: {wrappers}")
     stripped = strip_self_qualifiers(sources)
     if not arguments.quiet:
         print(f"  self-qualifiers removed: {stripped}")

@@ -10,3 +10,7 @@ SwiftUI.Button<Label> => internal var _portAction: (@MainActor () -> Void)?; int
 
 # String interpolation for LocalizedStringKey: the interface hides the accumulating storage.
 SwiftUI.LocalizedStringKey.StringInterpolation => internal var _portText: String = ""
+
+# LazyVGrid: the interface hides its columns/content entirely.
+SwiftUI.LazyVGrid<Content> => internal var _portColumns: [GridItem] = []; internal var _portSpacing: CGFloat?; internal var _portContent: Content?
+SwiftUI.Toggle<Label> => internal var _portIsOn: Binding<Bool>?; internal var _portLabel: Label?

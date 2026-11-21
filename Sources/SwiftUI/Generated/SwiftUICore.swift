@@ -2573,9 +2573,8 @@ extension SwiftUICore::EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUICore::Color {
-  public static var accentColor: SwiftUICore::Color {
-    get { _suiUnimplemented("SwiftUICore.Color.accentColor") }
-  }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -10775,20 +10774,18 @@ extension SwiftUICore::Transaction {
  @preconcurrency @_Concurrency::MainActor @frozen public struct ObservedObject<ObjectType> : SwiftUICore::DynamicProperty where ObjectType : Combine::ObservableObject {
   @dynamicMemberLookup @preconcurrency @_Concurrency::MainActor @frozen public struct Wrapper {
     @_Concurrency::MainActor @preconcurrency internal let root: ObjectType
-    @_Concurrency::MainActor @preconcurrency public subscript<Subject>(dynamicMember keyPath: Swift::ReferenceWritableKeyPath<ObjectType, Subject>) -> SwiftUICore::Binding<Subject> {
-      get { _suiUnimplemented("SwiftUICore.ObservedObject.Wrapper.subscript(dynamicMember:)") }
-    }
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   }
   @usableFromInline
   @_Concurrency::MainActor @preconcurrency internal var _seed: Swift::Int = 0
   @export(implementation) @_Concurrency::MainActor @preconcurrency public init(initialValue: ObjectType) {
       self.init(wrappedValue: initialValue)
     }
-  @_Concurrency::MainActor @preconcurrency public init(wrappedValue: ObjectType) { _suiUnimplemented("SwiftUICore.ObservedObject.init(wrappedValue:)") }
+  @_Concurrency::MainActor @preconcurrency public init(wrappedValue: ObjectType) { self.wrappedValue = wrappedValue; self._seed = 0 }
   @_Concurrency::MainActor @preconcurrency public var wrappedValue: ObjectType
-  @_Concurrency::MainActor @preconcurrency public var projectedValue: SwiftUICore::ObservedObject<ObjectType>.Wrapper {
-    get { _suiUnimplemented("SwiftUICore.ObservedObject.projectedValue") }
-  }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11800,8 +11797,8 @@ extension SwiftUICore::Image {
   public init(_ name: Swift::String, bundle: Foundation::Bundle? = nil) { _suiUnimplemented("SwiftUICore.Image.init(_:bundle:)") }
   public init(_ name: Swift::String, bundle: Foundation::Bundle? = nil, label: SwiftUICore::Text) { _suiUnimplemented("SwiftUICore.Image.init(_:bundle:label:)") }
   public init(decorative name: Swift::String, bundle: Foundation::Bundle? = nil) { _suiUnimplemented("SwiftUICore.Image.init(decorative:bundle:)") }
-  @available(macOS 11.0, *)
-  public init(systemName: Swift::String) { _suiUnimplemented("SwiftUICore.Image.init(systemName:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   public init(_internalSystemName systemName: Swift::String) { _suiUnimplemented("SwiftUICore.Image.init(_internalSystemName:)") }
 }
@@ -19209,7 +19206,8 @@ extension SwiftUICore::TapGesture {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUICore::View {
-  nonisolated public func onTapGesture(count: Swift::Int = 1, perform action: @escaping () -> Swift::Void) -> some SwiftUICore::View { _suiUnimplemented("SwiftUICore.View.onTapGesture(count:perform:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -19299,12 +19297,10 @@ extension SwiftUICore::KeyframeTrackContentBuilder {
   @inlinable nonisolated public init(wrappedValue thunk: @autoclosure @escaping () -> ObjectType) {
         storage = .initially(thunk)
     }
-  @_Concurrency::MainActor @preconcurrency public var wrappedValue: ObjectType {
-    get { _suiUnimplemented("SwiftUICore.StateObject.wrappedValue") }
-  }
-  @_Concurrency::MainActor @preconcurrency public var projectedValue: SwiftUICore::ObservedObject<ObjectType>.Wrapper {
-    get { _suiUnimplemented("SwiftUICore.StateObject.projectedValue") }
-  }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   nonisolated public static func _makeProperty<V>(in buffer: inout SwiftUICore::_DynamicPropertyBuffer, container: SwiftUICore::_GraphValue<V>, fieldOffset: Swift::Int, inputs: inout SwiftUICore::_GraphInputs) { _suiUnimplemented("SwiftUICore.StateObject._makeProperty(in:container:fieldOffset:inputs:)") }
   @available(iOS 27.0, macOS 27.0, tvOS 27.0, watchOS 27.0, visionOS 27.0, *)
   nonisolated public static var _propertyStorageSize: Swift::Int? {

@@ -43,3 +43,9 @@ SwiftUICore.Axis.rawValue => switch self { case .horizontal: return 0; case .ver
 # storage (`data`, `content`) is real, so the factory just builds the value.
 SwiftUICore.ForEach.create(_:?:) => ForEach(data: data, content: content)
 SwiftUICore.ForEach.create(_:id:?:) => ForEach(data: data, content: content)
+
+# GridItem stores its own size/spacing/alignment; only the initialiser was Apple's.
+SwiftUICore.GridItem.init(_:spacing:alignment:) => self.size = size; self.spacing = spacing; self.alignment = alignment
+
+# ObservedObject keeps its object in the stored `wrappedValue` field; only the seed needs setting.
+SwiftUICore.ObservedObject.init(wrappedValue:) => self.wrappedValue = wrappedValue; self._seed = 0
