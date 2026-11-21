@@ -71,6 +71,9 @@ Apple-only modules (UIKit, CoreGraphics, …)  ──shim──▶    │
 
 ## The demo app
 
+`demos/AtlasSwiftUI.swift` is the same app written in **real SwiftUI syntax** and it type-checks
+for Android with 0 errors (`scripts/port/check-demo.sh`) against Apple's retargeted interface.
+
 `Sources/DemoApp/` contains **Atlas**, a multi-screen app (home feed, discover grid, pushed
 detail, profile with live settings) built on the port and running on the emulator. See
 [docs/DEMO.md](docs/DEMO.md) for the screen breakdown, the architecture, and the six engine bugs

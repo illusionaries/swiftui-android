@@ -206,17 +206,13 @@ class ModuleSpec:
 
     interface_module: str  # Apple module name / directory in build/port-sdk/gen
     file_stem: str  # output file: Sources/SwiftUI/Generated/<file_stem>.swift
-    strip_qualifiers: tuple[str, ...]  # module qualifiers removed (those names are local)
+    requalify: tuple[str, ...]  # Apple modules whose references become `SwiftUI.<name>`
     drop_imports: tuple[str, ...]  # prelude imports removed (those names are local)
 
 
 MODULE_SPECS = (
-    ModuleSpec("SwiftUICore", "SwiftUICore", strip_qualifiers=("SwiftUICore",), drop_imports=()),
-    ModuleSpec(
-        "SwiftUI", "SwiftUI",
-        strip_qualifiers=("SwiftUICore", "SwiftUI"),
-        drop_imports=("SwiftUICore",),
-    ),
+    ModuleSpec("SwiftUICore", "SwiftUICore", requalify=("SwiftUICore",), drop_imports=()),
+    ModuleSpec("SwiftUI", "SwiftUI", requalify=("SwiftUICore",), drop_imports=("SwiftUICore",)),
 )
 MODULES = tuple(spec.interface_module for spec in MODULE_SPECS)
 
@@ -1915,41 +1911,49 @@ class Generator:
                 self.record_body(symbol, kind, False)
 
     # -- module qualification (R1) ----------------------------------------
-    def strip_qualifiers(self, text: str) -> str:
-        """Remove ``Module::`` / ``Module.`` for modules that are local in the port module."""
-        if not self.spec.strip_qualifiers:
+    def requalify_modules(self, text: str) -> str:
+        """Rewrite Apple module qualifiers to the port module name.
+
+        ``SwiftUICore::Foo`` / ``SwiftUICore.Foo`` / ``SwiftUI.Foo`` all become
+        ``SwiftUI.Foo``. The qualifier is *kept* (not dropped, as an earlier revision of this
+        rule did) because dropping it lets a generic parameter or a nested type shadow the
+        intended type: `extension MenuBarExtra where Label == Label<Text, Image>` resolved
+        `Label<Text, Image>` to the generic parameter `Label` and produced "cannot specialize
+        non-generic type 'Label'". `SwiftUI.Foo` is valid self-qualification inside the module
+        being compiled, and the Port SDK's `deps/` directory no longer contains a prebuilt
+        `SwiftUI` module, so it cannot bind to anything else.
+        """
+        if not self.spec.requalify:
             return text
         tokens = tokenize(text)
-        removals: list[Edit] = []
-        removed = 0
+        edits: list[Edit] = []
+        rewritten = 0
         index = 0
         while index < len(tokens):
             token = tokens[index]
-            if token.kind == "id" and token.text in self.spec.strip_qualifiers:
-                # `Module::Name`
-                if (
+            if token.kind == "id" and token.text in self.spec.requalify:
+                is_qualifier = (
                     index + 2 < len(tokens)
-                    and tokens[index + 1].text == ":"
-                    and tokens[index + 2].text == ":"
-                    and tokens[index + 1].end == tokens[index + 2].start
-                ):
-                    removals.append(Edit(token.start, tokens[index + 2].end, ""))
-                    removed += 1
-                    index += 3
-                    continue
-                # `Module.Name`
-                if (
-                    index + 2 < len(tokens)
-                    and tokens[index + 1].text == "."
-                    and tokens[index + 2].kind == "id"
-                ):
-                    removals.append(Edit(token.start, tokens[index + 1].end, ""))
-                    removed += 1
-                    index += 2
-                    continue
+                    and (
+                        (
+                            tokens[index + 1].text == ":"
+                            and tokens[index + 2].text == ":"
+                            and tokens[index + 1].end == tokens[index + 2].start
+                        )
+                        or (
+                            tokens[index + 1].text == "."
+                            and tokens[index + 2].kind == "id"
+                        )
+                    )
+                )
+                if is_qualifier:
+                    edits.append(Edit(token.start, token.end, COMPILED_MODULE))
+                    rewritten += 1
             index += 1
-        self.stats.self_qualifiers_removed += removed
-        return apply_edits(text, removals)
+        self.stats.self_qualifiers_removed += rewritten
+        if not edits:
+            return text
+        return apply_edits(text, edits)
 
     def drop_imports(self, text: str) -> str:
         """Drop prelude imports of modules that are local declarations in the port module."""
@@ -2037,7 +2041,7 @@ class Generator:
 
     def render_source(self, attribute_names: set[str] | None = None) -> str:
         edited = apply_edits(self.body, self.edits)
-        edited = self.strip_qualifiers(edited)
+        edited = self.requalify_modules(edited)
         edited = self.drop_imports(edited)
         if attribute_names:
             edited, removed = strip_attribute_prefixes(edited, attribute_names)

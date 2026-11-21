@@ -48,6 +48,24 @@ Building a real app shook out six bugs that a one-page test never would:
    it was statically dispatched and scrolling silently never reached the scene. It is a real
    protocol requirement now.
 
+## The same app in real SwiftUI syntax
+
+`demos/AtlasSwiftUI.swift` is the identical product UI written as **genuine SwiftUI source** —
+`ObservableObject` + `@Published` + `@StateObject`, `ScrollView`, `LazyVGrid`, `ForEach`,
+`Toggle`, `Button`, `LinearGradient`, `.clipShape`, `.overlay`, `Image(systemName:)`,
+`@ViewBuilder` helpers — and it **type-checks for `aarch64-unknown-linux-android28` with zero errors** against
+Apple's own retargeted `SwiftUI` interface:
+
+```bash
+./scripts/port/check-demo.sh          # demo typecheck: OK (AtlasSwiftUI.swift)
+```
+
+That is the port's fidelity claim made concrete: an application written as ordinary SwiftUI for
+iOS compiles unmodified for Android, because the `SwiftUI` module it compiles against is Apple's
+declaration set, not a lookalike. What remains is the renderer half — the `_makeView` adapters
+listed in `build/port-sdk/injected-bodies.json` (594 seams) turn those declarations into the same
+layout nodes the engine-level Atlas already renders today.
+
 ## Interaction proof
 
 Scrolling, tab switching and push/pop are driven through the same `MotionEvent → JNI → Swift →
