@@ -90,7 +90,7 @@ let package = Package(
             // generated declarations are in the target. See docs/RENDERER.md.
             exclude: includeGeneratedPort ? [] : ["Generated", "Adapters"],
             swiftSettings: portSettings,
-            linkerSettings: shimObjects.isEmpty ? [] : [.unsafeFlags(shimObjects)]
+            linkerSettings: (includeGeneratedPort && !shimObjects.isEmpty) ? [.unsafeFlags(shimObjects)] : []
         ),
         .target(
             name: "SwiftUIAndroid",
