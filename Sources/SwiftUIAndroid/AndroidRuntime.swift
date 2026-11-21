@@ -277,7 +277,7 @@ public func swiftuiAndroidTouch(_ runtime: OpaquePointer?, _ phase: Int32, _ x: 
     case 1:   // move: hand to the scene as a drag (scroll views consume it)
         let translation = hypot(point.x - state.touchStart.x, point.y - state.touchStart.y)
         if translation > 4 {
-            let gesture = DragGesture(phase: state.touchConsumed ? .changed : .began,
+            let gesture = PortDragGesture(phase: state.touchConsumed ? .changed : .began,
                                       start: state.touchStart, location: point)
             if scene.handleDrag(gesture) {
                 state.touchConsumed = true

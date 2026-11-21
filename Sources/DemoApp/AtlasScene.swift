@@ -80,7 +80,7 @@ public final class AtlasScene: PortScene {
         return false
     }
 
-    public func handleDrag(_ gesture: DragGesture) -> Bool {
+    public func handleDrag(_ gesture: PortDragGesture) -> Bool {
         guard scroll.canScroll else { return false }
         if gesture.phase == .began { dragStartOffset = scroll.offset }
         // Content follows the finger: dragging up increases the offset.

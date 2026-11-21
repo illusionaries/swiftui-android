@@ -30,7 +30,7 @@ extension LayoutNode {
     func opacity(_ value: CGFloat) -> LayoutNode { LayoutNode(.opacity(value), self) }
 
     /// Rounded background fill, the most common decoration in this app.
-    func surfaceFill(_ fill: FillStyle, radius: CGFloat) -> LayoutNode {
+    func surfaceFill(_ fill: PortFillStyle, radius: CGFloat) -> LayoutNode {
         background(LayoutNode(.shape(.roundedRectangle(cornerRadius: radius), fill: fill, stroke: nil)))
     }
 }

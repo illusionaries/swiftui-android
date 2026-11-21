@@ -33,7 +33,10 @@ What this repository does instead is a genuine port of the framework's *publisha
 | APK pipeline (`build-apk.sh`) | complete: aapt2 → javac → d8 → zip → zipalign → sign, bundles Swift runtime dylibs from `llvm-readelf` NEEDED | `build/SwiftUI-Android.apk` |
 | Emulator harness (`emulator.sh`, `device-test.sh`) | complete: headless API 35 arm64, install→launch→screenshot→crash assertions | `build/screenshots/**` |
 | Engine: display list, painter, frame loop | complete for the proof path | 8 host tests green (`swift test`) |
-| Engine: view graph (`_makeView`/`_ViewInputs`/`_ViewOutputs`) + layout + state | next | — |
+| Engine: layout/scroll/hit-test/display list | complete, exercised by the Atlas demo | `Sources/SwiftUI/Engine/**`, `docs/DEMO.md` |
+| Demo app (Atlas: home / discover / detail / profile, tabs, scrolling, toggles) | running on the emulator | `Sources/DemoApp/**`, `build/screenshots` |
+| Apple declarations generated (11,197 decls, 7,351 bodies, 704 inlinable preserved) | committed, opt-in, 244 errors left in the package gate | `Sources/SwiftUI/Generated/**`, `docs/PORT-BODIES.md` |
+| Engine: view graph adapters (`_makeView` for Text/stacks/modifiers) | next — needs the generated gate at 0 | 594 seams listed in `build/port-sdk/injected-bodies.json` |
 
 ## What the interfaces actually expose (and why that matters)
 

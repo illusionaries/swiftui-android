@@ -90,7 +90,7 @@ public struct FrameSpec: Equatable {
     }
 }
 
-public enum FillStyle: Equatable {
+public enum PortFillStyle: Equatable {
     case color(RGBAColor)
     case linearGradient([RGBAColor], start: CGPoint, end: CGPoint)
 }
@@ -114,8 +114,8 @@ public final class LayoutNode {
         /// shifted by `offset`; painting is clipped to the viewport. Maps to `ScrollView`.
         case scroll(offset: CGFloat)
         case spacer(minLength: CGFloat)
-        case fill(FillStyle)
-        case shape(ShapeKind, fill: FillStyle?, stroke: (width: CGFloat, color: RGBAColor)?)
+        case fill(PortFillStyle)
+        case shape(ShapeKind, fill: PortFillStyle?, stroke: (width: CGFloat, color: RGBAColor)?)
         case padding(EdgeInsetsLike)
         case frame(FrameSpec)
         /// children[0] = content, children[1] = background

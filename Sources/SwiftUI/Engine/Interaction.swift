@@ -16,7 +16,7 @@ public enum DragPhase: Equatable {
     case cancelled
 }
 
-public struct DragGesture: Equatable {
+public struct PortDragGesture: Equatable {
     public var phase: DragPhase
     public var start: CGPoint
     public var location: CGPoint
@@ -34,7 +34,7 @@ public struct DragGesture: Equatable {
 
 public extension PortScene {
     /// Default: the scene does not scroll.
-    func handleDrag(_ gesture: DragGesture) -> Bool { false }
+    func handleDrag(_ gesture: PortDragGesture) -> Bool { false }
 }
 
 /// Simple scroll model: content height vs. viewport, with fling-free clamping.

@@ -42,7 +42,7 @@ public protocol PortScene: AnyObject {
     /// Returns true when the scene consumed the drag (e.g. it scrolled). Declared as a
     /// requirement so scenes that implement it are dispatched dynamically — an extension-only
     /// method would be statically dispatched and never reach the scene.
-    func handleDrag(_ gesture: DragGesture) -> Bool
+    func handleDrag(_ gesture: PortDragGesture) -> Bool
     /// True while the scene wants continuous frames (animations).
     var isAnimating: Bool { get }
 }

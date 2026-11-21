@@ -14,8 +14,15 @@ import PackageDescription
 import Foundation
 
 let packageDirectory = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
+// `deps/` holds every Port SDK module *except* SwiftUI/SwiftUICore. Those two must not be on the
+// path: the target below is itself named SwiftUI and already contains SwiftUICore's
+// declarations, so exposing the prebuilt interface modules makes every type ambiguous.
+let depsPath = packageDirectory + "/build/port-sdk/deps"
+let portModulesPath = FileManager.default.fileExists(atPath: depsPath)
+    ? depsPath
+    : packageDirectory + "/build/port-sdk/gen"
 let portSDKFlags: [String] = [
-    "-I", packageDirectory + "/build/port-sdk/gen",
+    "-I", portModulesPath,
     "-I", packageDirectory + "/build/port-sdk/shims",
     "-enable-experimental-feature", "AnyAppleOSAvailability",
 ]
