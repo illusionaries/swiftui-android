@@ -19036,14 +19036,14 @@ extension SwiftUI.AttributedTextSelection {
   #if compiler(>=5.3) && $TildeSendable
   public struct Attributes<Text> : Swift.Sequence, ~Swift.Sendable {
         // port: opaque result type is not expressible in source; declared as Never (R3)
-public func makeIterator() -> Self { _suiUnimplemented("SwiftUI.AttributedTextSelection.Attributes.makeIterator()") }
+public func makeIterator() -> Swift.IndexingIterator<Swift.EmptyCollection<Foundation.AttributeContainer>> { _suiUnimplemented("SwiftUI.AttributedTextSelection.Attributes.makeIterator()") }
     
         // port: opaque result type is not expressible in source; declared as Never (R3)
-public subscript<K>(type: Swift.KeyPath<Foundation.AttributeDynamicLookup, K>) -> Self where K : Foundation.AttributedStringKey, K.Value : Swift.Sendable {
+public subscript<K>(type: Swift.KeyPath<Foundation.AttributeDynamicLookup, K>) -> Swift.EmptyCollection<Swift.Optional<K.Value>> where K : Foundation.AttributedStringKey, K.Value : Swift.Sendable {
       get { _suiUnimplemented("SwiftUI.AttributedTextSelection.Attributes.subscript(type:)") }
     }
         // port: opaque result type is not expressible in source; declared as Never (R3)
-public subscript<K>(type: K.Type) -> Self where K : Foundation.AttributedStringKey, K.Value : Swift.Sendable {
+public subscript<K>(type: K.Type) -> Swift.EmptyCollection<Swift.Optional<K.Value>> where K : Foundation.AttributedStringKey, K.Value : Swift.Sendable {
       get { _suiUnimplemented("SwiftUI.AttributedTextSelection.Attributes.subscript(type:)") }
     }
     @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)

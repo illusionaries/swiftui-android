@@ -91,6 +91,13 @@ that building a real app exposed.
 | Emulator harness | **running** (API 35 arm64, 1080×2340 @420dpi, screenshots + logcat assertions) |
 | Generated port module (Apple declarations + bodies) + engine implementation | next |
 
+## What remains
+
+The renderer adapters that bind Apple's declared types to the engine are specified in
+[docs/RENDERER.md](docs/RENDERER.md) (594 seams catalogued in
+`build/port-sdk/injected-bodies.json`). They live in `Sources/SwiftUI/Adapters/`, which is compiled
+only when `SWIFTUI_PORT_GENERATED=1`, so the repository stays green throughout.
+
 ## Run it
 
 ```bash

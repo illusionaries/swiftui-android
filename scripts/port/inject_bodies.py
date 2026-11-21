@@ -1457,6 +1457,7 @@ class ModuleStats:
     convenience_init_rewrites: int = 0
     duplicate_witnesses_omitted: int = 0
     synthesized_inits: int = 0
+    incompatible_conformances_omitted: int = 0
 
     def as_dict(self) -> dict[str, int]:
         return {
@@ -1475,6 +1476,7 @@ class ModuleStats:
             "convenience_init_rewrites": self.convenience_init_rewrites,
             "duplicate_witnesses_omitted": self.duplicate_witnesses_omitted,
             "synthesized_inits": self.synthesized_inits,
+            "incompatible_conformances_omitted": self.incompatible_conformances_omitted,
         }
 
 
@@ -1882,13 +1884,31 @@ class Generator:
         if not generic_opaque and not self.opaque_needs_never(member.result_type_span, container):
             return
         span = member.result_type_span
-        if generic_opaque and container.kind != "module":
-            # `some P<Args>`: `Self` is known to satisfy `P<Args>` in a type/protocol-extension
-            # context (the conformance that declares the requirement), and `Never` converts to
-            # `Self`, so Apple's inlinable callers keep type-checking.
-            replacement = "Self"
-        else:
-            replacement = "Swift.Never"
+        replacement = "Swift.Never"
+        if generic_opaque:
+            match = re.match(r"\s*some\s+([^<]+)<(.+)>\s*$", span_text, re.S)
+            base = ""
+            argument = ""
+            if match:
+                qualified = match.group(1).strip().replace("::", ".")
+                base = qualified.split(".")[-1]
+                argument = match.group(2).strip()
+            if base == "IteratorProtocol" and argument:
+                # `some IteratorProtocol<Element>`: no local type can be invented for it, but the
+                # stdlib has an always-empty iterator with the right element type.
+                replacement = (
+                    f"Swift.IndexingIterator<Swift.EmptyCollection<{argument}>>"
+                )
+            elif base in (
+                "Sequence", "Collection", "BidirectionalCollection",
+                "RandomAccessCollection", "MutableCollection",
+            ) and argument:
+                replacement = f"Swift.EmptyCollection<{argument}>"
+            elif container.kind != "module":
+                # `some P<Args>` where the type itself conforms to `P<Args>` (e.g. `Body`):
+                # `Self` satisfies the primary-associated-type equality by construction, and
+                # `Never` converts to `Self`.
+                replacement = "Self"
         self.add_comment(member.start, message)
         self.edits.append(Edit(span[0], span[1], replacement))
         self.stats.opaque_rewrites += 1
@@ -2333,7 +2353,15 @@ def build_witness(requirement: Requirement, substitutions: dict[str, str], symbo
     signature = text[requirement.keyword_offset:end].rstrip()
 
     def replace_associated(match: re.Match) -> str:
-        return substitutions.get(match.group(1), "Swift.Never")
+        name = match.group(1)
+        if name in substitutions:
+            return substitutions[name]
+        if name == "Iterator":
+            # `Sequence`'s Iterator has no witness in the interface; the port provides a concrete
+            # placeholder (Engine/PortRuntime.swift) instead of the uninhabited `Never`, which
+            # does not conform to `IteratorProtocol`.
+            return "SwiftUI._PortIterator"
+        return "Swift.Never"
 
     signature = re.sub(r"\bSelf\.(\w+)", replace_associated, signature)
     kept = [modifier for modifier in requirement.modifiers if modifier in WITNESS_MODIFIERS]
@@ -2347,6 +2375,48 @@ def build_witness(requirement: Requirement, substitutions: dict[str, str], symbo
         f' {keyword} {{ _suiUnimplemented("{symbol}") }}' for keyword in keywords
     )
     return f"{head}{signature} {{{accessor_bodies} }}"
+
+
+#: Conformances that cannot be expressed in a single Swift module. Apple ships each half in a
+#: different module (`SwiftUI` / `SwiftUICore`) and relies on per-module associated-type witness
+#: shadowing; merged into one module there is exactly one witness per associated type, and these
+#: protocols require witnesses that are mutually incompatible with the type's other conformances.
+#: Omitting the conformance clause is the only way to keep the rest of the declaration intact;
+#: every omission is recorded in the manifest (`incompatible_conformances_omitted`) and in
+#: docs/PORT-BODIES.md. Nothing else is dropped.
+INCOMPATIBLE_CONFORMANCES: tuple[dict[str, str], ...] = (
+    {
+        "type": "Optional",
+        "protocol": "SliderTickContent",
+        "declared_in": "SwiftUI",
+        "conflicting_witness": (
+            "Body: Swift.RandomAccessCollection (with Body.Element == SliderTick<Self.Value>) "
+            "required by SliderTickContent vs Body: SwiftUI.View required by View "
+            "(and Body: SwiftUI.TabContent required by TabContent)"
+        ),
+    },
+    {
+        "type": "_ConditionalContent",
+        "protocol": "SliderTickContent",
+        "declared_in": "SwiftUI",
+        "conflicting_witness": (
+            "Body: Swift.RandomAccessCollection (with Body.Element == SliderTick<Self.Value>) "
+            "required by SliderTickContent vs Body: SwiftUI.View required by View; the shipped "
+            "interface half is also internally inconsistent (typealias Body = TrueContent but "
+            "body: TrueContent.Body)"
+        ),
+    },
+    {
+        "type": "GestureStateGesture",
+        "protocol": "Gesture",
+        "declared_in": "SwiftUI",
+        "conflicting_witness": (
+            "public stored property body: (Value, inout State, inout Transaction) -> Void "
+            "shadows Gesture's requirement body: Self.Body (Never); the stored property cannot be "
+            "dropped because Apple's @inlinable init assigns it"
+        ),
+    },
+)
 
 
 class SharedModel:
@@ -2386,6 +2456,7 @@ class SharedModel:
         self._paths_with_init: set[str] = set()
         self.synthetic_extensions: dict[str, list[str]] = {}
         self.override_inits: set[str] = set()
+        self.incompatible_records: list[dict[str, str]] = []
 
         for generator in generators:
             for container in walk_containers(generator.root):
@@ -2905,6 +2976,14 @@ class SharedModel:
         # R12 is disabled: the unified `Body = Self` witness removed the need for `Never`
         # conformances, and the ones this pass emitted could not satisfy constrained associated
         # types (`Never.Scope` is not an `AttributeScope`), so it only added diagnostics.
+
+    def incompatible_matches(self, container: Container) -> list[dict[str, str]]:
+        """Conformance clauses of `container` that a single module cannot express."""
+        simple = {conformance.split(".")[-1] for conformance in container.conformances}
+        return [
+            entry for entry in INCOMPATIBLE_CONFORMANCES
+            if entry["type"] == container.path and entry["protocol"] in simple
+        ]
 
     def resolve(self, path: str) -> str | None:
         candidates = self.protocol_by_name.get(path.split(".")[-1])

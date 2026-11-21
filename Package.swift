@@ -74,7 +74,9 @@ let package = Package(
         .target(
             name: "SwiftUI",
             path: "Sources/SwiftUI",
-            exclude: includeGeneratedPort ? [] : ["Generated"],
+            // `Adapters` binds Apple's declared types to the engine, so it only compiles when the
+            // generated declarations are in the target. See docs/RENDERER.md.
+            exclude: includeGeneratedPort ? [] : ["Generated", "Adapters"],
             swiftSettings: portSettings
         ),
         .target(
