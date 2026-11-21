@@ -39,6 +39,14 @@ if FileManager.default.fileExists(atPath: pluginHost) {
     portSDKFlags += ["-external-plugin-path", pluginHost + "#" + pluginServer]
 }
 
+// Port SDK shims are compiled to objects by build-port-sdk.sh; linking them into the app library
+// is what satisfies the symbols Apple's declarations reference (UIKit, CoreGraphics, …).
+let shimObjectDirectory = packageDirectory + "/build/port-sdk/shim-objects"
+let shimObjects: [String] = ((try? FileManager.default.contentsOfDirectory(atPath: shimObjectDirectory)) ?? [])
+    .filter { $0.hasSuffix(".o") }
+    .sorted()
+    .map { shimObjectDirectory + "/" + $0 }
+
 let swift5Mode: [SwiftSetting] = [.swiftLanguageMode(.v5)]
 
 // Apple's declarations (Sources/SwiftUI/Generated) are still being brought up against the
@@ -51,6 +59,10 @@ let swift5Mode: [SwiftSetting] = [.swiftLanguageMode(.v5)]
 //
 // Once the Port SDK probe is green (scripts/port/build-port-sdk.sh), flip the default below to
 // `true` — the engine and its adapters are written against those declarations.
+// Apple's declarations now compile for Android (gate: 0 errors) and the adapters compile against
+// them, but the app still needs the Port SDK shims' object code resolved at link before the ported
+// path can ship. Until then it is opt-in:
+//   SWIFTUI_PORT_GENERATED=1 swift build --product SwiftUIAndroidApp …
 let includeGeneratedPort = ProcessInfo.processInfo.environment["SWIFTUI_PORT_GENERATED"] == "1"
 let portSettings: [SwiftSetting] = [
     .swiftLanguageMode(.v5),
@@ -77,7 +89,8 @@ let package = Package(
             // `Adapters` binds Apple's declared types to the engine, so it only compiles when the
             // generated declarations are in the target. See docs/RENDERER.md.
             exclude: includeGeneratedPort ? [] : ["Generated", "Adapters"],
-            swiftSettings: portSettings
+            swiftSettings: portSettings,
+            linkerSettings: shimObjects.isEmpty ? [] : [.unsafeFlags(shimObjects)]
         ),
         .target(
             name: "SwiftUIAndroid",
@@ -89,6 +102,8 @@ let package = Package(
             name: "DemoApp",
             dependencies: ["SwiftUI"],
             path: "Sources/DemoApp",
+            // The SwiftUI-hosted scene only compiles against the generated declarations.
+            exclude: includeGeneratedPort ? [] : ["SwiftUIHostScene.swift"],
             swiftSettings: swift5Mode
         ),
         .testTarget(

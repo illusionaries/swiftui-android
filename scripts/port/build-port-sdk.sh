@@ -111,13 +111,18 @@ build_shim() {
     local module="$1"
     local src="$ROOT/port-shims/$module/$module.swift"
     [ -f "$src" ] || { echo "  ! no shim source for $module"; return 0; }
-    mkdir -p "$shims/$module.swiftmodule"
+    mkdir -p "$shims/$module.swiftmodule" "$out/shim-objects"
     rm -f "$shims/$module.swiftmodule"/*.swiftmodule
     local iface_tmp="$out/.tmp-$module.swiftinterface"
-    if ! swiftc -emit-module -parse-as-library "$src" -module-name "$module" -target "$TARGET_TRIPLE" \
+    local binary_module="$shims/$module.swiftmodule/aarch64-unknown-linux-android28.swiftmodule"
+    # Two artefacts: a *binary* module (so the app target can import it and the linker can
+    # resolve its symbols) and its textual interface (for the probe).
+    if ! swiftc -c "$src" -module-name "$module" -target "$TARGET_TRIPLE" \
         -resource-dir "$resource_dir" -sdk "$ndk_sysroot" -I "$shims" -I "$gen" -swift-version 5 \
-        -enable-library-evolution -emit-module-interface-path "$iface_tmp" \
-        -emit-module-path "$out/.tmp-$module.swiftmodule" \
+        -enable-library-evolution -parse-as-library \
+        -emit-module -emit-module-path "$binary_module" \
+        -emit-module-interface-path "$iface_tmp" \
+        -o "$out/shim-objects/$module.o" \
         -module-cache-path "$out/.module-cache" 2>"$out/.shim-$module.log"; then
         echo "  ✗ shim $module failed:"
         grep -E "error:" "$out/.shim-$module.log" | head -5 | sed 's/^/      /'

@@ -1729,7 +1729,14 @@ class Generator:
         self.synthesize_witnesses(shared)
         for block in shared.synthetic_extensions.get(self.spec.file_stem, []):
             self.edits.append(Edit(len(self.body), len(self.body), block))
-        missing = sorted(self.implemented - self.override_hits)
+        # `implemented.txt` covers both interfaces, but each interface is processed by its own
+        # pass. Only symbols belonging to *this* module can be resolved here; the other pass
+        # resolves the rest (each pass records its own hits).
+        missing = sorted(
+            symbol
+            for symbol in self.implemented - self.override_hits
+            if symbol.split(".", 1)[0] == self.module
+        )
         if missing:
             raise GenerationError(
                 "port-impl/implemented.txt lists symbols that are not bodyless declarations in "

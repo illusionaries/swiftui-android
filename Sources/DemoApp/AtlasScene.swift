@@ -602,6 +602,6 @@ public final class AtlasScene: PortScene {
 
 /// Runtime entry point: the C bridge resolves this symbol and hands the object to the runtime.
 @_cdecl("swiftui_app_entry")
-public func swiftuiAppEntry() -> UnsafeMutableRawPointer? {
+public func swiftuiAtlasEntry() -> UnsafeMutableRawPointer? {
     Unmanaged.passRetained(AtlasScene() as AnyObject).toOpaque()
 }

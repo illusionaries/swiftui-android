@@ -454,7 +454,8 @@ extension SwiftUI::View {
   @inlinable nonisolated public init(alignment: SwiftUI::Alignment = .center, @SwiftUI::ContentBuilder content: () -> Content) {
         _tree = .init(_ZStackLayout(alignment: alignment)) { content() }
     }
-  public static func _makeView(view: SwiftUI::_GraphValue<SwiftUI::ZStack<Content>>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.ZStack._makeView(view:inputs:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
   // port: synthesized witness for View (R7); Apple implements it with an internal member
@@ -768,7 +769,8 @@ extension SwiftUI::ShapeStyle where Self == SwiftUI::AngularGradient {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::View where Self : SwiftUI::Animatable {
-  nonisolated public static func _makeView(view: SwiftUI::_GraphValue<Self>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.View._makeView(view:inputs:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   nonisolated public static func _makeViewList(view: SwiftUI::_GraphValue<Self>, inputs: SwiftUI::_ViewListInputs) -> SwiftUI::_ViewListOutputs { _suiUnimplemented("SwiftUICore.View._makeViewList(view:inputs:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -1461,7 +1463,8 @@ extension SwiftUI::SimultaneousGesture.Value : Swift::Hashable where First.Value
             content()
         }
     }
-  public static func _makeView(view: SwiftUI::_GraphValue<SwiftUI::VStack<Content>>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.VStack._makeView(view:inputs:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
   // port: synthesized witness for View (R7); Apple implements it with an internal member
@@ -3336,7 +3339,8 @@ extension SwiftUI::View {
 @frozen nonisolated public struct TupleView<T> : SwiftUI::View, ~Swift::Sendable {
   public var value: T
   @inlinable nonisolated public init(_ value: T) { self.value = value }
-  public static func _makeView(view: SwiftUI::_GraphValue<SwiftUI::TupleView<T>>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.TupleView._makeView(view:inputs:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   public static func _makeViewList(view: SwiftUI::_GraphValue<SwiftUI::TupleView<T>>, inputs: SwiftUI::_ViewListInputs) -> SwiftUI::_ViewListOutputs { _suiUnimplemented("SwiftUICore.TupleView._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   public static func _viewListCount(inputs: SwiftUI::_ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.TupleView._viewListCount(inputs:)") }
@@ -6284,7 +6288,8 @@ extension SwiftUI::View {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::View {
-  nonisolated public static func _makeView(view: SwiftUI::_GraphValue<Self>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.View._makeView(view:inputs:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   nonisolated public static func _makeViewList(view: SwiftUI::_GraphValue<Self>, inputs: SwiftUI::_ViewListInputs) -> SwiftUI::_ViewListOutputs { _suiUnimplemented("SwiftUICore.View._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   nonisolated public static func _viewListCount(inputs: SwiftUI::_ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.View._viewListCount(inputs:)") }
@@ -7041,8 +7046,8 @@ public struct DisabledTextSelectability : SwiftUI::TextSelectability {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::Text {
-  @available(iOS 16.0, macOS 13, tvOS 16.0, watchOS 9.0, *)
-  @_disfavoredOverload public init(_ resource: FoundationShims.LocalizedStringResource) { _suiUnimplemented("SwiftUICore.Text.init(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 16.0, macOS 13, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -7180,7 +7185,8 @@ extension SwiftUI::ViewDimensions3D : Swift::Equatable {
             content()
         }
     }
-  public static func _makeView(view: SwiftUI::_GraphValue<SwiftUI::HStack<Content>>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.HStack._makeView(view:inputs:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
   // port: synthesized witness for View (R7); Apple implements it with an internal member
@@ -7686,7 +7692,8 @@ public struct Glass : Swift::Equatable, Swift::Sendable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::Text : SwiftUI::View {
-  nonisolated public static func _makeView(view: SwiftUI::_GraphValue<SwiftUI::Text>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.Text._makeView(view:inputs:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   nonisolated public static func _makeViewList(view: SwiftUI::_GraphValue<SwiftUI::Text>, inputs: SwiftUI::_ViewListInputs) -> SwiftUI::_ViewListOutputs { _suiUnimplemented("SwiftUICore.Text._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   nonisolated public static func _viewListCount(inputs: SwiftUI::_ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.Text._viewListCount(inputs:)") }
@@ -10164,8 +10171,8 @@ extension SwiftUI::TupleContent : SwiftUI::View where repeat each Content : Swif
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::Text {
-  @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  public init(_ image: SwiftUI::Image) { _suiUnimplemented("SwiftUICore.Text.init(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -10194,8 +10201,10 @@ public static var offset: SwiftUI::Text.DateStyle { get { _suiUnimplemented("Swi
 public static var timer: SwiftUI::Text.DateStyle { get { _suiUnimplemented("SwiftUICore.Text.DateStyle.timer") } }
   }
   public init(_ date: Foundation::Date, style: SwiftUI::Text.DateStyle) { _suiUnimplemented("SwiftUICore.Text.init(_:style:)") }
-  public init(_ dates: Swift::ClosedRange<Foundation::Date>) { _suiUnimplemented("SwiftUICore.Text.init(_:)") }
-  public init(_ interval: Foundation::DateInterval) { _suiUnimplemented("SwiftUICore.Text.init(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -10350,7 +10359,8 @@ extension SwiftUI::ShapeStyle where Self == SwiftUI::Color {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::Text {
-  @_disfavoredOverload public init(_ attributedContent: Foundation::AttributedString) { _suiUnimplemented("SwiftUICore.Text.init(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -18338,7 +18348,8 @@ extension SwiftUI::Transaction {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @_typeEraser(DebugReplaceableView) @_typeEraser(AnyView) @preconcurrency @_Concurrency::MainActor public protocol View {
-  nonisolated static func _makeView(view: SwiftUI::_GraphValue<Self>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   nonisolated static func _makeViewList(view: SwiftUI::_GraphValue<Self>, inputs: SwiftUI::_ViewListInputs) -> SwiftUI::_ViewListOutputs
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   nonisolated static func _viewListCount(inputs: SwiftUI::_ViewListCountInputs) -> Swift::Int?
@@ -18586,7 +18597,8 @@ extension SwiftUI::ViewModifier where Self : SwiftUI::Animatable {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @frozen nonisolated public struct EmptyView : SwiftUI::View {
   @inlinable nonisolated public init() {}
-  public static func _makeView(view: SwiftUI::_GraphValue<SwiftUI::EmptyView>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.EmptyView._makeView(view:inputs:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   public static func _makeViewList(view: SwiftUI::_GraphValue<SwiftUI::EmptyView>, inputs: SwiftUI::_ViewListInputs) -> SwiftUI::_ViewListOutputs { _suiUnimplemented("SwiftUICore.EmptyView._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   public static func _viewListCount(inputs: SwiftUI::_ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.EmptyView._viewListCount(inputs:)") }
@@ -20173,7 +20185,8 @@ nonisolated public struct MeshGradient : SwiftUI::ShapeStyle, Swift::Equatable, 
 extension Swift::Optional : SwiftUI::View where Wrapped : SwiftUI::View {
     // port: omitted: a single-module port can only keep one witness per associated type (R10)
 
-  nonisolated public static func _makeView(view: SwiftUI::_GraphValue<Swift::Optional<Wrapped>>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.Optional._makeView(view:inputs:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   nonisolated public static func _makeViewList(view: SwiftUI::_GraphValue<Swift::Optional<Wrapped>>, inputs: SwiftUI::_ViewListInputs) -> SwiftUI::_ViewListOutputs { _suiUnimplemented("SwiftUICore.Optional._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   nonisolated public static func _viewListCount(inputs: SwiftUI::_ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.Optional._viewListCount(inputs:)") }
@@ -20423,7 +20436,8 @@ extension SwiftUI::ModifiedContent : SwiftUI::Animatable where Content : SwiftUI
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::ModifiedContent : SwiftUI::View where Content : SwiftUI::View, Modifier : SwiftUI::ViewModifier {
-  nonisolated public static func _makeView(view: SwiftUI::_GraphValue<SwiftUI::ModifiedContent<Content, Modifier>>, inputs: SwiftUI::_ViewInputs) -> SwiftUI::_ViewOutputs { _suiUnimplemented("SwiftUICore.ModifiedContent._makeView(view:inputs:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   nonisolated public static func _makeViewList(view: SwiftUI::_GraphValue<SwiftUI::ModifiedContent<Content, Modifier>>, inputs: SwiftUI::_ViewListInputs) -> SwiftUI::_ViewListOutputs { _suiUnimplemented("SwiftUICore.ModifiedContent._makeViewList(view:inputs:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   nonisolated public static func _viewListCount(inputs: SwiftUI::_ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.ModifiedContent._viewListCount(inputs:)") }
@@ -24624,7 +24638,8 @@ public static var upUp: SwiftUI::BlurReplaceTransition.Configuration { get { _su
   @inlinable public init(verbatim content: Swift::String) {
         storage = .verbatim(content)
     }
-  @_disfavoredOverload public init<S>(_ content: S) where S : Swift::StringProtocol { _suiUnimplemented("SwiftUICore.Text.init(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   public static func == (a: SwiftUI::Text, b: SwiftUI::Text) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Text.==(a:b:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)

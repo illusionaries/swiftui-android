@@ -23,7 +23,7 @@ public func _suiUnimplemented(_ symbol: String) -> Never {
 
 /// Diagnostics sink, also used by the harness to assert coverage of a rendered screen.
 public enum PortDiagnostics {
-    nonisolated(unsafe) public private(set) static var unimplementedHits: [String] = []
+    nonisolated(unsafe) public internal(set) static var unimplementedHits: [String] = []
     nonisolated(unsafe) public static var verbose = false
 
     public static func reportUnimplemented(_ symbol: String) {
