@@ -3,6 +3,16 @@
 Living document. Updated as the port converges. Numbers are measured, not estimated.
 
 
+### Open issue: text rows overlap on device
+
+Host geometry for a `HStack { dot; Text }.padding(.vertical, 2)` row inside a `VStack(spacing: 6)`
+is exact (pinned by `HighlightRowTests`), yet on the emulator the Detail screen's highlight rows
+overlap. So the mismatch is between the device `TextMeasurer`'s reported metrics and where the
+canvas baseline lands, not in the layout maths: measure uses `ab_font_metrics`, paint places each
+line at the layout's baseline. Compare the two directly (log `ascent`/`descent` from
+`ab_font_metrics` next to the painted origin) before changing any layout code — a line-height floor
+was tried and correctly rejected by the existing metrics tests.
+
 ### Next: putting the full Atlas app on the ported path
 
 `demos/AtlasSwiftUI.swift` (521 lines, four screens) compiles for Android but does not yet run:
