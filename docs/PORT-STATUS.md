@@ -2,6 +2,17 @@
 
 Living document. Updated as the port converges. Numbers are measured, not estimated.
 
+### Resolved: the build assumed one particular machine
+
+Every script used to carry the paths of the checkout it was written in: an Android SDK under a
+project-specific home directory, an unpacked toolchain `.pkg` in a cache directory, a home
+directory spelled out in a comment. They now ask `scripts/env.sh`, which resolves the OSS Swift
+toolchain, the Swift SDK for Android, the Android SDK with an NDK, the JDK and Xcode from — in
+order — an exported variable, a gitignored `scripts/local.env`, and the conventional install
+location of each tool. It also refuses an NDK older than r27 up front, instead of letting SwiftPM
+fail somewhere inside Foundation, and `./scripts/env.sh --check` prints what it resolved. The
+history of this repository was rewritten for the same reason: no commit names a home directory.
+
 
 ### Resolved: the layout defects found by reading screenshots
 
