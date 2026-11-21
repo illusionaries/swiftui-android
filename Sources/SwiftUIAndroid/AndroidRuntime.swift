@@ -196,6 +196,142 @@ final class AndroidCanvasPainter: DisplayListPainter, TextMeasurer {
     @inline(__always) private func f(_ value: CGFloat) -> Float { Float(value) }
 }
 
+// MARK: - Text input
+
+/// Bridges `PortTextInput` to the host View's text editor.
+///
+/// The direction here is the unusual one for this file: everything else runs *because* Android
+/// called in through AndroidBridge.c, whereas this class is pulled from Java. The reason is that
+/// a text editor cannot be expressed as drawing commands — it has to be a real `EditText` in the
+/// view hierarchy, with a caret and an IME session — and this side of the process has no JNIEnv:
+/// AndroidBridge.c owns every Java object by design and exposes no text-input entry point. So the
+/// host View does both halves itself: it polls `nativeTextInputCommand` once per frame and after
+/// every input event and pulls the pending request (slot, initial text, frame in dp) out of the
+/// getters below, and it pushes the edited text back through `nativeTextChanged*`.
+///
+/// Text cannot cross that boundary as a jstring either, for the same reason: converting one needs
+/// JNIEnv. It travels as UTF-16 code units packed four to a jlong, lowest unit first, in both
+/// directions — `packedChunk(at:)` and `textChunk(_:)` are the two halves of that encoding.
+private final class AndroidTextInput {
+    static let shared = AndroidTextInput()
+
+    enum Command: Int32 {
+        case none = 0
+        case begin = 1
+        case updateFrame = 2
+        case end = 3
+    }
+
+    /// The request the View is about to pull. Only one can be pending: the View drains and
+    /// acknowledges it inside a single call, on the same thread.
+    var command = Command.none
+    var slot = 0
+    var textUnits: [UInt16] = []
+    var frame = CGRect.zero
+
+    /// Snapshot being assembled from a `nativeTextChanged*` run. -1 means "no run in progress";
+    /// 0 is a real length (the user deleted everything).
+    private var pendingUnits: [UInt16] = []
+    private var pendingLength = -1
+
+    /// Install the host into SwiftUI. Called when the native runtime is created, i.e. before the
+    /// first frame and before any control can be tapped.
+    func install() {
+        PortTextInput.host = PortTextInputHost(
+            begin: { slot, text, frame in
+                self.command = .begin
+                self.slot = slot
+                // Cache the UTF-16 form now: the View asks for it once per begin, but a control
+                // can be re-begun while the request is still pending, and encoding then would be
+                // work in the middle of a frame.
+                self.textUnits = Array(text.utf16)
+                self.frame = frame
+            },
+            updateFrame: { frame in
+                self.frame = frame
+                // Never downgrade a pending begin: the request the View has not seen yet then
+                // carries the newest frame anyway, and turning it into "move" would leave the
+                // editor closed.
+                if self.command == .none {
+                    self.command = .updateFrame
+                }
+            },
+            end: {
+                self.command = .end
+                self.slot = 0
+                self.textUnits = []
+                self.frame = .zero
+            })
+    }
+
+    /// Drop everything on teardown: the View and its EditText are going away with the window, so
+    /// no request may survive into a later frame, and SwiftUI must not keep a session whose
+    /// editor no longer exists.
+    func teardown() {
+        command = .none
+        slot = 0
+        textUnits = []
+        frame = .zero
+        pendingUnits = []
+        pendingLength = -1
+        PortTextInput.hostEnded()
+    }
+
+    /// Left/top/width/height of the pending frame in dp, as the View's four-argument getter
+    /// requests it.
+    func frameComponent(_ component: Int32) -> Float {
+        switch component {
+        case 0: return Float(frame.minX)
+        case 1: return Float(frame.minY)
+        case 2: return Float(frame.width)
+        case 3: return Float(frame.height)
+        default: return 0
+        }
+    }
+
+    /// Four UTF-16 code units per jlong. The last chunk of a string whose length is not a
+    /// multiple of four carries zero padding; the consumer trims it with the length it was given.
+    func packedChunk(at index: Int) -> Int64 {
+        var packed: UInt64 = 0
+        var offset = 0
+        while offset < 4, index + offset < textUnits.count {
+            packed |= UInt64(textUnits[index + offset]) << (16 * UInt64(offset))
+            offset += 1
+        }
+        return Int64(bitPattern: packed)
+    }
+
+    // MARK: reverse direction (the View reports what the user typed)
+
+    func textBegin(_ length: Int32) {
+        pendingUnits.removeAll(keepingCapacity: true)
+        pendingLength = max(0, Int(length))
+    }
+
+    func textChunk(_ packed: Int64) {
+        guard pendingLength >= 0 else { return }
+        let bits = UInt64(bitPattern: packed)
+        for offset in 0..<4 {
+            pendingUnits.append(UInt16(truncatingIfNeeded: bits >> (16 * UInt64(offset))))
+        }
+    }
+
+    func textCommit() {
+        // Typing arrives outside any draw (a Java TextWatcher callback), so nothing else would
+        // schedule the frame that renders the new text: ask the platform for it here.
+        defer { AndroidRuntime.shared.invalidate() }
+        guard pendingLength >= 0 else { return }
+        let expected = pendingLength
+        let units = pendingUnits
+        pendingLength = -1
+        pendingUnits.removeAll(keepingCapacity: true)
+        // A short run means a chunk went missing. Keep the previous text instead of delivering a
+        // truncated one; every later change delivers a complete snapshot anyway.
+        guard units.count >= expected else { return }
+        PortTextInput.hostTextChanged(String(decoding: units[0..<expected], as: UTF16.self))
+    }
+}
+
 // MARK: - C entry points
 
 @_cdecl("swiftui_android_start")
@@ -204,6 +340,10 @@ public func swiftuiAndroidStart(_ runtime: OpaquePointer?, _ appScene: UnsafeMut
     state.runtime = runtime
     state.scene = loadAppScene(appScene)
     state.started = true
+    // The text editor belongs to the platform, not to any one scene, so it is installed here
+    // rather than from the text adapter: an app that never shows a TextField pays nothing, and a
+    // control that appears on the first frame already finds the host in place.
+    AndroidTextInput.shared.install()
 }
 
 @_cdecl("swiftui_android_resize")
@@ -308,6 +448,7 @@ public func swiftuiAndroidLifecycle(_ runtime: OpaquePointer?, _ event: Int32) {
     case 1:  // resume
         state.invalidate()
     case 3:  // destroy
+        AndroidTextInput.shared.teardown()
         state.scene = nil
         state.canvas = nil
         state.runtime = nil
@@ -319,6 +460,98 @@ public func swiftuiAndroidLifecycle(_ runtime: OpaquePointer?, _ event: Int32) {
 @_cdecl("swiftui_android_low_memory")
 public func swiftuiAndroidLowMemory(_ runtime: OpaquePointer?) {
     // Nothing cached yet beyond the per-frame painters; reserved for image caches.
+}
+
+// MARK: - Text input JNI
+//
+// These run in the opposite direction to the entry points above: the host View calls them, so
+// they are declared in SwiftUIHostView.java as `native`. ART resolves an unregistered native
+// method by looking for `Java_<mangled class>_<mangled method>` in the loaded libraries, so a
+// @_cdecl carrying the mangled name *is* the JNI implementation. That keeps text input out of
+// AndroidBridge.c, which owns every JNI object and deliberately exposes no text-input seam.
+// The first two parameters are the JNIEnv and jclass every JNI function receives; they are
+// unused on purpose — this layer never touches a JNI object (see AndroidTextInput for the packed
+// UTF-16 transport). The trailing `handle` is the ABRuntime the View was created with; the
+// bridge is a per-process singleton because there is exactly one host View, and the View already
+// refuses to call in with a dead handle.
+//
+// The Java declarations, in this order (app/src/dev/swiftui/android/SwiftUIHostView.java):
+//
+//   nativeTextInputCommand(long) -> int         0 none, 1 begin, 2 update frame, 3 end
+//   nativeTextInputSlot(long) -> int            the control that owns the editor
+//   nativeTextInputFrame(long, int) -> float    0 left, 1 top, 2 width, 3 height (dp)
+//   nativeTextInputTextLength(long) -> int      UTF-16 code units of the initial text
+//   nativeTextInputTextChunk(long, int) -> long 4 code units starting at that unit offset
+//   nativeTextInputAck(long) -> void            the pending request has been consumed
+//   nativeTextChangedBegin(long, int) -> void   start of a whole-text snapshot (its length)
+//   nativeTextChangedChunk(long, long) -> void  one 4-unit chunk of that snapshot
+//   nativeTextChangedCommit(long) -> void       the snapshot is complete
+//   nativeTextEnded(long, int) -> void          the editor closed by itself
+
+@_cdecl("Java_dev_swiftui_android_SwiftUIHostView_nativeTextInputCommand")
+public func jniTextInputCommand(_ env: UnsafeMutableRawPointer?, _ clazz: UnsafeRawPointer?,
+                                _ handle: Int64) -> Int32 {
+    AndroidTextInput.shared.command.rawValue
+}
+
+@_cdecl("Java_dev_swiftui_android_SwiftUIHostView_nativeTextInputSlot")
+public func jniTextInputSlot(_ env: UnsafeMutableRawPointer?, _ clazz: UnsafeRawPointer?,
+                             _ handle: Int64) -> Int32 {
+    Int32(AndroidTextInput.shared.slot)
+}
+
+@_cdecl("Java_dev_swiftui_android_SwiftUIHostView_nativeTextInputFrame")
+public func jniTextInputFrame(_ env: UnsafeMutableRawPointer?, _ clazz: UnsafeRawPointer?,
+                              _ handle: Int64, _ component: Int32) -> Float {
+    AndroidTextInput.shared.frameComponent(component)
+}
+
+@_cdecl("Java_dev_swiftui_android_SwiftUIHostView_nativeTextInputTextLength")
+public func jniTextInputTextLength(_ env: UnsafeMutableRawPointer?, _ clazz: UnsafeRawPointer?,
+                                   _ handle: Int64) -> Int32 {
+    Int32(AndroidTextInput.shared.textUnits.count)
+}
+
+@_cdecl("Java_dev_swiftui_android_SwiftUIHostView_nativeTextInputTextChunk")
+public func jniTextInputTextChunk(_ env: UnsafeMutableRawPointer?, _ clazz: UnsafeRawPointer?,
+                                  _ handle: Int64, _ index: Int32) -> Int64 {
+    AndroidTextInput.shared.packedChunk(at: max(0, Int(index)))
+}
+
+@_cdecl("Java_dev_swiftui_android_SwiftUIHostView_nativeTextInputAck")
+public func jniTextInputAck(_ env: UnsafeMutableRawPointer?, _ clazz: UnsafeRawPointer?,
+                            _ handle: Int64) {
+    AndroidTextInput.shared.command = .none
+}
+
+@_cdecl("Java_dev_swiftui_android_SwiftUIHostView_nativeTextChangedBegin")
+public func jniTextChangedBegin(_ env: UnsafeMutableRawPointer?, _ clazz: UnsafeRawPointer?,
+                                _ handle: Int64, _ length: Int32) {
+    AndroidTextInput.shared.textBegin(length)
+}
+
+@_cdecl("Java_dev_swiftui_android_SwiftUIHostView_nativeTextChangedChunk")
+public func jniTextChangedChunk(_ env: UnsafeMutableRawPointer?, _ clazz: UnsafeRawPointer?,
+                                _ handle: Int64, _ packed: Int64) {
+    AndroidTextInput.shared.textChunk(packed)
+}
+
+@_cdecl("Java_dev_swiftui_android_SwiftUIHostView_nativeTextChangedCommit")
+public func jniTextChangedCommit(_ env: UnsafeMutableRawPointer?, _ clazz: UnsafeRawPointer?,
+                                 _ handle: Int64) {
+    AndroidTextInput.shared.textCommit()
+}
+
+@_cdecl("Java_dev_swiftui_android_SwiftUIHostView_nativeTextEnded")
+public func jniTextEnded(_ env: UnsafeMutableRawPointer?, _ clazz: UnsafeRawPointer?,
+                         _ handle: Int64, _ reason: Int32) {
+    // The reason (0 IME action, 1 cancelled, 2 focus lost, 3 host destroyed) is already in
+    // logcat on the Java side; SwiftUI only needs to know that the session is over.
+    _ = reason
+    PortTextInput.hostEnded()
+    // The caret and the focus ring are drawn by SwiftUI, so the end of a platform-initiated
+    // session needs a frame of its own.
+    AndroidRuntime.shared.invalidate()
 }
 
 #endif  // os(Android)

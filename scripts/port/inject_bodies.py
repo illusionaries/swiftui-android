@@ -3425,8 +3425,11 @@ def apply_storage_injections(sources: dict[str, str], entries: dict[str, str]) -
     """
     if not entries:
         return 0
+    # Dotted attribute names (`@_Concurrency.MainActor`) must be accepted too: Apple's interface
+    # spells the isolated `Link` and `Button` declarations that way, and a storage injection that
+    # silently skipped them left those structs with nowhere to keep their state.
     declaration = re.compile(
-        r"^(?:\s*(?:@\w+(?:\([^)]*\))?|public|internal|package|fileprivate|private|final|nonisolated|"
+        r"^(?:\s*(?:@[\w.]+(?:\([^)]*\))?|public|internal|package|fileprivate|private|final|nonisolated|"
         r"frozen|indirect|@_Concurrency::MainActor|@preconcurrency|@usableFromInline))*\s*"
         r"(?:struct|class|actor|enum)\s+(?P<name>[A-Za-z_][A-Za-z0-9_]*)(?P<generics><[^{]*?>)?\s*(?::|where|\{)"
     )

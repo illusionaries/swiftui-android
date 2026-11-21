@@ -115,6 +115,11 @@ public final class LayoutNode {
         case scroll(offset: CGFloat)
         case spacer(minLength: CGFloat)
         case fill(PortFillStyle)
+        /// Linear value indicator (`ProgressView`): a rounded track with the filled fraction.
+        case progressBar(fraction: CGFloat, track: RGBAColor, fill: RGBAColor)
+        /// Continuous value control (`Slider`): track, filled fraction and a knob. The geometry is
+        /// resolved from the placed frame, so the control is flexible along the horizontal axis.
+        case sliderTrack(fraction: CGFloat, track: RGBAColor, fill: RGBAColor, knob: RGBAColor)
         case shape(ShapeKind, fill: PortFillStyle?, stroke: (width: CGFloat, color: RGBAColor)?)
         case padding(EdgeInsetsLike)
         case frame(FrameSpec)
@@ -134,6 +139,10 @@ public final class LayoutNode {
     public var children: [LayoutNode]
     /// Tap handler attached by the `.onTapGesture` equivalent.
     public var action: (() -> Void)?
+    /// Continuous drag handler for controls (sliders). Receives the touch point in the same
+    /// coordinate space as `frame`, plus the node's own frame, so the control can map the position
+    /// onto its track. Taps on such a node are routed here too (a tap on a slider jumps the value).
+    public var dragAction: ((CGPoint, CGRect) -> Void)?
     /// Opaque payload the app can use to identify the tapped node (e.g. a row index).
     public var tag: Int?
     /// Assigned during the place pass, in the coordinate space of the nearest ancestor that
@@ -164,6 +173,47 @@ public final class LayoutNode {
         return (action != nil || tag != nil) ? self : nil
     }
 
+    /// Every node whose placed frame contains `point`, in tree order. Diagnostics only: it answers
+    /// "what is under the finger here?" when a tap seems to go nowhere, which is otherwise
+    /// invisible without a debuggable build.
+    public func path(containing point: CGPoint, depth: Int = 0, into result: inout [String]) {
+        guard frame.contains(point) else { return }
+        result.append(String(repeating: ".", count: min(depth, 12)) + portDescription)
+        for child in children {
+            child.path(containing: point, depth: depth + 1, into: &result)
+        }
+    }
+
+    /// One-line description of this node for the demos' on-screen debug read-out.
+    public var portDescription: String {
+        let label: String
+        switch kind {
+        case .empty: label = "empty"
+        case .text: label = "text"
+        case let .stack(axis, _, _, _): label = axis == .vertical ? "vstack" : "hstack"
+        case .zstack: label = "zstack"
+        case .scroll: label = "scroll"
+        case .spacer: label = "spacer"
+        case .fill: label = "fill"
+        case .shape: label = "shape"
+        case .padding: label = "padding"
+        case .frame: label = "frame"
+        case .background: label = "background"
+        case .overlay: label = "overlay"
+        case .opacity: label = "opacity"
+        case .offset: label = "offset"
+        case .clip: label = "clip"
+        case .shadow: label = "shadow"
+        case .tap: label = "tap"
+        case .group: label = "group"
+        case .progressBar: label = "progressBar"
+        case .sliderTrack: label = "sliderTrack"
+        }
+        let x = Int(frame.minX), y = Int(frame.minY)
+        let w = Int(frame.width), h = Int(frame.height)
+        return "\(label)[\(x),\(y) \(w)x\(h)] act=\(action != nil)"
+    }
+
     /// All nodes carrying a tag, in paint order (used by list tests and debugging).
     public func taggedNodes() -> [LayoutNode] {
         var result: [LayoutNode] = []
@@ -176,6 +226,22 @@ public final class LayoutNode {
     public func onTap(_ body: @escaping () -> Void) -> LayoutNode {
         action = body
         return self
+    }
+
+    /// Attaches a continuous handler for controls that track the finger (sliders).
+    @discardableResult
+    public func onDrag(_ body: @escaping (CGPoint, CGRect) -> Void) -> LayoutNode {
+        dragAction = body
+        return self
+    }
+
+    /// The deepest node with a drag handler that contains `point` (controls win over scrolling).
+    public func dragTarget(at point: CGPoint) -> LayoutNode? {
+        guard frame.contains(point) else { return nil }
+        for child in children.reversed() {
+            if let hit = child.dragTarget(at: point) { return hit }
+        }
+        return dragAction != nil ? self : nil
     }
 
     @discardableResult
@@ -263,6 +329,9 @@ public final class LayoutNode {
         switch kind {
         case .spacer, .fill:
             result = true
+        case .progressBar, .sliderTrack:
+            // Both stretch across the width they are offered, and stay at their natural height.
+            result = axis == .horizontal
         case let .shape(kind, _, _):
             switch kind {
             case .circle, .capsule: result = false
@@ -345,6 +414,13 @@ public final class LayoutNode {
 
         case .fill(_):
             return CGSize(width: proposal.width ?? 10, height: proposal.height ?? 10)
+
+        case .progressBar, .sliderTrack:
+            let naturalHeight: CGFloat = {
+                if case .progressBar = kind { return 5 }
+                return 27
+            }()
+            return CGSize(width: proposal.width ?? 120, height: proposal.height ?? naturalHeight)
 
         case let .shape(shapeKind, _, _):
             if let width = proposal.width, let height = proposal.height {
@@ -720,6 +796,35 @@ public final class LayoutNode {
                                             start: resolvedStart, end: resolvedEnd, stops: stops))
             }
 
+        case let .progressBar(fraction, track, fillColor):
+            let clamped = min(max(fraction, 0), 1)
+            let radius = min(frame.height, frame.width) / 2
+            list.append(.fillRoundRect(frame, cornerRadius: radius, track))
+            if clamped > 0, frame.width > 0 {
+                let filled = CGRect(x: frame.minX, y: frame.minY,
+                                    width: frame.width * clamped, height: frame.height)
+                list.append(.fillRoundRect(filled, cornerRadius: radius, fillColor))
+            }
+
+        case let .sliderTrack(fraction, track, fillColor, knob):
+            // Geometry in one place: the drag handler maps a touch back through the same values.
+            let geometry = PortSliderGeometry(frame: frame)
+            let clamped = min(max(fraction, 0), 1)
+            list.append(.fillRoundRect(geometry.trackRect, cornerRadius: geometry.trackHeight / 2, track))
+            let filledWidth = geometry.trackRect.width * clamped
+            if filledWidth > 0 {
+                list.append(.fillRoundRect(CGRect(x: geometry.trackRect.minX,
+                                                  y: geometry.trackRect.minY,
+                                                  width: filledWidth,
+                                                  height: geometry.trackHeight),
+                                           cornerRadius: geometry.trackHeight / 2, fillColor))
+            }
+            let knobRect = geometry.knobRect(fraction: clamped)
+            list.append(.shadowRoundRect(knobRect, cornerRadius: geometry.knobDiameter / 2,
+                                         dx: 0, dy: 1, blur: 4,
+                                         RGBAColor(hex: 0x000000, alpha: 0.28)))
+            list.append(.fillOval(knobRect, knob))
+
         case let .shape(shapeKind, fill, stroke):
             let path: PathData
             let cornerRadius: CGFloat
@@ -804,6 +909,51 @@ public final class LayoutNode {
         case .group:
             for child in children { child.paint(into: &list) }
         }
+    }
+}
+
+// MARK: - Slider geometry
+
+/// Where a slider's track, filled portion and knob are inside its placed frame.
+///
+/// Painting and hit-testing share this type: the drag handler maps the finger through
+/// `fraction(atX:)`, the painter places the knob with `knobRect(fraction:)`, so the knob follows
+/// the finger exactly instead of drifting near the ends.
+public struct PortSliderGeometry {
+    public let frame: CGRect
+
+    public init(frame: CGRect) {
+        self.frame = frame
+    }
+
+    /// The knob is as tall as the control (capped), which keeps it proportional at any text size.
+    public var knobDiameter: CGFloat { min(26, max(frame.height, 1)) }
+    public var trackHeight: CGFloat { 5 }
+
+    /// The track stops half a knob from each edge, so the knob is never clipped by the control.
+    public var trackRect: CGRect {
+        let inset = knobDiameter / 2
+        return CGRect(x: frame.minX + inset,
+                      y: frame.midY - trackHeight / 2,
+                      width: max(0, frame.width - knobDiameter),
+                      height: trackHeight)
+    }
+
+    /// Fraction (0…1) for a touch at `x` in the node's coordinate space.
+    public func fraction(atX x: CGFloat) -> CGFloat {
+        let track = trackRect
+        guard track.width > 0 else { return 0 }
+        return min(max((x - track.minX) / track.width, 0), 1)
+    }
+
+    /// Knob box for a fraction, clamped so the knob stays inside the placement.
+    public func knobRect(fraction: CGFloat) -> CGRect {
+        let track = trackRect
+        let clamped = min(max(fraction, 0), 1)
+        return CGRect(x: track.minX + track.width * clamped - knobDiameter / 2,
+                      y: frame.midY - knobDiameter / 2,
+                      width: knobDiameter,
+                      height: knobDiameter)
     }
 }
 

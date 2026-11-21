@@ -106,22 +106,62 @@ extension Toggle where Label == Text {
     }
 }
 
+/// iOS switch geometry: a 51 × 31 track with a 27 pt knob inset by 2 pt on its side.
+///
+/// The track's height is pinned rather than inherited from the row. Left to the proposal it took
+/// the height of the label next to it, which drew a tall pill with a small knob floating at its
+/// edge — the switch looked broken next to the text.
+enum PortSwitchMetrics {
+    static let trackWidth: CGFloat = 51
+    static let trackHeight: CGFloat = 31
+    static let knobDiameter: CGFloat = 27
+    static let knobInset: CGFloat = 2
+
+    /// Alignment fraction inside a zstack for the knob's resting places.
+    static var offAlignment: CGFloat { knobInset / (trackWidth - knobDiameter) }
+    static var onAlignment: CGFloat { (trackWidth - knobInset - knobDiameter) / (trackWidth - knobDiameter) }
+}
+
 extension Toggle: _PortRenderable where Label: View {
     nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
         let isOn = _portIsOn?.wrappedValue ?? false
-        let label = _portLabel.map { context.makeNode($0, proposal: proposal) } ?? LayoutNode(.empty)
+        let environment = context.environment
+        let label = environment.labelsHidden
+            ? LayoutNode(.empty)
+            : _portLabel.map { context.makeNode($0, proposal: proposal) } ?? LayoutNode(.empty)
 
+        let offTint = environment.isDark ? RGBAColor(hex: 0x39393D) : RGBAColor(hex: 0xE5E5EA)
         let track = LayoutNode(.shape(.capsule,
-                                      fill: .color(isOn ? context.environment.accentColor
-                                                        : RGBAColor(hex: 0xE5E5EA)),
+                                      fill: .color(isOn ? environment.accentColor : offTint),
                                       stroke: nil))
-        let trackFixed = LayoutNode.frame(FrameSpec(minWidth: 51, maxWidth: 51), track)
-        let knob = LayoutNode.frame(FrameSpec.width(27),
-                                    LayoutNode(.shape(.circle, fill: .color(RGBAColor(hex: 0xFFFFFF)), stroke: nil)))
-        let switchBody = LayoutNode(.zstack(horizontalAlignment: isOn ? 0.85 : 0.15, verticalAlignment: 0.5),
+        let trackFixed = LayoutNode.frame(FrameSpec(minWidth: PortSwitchMetrics.trackWidth,
+                                                    idealWidth: PortSwitchMetrics.trackWidth,
+                                                    maxWidth: PortSwitchMetrics.trackWidth,
+                                                    minHeight: PortSwitchMetrics.trackHeight,
+                                                    idealHeight: PortSwitchMetrics.trackHeight,
+                                                    maxHeight: PortSwitchMetrics.trackHeight),
+                                          track)
+        let knobShape = LayoutNode(.shape(.circle, fill: .color(RGBAColor(hex: 0xFFFFFF)), stroke: nil))
+        let knobShadow = LayoutNode(.shadow(dx: 0, dy: 1, blur: 3,
+                                            color: RGBAColor(hex: 0x000000, alpha: 0.24),
+                                            cornerRadius: PortSwitchMetrics.knobDiameter / 2),
+                                    children: [knobShape])
+        let knob = LayoutNode.frame(FrameSpec(minWidth: PortSwitchMetrics.knobDiameter,
+                                              idealWidth: PortSwitchMetrics.knobDiameter,
+                                              maxWidth: PortSwitchMetrics.knobDiameter,
+                                              minHeight: PortSwitchMetrics.knobDiameter,
+                                              idealHeight: PortSwitchMetrics.knobDiameter,
+                                              maxHeight: PortSwitchMetrics.knobDiameter),
+                                    knobShadow)
+        let switchBody = LayoutNode(.zstack(horizontalAlignment: isOn ? PortSwitchMetrics.onAlignment
+                                                                     : PortSwitchMetrics.offAlignment,
+                                            verticalAlignment: 0.5),
                                     children: [trackFixed, knob])
-        return [LayoutNode(.stack(axis: .horizontal, spacing: 12, horizontalAlignment: 0, verticalAlignment: 0.5),
-                           children: [label, switchBody])]
+        // A toggle spans the width it is offered: label leading, switch trailing. Stacking the two
+        // side by side made the switch sit against the label's text.
+        let row = LayoutNode(.stack(axis: .horizontal, spacing: 12, horizontalAlignment: 0, verticalAlignment: 0.5),
+                             children: [label, LayoutNode.spacer(), switchBody])
+        return [LayoutNode.frame(FrameSpec(maxWidth: .infinity, horizontalAlignment: 0), row)]
             .map { node in
                 _portIsOn.map { binding in
                     node.onTap {
@@ -155,10 +195,27 @@ extension View {
     }
 }
 
-/// Layout-neutral modifiers Apple defines in terms of its own internals: the port returns the
-/// value unchanged, which is what "hidden label" means for a renderer with no label chrome.
+/// `.labelsHidden()` hides a control's label and keeps the control itself.
+///
+/// In Apple's framework it writes the `\.labelsHidden` environment value, and each control's style
+/// reads it. The port does the same thing with its own environment: the wrapper below marks the
+/// subtree and `Toggle`/`Label`/`Picker` consult `PortEnvironment.labelsHidden`.
+public struct _PortLabelsHidden<Content: View>: View, _PortRenderable {
+    let content: Content
+
+    nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
+        context.withEnvironment({ environment in
+            environment.labelsHidden = true
+        }, body: {
+            context.makeNodes(content, proposal: proposal)
+        })
+    }
+
+    public var body: some View { content }
+}
+
 extension View {
-    public func labelsHidden() -> some View { self }
+    public func labelsHidden() -> some View { _PortLabelsHidden(content: self) }
 }
 
 // MARK: - accentColor

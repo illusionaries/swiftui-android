@@ -15,3 +15,14 @@ SwiftUI.LocalizedStringKey.StringInterpolation => internal var _portText: String
 SwiftUI.LazyVGrid<Content> => internal var _portColumns: [GridItem] = []; internal var _portSpacing: CGFloat?; internal var _portContent: Content?
 SwiftUI.Toggle<Label> => internal var _portIsOn: Binding<Bool>?; internal var _portLabel: Label?
 SwiftUI.StateObject<ObjectType> => internal var _portSlot: Int = -1
+
+# ── Controls (the gallery demo) ──────────────────────────────────────────────
+# Apple's interface declares these as `View` with no visible storage, exactly like `Button`. The
+# port stores what the control needs to paint itself and to write back through its `Binding`.
+SwiftUI.Slider<Label, ValueLabel> => internal var _portValue: Double = 0; internal var _portSetValue: ((Double) -> Void)?; internal var _portRange: ClosedRange<Double> = 0...1; internal var _portStep: Double?; internal var _portLabel: Label?; internal var _portMinLabel: ValueLabel?; internal var _portMaxLabel: ValueLabel?
+SwiftUI.Stepper<Label> => internal var _portIncrement: (() -> Void)?; internal var _portDecrement: (() -> Void)?; internal var _portLabel: Label?
+SwiftUI.Picker<Label, SelectionValue, Content> => internal var _portSelection: Binding<SelectionValue>?; internal var _portLabel: Label?; internal var _portContent: Content?
+SwiftUI.TextField<Label> => internal var _portText: Binding<String>?; internal var _portPrompt: Text?; internal var _portLabel: Label?
+SwiftUI.ProgressView<Label, CurrentValueLabel> => internal var _portValue: Double?; internal var _portTotal: Double = 1; internal var _portLabel: Label?; internal var _portCurrentValueLabel: CurrentValueLabel?
+SwiftUI.Label<Title, Icon> => internal var _portTitle: Title?; internal var _portIcon: Icon?
+SwiftUI.Link<Label> => internal var _portDestination: Foundation.URL?; internal var _portLabel: Label?

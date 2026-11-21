@@ -126,6 +126,16 @@ struct PortDemoView: View {
     }
 }
 
+/// Which demo this build hosts. The gallery is built as its own app (see scripts/build-apk.sh
+/// `--demo`) so the two demos stay independent, but they share one scene implementation.
+// Not main-actor isolated: `draw(into:context:)` is a synchronous nonisolated scene callback, and
+// the demos are plain value types.
+#if PORT_DEMO_GALLERY
+func hostedDemo() -> some View { ControlGallery() }
+#else
+func hostedDemo() -> some View { AtlasRootView() }
+#endif
+
 public final class SwiftUIHostScene: PortScene {
     private var width: CGFloat = 0
     private var height: CGFloat = 0
@@ -150,7 +160,7 @@ public final class SwiftUIHostScene: PortScene {
         graph.beginFrame(environment: PortEnvironment(isDark: isDark,
                                                       accentColor: RGBAColor(hex: 0x0A84FF),
                                                       displayScale: context.displayScale))
-        let root = graph.makeNode(AtlasRootView(), proposal: ProposedSize(width: width, height: height))
+        let root = graph.makeNode(hostedDemo(), proposal: ProposedSize(width: width, height: height))
         graph.endFrame()
 
         let size = root.measure(ProposedSize(width: width, height: height))
@@ -189,13 +199,26 @@ public final class SwiftUIHostScene: PortScene {
     }
 
     public func handleTap(at point: CGPoint) -> Bool {
+        PortDiagnostics.lastTap = point
+        var tapPath: [String] = []
+        tree?.path(containing: point, into: &tapPath)
+        PortDiagnostics.lastTapPath = tapPath
+        // A control that tracks the finger (a slider) consumes touches before any tap gesture.
+        if let target = tree?.dragTarget(at: point), let drag = target.dragAction {
+            drag(point, target.frame)
+            return true
+        }
         guard let hit = tree?.hitTest(point) else { return false }
         hit.action?()
         return hit.action != nil
     }
 
     public func handleDrag(_ gesture: PortDragGesture) -> Bool {
-        PortScrollStore.apply(drag: gesture, at: gesture.location)
+        if let target = tree?.dragTarget(at: gesture.location), let drag = target.dragAction {
+            drag(gesture.location, target.frame)
+            return true
+        }
+        return PortScrollStore.apply(drag: gesture, at: gesture.location)
     }
 }
 

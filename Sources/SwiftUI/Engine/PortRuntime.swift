@@ -28,6 +28,11 @@ public func _suiUnimplemented(_ symbol: String) -> Never {
 public enum PortDiagnostics {
     nonisolated(unsafe) public internal(set) static var unimplementedHits: [String] = []
     nonisolated(unsafe) public static var verbose = false
+    /// The last tap the host scene received and the frame the last text field was laid out in
+    /// (dp, scene space). The ported APK is not debuggable, so a demo printing these on screen is
+    /// the cheapest way to answer "did the touch arrive, and where is the control?".
+    nonisolated(unsafe) public static var lastTap: CGPoint?
+    nonisolated(unsafe) public static var lastTapPath: [String] = []
 
     public static func reportUnimplemented(_ symbol: String) {
         unimplementedHits.append(symbol)

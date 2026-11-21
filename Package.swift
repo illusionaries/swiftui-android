@@ -64,6 +64,10 @@ let swift5Mode: [SwiftSetting] = [.swiftLanguageMode(.v5)]
 // retargeted interfaces plus this project's engine. Set SWIFTUI_PORT_GENERATED=0 to build the
 // older engine-level demo instead (kept as a reference implementation of the engine alone).
 let includeGeneratedPort = ProcessInfo.processInfo.environment["SWIFTUI_PORT_GENERATED"] != "0"
+// The port ships two independent demos. Atlas is the default; the control gallery is selected at
+// compile time so each demo is a standalone app with its own application id:
+//   SWIFTUI_DEMO_GALLERY=1 scripts/build-apk.sh --demo gallery …   (or scripts/gallery.sh)
+let demoGallery = ProcessInfo.processInfo.environment["SWIFTUI_DEMO_GALLERY"] == "1"
 let portSettings: [SwiftSetting] = [
     .swiftLanguageMode(.v5),
     .unsafeFlags(portSDKFlags),
@@ -253,10 +257,17 @@ let package = Package(
             // The SwiftUI-hosted scene only compiles against the generated declarations.
             // The engine-level Atlas scene and the SwiftUI Atlas app define overlapping model
             // types, and each only makes sense in one build mode.
+            // Which demo the hosted scene shows is a compile-time choice (`SWIFTUI_DEMO_GALLERY=1`
+            // → ControlGallery, else the Atlas app), so each demo ships as its own APK.
             exclude: includeGeneratedPort
                 ? ["AtlasScene.swift", "DemoTheme.swift", "NodeBuilders.swift"]
-                : ["SwiftUIHostScene.swift", "AtlasApp.swift"],
-            swiftSettings: includeGeneratedPort ? swift5Mode + [.define("PORT_RENDERER")] : swift5Mode
+                  + (demoGallery ? ["AtlasApp.swift"] : [])
+                // Engine-only mode has no `SwiftUI` module at all, so both SwiftUI demos (which
+                // import it) stay out of that build.
+                : ["SwiftUIHostScene.swift", "AtlasApp.swift", "ControlGallery.swift"],
+            swiftSettings: includeGeneratedPort
+                ? swift5Mode + [.define("PORT_RENDERER")] + (demoGallery ? [.define("PORT_DEMO_GALLERY")] : [])
+                : swift5Mode
         ),
         .testTarget(
             name: "SwiftUITests",

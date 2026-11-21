@@ -15183,18 +15183,8 @@ extension SwiftUICore::EnableRuntimeConcurrencyCheck : @unchecked Swift::Sendabl
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUICore::View {
-  @export(implementation) nonisolated public func tag<V>(_ tag: V, includeOptional: Swift::Bool = true) -> some SwiftUICore::View where V : Swift::Hashable {
-        if #available(
-            iOS 26.0, macOS 26.0, tvOS 26.0, visionOS 26.0, watchOS 26.0, *)
-        {
-            return modifier(_TagTraitWritingModifier(
-                tag: tag, includeOptional: includeOptional))
-        }
-        return _trait(TagValueTraitKey<V>.self, .tagged(tag))
-            ._trait(
-                TagValueTraitKey<V?>.self,
-                includeOptional ? .tagged(Optional(tag)) : .untagged)
-    }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   
   @inlinable nonisolated public func _untagged() -> some SwiftUICore::View {
         return _trait(IsAuxiliaryContentTraitKey.self, true)

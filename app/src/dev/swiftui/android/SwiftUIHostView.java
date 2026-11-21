@@ -18,6 +18,20 @@
  *   nativeConfiguration(h)                      density / dark-mode changed
  *   nativeLowMemory(h)
  *   nativeDestroy(h)
+ *
+ * Text input has its own natives, implemented in Swift (see the JNI section of
+ * Sources/SwiftUIAndroid/AndroidRuntime.swift); the View polls them, it is not pushed to:
+ *
+ *   nativeTextInputCommand(h) -> int            0 none 1 begin 2 move 3 end
+ *   nativeTextInputSlot(h) -> int
+ *   nativeTextInputFrame(h, part) -> float      part: 0 left 1 top 2 width 3 height (dp)
+ *   nativeTextInputTextLength(h) -> int         UTF-16 code units
+ *   nativeTextInputTextChunk(h, unitOffset) -> long   4 code units packed per long
+ *   nativeTextInputAck(h)                       the pending request has been consumed
+ *   nativeTextChangedBegin(h, length)           whole-text snapshot starts
+ *   nativeTextChangedChunk(h, packed)           one chunk of it
+ *   nativeTextChangedCommit(h)                  snapshot complete
+ *   nativeTextEnded(h, reason)                  the editor closed on its own
  */
 package dev.swiftui.android;
 
@@ -25,15 +39,30 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Canvas;
 import android.os.Build;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.DisplayCutout;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowInsets;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
+import android.widget.FrameLayout;
 
-public class SwiftUIHostView extends View {
+/**
+ * A {@link FrameLayout} rather than a plain View only because of the text editor: the IME needs a
+ * real descendant to own the session, and a child's coordinates are already this View's dp space.
+ * Nothing else is added to the tree, and the drawing is unchanged ({@code onDraw} still paints the
+ * whole SwiftUI tree; the invisible child is drawn after it).
+ */
+public class SwiftUIHostView extends FrameLayout {
 
     /* Keep in sync with AndroidBridge.h / AndroidBridge.c. */
     public static final int TOUCH_DOWN = 0;
@@ -45,6 +74,24 @@ public class SwiftUIHostView extends View {
     public static final int LIFECYCLE_RESUME = 1;
     public static final int LIFECYCLE_PAUSE = 2;
     public static final int LIFECYCLE_DESTROY = 3;
+
+    /* Text input request kinds, returned by nativeTextInputCommand (see AndroidTextInput). */
+    public static final int TEXT_INPUT_NONE = 0;
+    public static final int TEXT_INPUT_BEGIN = 1;
+    public static final int TEXT_INPUT_FRAME = 2;
+    public static final int TEXT_INPUT_END = 3;
+
+    /* Components of nativeTextInputFrame. */
+    public static final int TEXT_INPUT_LEFT = 0;
+    public static final int TEXT_INPUT_TOP = 1;
+    public static final int TEXT_INPUT_WIDTH = 2;
+    public static final int TEXT_INPUT_HEIGHT = 3;
+
+    /* Why the editor closed; kept for logcat and for a future onEditingChanged-style report. */
+    public static final int TEXT_INPUT_DONE = 0;
+    public static final int TEXT_INPUT_CANCELLED = 1;
+    public static final int TEXT_INPUT_FOCUS_LOST = 2;
+    public static final int TEXT_INPUT_DESTROYED = 3;
 
     static {
         // The native runtime lives in the Swift product's shared object, which the packaging
@@ -72,6 +119,27 @@ public class SwiftUIHostView extends View {
 
     private static native void nativeDestroy(long handle);
 
+    /* Text input (IME). Implemented in Swift, see the JNI section of AndroidRuntime.swift. */
+    private static native int nativeTextInputCommand(long handle);
+
+    private static native int nativeTextInputSlot(long handle);
+
+    private static native float nativeTextInputFrame(long handle, int component);
+
+    private static native int nativeTextInputTextLength(long handle);
+
+    private static native long nativeTextInputTextChunk(long handle, int unitOffset);
+
+    private static native void nativeTextInputAck(long handle);
+
+    private static native void nativeTextChangedBegin(long handle, int length);
+
+    private static native void nativeTextChangedChunk(long handle, long packed);
+
+    private static native void nativeTextChangedCommit(long handle);
+
+    private static native void nativeTextEnded(long handle, int reason);
+
     /** Native runtime handle; 0 means "no runtime" (create failed or already destroyed). */
     private long handle;
     /** Set by destroyNativeHandle(); after this no native call is ever made again. */
@@ -89,6 +157,19 @@ public class SwiftUIHostView extends View {
     private int safeRightPx;
     /** True once onApplyWindowInsets delivered real values. */
     private boolean hasInsets;
+
+    /** The transparent platform editor while a SwiftUI text control has focus, else null. */
+    private EditText textInput;
+    /**
+     * Set once a text-input native failed to resolve. The whole feature is then skipped instead
+     * of throwing on every frame: the port keeps rendering, only typing is unavailable.
+     */
+    private boolean textInputUnavailable;
+    /** Last dp rectangle handed to nativeTextInput* , kept so a density change can re-apply it. */
+    private float textInputLeftDp;
+    private float textInputTopDp;
+    private float textInputWidthDp;
+    private float textInputHeightDp;
 
     /** Logcat tag shared with scripts/device-test.sh and the C bridge diagnostics. */
     private static final String LOG_TAG = "SwiftUIBridge";
@@ -224,6 +305,9 @@ public class SwiftUIHostView extends View {
             d = 1.0f;
         }
         density = d;
+        // The editor sits in pixels derived from dp, so a density change has to re-place it even
+        // when the dp rectangle itself did not move.
+        repositionTextInput();
         float topDp = safeTopPx / d;
         float bottomDp = safeBottomPx / d;
         float leftDp = safeLeftPx / d;
@@ -259,6 +343,9 @@ public class SwiftUIHostView extends View {
         if (h == 0 || destroyed) {
             return;
         }
+        // Requests raised while rendering the previous frame are acted on before this one paints,
+        // so an editor that appears or disappears does so in step with the drawing.
+        syncTextInput();
         float d = density;
         if (d <= 0.0f) {
             return;
@@ -314,6 +401,9 @@ public class SwiftUIHostView extends View {
         float xDp = event.getX(0) / d;
         float yDp = event.getY(0) / d;
         boolean consumed = nativeTouch(h, phase, xDp, yDp);
+        // A tap on a text control begins or ends editing inside nativeTouch; poll now so the
+        // keyboard follows the tap in the same event rather than a frame later.
+        syncTextInput();
         // Keep receiving the rest of the gesture: a DOWN that nobody "consumed" yet still
         // belongs to this view (hit testing happens inside SwiftUI).
         return consumed || phase == TOUCH_DOWN || phase == TOUCH_MOVE;
@@ -327,6 +417,8 @@ public class SwiftUIHostView extends View {
             return false;
         }
         if (forwardKey(0, keyCode)) {
+            // A forwarded key can move focus (Tab-like navigation); let the editor follow.
+            syncTextInput();
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -358,6 +450,13 @@ public class SwiftUIHostView extends View {
      *         host then does nothing. false means the activity should finish normally.
      */
     public boolean handleBackPressed() {
+        // While a text editor is open, BACK belongs to it: the first press closes the keyboard and
+        // ends the session, exactly as it does for a native EditText. Consuming it here is also
+        // what keeps the activity from finishing under an open keyboard.
+        if (textInput != null) {
+            endTextInputFromPlatform(TEXT_INPUT_CANCELLED);
+            return true;
+        }
         long h = handle;
         if (h == 0 || destroyed) {
             return false;
@@ -365,6 +464,270 @@ public class SwiftUIHostView extends View {
         boolean down = nativeKey(h, 0, KeyEvent.KEYCODE_BACK);
         boolean up = nativeKey(h, 1, KeyEvent.KEYCODE_BACK);
         return down || up;
+    }
+
+    /* ──────────────────────────────────────────────────────────────────────────
+     * Text input (the IME overlay)
+     * ──────────────────────────────────────────────────────────────────────────
+     *
+     * A ported SwiftUI text control needs what drawing cannot express: a caret, a selection and
+     * the system IME. Those come from a real platform editor, so this View hosts a transparent
+     * EditText over the drawing. SwiftUI keeps rendering the text — that is what keeps its
+     * styling, and the binding, authoritative — while the EditText owns the IME session and
+     * reports every change. The visible glyphs are therefore the SwiftUI ones; the keyboard is
+     * Android's, unchanged.
+     *
+     * Swift cannot call into Java in this process (Sources/SwiftUIAndroid deliberately holds no
+     * JNIEnv), so the request travels the other way: this View polls the runtime once per frame
+     * and after every input event and pulls the pending request out of it. Text crosses as UTF-16
+     * code units packed four to a long, because reading a String would itself need JNIEnv.
+     */
+
+    /**
+     * Pull one pending request out of the SwiftUI runtime and act on it.
+     *
+     * This poll is also how a tap that focuses a TextField reaches this View: the tap goes to
+     * nativeTouch, the SwiftUI adapter calls PortTextInput.beginEditing, and the poll at the end
+     * of onTouchEvent sees the request immediately (no frame of latency). A request raised by a
+     * state change instead is picked up by the poll at the start of the next onDraw.
+     */
+    private void syncTextInput() {
+        long h = handle;
+        if (h == 0 || destroyed || textInputUnavailable) {
+            return;
+        }
+        try {
+            switch (nativeTextInputCommand(h)) {
+                case TEXT_INPUT_BEGIN:
+                    beginTextInput(h);
+                    nativeTextInputAck(h);
+                    break;
+                case TEXT_INPUT_FRAME:
+                    applyTextInputFrame(nativeTextInputFrame(h, TEXT_INPUT_LEFT),
+                            nativeTextInputFrame(h, TEXT_INPUT_TOP),
+                            nativeTextInputFrame(h, TEXT_INPUT_WIDTH),
+                            nativeTextInputFrame(h, TEXT_INPUT_HEIGHT));
+                    nativeTextInputAck(h);
+                    break;
+                case TEXT_INPUT_END:
+                    hideTextInput();
+                    nativeTextInputAck(h);
+                    break;
+                default:
+                    break;
+            }
+        } catch (UnsatisfiedLinkError e) {
+            // A missing symbol must not take the app down: drawing keeps working without typing,
+            // and one log line says exactly what happened.
+            textInputUnavailable = true;
+            Log.w(LOG_TAG, "text input unavailable (" + e.getMessage()
+                    + "); typing is disabled, drawing is unaffected");
+        }
+    }
+
+    /** Read a begin request in full, then build the editor for it. */
+    private void beginTextInput(long h) {
+        int slot = nativeTextInputSlot(h);
+        int length = Math.max(0, nativeTextInputTextLength(h));
+        StringBuilder text = new StringBuilder(length);
+        for (int unit = 0; unit < length; unit += 4) {
+            long packed = nativeTextInputTextChunk(h, unit);
+            for (int i = 0; i < 4; i++) {
+                text.append((char) ((packed >>> (16 * i)) & 0xFFFFL));
+            }
+        }
+        // The last chunk is zero-padded to a multiple of four; the length is the truth.
+        text.setLength(length);
+        showTextInput(slot, text.toString(), nativeTextInputFrame(h, TEXT_INPUT_LEFT),
+                nativeTextInputFrame(h, TEXT_INPUT_TOP),
+                nativeTextInputFrame(h, TEXT_INPUT_WIDTH),
+                nativeTextInputFrame(h, TEXT_INPUT_HEIGHT));
+    }
+
+    /** Install the platform editor over the requested dp rectangle and open the keyboard. */
+    private void showTextInput(int slot, String text, float leftDp, float topDp, float widthDp,
+            float heightDp) {
+        // Focus moved (or the same control asked again after its editor was torn down): start
+        // from a clean editor, because the old one still owns the IME until it is removed.
+        hideTextInput();
+
+        final EditText editor = new EditText(getContext());
+        // SwiftUI paints the text; the editor must be neither seen nor heard from.
+        editor.setAlpha(0.0f);
+        editor.setCursorVisible(false);
+        editor.setBackground(null);
+        editor.setPadding(0, 0, 0, 0);
+        editor.setSingleLine(true);
+        editor.setInputType(InputType.TYPE_CLASS_TEXT);
+        editor.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        // Explicit rather than assumed: the host is in touch mode, and only a child that is
+        // focusable *in touch mode* can take focus away from it and receive the IME.
+        editor.setFocusable(true);
+        editor.setFocusableInTouchMode(true);
+        // The text lives in SwiftUI state and in this editor, never in the view hierarchy: a
+        // restored instance state would silently overwrite the binding after a rotation.
+        editor.setSaveEnabled(false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            editor.setImportantForAutofill(View.IMPORTANT_FOR_AUTOFILL_NO);
+        }
+        // A plausible text size keeps the editor's internal layout (and the IME's idea of where
+        // the field is) sane; none of it is ever painted at alpha 0.
+        float heightPx = Math.max(1.0f, heightDp * (density > 0.0f ? density : 1.0f));
+        editor.setTextSize(TypedValue.COMPLEX_UNIT_PX, Math.max(8.0f, heightPx * 0.55f));
+        editor.setText(text);
+        editor.setSelection(editor.getText().length());
+        // Attached after seeding, so the initial text is not reported back as a user edit.
+        editor.addTextChangedListener(new TextChangeRelay(this, editor));
+        editor.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE || actionId == EditorInfo.IME_ACTION_GO
+                    || actionId == EditorInfo.IME_ACTION_SEND
+                    || actionId == EditorInfo.IME_ACTION_NEXT) {
+                endTextInputFromPlatform(TEXT_INPUT_DONE);
+                return true;
+            }
+            return false;
+        });
+        editor.setOnFocusChangeListener((v, hasFocus) -> {
+            if (!hasFocus && textInput == v) {
+                // Focus left without the SwiftUI side asking for it: the session has to end, or
+                // the caret would live on with no editor behind it.
+                endTextInputFromPlatform(TEXT_INPUT_FOCUS_LOST);
+            }
+        });
+        textInput = editor;
+        textInputLeftDp = leftDp;
+        textInputTopDp = topDp;
+        textInputWidthDp = widthDp;
+        textInputHeightDp = heightDp;
+        addView(editor, textInputLayoutParams(leftDp, topDp, widthDp, heightDp));
+        editor.requestFocus();
+        editor.post(() -> {
+            if (textInput == editor) {
+                InputMethodManager imm = inputMethodManager();
+                if (imm != null) {
+                    imm.showSoftInput(editor, InputMethodManager.SHOW_IMPLICIT);
+                }
+            }
+        });
+        Log.i(LOG_TAG, "text input begin slot=" + slot + " frame(dp)=[" + leftDp + "," + topDp
+                + "," + widthDp + "," + heightDp + "] length=" + text.length());
+    }
+
+    /**
+     * dp -> px. The rest of this file converts the other way (divides pixels by {@code density}),
+     * so the factor is the same one the Canvas is scaled with.
+     */
+    private FrameLayout.LayoutParams textInputLayoutParams(float leftDp, float topDp,
+            float widthDp, float heightDp) {
+        float d = density > 0.0f ? density : 1.0f;
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(
+                Math.max(1, Math.round(widthDp * d)), Math.max(1, Math.round(heightDp * d)));
+        // LEFT, not START: the rectangle is a physical coordinate, the same one the canvas uses.
+        lp.gravity = Gravity.TOP | Gravity.LEFT;
+        lp.leftMargin = Math.max(0, Math.round(leftDp * d));
+        lp.topMargin = Math.max(0, Math.round(topDp * d));
+        return lp;
+    }
+
+    /** The focused control moved, or the density changed: follow it. */
+    private void applyTextInputFrame(float leftDp, float topDp, float widthDp, float heightDp) {
+        textInputLeftDp = leftDp;
+        textInputTopDp = topDp;
+        textInputWidthDp = widthDp;
+        textInputHeightDp = heightDp;
+        EditText editor = textInput;
+        if (editor != null) {
+            editor.setLayoutParams(textInputLayoutParams(leftDp, topDp, widthDp, heightDp));
+        }
+    }
+
+    /** Re-apply the last dp rectangle after a density or size change (the dp values are stable). */
+    private void repositionTextInput() {
+        if (textInput != null) {
+            applyTextInputFrame(textInputLeftDp, textInputTopDp, textInputWidthDp,
+                    textInputHeightDp);
+        }
+    }
+
+    /** Remove the platform editor, if any. Reports nothing to SwiftUI (see the two callers). */
+    private void hideTextInput() {
+        EditText editor = textInput;
+        if (editor == null) {
+            return;
+        }
+        // Detach the listeners first: removeView() takes focus away, and the focus listener would
+        // otherwise report a second end for a session that is already over.
+        textInput = null;
+        editor.setOnFocusChangeListener(null);
+        editor.setOnEditorActionListener(null);
+        InputMethodManager imm = inputMethodManager();
+        if (imm != null) {
+            imm.hideSoftInputFromWindow(editor.getWindowToken(), 0);
+        }
+        removeView(editor);
+        // Focus back on this View, so hardware keys reach the SwiftUI tree again.
+        requestFocus();
+        Log.i(LOG_TAG, "text input end");
+    }
+
+    /**
+     * The editor ended the session on its own (IME action, BACK, focus loss): tear it down and
+     * tell SwiftUI. The other direction — SwiftUI asking for the end — is TEXT_INPUT_END in
+     * syncTextInput(), which does not call back in.
+     */
+    private void endTextInputFromPlatform(int reason) {
+        if (textInput == null) {
+            return;
+        }
+        hideTextInput();
+        long h = handle;
+        if (h == 0 || destroyed || textInputUnavailable) {
+            return;
+        }
+        try {
+            nativeTextEnded(h, reason);
+        } catch (UnsatisfiedLinkError e) {
+            textInputUnavailable = true;
+            Log.w(LOG_TAG, "text input unavailable (" + e.getMessage()
+                    + "); typing is disabled, drawing is unaffected");
+        }
+    }
+
+    /**
+     * Push the editor's whole text to SwiftUI as packed UTF-16 code units.
+     *
+     * Whole snapshots rather than deltas: the editor already holds the new text, and a delta would
+     * have to be diffed on one side and re-applied on the other to reach the same state. A field
+     * is short and this runs once per keystroke; the encoding costs four bytes per two characters.
+     */
+    private void sendTextInput(String text) {
+        long h = handle;
+        if (h == 0 || destroyed || textInputUnavailable) {
+            return;
+        }
+        try {
+            int length = text.length();
+            nativeTextChangedBegin(h, length);
+            for (int unit = 0; unit < length; unit += 4) {
+                long packed = 0L;
+                for (int i = 0; i < 4 && unit + i < length; i++) {
+                    packed |= ((long) text.charAt(unit + i)) << (16 * i);
+                }
+                nativeTextChangedChunk(h, packed);
+            }
+            nativeTextChangedCommit(h);
+        } catch (UnsatisfiedLinkError e) {
+            textInputUnavailable = true;
+            Log.w(LOG_TAG, "text input unavailable (" + e.getMessage()
+                    + "); typing is disabled, drawing is unaffected");
+        }
+    }
+
+    private InputMethodManager inputMethodManager() {
+        Context context = getContext();
+        return context == null
+                ? null
+                : (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
     }
 
     /* ──────────────────────────────────────────────────────────────────────────
@@ -429,6 +792,9 @@ public class SwiftUIHostView extends View {
         }
         destroyed = true;
         lastLifecycleEvent = LIFECYCLE_DESTROY;
+        // The window is going away with this View: drop the editor before the runtime dies, so no
+        // native call is ever made on behalf of a dead handle.
+        hideTextInput();
         long h = handle;
         handle = 0;
         if (h != 0) {
@@ -439,6 +805,40 @@ public class SwiftUIHostView extends View {
     /** For diagnostics only; never call native with a stale value. */
     public long nativeHandle() {
         return handle;
+    }
+
+    /**
+     * Reports edits back to Swift.
+     *
+     * A static nested class that holds the host explicitly, not an anonymous inner class: javac
+     * gives an inner class a synthetic `this$0` field, and the d8 in this project's build-tools
+     * (8.2.2) crashes with an internal NullPointerException on any class that captures its
+     * enclosing instance. Static nesting sidesteps that and costs nothing here.
+     */
+    private static final class TextChangeRelay implements TextWatcher {
+        private final SwiftUIHostView host;
+        private final EditText editor;
+
+        TextChangeRelay(SwiftUIHostView host, EditText editor) {
+            this.host = host;
+            this.editor = editor;
+        }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            if (host.textInput != editor) {
+                return; // a replacement editor, or one that is being torn down
+            }
+            host.sendTextInput(s.toString());
+        }
     }
 
     /**

@@ -66,3 +66,85 @@ SwiftUICore.ObservedObject.projectedValue => Wrapper(root: wrappedValue)
 SwiftUICore.StateObject.wrappedValue => switch storage { case let .object(observed): return observed.wrappedValue; case let .initially(thunk): return PortObjectStore.object(at: _portSlot, create: thunk) }
 SwiftUICore.StateObject.projectedValue => ObservedObject(wrappedValue: wrappedValue).projectedValue
 SwiftUICore.PinnedScrollableViews.init(rawValue:) => self.rawValue = rawValue
+
+# ── Controls (the gallery demo) ──────────────────────────────────────────────
+# Each control funnels into one designated initialiser; the others are Apple's convenience
+# overloads and simply forward, so the storage assignment exists exactly once.
+#
+# NOTE: a symbol that occurs several times in the interface is listed HIGHEST occurrence first.
+# `apply_body_overrides` counts occurrences of the *remaining* stub text, so a `#2` row must run
+# before the `#1` row for the same symbol; otherwise the second row silently matches nothing and
+# the String/LocalizedStringResource overload it was meant for keeps trapping at runtime.
+
+SwiftUICore.Slider.init(value:in:onEditingChanged:minimumValueLabel:maximumValueLabel:label:) => self._portValue = Double(value.wrappedValue); self._portSetValue = { newValue in value.wrappedValue = V(newValue) }; self._portRange = Double(bounds.lowerBound)...Double(bounds.upperBound); self._portLabel = label(); self._portMinLabel = minimumValueLabel; self._portMaxLabel = maximumValueLabel
+SwiftUICore.Slider.init(value:in:step:onEditingChanged:minimumValueLabel:maximumValueLabel:label:) => self._portValue = Double(value.wrappedValue); self._portSetValue = { newValue in value.wrappedValue = V(newValue) }; self._portRange = Double(bounds.lowerBound)...Double(bounds.upperBound); self._portStep = Double(step); self._portLabel = label(); self._portMinLabel = minimumValueLabel; self._portMaxLabel = maximumValueLabel
+SwiftUICore.Slider.init(value:in:onEditingChanged:) => self.init(value: value, in: bounds, onEditingChanged: onEditingChanged, minimumValueLabel: EmptyView(), maximumValueLabel: EmptyView(), label: { EmptyView() })
+SwiftUICore.Slider.init(value:in:step:onEditingChanged:) => self.init(value: value, in: bounds, step: step, onEditingChanged: onEditingChanged, minimumValueLabel: EmptyView(), maximumValueLabel: EmptyView(), label: { EmptyView() })
+SwiftUICore.Slider.init(value:in:onEditingChanged:label:) => self.init(value: value, in: bounds, onEditingChanged: onEditingChanged, minimumValueLabel: EmptyView(), maximumValueLabel: EmptyView(), label: label)
+SwiftUICore.Slider.init(value:in:step:onEditingChanged:label:) => self.init(value: value, in: bounds, step: step, onEditingChanged: onEditingChanged, minimumValueLabel: EmptyView(), maximumValueLabel: EmptyView(), label: label)
+
+SwiftUICore.Stepper.init(onIncrement:onDecrement:onEditingChanged:label:) => self._portIncrement = onIncrement; self._portDecrement = onDecrement; self._portLabel = label()
+SwiftUICore.Stepper.init(value:step:onEditingChanged:label:) => self.init(onIncrement: { value.wrappedValue = value.wrappedValue.advanced(by: step) }, onDecrement: { value.wrappedValue = value.wrappedValue.advanced(by: -step) }, onEditingChanged: onEditingChanged, label: label)
+SwiftUICore.Stepper.init(value:in:step:onEditingChanged:label:) => self.init(onIncrement: { value.wrappedValue = min(value.wrappedValue.advanced(by: step), bounds.upperBound) }, onDecrement: { value.wrappedValue = max(value.wrappedValue.advanced(by: -step), bounds.lowerBound) }, onEditingChanged: onEditingChanged, label: label)
+SwiftUICore.Stepper.init(_:onIncrement:onDecrement:onEditingChanged:)#2 => self.init(onIncrement: onIncrement, onDecrement: onDecrement, onEditingChanged: onEditingChanged, label: { Text(verbatim: String(title)) })
+SwiftUICore.Stepper.init(_:onIncrement:onDecrement:onEditingChanged:)#1 => self.init(onIncrement: onIncrement, onDecrement: onDecrement, onEditingChanged: onEditingChanged, label: { Text(titleKey) })
+SwiftUICore.Stepper.init(_:value:step:onEditingChanged:)#2 => self.init(value: value, step: step, onEditingChanged: onEditingChanged, label: { Text(verbatim: String(title)) })
+SwiftUICore.Stepper.init(_:value:step:onEditingChanged:)#1 => self.init(value: value, step: step, onEditingChanged: onEditingChanged, label: { Text(titleKey) })
+SwiftUICore.Stepper.init(_:value:in:step:onEditingChanged:)#2 => self.init(value: value, in: bounds, step: step, onEditingChanged: onEditingChanged, label: { Text(verbatim: String(title)) })
+SwiftUICore.Stepper.init(_:value:in:step:onEditingChanged:)#1 => self.init(value: value, in: bounds, step: step, onEditingChanged: onEditingChanged, label: { Text(titleKey) })
+SwiftUICore.Stepper.init(value:step:format:label:onEditingChanged:) => self.init(value: value, step: step, onEditingChanged: onEditingChanged, label: label)
+SwiftUICore.Stepper.init(value:in:step:format:label:onEditingChanged:) => self.init(value: value, in: bounds, step: step, onEditingChanged: onEditingChanged, label: label)
+SwiftUICore.Stepper.init(_:value:step:format:onEditingChanged:)#2 => self.init(title, value: value, step: step, onEditingChanged: onEditingChanged)
+SwiftUICore.Stepper.init(_:value:step:format:onEditingChanged:)#1 => self.init(titleKey, value: value, step: step, onEditingChanged: onEditingChanged)
+SwiftUICore.Stepper.init(_:value:in:step:format:onEditingChanged:)#2 => self.init(title, value: value, in: bounds, step: step, onEditingChanged: onEditingChanged)
+SwiftUICore.Stepper.init(_:value:in:step:format:onEditingChanged:)#1 => self.init(titleKey, value: value, in: bounds, step: step, onEditingChanged: onEditingChanged)
+
+SwiftUICore.Picker.init(selection:label:content:) => self._portSelection = selection; self._portLabel = label; self._portContent = content()
+SwiftUICore.Picker.init(_:selection:content:)#2 => self.init(selection: selection, label: Text(verbatim: String(title)), content: content)
+SwiftUICore.Picker.init(_:selection:content:)#1 => self.init(selection: selection, label: Text(titleKey), content: content)
+SwiftUICore.Picker.init(selection:content:label:currentValueLabel:) => self.init(selection: selection, label: label(), content: content)
+SwiftUICore.Picker.init(_:selection:content:currentValueLabel:)#2 => self.init(selection: selection, label: Text(verbatim: String(title)), content: content)
+SwiftUICore.Picker.init(_:selection:content:currentValueLabel:)#1 => self.init(selection: selection, label: Text(titleKey), content: content)
+SwiftUICore.Picker.init(_:image:selection:content:)#2 => self.init(selection: selection, label: Label(title, image: image), content: content)
+SwiftUICore.Picker.init(_:image:selection:content:)#1 => self.init(selection: selection, label: Label(titleKey, image: image), content: content)
+SwiftUICore.Picker.init(_:image:selection:content:currentValueLabel:)#2 => self.init(selection: selection, label: Label(title, image: image), content: content)
+SwiftUICore.Picker.init(_:image:selection:content:currentValueLabel:)#1 => self.init(selection: selection, label: Label(titleKey, image: image), content: content)
+
+SwiftUICore.TextField.init(text:prompt:label:) => self._portText = text; self._portPrompt = prompt; self._portLabel = label()
+SwiftUICore.TextField.init(_:text:prompt:)#2 => self.init(text: text, prompt: prompt, label: { Text(verbatim: String(title)) })
+SwiftUICore.TextField.init(_:text:prompt:)#1 => self.init(text: text, prompt: prompt, label: { Text(titleKey) })
+SwiftUICore.TextField.init(_:text:onEditingChanged:onCommit:)#2 => self.init(text: text, prompt: nil, label: { Text(verbatim: String(title)) })
+SwiftUICore.TextField.init(_:text:onEditingChanged:onCommit:)#1 => self.init(text: text, prompt: nil, label: { Text(titleKey) })
+SwiftUICore.TextField.init(text:prompt:axis:label:) => self.init(text: text, prompt: prompt, label: label)
+SwiftUICore.TextField.init(_:text:axis:)#2 => self.init(text: text, prompt: nil, label: { Text(verbatim: String(title)) })
+SwiftUICore.TextField.init(_:text:axis:)#1 => self.init(text: text, prompt: nil, label: { Text(titleKey) })
+SwiftUICore.TextField.init(_:text:prompt:axis:)#2 => self.init(text: text, prompt: prompt, label: { Text(verbatim: String(title)) })
+SwiftUICore.TextField.init(_:text:prompt:axis:)#1 => self.init(text: text, prompt: prompt, label: { Text(titleKey) })
+SwiftUICore.TextField.init(text:selection:prompt:axis:label:) => self.init(text: text, prompt: prompt, label: label)
+SwiftUICore.TextField.init(_:text:selection:prompt:axis:)#2 => self.init(text: text, prompt: prompt, label: { Text(verbatim: String(title)) })
+SwiftUICore.TextField.init(_:text:selection:prompt:axis:)#1 => self.init(text: text, prompt: prompt, label: { Text(titleKey) })
+SwiftUICore.TextField.init(_:text:) => self.init(text: text, prompt: nil, label: { Text(titleResource) })
+
+SwiftUICore.ProgressView.init(value:total:label:currentValueLabel:) => self._portValue = value.map { Double($0) }; self._portTotal = Double(total); self._portLabel = label(); self._portCurrentValueLabel = currentValueLabel()
+SwiftUICore.ProgressView.init(value:total:label:) => self.init(value: value, total: total, label: label, currentValueLabel: { EmptyView() })
+SwiftUICore.ProgressView.init(value:total:) => self.init(value: value, total: total, label: { EmptyView() }, currentValueLabel: { EmptyView() })
+SwiftUICore.ProgressView.init(_:value:total:)#2 => self.init(value: value, total: total, label: { Text(verbatim: String(title)) }, currentValueLabel: { EmptyView() })
+SwiftUICore.ProgressView.init(_:value:total:)#1 => self.init(value: value, total: total, label: { Text(titleKey) }, currentValueLabel: { EmptyView() })
+SwiftUICore.ProgressView.init(label:) => self.init(value: nil as Double?, total: 1.0, label: label, currentValueLabel: { EmptyView() })
+SwiftUICore.ProgressView.init(_:)#2 => self.init(value: nil as Double?, total: 1.0, label: { Text(verbatim: String(title)) }, currentValueLabel: { EmptyView() })
+SwiftUICore.ProgressView.init(_:)#1 => self.init(value: nil as Double?, total: 1.0, label: { Text(titleKey) }, currentValueLabel: { EmptyView() })
+
+SwiftUICore.Label.init(title:icon:) => self._portTitle = title(); self._portIcon = icon()
+SwiftUICore.Label.init(_:systemImage:)#2 => self.init(title: { Text(verbatim: String(title)) }, icon: { Image(systemName: name) })
+SwiftUICore.Label.init(_:systemImage:)#1 => self.init(title: { Text(titleKey) }, icon: { Image(systemName: name) })
+SwiftUICore.Label.init(_:image:)#4 => self.init(title: { Text(verbatim: String(title)) }, icon: { Image(systemName: resource.name) })
+SwiftUICore.Label.init(_:image:)#3 => self.init(title: { Text(titleKey) }, icon: { Image(systemName: resource.name) })
+SwiftUICore.Label.init(_:image:)#2 => self.init(title: { Text(verbatim: String(title)) }, icon: { Image(systemName: name) })
+SwiftUICore.Label.init(_:image:)#1 => self.init(title: { Text(titleKey) }, icon: { Image(systemName: name) })
+
+SwiftUICore.Link.init(destination:label:) => self._portDestination = destination; self._portLabel = label()
+SwiftUICore.Link.init(_:destination:)#2 => self.init(destination: destination) { Text(verbatim: String(title)) }
+SwiftUICore.Link.init(_:destination:)#1 => self.init(destination: destination) { Text(titleKey) }
+
+# Divider is stateless: Apple's `init()` is a no-op that the declaration still needs.
+SwiftUICore.Divider.init() => do {}

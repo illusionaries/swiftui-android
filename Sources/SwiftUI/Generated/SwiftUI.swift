@@ -195,7 +195,9 @@ extension SwiftUICore._TestApp {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_Concurrency.MainActor @preconcurrency public struct Link<Label> : SwiftUICore.View, ~Swift.Sendable where Label : SwiftUICore.View {
-  @_Concurrency.MainActor @preconcurrency public init(destination: Foundation.URL, @SwiftUICore.ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUICore.Link.init(destination:label:)") }
+  internal var _portDestination: Foundation.URL?
+  internal var _portLabel: Label?
+  @_Concurrency.MainActor @preconcurrency public init(destination: Foundation.URL, @SwiftUICore.ContentBuilder label: () -> Label) { self._portDestination = destination; self._portLabel = label() }
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUICore.View {
     get { _suiUnimplemented("SwiftUICore.Link.body") }
   }
@@ -213,12 +215,12 @@ extension SwiftUICore._TestApp {
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUICore.Link where Label == SwiftUICore.Text {
-  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, destination: Foundation.URL) { _suiUnimplemented("SwiftUICore.Link.init(_:destination:)") }
+  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, destination: Foundation.URL) { self.init(destination: destination) { Text(titleKey) } }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, destination: Foundation.URL) {
         self.init(destination: destination) { Text(titleResource) }
     }
-  @_disfavoredOverload nonisolated public init<S>(_ title: S, destination: Foundation.URL) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.Link.init(_:destination:)") }
+  @_disfavoredOverload nonisolated public init<S>(_ title: S, destination: Foundation.URL) where S : Swift.StringProtocol { self.init(destination: destination) { Text(verbatim: String(title)) } }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -4851,6 +4853,13 @@ extension SwiftUICore.Gesture {
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, *)
 @available(tvOS, unavailable)
 nonisolated public struct Slider<Label, ValueLabel> : SwiftUICore.View, ~Swift.Sendable where Label : SwiftUICore.View, ValueLabel : SwiftUICore.View {
+  internal var _portValue: Double = 0
+  internal var _portSetValue: ((Double) -> Void)?
+  internal var _portRange: ClosedRange<Double> = 0...1
+  internal var _portStep: Double?
+  internal var _portLabel: Label?
+  internal var _portMinLabel: ValueLabel?
+  internal var _portMaxLabel: ValueLabel?
   nonisolated public var body: some SwiftUICore.View {
     get { _suiUnimplemented("SwiftUICore.Slider.body") }
   }
@@ -4911,8 +4920,8 @@ extension SwiftUICore.Slider where ValueLabel == SwiftUICore.EmptyView {
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, *)
 @available(tvOS, unavailable)
 extension SwiftUICore.Slider where Label == SwiftUICore.EmptyView, ValueLabel == SwiftUICore.EmptyView {
-  nonisolated public init<V>(value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V> = 0...1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUICore.Slider.init(value:in:onEditingChanged:)") }
-  nonisolated public init<V>(value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUICore.Slider.init(value:in:step:onEditingChanged:)") }
+  nonisolated public init<V>(value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V> = 0...1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { self.init(value: value, in: bounds, onEditingChanged: onEditingChanged, minimumValueLabel: EmptyView(), maximumValueLabel: EmptyView(), label: { EmptyView() }) }
+  nonisolated public init<V>(value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { self.init(value: value, in: bounds, step: step, onEditingChanged: onEditingChanged, minimumValueLabel: EmptyView(), maximumValueLabel: EmptyView(), label: { EmptyView() }) }
 }
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, *)
 @available(tvOS, unavailable)
@@ -4922,13 +4931,13 @@ extension SwiftUICore.Slider {
   @available(watchOS, deprecated: 100000.0, renamed: "Slider(value:in:label:minimumValueLabel:maximumValueLabel:onEditingChanged:)")
   @available(tvOS, deprecated: 100000.0, renamed: "Slider(value:in:label:minimumValueLabel:maximumValueLabel:onEditingChanged:)")
   @available(visionOS, deprecated: 100000.0, renamed: "Slider(value:in:label:minimumValueLabel:maximumValueLabel:onEditingChanged:)")
-  nonisolated public init<V>(value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V> = 0...1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }, minimumValueLabel: ValueLabel, maximumValueLabel: ValueLabel, @SwiftUICore.ContentBuilder label: () -> Label) where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUICore.Slider.init(value:in:onEditingChanged:minimumValueLabel:maximumValueLabel:label:)") }
+  nonisolated public init<V>(value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V> = 0...1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }, minimumValueLabel: ValueLabel, maximumValueLabel: ValueLabel, @SwiftUICore.ContentBuilder label: () -> Label) where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { self._portValue = Double(value.wrappedValue); self._portSetValue = { newValue in value.wrappedValue = V(newValue) }; self._portRange = Double(bounds.lowerBound)...Double(bounds.upperBound); self._portLabel = label(); self._portMinLabel = minimumValueLabel; self._portMaxLabel = maximumValueLabel }
   @available(iOS, deprecated: 100000.0, renamed: "Slider(value:in:step:label:minimumValueLabel:maximumValueLabel:onEditingChanged:)")
   @available(macOS, deprecated: 100000.0, renamed: "Slider(value:in:step:label:minimumValueLabel:maximumValueLabel:onEditingChanged:)")
   @available(watchOS, deprecated: 100000.0, renamed: "Slider(value:in:step:label:minimumValueLabel:maximumValueLabel:onEditingChanged:)")
   @available(tvOS, deprecated: 100000.0, renamed: "Slider(value:in:step:label:minimumValueLabel:maximumValueLabel:onEditingChanged:)")
   @available(visionOS, deprecated: 100000.0, renamed: "Slider(value:in:step:label:minimumValueLabel:maximumValueLabel:onEditingChanged:)")
-  nonisolated public init<V>(value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }, minimumValueLabel: ValueLabel, maximumValueLabel: ValueLabel, @SwiftUICore.ContentBuilder label: () -> Label) where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUICore.Slider.init(value:in:step:onEditingChanged:minimumValueLabel:maximumValueLabel:label:)") }
+  nonisolated public init<V>(value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }, minimumValueLabel: ValueLabel, maximumValueLabel: ValueLabel, @SwiftUICore.ContentBuilder label: () -> Label) where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { self._portValue = Double(value.wrappedValue); self._portSetValue = { newValue in value.wrappedValue = V(newValue) }; self._portRange = Double(bounds.lowerBound)...Double(bounds.upperBound); self._portStep = Double(step); self._portLabel = label(); self._portMinLabel = minimumValueLabel; self._portMaxLabel = maximumValueLabel }
 }
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, *)
 @available(tvOS, unavailable)
@@ -4938,13 +4947,13 @@ extension SwiftUICore.Slider where ValueLabel == SwiftUICore.EmptyView {
   @available(watchOS, deprecated: 100000.0, renamed: "Slider(value:in:label:onEditingChanged:)")
   @available(tvOS, deprecated: 100000.0, renamed: "Slider(value:in:label:onEditingChanged:)")
   @available(visionOS, deprecated: 100000.0, renamed: "Slider(value:in:label:onEditingChanged:)")
-  @_disfavoredOverload nonisolated public init<V>(value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V> = 0...1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }, @SwiftUICore.ContentBuilder label: () -> Label) where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUICore.Slider.init(value:in:onEditingChanged:label:)") }
+  @_disfavoredOverload nonisolated public init<V>(value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V> = 0...1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }, @SwiftUICore.ContentBuilder label: () -> Label) where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { self.init(value: value, in: bounds, onEditingChanged: onEditingChanged, minimumValueLabel: EmptyView(), maximumValueLabel: EmptyView(), label: label) }
   @available(iOS, deprecated: 100000.0, renamed: "Slider(value:in:step:label:onEditingChanged:)")
   @available(macOS, deprecated: 100000.0, renamed: "Slider(value:in:step:label:onEditingChanged:)")
   @available(watchOS, deprecated: 100000.0, renamed: "Slider(value:in:step:label:onEditingChanged:)")
   @available(tvOS, deprecated: 100000.0, renamed: "Slider(value:in:step:label:onEditingChanged:)")
   @available(visionOS, deprecated: 100000.0, renamed: "Slider(value:in:step:label:onEditingChanged:)")
-  @_disfavoredOverload nonisolated public init<V>(value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }, @SwiftUICore.ContentBuilder label: () -> Label) where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUICore.Slider.init(value:in:step:onEditingChanged:label:)") }
+  @_disfavoredOverload nonisolated public init<V>(value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }, @SwiftUICore.ContentBuilder label: () -> Label) where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { self.init(value: value, in: bounds, step: step, onEditingChanged: onEditingChanged, minimumValueLabel: EmptyView(), maximumValueLabel: EmptyView(), label: label) }
 }
 extension SwiftUICore.View {
   @available(macOS 13.0, *)
@@ -5034,6 +5043,10 @@ public struct DefaultWindowToolbarStyle : SwiftUICore.WindowToolbarStyle {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 nonisolated public struct ProgressView<Label, CurrentValueLabel> : SwiftUICore.View, ~Swift.Sendable where Label : SwiftUICore.View, CurrentValueLabel : SwiftUICore.View {
+  internal var _portValue: Double?
+  internal var _portTotal: Double = 1
+  internal var _portLabel: Label?
+  internal var _portCurrentValueLabel: CurrentValueLabel?
   nonisolated public var body: some SwiftUICore.View {
     get { _suiUnimplemented("SwiftUICore.ProgressView.body") }
   }
@@ -5050,20 +5063,20 @@ nonisolated public struct ProgressView<Label, CurrentValueLabel> : SwiftUICore.V
 extension SwiftUICore.ProgressView where CurrentValueLabel == SwiftUICore.EmptyView {
     // port: duplicate parameterless initializer; the port declares one public `init()` in the type (R11)
 
-  nonisolated public init(@SwiftUICore.ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUICore.ProgressView.init(label:)") }
-  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey) where Label == SwiftUICore.Text { _suiUnimplemented("SwiftUICore.ProgressView.init(_:)") }
+  nonisolated public init(@SwiftUICore.ContentBuilder label: () -> Label) { self.init(value: nil as Double?, total: 1.0, label: label, currentValueLabel: { EmptyView() }) }
+  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey) where Label == SwiftUICore.Text { self.init(value: nil as Double?, total: 1.0, label: { Text(titleKey) }, currentValueLabel: { EmptyView() }) }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource) where Label == SwiftUICore.Text {
         self.init(label: { Text(titleResource) })
     }
-  @_disfavoredOverload nonisolated public init<S>(_ title: S) where Label == SwiftUICore.Text, S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.ProgressView.init(_:)") }
+  @_disfavoredOverload nonisolated public init<S>(_ title: S) where Label == SwiftUICore.Text, S : Swift.StringProtocol { self.init(value: nil as Double?, total: 1.0, label: { Text(verbatim: String(title)) }, currentValueLabel: { EmptyView() }) }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUICore.ProgressView {
-  nonisolated public init<V>(value: V?, total: V = 1.0) where Label == SwiftUICore.EmptyView, CurrentValueLabel == SwiftUICore.EmptyView, V : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUICore.ProgressView.init(value:total:)") }
-  nonisolated public init<V>(value: V?, total: V = 1.0, @SwiftUICore.ContentBuilder label: () -> Label) where CurrentValueLabel == SwiftUICore.EmptyView, V : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUICore.ProgressView.init(value:total:label:)") }
-  nonisolated public init<V>(value: V?, total: V = 1.0, @SwiftUICore.ContentBuilder label: () -> Label, @SwiftUICore.ContentBuilder currentValueLabel: () -> CurrentValueLabel) where V : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUICore.ProgressView.init(value:total:label:currentValueLabel:)") }
-  nonisolated public init<V>(_ titleKey: SwiftUICore.LocalizedStringKey, value: V?, total: V = 1.0) where Label == SwiftUICore.Text, CurrentValueLabel == SwiftUICore.EmptyView, V : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUICore.ProgressView.init(_:value:total:)") }
+  nonisolated public init<V>(value: V?, total: V = 1.0) where Label == SwiftUICore.EmptyView, CurrentValueLabel == SwiftUICore.EmptyView, V : Swift.BinaryFloatingPoint { self.init(value: value, total: total, label: { EmptyView() }, currentValueLabel: { EmptyView() }) }
+  nonisolated public init<V>(value: V?, total: V = 1.0, @SwiftUICore.ContentBuilder label: () -> Label) where CurrentValueLabel == SwiftUICore.EmptyView, V : Swift.BinaryFloatingPoint { self.init(value: value, total: total, label: label, currentValueLabel: { EmptyView() }) }
+  nonisolated public init<V>(value: V?, total: V = 1.0, @SwiftUICore.ContentBuilder label: () -> Label, @SwiftUICore.ContentBuilder currentValueLabel: () -> CurrentValueLabel) where V : Swift.BinaryFloatingPoint { self._portValue = value.map { Double($0) }; self._portTotal = Double(total); self._portLabel = label(); self._portCurrentValueLabel = currentValueLabel() }
+  nonisolated public init<V>(_ titleKey: SwiftUICore.LocalizedStringKey, value: V?, total: V = 1.0) where Label == SwiftUICore.Text, CurrentValueLabel == SwiftUICore.EmptyView, V : Swift.BinaryFloatingPoint { self.init(value: value, total: total, label: { Text(titleKey) }, currentValueLabel: { EmptyView() }) }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public init<V>(_ titleResource: FoundationShims.LocalizedStringResource, value: V?, total: V = 1.0) where Label == SwiftUICore.Text, CurrentValueLabel == SwiftUICore.EmptyView, V : Swift.BinaryFloatingPoint {
         self.init(
@@ -5072,7 +5085,7 @@ extension SwiftUICore.ProgressView {
             label: { Text(titleResource) }
         )
     }
-  @_disfavoredOverload nonisolated public init<S, V>(_ title: S, value: V?, total: V = 1.0) where Label == SwiftUICore.Text, CurrentValueLabel == SwiftUICore.EmptyView, S : Swift.StringProtocol, V : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUICore.ProgressView.init(_:value:total:)") }
+  @_disfavoredOverload nonisolated public init<S, V>(_ title: S, value: V?, total: V = 1.0) where Label == SwiftUICore.Text, CurrentValueLabel == SwiftUICore.EmptyView, S : Swift.StringProtocol, V : Swift.BinaryFloatingPoint { self.init(value: value, total: total, label: { Text(verbatim: String(title)) }, currentValueLabel: { EmptyView() }) }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUICore.ProgressView {
@@ -6598,6 +6611,9 @@ extension SwiftUICore.RotateGesture {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 nonisolated public struct TextField<Label> : SwiftUICore.View, ~Swift.Sendable where Label : SwiftUICore.View {
+  internal var _portText: Binding<String>?
+  internal var _portPrompt: Text?
+  internal var _portLabel: Label?
   nonisolated public var body: some SwiftUICore.View {
     get { _suiUnimplemented("SwiftUICore.TextField.body") }
   }
@@ -6614,7 +6630,7 @@ nonisolated public struct TextField<Label> : SwiftUICore.View where Label : Swif
 #endif
 extension SwiftUICore.TextField where Label == SwiftUICore.Text {
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, text: SwiftUICore.Binding<Swift.String>, axis: SwiftUICore.Axis) { _suiUnimplemented("SwiftUICore.TextField.init(_:text:axis:)") }
+  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, text: SwiftUICore.Binding<Swift.String>, axis: SwiftUICore.Axis) { self.init(text: text, prompt: nil, label: { Text(titleKey) }) }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, text: SwiftUICore.Binding<Swift.String>, axis: SwiftUICore.Axis) {
         self.init(
@@ -6625,7 +6641,7 @@ extension SwiftUICore.TextField where Label == SwiftUICore.Text {
         )
     }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, text: SwiftUICore.Binding<Swift.String>, prompt: SwiftUICore.Text?, axis: SwiftUICore.Axis) { _suiUnimplemented("SwiftUICore.TextField.init(_:text:prompt:axis:)") }
+  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, text: SwiftUICore.Binding<Swift.String>, prompt: SwiftUICore.Text?, axis: SwiftUICore.Axis) { self.init(text: text, prompt: prompt, label: { Text(titleKey) }) }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, text: SwiftUICore.Binding<Swift.String>, prompt: SwiftUICore.Text?, axis: SwiftUICore.Axis) {
         self.init(
@@ -6636,17 +6652,17 @@ extension SwiftUICore.TextField where Label == SwiftUICore.Text {
         )
     }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  @_disfavoredOverload nonisolated public init<S>(_ title: S, text: SwiftUICore.Binding<Swift.String>, axis: SwiftUICore.Axis) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.TextField.init(_:text:axis:)") }
+  @_disfavoredOverload nonisolated public init<S>(_ title: S, text: SwiftUICore.Binding<Swift.String>, axis: SwiftUICore.Axis) where S : Swift.StringProtocol { self.init(text: text, prompt: nil, label: { Text(verbatim: String(title)) }) }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  @_disfavoredOverload nonisolated public init<S>(_ title: S, text: SwiftUICore.Binding<Swift.String>, prompt: SwiftUICore.Text?, axis: SwiftUICore.Axis) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.TextField.init(_:text:prompt:axis:)") }
+  @_disfavoredOverload nonisolated public init<S>(_ title: S, text: SwiftUICore.Binding<Swift.String>, prompt: SwiftUICore.Text?, axis: SwiftUICore.Axis) where S : Swift.StringProtocol { self.init(text: text, prompt: prompt, label: { Text(verbatim: String(title)) }) }
 }
 extension SwiftUICore.TextField {
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public init(text: SwiftUICore.Binding<Swift.String>, prompt: SwiftUICore.Text? = nil, axis: SwiftUICore.Axis, @SwiftUICore.ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUICore.TextField.init(text:prompt:axis:label:)") }
+  nonisolated public init(text: SwiftUICore.Binding<Swift.String>, prompt: SwiftUICore.Text? = nil, axis: SwiftUICore.Axis, @SwiftUICore.ContentBuilder label: () -> Label) { self.init(text: text, prompt: prompt, label: label) }
 }
 extension SwiftUICore.TextField where Label == SwiftUICore.Text {
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, text: SwiftUICore.Binding<Swift.String>, prompt: SwiftUICore.Text?) { _suiUnimplemented("SwiftUICore.TextField.init(_:text:prompt:)") }
+  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, text: SwiftUICore.Binding<Swift.String>, prompt: SwiftUICore.Text?) { self.init(text: text, prompt: prompt, label: { Text(titleKey) }) }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, text: SwiftUICore.Binding<Swift.String>, prompt: SwiftUICore.Text?) {
         self.init(
@@ -6656,17 +6672,17 @@ extension SwiftUICore.TextField where Label == SwiftUICore.Text {
         )
     }
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  @_disfavoredOverload nonisolated public init<S>(_ title: S, text: SwiftUICore.Binding<Swift.String>, prompt: SwiftUICore.Text?) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.TextField.init(_:text:prompt:)") }
+  @_disfavoredOverload nonisolated public init<S>(_ title: S, text: SwiftUICore.Binding<Swift.String>, prompt: SwiftUICore.Text?) where S : Swift.StringProtocol { self.init(text: text, prompt: prompt, label: { Text(verbatim: String(title)) }) }
 }
 extension SwiftUICore.TextField {
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  nonisolated public init(text: SwiftUICore.Binding<Swift.String>, prompt: SwiftUICore.Text? = nil, @SwiftUICore.ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUICore.TextField.init(text:prompt:label:)") }
+  nonisolated public init(text: SwiftUICore.Binding<Swift.String>, prompt: SwiftUICore.Text? = nil, @SwiftUICore.ContentBuilder label: () -> Label) { self._portText = text; self._portPrompt = prompt; self._portLabel = label() }
 }
 @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUICore.TextField where Label == SwiftUICore.Text {
-  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, text: SwiftUICore.Binding<Swift.String>, selection: SwiftUICore.Binding<SwiftUICore.TextSelection?>, prompt: SwiftUICore.Text? = nil, axis: SwiftUICore.Axis? = nil) { _suiUnimplemented("SwiftUICore.TextField.init(_:text:selection:prompt:axis:)") }
+  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, text: SwiftUICore.Binding<Swift.String>, selection: SwiftUICore.Binding<SwiftUICore.TextSelection?>, prompt: SwiftUICore.Text? = nil, axis: SwiftUICore.Axis? = nil) { self.init(text: text, prompt: prompt, label: { Text(titleKey) }) }
   @_disfavoredOverload @export(implementation) nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, text: SwiftUICore.Binding<Swift.String>, selection: SwiftUICore.Binding<SwiftUICore.TextSelection?>, prompt: SwiftUICore.Text? = nil, axis: SwiftUICore.Axis? = nil) {
         self.init(
             text: text,
@@ -6676,13 +6692,13 @@ extension SwiftUICore.TextField where Label == SwiftUICore.Text {
             label: { Text(titleResource) }
         )
     }
-  @_disfavoredOverload nonisolated public init<S>(_ title: S, text: SwiftUICore.Binding<Swift.String>, selection: SwiftUICore.Binding<SwiftUICore.TextSelection?>, prompt: SwiftUICore.Text? = nil, axis: SwiftUICore.Axis? = nil) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.TextField.init(_:text:selection:prompt:axis:)") }
+  @_disfavoredOverload nonisolated public init<S>(_ title: S, text: SwiftUICore.Binding<Swift.String>, selection: SwiftUICore.Binding<SwiftUICore.TextSelection?>, prompt: SwiftUICore.Text? = nil, axis: SwiftUICore.Axis? = nil) where S : Swift.StringProtocol { self.init(text: text, prompt: prompt, label: { Text(verbatim: String(title)) }) }
 }
 @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUICore.TextField {
-  nonisolated public init(text: SwiftUICore.Binding<Swift.String>, selection: SwiftUICore.Binding<SwiftUICore.TextSelection?>, prompt: SwiftUICore.Text? = nil, axis: SwiftUICore.Axis? = nil, @SwiftUICore.ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUICore.TextField.init(text:selection:prompt:axis:label:)") }
+  nonisolated public init(text: SwiftUICore.Binding<Swift.String>, selection: SwiftUICore.Binding<SwiftUICore.TextSelection?>, prompt: SwiftUICore.Text? = nil, axis: SwiftUICore.Axis? = nil, @SwiftUICore.ContentBuilder label: () -> Label) { self.init(text: text, prompt: prompt, label: label) }
 }
 extension SwiftUICore.TextField where Label == SwiftUICore.Text {
   @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6691,7 +6707,7 @@ extension SwiftUICore.TextField where Label == SwiftUICore.Text {
             titleKey, text: text, onEditingChanged: { _ in }, onCommit: {})
     }
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  @_disfavoredOverload nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, text: SwiftUICore.Binding<Swift.String>) { _suiUnimplemented("SwiftUICore.TextField.init(_:text:)") }
+  @_disfavoredOverload nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, text: SwiftUICore.Binding<Swift.String>) { self.init(text: text, prompt: nil, label: { Text(titleResource) }) }
   @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public init<S>(_ title: S, text: SwiftUICore.Binding<Swift.String>) where S : Swift.StringProtocol {
         self.init(
@@ -6705,7 +6721,7 @@ extension SwiftUICore.TextField where Label == SwiftUICore.Text {
   @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "Renamed TextField.init(_:text:onEditingChanged:). Use View.onSubmit(of:_:) for functionality previously provided by the onCommit parameter. Use FocusState<T> and View.focused(_:equals:) for functionality previously provided by the onEditingChanged parameter.")
   @available(watchOS, introduced: 6.0, deprecated: 100000.0, message: "Renamed TextField.init(_:text:onEditingChanged:). Use View.onSubmit(of:_:) for functionality previously provided by the onCommit parameter. Use FocusState<T> and View.focused(_:equals:) for functionality previously provided by the onEditingChanged parameter.")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Renamed TextField.init(_:text:onEditingChanged:). Use View.onSubmit(of:_:) for functionality previously provided by the onCommit parameter. Use FocusState<T> and View.focused(_:equals:) for functionality previously provided by the onEditingChanged parameter.")
-  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, text: SwiftUICore.Binding<Swift.String>, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void, onCommit: @escaping () -> Swift.Void) { _suiUnimplemented("SwiftUICore.TextField.init(_:text:onEditingChanged:onCommit:)") }
+  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, text: SwiftUICore.Binding<Swift.String>, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void, onCommit: @escaping () -> Swift.Void) { self.init(text: text, prompt: nil, label: { Text(titleKey) }) }
   @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Renamed TextField.init(_:text:onEditingChanged:). Use View.onSubmit(of:_:) for functionality previously provided by the onCommit parameter. Use FocusState<T> and View.focused(_:equals:) for functionality previously provided by the onEditingChanged parameter.")
   @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Renamed TextField.init(_:text:onEditingChanged:). Use View.onSubmit(of:_:) for functionality previously provided by the onCommit parameter. Use FocusState<T> and View.focused(_:equals:) for functionality previously provided by the onEditingChanged parameter.")
   @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "Renamed TextField.init(_:text:onEditingChanged:). Use View.onSubmit(of:_:) for functionality previously provided by the onCommit parameter. Use FocusState<T> and View.focused(_:equals:) for functionality previously provided by the onEditingChanged parameter.")
@@ -6731,7 +6747,7 @@ extension SwiftUICore.TextField where Label == SwiftUICore.Text {
   @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "Renamed TextField.init(_:text:onEditingChanged:). Use View.onSubmit(of:_:) for functionality previously provided by the onCommit parameter. Use FocusState<T> and View.focused(_:equals:) for functionality previously provided by the onEditingChanged parameter.")
   @available(watchOS, introduced: 6.0, deprecated: 100000.0, message: "Renamed TextField.init(_:text:onEditingChanged:). Use View.onSubmit(of:_:) for functionality previously provided by the onCommit parameter. Use FocusState<T> and View.focused(_:equals:) for functionality previously provided by the onEditingChanged parameter.")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Renamed TextField.init(_:text:onEditingChanged:). Use View.onSubmit(of:_:) for functionality previously provided by the onCommit parameter. Use FocusState<T> and View.focused(_:equals:) for functionality previously provided by the onEditingChanged parameter.")
-  @_disfavoredOverload nonisolated public init<S>(_ title: S, text: SwiftUICore.Binding<Swift.String>, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void, onCommit: @escaping () -> Swift.Void) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.TextField.init(_:text:onEditingChanged:onCommit:)") }
+  @_disfavoredOverload nonisolated public init<S>(_ title: S, text: SwiftUICore.Binding<Swift.String>, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void, onCommit: @escaping () -> Swift.Void) where S : Swift.StringProtocol { self.init(text: text, prompt: nil, label: { Text(verbatim: String(title)) }) }
   @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Renamed TextField.init(_:text:onEditingChanged:). Use View.onSubmit(of:_:) for functionality previously provided by the onCommit parameter. Use FocusState<T> and View.focused(_:equals:) for functionality previously provided by the onEditingChanged parameter.")
   @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Renamed TextField.init(_:text:onEditingChanged:). Use View.onSubmit(of:_:) for functionality previously provided by the onCommit parameter. Use FocusState<T> and View.focused(_:equals:) for functionality previously provided by the onEditingChanged parameter.")
   @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "Renamed TextField.init(_:text:onEditingChanged:). Use View.onSubmit(of:_:) for functionality previously provided by the onCommit parameter. Use FocusState<T> and View.focused(_:equals:) for functionality previously provided by the onEditingChanged parameter.")
@@ -11021,7 +11037,7 @@ public static var automatic: SwiftUICore.TabBarMinimizeBehavior { get { _suiUnim
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 nonisolated public struct Divider : SwiftUICore.View, ~Swift.Sendable {
-  nonisolated public init() { _suiUnimplemented("SwiftUICore.Divider.init()") }
+  nonisolated public init() { do {} }
   public static func _makeView(view: SwiftUICore._GraphValue<SwiftUICore.Divider>, inputs: SwiftUICore._ViewInputs) -> SwiftUICore._ViewOutputs { _suiUnimplemented("SwiftUICore.Divider._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
@@ -17566,6 +17582,9 @@ public struct PlainWindowStyle : SwiftUICore.WindowStyle {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 nonisolated public struct Picker<Label, SelectionValue, Content> : SwiftUICore.View, ~Swift.Sendable where Label : SwiftUICore.View, SelectionValue : Swift.Hashable, Content : SwiftUICore.View {
+  internal var _portSelection: Binding<SelectionValue>?
+  internal var _portLabel: Label?
+  internal var _portContent: Content?
   nonisolated public var body: some SwiftUICore.View {
     get { _suiUnimplemented("SwiftUICore.Picker.body") }
   }
@@ -17590,7 +17609,7 @@ extension SwiftUICore.Picker {
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUICore.Picker where Label == SwiftUICore.Text {
-  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUICore.Picker.init(_:selection:content:)") }
+  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content) { self.init(selection: selection, label: Text(titleKey), content: content) }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content) {
         self.init(
@@ -17609,7 +17628,7 @@ extension SwiftUICore.Picker where Label == SwiftUICore.Text {
             label: { Text(titleResource) }
         )
     }
-  @_disfavoredOverload nonisolated public init<S>(_ title: S, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.Picker.init(_:selection:content:)") }
+  @_disfavoredOverload nonisolated public init<S>(_ title: S, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content) where S : Swift.StringProtocol { self.init(selection: selection, label: Text(verbatim: String(title)), content: content) }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload nonisolated public init<C, S>(_ title: S, sources: C, selection: Swift.KeyPath<C.Element, SwiftUICore.Binding<SelectionValue>>, @SwiftUICore.ContentBuilder content: () -> Content) where C : Swift.RandomAccessCollection, S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.Picker.init(_:sources:selection:content:)") }
 }
@@ -17669,7 +17688,7 @@ extension SwiftUICore.Picker where Label == SwiftUICore.Label<SwiftUICore.Text, 
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension SwiftUICore.Picker where Label == SwiftUICore.Label<SwiftUICore.Text, SwiftUICore.Image> {
-  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, image: DeveloperToolsSupport.ImageResource, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUICore.Picker.init(_:image:selection:content:)") }
+  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, image: DeveloperToolsSupport.ImageResource, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content) { self.init(selection: selection, label: Label(titleKey, image: image), content: content) }
   @_disfavoredOverload @export(implementation) nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, image: DeveloperToolsSupport.ImageResource, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content) {
         self.init(
             selection: selection,
@@ -17686,17 +17705,17 @@ extension SwiftUICore.Picker where Label == SwiftUICore.Label<SwiftUICore.Text, 
             SwiftUICore.Label(titleResource, image: image)
         }
     }
-  @_disfavoredOverload nonisolated public init<S>(_ title: S, image: DeveloperToolsSupport.ImageResource, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.Picker.init(_:image:selection:content:)") }
+  @_disfavoredOverload nonisolated public init<S>(_ title: S, image: DeveloperToolsSupport.ImageResource, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content) where S : Swift.StringProtocol { self.init(selection: selection, label: Label(title, image: image), content: content) }
   @_disfavoredOverload nonisolated public init<C, S>(_ title: S, image: DeveloperToolsSupport.ImageResource, sources: C, selection: Swift.KeyPath<C.Element, SwiftUICore.Binding<SelectionValue>>, @SwiftUICore.ContentBuilder content: () -> Content) where C : Swift.RandomAccessCollection, S : Swift.StringProtocol, C.Element == SwiftUICore.Binding<SelectionValue> { _suiUnimplemented("SwiftUICore.Picker.init(_:image:sources:selection:content:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUICore.Picker {
-  nonisolated public init(selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content, @SwiftUICore.ContentBuilder label: () -> Label, @SwiftUICore.ContentBuilder currentValueLabel: () -> some View) { _suiUnimplemented("SwiftUICore.Picker.init(selection:content:label:currentValueLabel:)") }
+  nonisolated public init(selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content, @SwiftUICore.ContentBuilder label: () -> Label, @SwiftUICore.ContentBuilder currentValueLabel: () -> some View) { self.init(selection: selection, label: label(), content: content) }
   nonisolated public init<C>(sources: C, selection: Swift.KeyPath<C.Element, SwiftUICore.Binding<SelectionValue>>, @SwiftUICore.ContentBuilder content: () -> Content, @SwiftUICore.ContentBuilder label: () -> Label, @SwiftUICore.ContentBuilder currentValueLabel: () -> some View) where C : Swift.RandomAccessCollection { _suiUnimplemented("SwiftUICore.Picker.init(sources:selection:content:label:currentValueLabel:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUICore.Picker where Label == SwiftUICore.Text {
-  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content, @SwiftUICore.ContentBuilder currentValueLabel: () -> some View) { _suiUnimplemented("SwiftUICore.Picker.init(_:selection:content:currentValueLabel:)") }
+  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content, @SwiftUICore.ContentBuilder currentValueLabel: () -> some View) { self.init(selection: selection, label: Text(titleKey), content: content) }
   @_disfavoredOverload @export(implementation) nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content, @SwiftUICore.ContentBuilder currentValueLabel: () -> some View) {
         self.init(
             selection: selection,
@@ -17715,7 +17734,7 @@ extension SwiftUICore.Picker where Label == SwiftUICore.Text {
             currentValueLabel: currentValueLabel
         )
     }
-  @_disfavoredOverload nonisolated public init<S>(_ title: S, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content, @SwiftUICore.ContentBuilder currentValueLabel: () -> some View) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.Picker.init(_:selection:content:currentValueLabel:)") }
+  @_disfavoredOverload nonisolated public init<S>(_ title: S, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content, @SwiftUICore.ContentBuilder currentValueLabel: () -> some View) where S : Swift.StringProtocol { self.init(selection: selection, label: Text(verbatim: String(title)), content: content) }
   @_disfavoredOverload nonisolated public init<C, S>(_ title: S, sources: C, selection: Swift.KeyPath<C.Element, SwiftUICore.Binding<SelectionValue>>, @SwiftUICore.ContentBuilder content: () -> Content, @SwiftUICore.ContentBuilder currentValueLabel: () -> some View) where C : Swift.RandomAccessCollection, S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.Picker.init(_:sources:selection:content:currentValueLabel:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -17780,7 +17799,7 @@ extension SwiftUICore.Picker where Label == SwiftUICore.Label<SwiftUICore.Text, 
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUICore.Picker where Label == SwiftUICore.Label<SwiftUICore.Text, SwiftUICore.Image> {
-  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, image: DeveloperToolsSupport.ImageResource, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content, @SwiftUICore.ContentBuilder currentValueLabel: () -> some View) { _suiUnimplemented("SwiftUICore.Picker.init(_:image:selection:content:currentValueLabel:)") }
+  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, image: DeveloperToolsSupport.ImageResource, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content, @SwiftUICore.ContentBuilder currentValueLabel: () -> some View) { self.init(selection: selection, label: Label(titleKey, image: image), content: content) }
   @_disfavoredOverload @export(implementation) nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, image: DeveloperToolsSupport.ImageResource, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content, @SwiftUICore.ContentBuilder currentValueLabel: () -> some View) {
         self.init(
             selection: selection,
@@ -17801,7 +17820,7 @@ extension SwiftUICore.Picker where Label == SwiftUICore.Label<SwiftUICore.Text, 
             },
             currentValueLabel: currentValueLabel)
     }
-  @_disfavoredOverload nonisolated public init<S>(_ title: S, image: DeveloperToolsSupport.ImageResource, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content, @SwiftUICore.ContentBuilder currentValueLabel: () -> some View) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.Picker.init(_:image:selection:content:currentValueLabel:)") }
+  @_disfavoredOverload nonisolated public init<S>(_ title: S, image: DeveloperToolsSupport.ImageResource, selection: SwiftUICore.Binding<SelectionValue>, @SwiftUICore.ContentBuilder content: () -> Content, @SwiftUICore.ContentBuilder currentValueLabel: () -> some View) where S : Swift.StringProtocol { self.init(selection: selection, label: Label(title, image: image), content: content) }
   @_disfavoredOverload nonisolated public init<C, S>(_ title: S, image: DeveloperToolsSupport.ImageResource, sources: C, selection: Swift.KeyPath<C.Element, SwiftUICore.Binding<SelectionValue>>, @SwiftUICore.ContentBuilder content: () -> Content, @SwiftUICore.ContentBuilder currentValueLabel: () -> some View) where C : Swift.RandomAccessCollection, S : Swift.StringProtocol, C.Element == SwiftUICore.Binding<SelectionValue> { _suiUnimplemented("SwiftUICore.Picker.init(_:image:sources:selection:content:currentValueLabel:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -17811,7 +17830,7 @@ extension SwiftUICore.Picker {
   @available(tvOS, deprecated: 100000.0, renamed: "Picker(selection:content:label:)")
   @available(watchOS, deprecated: 100000.0, renamed: "Picker(selection:content:label:)")
   @available(visionOS, deprecated: 100000.0, renamed: "Picker(selection:content:label:)")
-  nonisolated public init(selection: SwiftUICore.Binding<SelectionValue>, label: Label, @SwiftUICore.ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUICore.Picker.init(selection:label:content:)") }
+  nonisolated public init(selection: SwiftUICore.Binding<SelectionValue>, label: Label, @SwiftUICore.ContentBuilder content: () -> Content) { self._portSelection = selection; self._portLabel = label; self._portContent = content() }
 }
 @available(iOS 17.0, macOS 14.0, *)
 @available(tvOS, unavailable)
@@ -25211,6 +25230,9 @@ extension SwiftUICore.View {
 @available(iOS 13.0, macOS 10.15, watchOS 9.0, *)
 @available(tvOS, unavailable)
 nonisolated public struct Stepper<Label> : SwiftUICore.View, ~Swift.Sendable where Label : SwiftUICore.View {
+  internal var _portIncrement: (() -> Void)?
+  internal var _portDecrement: (() -> Void)?
+  internal var _portLabel: Label?
   @export(implementation) nonisolated public init(@SwiftUICore.ContentBuilder label: () -> Label, onIncrement: (() -> Swift.Void)?, onDecrement: (() -> Swift.Void)?, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) {
         self.init(
             onIncrement: onIncrement,
@@ -25268,7 +25290,7 @@ extension SwiftUICore.Stepper {
 extension SwiftUICore.Stepper where Label == SwiftUICore.Text {
   @available(watchOS 9.0, *)
   @available(tvOS, unavailable)
-  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, onIncrement: (() -> Swift.Void)?, onDecrement: (() -> Swift.Void)?, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) { _suiUnimplemented("SwiftUICore.Stepper.init(_:onIncrement:onDecrement:onEditingChanged:)") }
+  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, onIncrement: (() -> Swift.Void)?, onDecrement: (() -> Swift.Void)?, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) { self.init(onIncrement: onIncrement, onDecrement: onDecrement, onEditingChanged: onEditingChanged, label: { Text(titleKey) }) }
   @available(iOS 16.0, macOS 13.0, *)
   @available(tvOS, unavailable)
   @_disfavoredOverload @export(implementation) nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, onIncrement: (() -> Swift.Void)?, onDecrement: (() -> Swift.Void)?, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) {
@@ -25282,10 +25304,10 @@ extension SwiftUICore.Stepper where Label == SwiftUICore.Text {
     }
   @available(watchOS 9.0, *)
   @available(tvOS, unavailable)
-  @_disfavoredOverload nonisolated public init<S>(_ title: S, onIncrement: (() -> Swift.Void)?, onDecrement: (() -> Swift.Void)?, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.Stepper.init(_:onIncrement:onDecrement:onEditingChanged:)") }
+  @_disfavoredOverload nonisolated public init<S>(_ title: S, onIncrement: (() -> Swift.Void)?, onDecrement: (() -> Swift.Void)?, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where S : Swift.StringProtocol { self.init(onIncrement: onIncrement, onDecrement: onDecrement, onEditingChanged: onEditingChanged, label: { Text(verbatim: String(title)) }) }
   @available(watchOS 9.0, *)
   @available(tvOS, unavailable)
-  nonisolated public init<V>(_ titleKey: SwiftUICore.LocalizedStringKey, value: SwiftUICore.Binding<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where V : Swift.Strideable { _suiUnimplemented("SwiftUICore.Stepper.init(_:value:step:onEditingChanged:)") }
+  nonisolated public init<V>(_ titleKey: SwiftUICore.LocalizedStringKey, value: SwiftUICore.Binding<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where V : Swift.Strideable { self.init(value: value, step: step, onEditingChanged: onEditingChanged, label: { Text(titleKey) }) }
   @available(iOS 16.0, macOS 13.0, *)
   @available(tvOS, unavailable)
   @_disfavoredOverload @export(implementation) nonisolated public init<V>(_ titleResource: FoundationShims.LocalizedStringResource, value: SwiftUICore.Binding<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where V : Swift.Strideable {
@@ -25298,10 +25320,10 @@ extension SwiftUICore.Stepper where Label == SwiftUICore.Text {
     }
   @available(watchOS 9.0, *)
   @available(tvOS, unavailable)
-  @_disfavoredOverload nonisolated public init<S, V>(_ title: S, value: SwiftUICore.Binding<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where S : Swift.StringProtocol, V : Swift.Strideable { _suiUnimplemented("SwiftUICore.Stepper.init(_:value:step:onEditingChanged:)") }
+  @_disfavoredOverload nonisolated public init<S, V>(_ title: S, value: SwiftUICore.Binding<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where S : Swift.StringProtocol, V : Swift.Strideable { self.init(value: value, step: step, onEditingChanged: onEditingChanged, label: { Text(verbatim: String(title)) }) }
   @available(watchOS 9.0, *)
   @available(tvOS, unavailable)
-  nonisolated public init<V>(_ titleKey: SwiftUICore.LocalizedStringKey, value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where V : Swift.Strideable { _suiUnimplemented("SwiftUICore.Stepper.init(_:value:in:step:onEditingChanged:)") }
+  nonisolated public init<V>(_ titleKey: SwiftUICore.LocalizedStringKey, value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where V : Swift.Strideable { self.init(value: value, in: bounds, step: step, onEditingChanged: onEditingChanged, label: { Text(titleKey) }) }
   @available(iOS 16.0, macOS 13.0, *)
   @available(tvOS, unavailable)
   @_disfavoredOverload @export(implementation) nonisolated public init<V>(_ titleResource: FoundationShims.LocalizedStringResource, value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where V : Swift.Strideable {
@@ -25314,18 +25336,18 @@ extension SwiftUICore.Stepper where Label == SwiftUICore.Text {
     }
   @available(watchOS 9.0, *)
   @available(tvOS, unavailable)
-  @_disfavoredOverload nonisolated public init<S, V>(_ title: S, value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where S : Swift.StringProtocol, V : Swift.Strideable { _suiUnimplemented("SwiftUICore.Stepper.init(_:value:in:step:onEditingChanged:)") }
+  @_disfavoredOverload nonisolated public init<S, V>(_ title: S, value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where S : Swift.StringProtocol, V : Swift.Strideable { self.init(value: value, in: bounds, step: step, onEditingChanged: onEditingChanged, label: { Text(verbatim: String(title)) }) }
 }
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
 @available(tvOS, unavailable)
 extension SwiftUICore.Stepper {
-  nonisolated public init<F>(value: SwiftUICore.Binding<F.FormatInput>, step: F.FormatInput.Stride = 1, format: F, @SwiftUICore.ContentBuilder label: () -> Label, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where F : Foundation.ParseableFormatStyle, F.FormatInput : Swift.BinaryFloatingPoint, F.FormatOutput == Swift.String { _suiUnimplemented("SwiftUICore.Stepper.init(value:step:format:label:onEditingChanged:)") }
-  nonisolated public init<F>(value: SwiftUICore.Binding<F.FormatInput>, in bounds: Swift.ClosedRange<F.FormatInput>, step: F.FormatInput.Stride = 1, format: F, @SwiftUICore.ContentBuilder label: () -> Label, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where F : Foundation.ParseableFormatStyle, F.FormatInput : Swift.BinaryFloatingPoint, F.FormatOutput == Swift.String { _suiUnimplemented("SwiftUICore.Stepper.init(value:in:step:format:label:onEditingChanged:)") }
+  nonisolated public init<F>(value: SwiftUICore.Binding<F.FormatInput>, step: F.FormatInput.Stride = 1, format: F, @SwiftUICore.ContentBuilder label: () -> Label, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where F : Foundation.ParseableFormatStyle, F.FormatInput : Swift.BinaryFloatingPoint, F.FormatOutput == Swift.String { self.init(value: value, step: step, onEditingChanged: onEditingChanged, label: label) }
+  nonisolated public init<F>(value: SwiftUICore.Binding<F.FormatInput>, in bounds: Swift.ClosedRange<F.FormatInput>, step: F.FormatInput.Stride = 1, format: F, @SwiftUICore.ContentBuilder label: () -> Label, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where F : Foundation.ParseableFormatStyle, F.FormatInput : Swift.BinaryFloatingPoint, F.FormatOutput == Swift.String { self.init(value: value, in: bounds, step: step, onEditingChanged: onEditingChanged, label: label) }
 }
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
 @available(tvOS, unavailable)
 extension SwiftUICore.Stepper where Label == SwiftUICore.Text {
-  nonisolated public init<F>(_ titleKey: SwiftUICore.LocalizedStringKey, value: SwiftUICore.Binding<F.FormatInput>, step: F.FormatInput.Stride = 1, format: F, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where F : Foundation.ParseableFormatStyle, F.FormatInput : Swift.BinaryFloatingPoint, F.FormatOutput == Swift.String { _suiUnimplemented("SwiftUICore.Stepper.init(_:value:step:format:onEditingChanged:)") }
+  nonisolated public init<F>(_ titleKey: SwiftUICore.LocalizedStringKey, value: SwiftUICore.Binding<F.FormatInput>, step: F.FormatInput.Stride = 1, format: F, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where F : Foundation.ParseableFormatStyle, F.FormatInput : Swift.BinaryFloatingPoint, F.FormatOutput == Swift.String { self.init(titleKey, value: value, step: step, onEditingChanged: onEditingChanged) }
   @_disfavoredOverload @export(implementation) nonisolated public init<F>(_ titleResource: FoundationShims.LocalizedStringResource, value: SwiftUICore.Binding<F.FormatInput>, step: F.FormatInput.Stride = 1, format: F, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where F : Foundation.ParseableFormatStyle, F.FormatInput : Swift.BinaryFloatingPoint, F.FormatOutput == Swift.String {
         self.init(
             value: value, step: step, format: format
@@ -25335,8 +25357,8 @@ extension SwiftUICore.Stepper where Label == SwiftUICore.Text {
             onEditingChanged($0)
         }
     }
-  @_disfavoredOverload nonisolated public init<S, F>(_ title: S, value: SwiftUICore.Binding<F.FormatInput>, step: F.FormatInput.Stride = 1, format: F, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where S : Swift.StringProtocol, F : Foundation.ParseableFormatStyle, F.FormatInput : Swift.BinaryFloatingPoint, F.FormatOutput == Swift.String { _suiUnimplemented("SwiftUICore.Stepper.init(_:value:step:format:onEditingChanged:)") }
-  nonisolated public init<F>(_ titleKey: SwiftUICore.LocalizedStringKey, value: SwiftUICore.Binding<F.FormatInput>, in bounds: Swift.ClosedRange<F.FormatInput>, step: F.FormatInput.Stride = 1, format: F, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where F : Foundation.ParseableFormatStyle, F.FormatInput : Swift.BinaryFloatingPoint, F.FormatOutput == Swift.String { _suiUnimplemented("SwiftUICore.Stepper.init(_:value:in:step:format:onEditingChanged:)") }
+  @_disfavoredOverload nonisolated public init<S, F>(_ title: S, value: SwiftUICore.Binding<F.FormatInput>, step: F.FormatInput.Stride = 1, format: F, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where S : Swift.StringProtocol, F : Foundation.ParseableFormatStyle, F.FormatInput : Swift.BinaryFloatingPoint, F.FormatOutput == Swift.String { self.init(title, value: value, step: step, onEditingChanged: onEditingChanged) }
+  nonisolated public init<F>(_ titleKey: SwiftUICore.LocalizedStringKey, value: SwiftUICore.Binding<F.FormatInput>, in bounds: Swift.ClosedRange<F.FormatInput>, step: F.FormatInput.Stride = 1, format: F, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where F : Foundation.ParseableFormatStyle, F.FormatInput : Swift.BinaryFloatingPoint, F.FormatOutput == Swift.String { self.init(titleKey, value: value, in: bounds, step: step, onEditingChanged: onEditingChanged) }
   @_disfavoredOverload @export(implementation) nonisolated public init<F>(_ titleResource: FoundationShims.LocalizedStringResource, value: SwiftUICore.Binding<F.FormatInput>, in bounds: Swift.ClosedRange<F.FormatInput>, step: F.FormatInput.Stride = 1, format: F, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where F : Foundation.ParseableFormatStyle, F.FormatInput : Swift.BinaryFloatingPoint, F.FormatOutput == Swift.String {
         self.init(
             value: value, in: bounds, step: step, format: format
@@ -25346,7 +25368,7 @@ extension SwiftUICore.Stepper where Label == SwiftUICore.Text {
             onEditingChanged($0)
         }
     }
-  @_disfavoredOverload nonisolated public init<S, F>(_ title: S, value: SwiftUICore.Binding<F.FormatInput>, in bounds: Swift.ClosedRange<F.FormatInput>, step: F.FormatInput.Stride = 1, format: F, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where S : Swift.StringProtocol, F : Foundation.ParseableFormatStyle, F.FormatInput : Swift.BinaryFloatingPoint, F.FormatOutput == Swift.String { _suiUnimplemented("SwiftUICore.Stepper.init(_:value:in:step:format:onEditingChanged:)") }
+  @_disfavoredOverload nonisolated public init<S, F>(_ title: S, value: SwiftUICore.Binding<F.FormatInput>, in bounds: Swift.ClosedRange<F.FormatInput>, step: F.FormatInput.Stride = 1, format: F, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }) where S : Swift.StringProtocol, F : Foundation.ParseableFormatStyle, F.FormatInput : Swift.BinaryFloatingPoint, F.FormatOutput == Swift.String { self.init(title, value: value, in: bounds, step: step, onEditingChanged: onEditingChanged) }
 }
 @available(iOS 13.0, macOS 10.15, watchOS 9.0, *)
 @available(tvOS, unavailable)
@@ -25355,17 +25377,17 @@ extension SwiftUICore.Stepper {
   @available(macOS, deprecated: 100000.0, renamed: "Stepper(label:onIncrement:onDecrement:onEditingChanged:)")
   @available(watchOS, deprecated: 100000.0, renamed: "Stepper(label:onIncrement:onDecrement:onEditingChanged:)")
   @available(visionOS, deprecated: 100000.0, renamed: "Stepper(label:onIncrement:onDecrement:onEditingChanged:)")
-  @_disfavoredOverload nonisolated public init(onIncrement: (() -> Swift.Void)?, onDecrement: (() -> Swift.Void)?, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }, @SwiftUICore.ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUICore.Stepper.init(onIncrement:onDecrement:onEditingChanged:label:)") }
+  @_disfavoredOverload nonisolated public init(onIncrement: (() -> Swift.Void)?, onDecrement: (() -> Swift.Void)?, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }, @SwiftUICore.ContentBuilder label: () -> Label) { self._portIncrement = onIncrement; self._portDecrement = onDecrement; self._portLabel = label() }
   @available(iOS, deprecated: 100000.0, renamed: "Stepper(value:step:label:onEditingChanged:)")
   @available(macOS, deprecated: 100000.0, renamed: "Stepper(value:step:label:onEditingChanged:)")
   @available(watchOS, deprecated: 100000.0, renamed: "Stepper(value:step:label:onEditingChanged:)")
   @available(visionOS, deprecated: 100000.0, renamed: "Stepper(value:step:label:onEditingChanged:)")
-  @_disfavoredOverload nonisolated public init<V>(value: SwiftUICore.Binding<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }, @SwiftUICore.ContentBuilder label: () -> Label) where V : Swift.Strideable { _suiUnimplemented("SwiftUICore.Stepper.init(value:step:onEditingChanged:label:)") }
+  @_disfavoredOverload nonisolated public init<V>(value: SwiftUICore.Binding<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }, @SwiftUICore.ContentBuilder label: () -> Label) where V : Swift.Strideable { self.init(onIncrement: { value.wrappedValue = value.wrappedValue.advanced(by: step) }, onDecrement: { value.wrappedValue = value.wrappedValue.advanced(by: -step) }, onEditingChanged: onEditingChanged, label: label) }
   @available(iOS, deprecated: 100000.0, renamed: "Stepper(value:in:step:label:onEditingChanged:)")
   @available(macOS, deprecated: 100000.0, renamed: "Stepper(value:in:step:label:onEditingChanged:)")
   @available(watchOS, deprecated: 100000.0, renamed: "Stepper(value:in:step:label:onEditingChanged:)")
   @available(visionOS, deprecated: 100000.0, renamed: "Stepper(value:in:step:label:onEditingChanged:)")
-  @_disfavoredOverload nonisolated public init<V>(value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }, @SwiftUICore.ContentBuilder label: () -> Label) where V : Swift.Strideable { _suiUnimplemented("SwiftUICore.Stepper.init(value:in:step:onEditingChanged:label:)") }
+  @_disfavoredOverload nonisolated public init<V>(value: SwiftUICore.Binding<V>, in bounds: Swift.ClosedRange<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }, @SwiftUICore.ContentBuilder label: () -> Label) where V : Swift.Strideable { self.init(onIncrement: { value.wrappedValue = min(value.wrappedValue.advanced(by: step), bounds.upperBound) }, onDecrement: { value.wrappedValue = max(value.wrappedValue.advanced(by: -step), bounds.lowerBound) }, onEditingChanged: onEditingChanged, label: label) }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -29626,7 +29648,9 @@ public struct StackNavigationViewStyle : SwiftUICore.NavigationViewStyle {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 nonisolated public struct Label<Title, Icon> : SwiftUICore.View, ~Swift.Sendable where Title : SwiftUICore.View, Icon : SwiftUICore.View {
-  nonisolated public init(@SwiftUICore.ContentBuilder title: () -> Title, @SwiftUICore.ContentBuilder icon: () -> Icon) { _suiUnimplemented("SwiftUICore.Label.init(title:icon:)") }
+  internal var _portTitle: Title?
+  internal var _portIcon: Icon?
+  nonisolated public init(@SwiftUICore.ContentBuilder title: () -> Title, @SwiftUICore.ContentBuilder icon: () -> Icon) { self._portTitle = title(); self._portIcon = icon() }
   nonisolated public var body: some SwiftUICore.View {
     get { _suiUnimplemented("SwiftUICore.Label.body") }
   }
@@ -29644,26 +29668,26 @@ nonisolated public struct Label<Title, Icon> : SwiftUICore.View where Title : Sw
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUICore.Label where Title == SwiftUICore.Text, Icon == SwiftUICore.Image {
-  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, image name: Swift.String) { _suiUnimplemented("SwiftUICore.Label.init(_:image:)") }
+  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, image name: Swift.String) { self.init(title: { Text(titleKey) }, icon: { Image(systemName: name) }) }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, image name: Swift.String) {
         self.init { Text(titleResource) } icon: { Image(name) }
     }
-  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, systemImage name: Swift.String) { _suiUnimplemented("SwiftUICore.Label.init(_:systemImage:)") }
+  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, systemImage name: Swift.String) { self.init(title: { Text(titleKey) }, icon: { Image(systemName: name) }) }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, systemImage name: Swift.String) {
         self.init { Text(titleResource) } icon: { Image(systemName: name) }
     }
-  @_disfavoredOverload nonisolated public init<S>(_ title: S, image name: Swift.String) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.Label.init(_:image:)") }
-  @_disfavoredOverload nonisolated public init<S>(_ title: S, systemImage name: Swift.String) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.Label.init(_:systemImage:)") }
+  @_disfavoredOverload nonisolated public init<S>(_ title: S, image name: Swift.String) where S : Swift.StringProtocol { self.init(title: { Text(verbatim: String(title)) }, icon: { Image(systemName: name) }) }
+  @_disfavoredOverload nonisolated public init<S>(_ title: S, systemImage name: Swift.String) where S : Swift.StringProtocol { self.init(title: { Text(verbatim: String(title)) }, icon: { Image(systemName: name) }) }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension SwiftUICore.Label where Title == SwiftUICore.Text, Icon == SwiftUICore.Image {
-  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, image resource: DeveloperToolsSupport.ImageResource) { _suiUnimplemented("SwiftUICore.Label.init(_:image:)") }
+  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, image resource: DeveloperToolsSupport.ImageResource) { self.init(title: { Text(titleKey) }, icon: { Image(systemName: resource.name) }) }
   @_disfavoredOverload @export(implementation) nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, image resource: DeveloperToolsSupport.ImageResource) {
         self.init { Text(titleResource) } icon: { Image(resource) }
     }
-  @_disfavoredOverload nonisolated public init<S>(_ title: S, image resource: DeveloperToolsSupport.ImageResource) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.Label.init(_:image:)") }
+  @_disfavoredOverload nonisolated public init<S>(_ title: S, image resource: DeveloperToolsSupport.ImageResource) where S : Swift.StringProtocol { self.init(title: { Text(verbatim: String(title)) }, icon: { Image(systemName: resource.name) }) }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUICore.Label where Title == SwiftUICore.LabelStyleConfiguration.Title, Icon == SwiftUICore.LabelStyleConfiguration.Icon {

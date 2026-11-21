@@ -1,19 +1,29 @@
-## Status: the ported framework renders
+## Status: the ported framework renders, and ships two demo apps
 
 The recompiled framework runs on a device and draws SwiftUI views through Android's Skia canvas —
-Apple's declarations, this project's engine:
+Apple's declarations, this project's engine. Two independent apps are built from it:
 
-![SwiftUI views ported to Android](docs/screenshots/ported-text-stack.png)
+| Demo | What it shows | Command | APK |
+|---|---|---|---|
+| **Atlas** | a four-screen app: navigation, scrolling, lists, gradients, state | `./scripts/dev.sh` | `build/SwiftUI-Android.apk` |
+| **Control gallery** | SwiftUI's controls, their variants and modifiers, including real IME text input | `./scripts/gallery.sh` | `build/SwiftUI-Gallery.apk` |
+
+Both install side by side (separate application ids), so the launcher has two icons and no
+switcher.
+
+![Control gallery on Android](docs/screenshots/gallery-top.png)
 
 ```bash
 ./scripts/port/build-port-sdk.sh   # retarget Apple's interfaces, build shims + vendored Combine
-./scripts/dev.sh                   # build, install and launch the app (ported path is the default)
+./scripts/dev.sh                   # Atlas: build, install and launch (ported path is the default)
+./scripts/gallery.sh               # control gallery: build, install and launch
 ./scripts/test.sh                  # engine unit tests (host, engine-only module set)
 SWIFTUI_PORT_GENERATED=0 ./scripts/dev.sh   # the older engine-level demo, for reference
 ```
 
 `import SwiftUI` in an Android app resolves to Apple's retargeted declarations plus this project's
-engine — no flags, no opt-in.
+engine — no flags, no opt-in. See [docs/GALLERY.md](docs/GALLERY.md) for what the gallery covers
+and which control APIs are still stubs.
 
 # SwiftUI for Android — a port of Apple's closed-source framework
 

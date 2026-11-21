@@ -31,6 +31,9 @@ public struct PortEnvironment: Equatable {
     public var foreground: RGBAColor
     /// Default text weight, raised by `.bold()` / `.fontWeight(...)`.
     public var fontWeight: TextStyleDescriptor.Weight
+    /// Set by `.labelsHidden()`: controls drop their label text and keep only their control body,
+    /// which is what the modifier means in Apple's environment.
+    public var labelsHidden: Bool
 
     public init(isDark: Bool = false,
                 accentColor: RGBAColor = RGBAColor(hex: 0x0A84FF),
@@ -39,7 +42,8 @@ public struct PortEnvironment: Equatable {
                 font: PortFontSpec? = nil,
                 lineLimit: Int? = nil,
                 foreground: RGBAColor? = nil,
-                fontWeight: TextStyleDescriptor.Weight = .regular) {
+                fontWeight: TextStyleDescriptor.Weight = .regular,
+                labelsHidden: Bool = false) {
         self.isDark = isDark
         self.accentColor = accentColor
         self.displayScale = displayScale
@@ -48,6 +52,7 @@ public struct PortEnvironment: Equatable {
         self.lineLimit = lineLimit
         self.foreground = foreground ?? (isDark ? RGBAColor(hex: 0xF2F2F7) : RGBAColor(hex: 0x111114))
         self.fontWeight = fontWeight
+        self.labelsHidden = labelsHidden
     }
 }
 
@@ -72,6 +77,7 @@ public final class PortGraphContext {
         PortStateStore.beginFrame()
         PortScrollStore.beginFrame()
         PortObjectStore.beginFrame()
+        PortTextFieldSlots.beginFrame()
         views.removeAll(keepingCapacity: true)
         proposals.removeAll(keepingCapacity: true)
         results.removeAll(keepingCapacity: true)

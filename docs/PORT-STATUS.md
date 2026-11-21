@@ -50,6 +50,43 @@ Affected symbols: `Binding.wrappedValue`/`projectedValue`, `State.wrappedValue`/
 `LazyState.wrappedValue`/`projectedValue`, `StateObject.wrappedValue`/`projectedValue`,
 `ObservedObject.projectedValue`.
 
+## The control gallery (second demo app)
+
+`scripts/gallery.sh` builds the gallery as its own app (`dev.swiftui.android.gallery`) from the
+same library; `docs/GALLERY.md` documents it. It is what forced the last round of framework work:
+
+- **Controls became real.** `Slider`, `Stepper`, `Picker`, `TextField`, `ProgressView`, `Label`,
+  `Link` and `Divider` now have storage (injected by `port-impl/storage.txt`), initialisers
+  (`port-impl/bodies.txt`) and renderers (`Adapters/PortControls.swift`). Every one of them
+  funnels through a single designated initialiser per type — nine of the forwarding overloads were
+  initially dropped because a `#2` occurrence selector ran after its `#1`, which is why
+  `bodies.txt` now lists multi-occurrence symbols highest-first.
+- **Two engine primitives were added** rather than faking them with fixed-width shapes:
+  `progressBar(fraction:track:fill:)` and `sliderTrack(fraction:track:fill:knob:)`, both painting
+  from the placed frame, plus `PortSliderGeometry` so the knob lands under the finger.
+- **Continuous gestures** are new: `LayoutNode.dragAction` + `dragTarget(at:)`, consulted before
+  tap handling, is what makes a slider track the finger.
+- **`.tag(_:)` is the port's own** (`_PortTagged`): Apple routes tags through a private trait
+  table, so the declaration is omitted and the port keeps the tag in a wrapper the `Picker`
+  reads to know each option's selection value.
+- **`.labelsHidden()` is a real environment value** now (`PortEnvironment.labelsHidden`), not a
+  no-op, so a toggle can render switch-only and a Label icon-only.
+- **Text input runs through the platform IME.** An invisible `EditText` owns the keyboard while
+  SwiftUI keeps the styling and the binding; `Adapters/PortTextInput.swift` declares the seam and
+  `SwiftUIAndroid` installs it (see the diagram in `docs/GALLERY.md`). Typing requests a frame,
+  since an edit arrives outside any draw.
+
+Device-verified interactions (screenshots in `docs/screenshots/`): slider drag 50% → 87%, stepper
+3 → 4, picker `Two` → `Three`, toggle on → off, and typing "Ada" through Gboard into the field.
+
+### A packaging landmine worth remembering
+
+`d8` 8.2.2 (build-tools 34) **crashes with an internal `NullPointerException` on any Java class that
+captures its enclosing instance** — anonymous inner classes and non-static nested classes both.
+Javac gives those a synthetic `this$0`. The fix is to declare listeners as `static` nested classes
+that take the owner explicitly (`SwiftUIHostView.TextChangeRelay`). `scripts/build-apk.sh` now
+explains that in its d8 failure path, because the error message names a class file and nothing else.
+
 ## Ported path: what renders today
 
 Every row below is Apple's API, recompiled for Android and executed by the port's engine; the

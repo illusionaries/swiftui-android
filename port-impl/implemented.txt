@@ -169,3 +169,8 @@ SwiftUICore.PinnedScrollableViews.sectionHeaders
 SwiftUICore.PinnedScrollableViews.sectionFooters
 SwiftUICore.Toggle.init(_:isOn:)
 SwiftUICore.View.labelsHidden()
+
+# The port implements `tag(_:includeOptional:)` itself: Apple's body routes the value through
+# `_trait(...)`/`TagValueTraitKey`, whose storage is private. The port's version keeps the tag in
+# `_PortTagged`, which is what `Picker` reads to find each option's selection value.
+SwiftUICore.View.tag(_:includeOptional:)

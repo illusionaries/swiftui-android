@@ -2,7 +2,7 @@
 # ────────────────────────────────────────────────────────────────────────────────
 # build-apk.sh — build build/SwiftUI-Android.apk from scratch, reproducibly.
 #
-#   scripts/build-apk.sh [--abi arm64-v8a|x86_64|all] [--dummy] [--clean] [-v]
+#   scripts/build-apk.sh [--abi arm64-v8a|x86_64|all] [--demo atlas|gallery] [--dummy] [--clean] [-v]
 #
 # Pipeline:
 #   1. native:  swift build -c release --product SwiftUIAndroidApp
@@ -19,6 +19,10 @@
 #    2  toolchain / SDK / NDK not available (Swift SDK for Android, Android SDK, JDK, NDK)
 #    3  the Swift package build failed (see build/tmp/swift-build.log)
 #    4  mandatory native runtime library missing (libc++_shared.so)
+#
+# Two demos ship as two independent apps. `--demo gallery` packages the control gallery as
+# dev.swiftui.android.gallery → build/SwiftUI-Gallery.apk (its own launchable icon next to the
+# Atlas demo); `--demo atlas` (default) packages the Atlas app as dev.swiftui.android.
 #
 # Env overrides: JAVA_HOME, ANDROID_HOME, ANDROID_NDK_HOME, ANDROID_PLATFORM,
 #                ANDROID_BUILD_TOOLS, SWIFT_SDK, MIN_SDK, DUMMY_SWIFT, VERBOSE,
@@ -49,6 +53,7 @@ PRODUCT="SwiftUIAndroidApp"
 # The Java host loads exactly this name.
 NATIVE_LIB_NAME="swiftui_app"
 
+DEMO="${SWIFTUI_DEMO:-atlas}"
 DUMMY="${DUMMY_SWIFT:-0}"
 VERBOSE="${VERBOSE:-0}"
 CLEAN=0
@@ -70,6 +75,8 @@ usage() {
 
 Options:
   --abi <abi>   arm64-v8a (default), x86_64, or all (one APK, both ABIs)
+  --demo <name> atlas (default) → build/SwiftUI-Android.apk  (dev.swiftui.android)
+                gallery         → build/SwiftUI-Gallery.apk  (dev.swiftui.android.gallery)
   --dummy       skip the Swift build, package a stub libswiftui_app.so instead
                 (same as DUMMY_SWIFT=1; validates APK assembly without a Swift runtime)
   --clean       remove build/ first (keeps nothing, including the debug keystore)
@@ -91,6 +98,8 @@ while [ $# -gt 0 ]; do
   case "$1" in
     --abi) [ $# -ge 2 ] || die "--abi needs a value" 1; add_abi "$2"; shift 2 ;;
     --abi=*) add_abi "${1#*=}"; shift ;;
+    --demo) [ $# -ge 2 ] || die "--demo needs a value (atlas|gallery)" 1; DEMO="$2"; shift 2 ;;
+    --demo=*) DEMO="${1#*=}"; shift ;;
     --dummy) DUMMY=1; shift ;;
     --clean) CLEAN=1; shift ;;
     -v|--verbose) VERBOSE=1; shift ;;
@@ -119,6 +128,26 @@ done
 ABIS=()
 for abi in $_DEDUP; do ABIS+=("$abi"); done
 unset _DEDUP
+
+# ── demo selection ────────────────────────────────────────────────────────────
+# Both demos come from the same Swift library; the demo is chosen at compile time
+# (Package.swift reads SWIFTUI_DEMO_GALLERY) so the two APKs are fully independent apps with
+# their own application ids and launcher icons.
+case "$DEMO" in
+  atlas)
+    APP_PACKAGE="dev.swiftui.android"
+    APK_OUT="$BUILD_DIR/SwiftUI-Android.apk"
+    ;;
+  gallery)
+    APP_PACKAGE="dev.swiftui.android.gallery"
+    APK_OUT="$BUILD_DIR/SwiftUI-Gallery.apk"
+    export SWIFTUI_DEMO_GALLERY=1
+    ;;
+  *)
+    usage >&2
+    die "unsupported --demo '$DEMO' (atlas|gallery)" 1
+    ;;
+esac
 
 # ── ABI tables (bash 3.2 compatible: functions instead of associative arrays) ──
 abi_swift_triple() {
@@ -310,6 +339,7 @@ info "build-tools : $BUILD_TOOLS"
 info "NDK         : $ANDROID_NDK_HOME ($(basename "$NDK_HOST_TAG"))"
 info "JDK         : $JAVA_HOME ($("$JAVA_HOME/bin/javac" -version 2>&1 | head -n 1))"
 info "ABIs        : ${ABIS[*]}"
+info "demo        : $DEMO ($APP_PACKAGE)"
 info "mode        : $([ "$DUMMY" = "1" ] && echo 'dummy native stub (no Swift build)' || echo 'SwiftPM release build')"
 if [ "$DUMMY" != "1" ]; then
   if [ -n "${SWIFT_LIB_SO:-}" ]; then
@@ -549,14 +579,36 @@ done
 # ──────────────────────────────────────────────────────────────────────────────
 log "resources: aapt2 compile/link"
 run "$AAPT2" compile --dir "$REPO_ROOT/app/res" -o "$RES_DIR/resources.zip"
+
+# One manifest, one package id per demo: the gallery variant differs only in the package name,
+# the (fully-qualified) activity class and the app label. The Java sources reference
+# `R` from their own package, so keep R.java there with --custom-package.
+MANIFEST="$REPO_ROOT/app/AndroidManifest.xml"
+EXTRA_LINK_ARGS=""
+if [ "$DEMO" = "gallery" ]; then
+  MANIFEST="$TMP_DIR/AndroidManifest.gallery.xml"
+  log "resources: gallery manifest ($APP_PACKAGE)"
+  sed -e 's/package="dev\.swiftui\.android"/package="dev.swiftui.android.gallery"/' \
+      -e 's/android:name="\.MainActivity"/android:name="dev.swiftui.android.MainActivity"/' \
+      -e 's/@string\/app_name/@string\/app_name_gallery/g' \
+      "$REPO_ROOT/app/AndroidManifest.xml" > "$MANIFEST"
+  grep -q "package=\"$APP_PACKAGE\"" "$MANIFEST" \
+    || die "could not rewrite the manifest package to $APP_PACKAGE"
+  grep -q 'android:name="dev.swiftui.android.MainActivity"' "$MANIFEST" \
+    || die "could not fully qualify the activity name in the gallery manifest"
+  EXTRA_LINK_ARGS="--custom-package dev.swiftui.android"
+fi
+
+# shellcheck disable=SC2086  # EXTRA_LINK_ARGS is an intentional (possibly empty) word list
 run "$AAPT2" link \
   -o "$TMP_DIR/base.apk" \
   -I "$ANDROID_JAR" \
-  --manifest "$REPO_ROOT/app/AndroidManifest.xml" \
+  --manifest "$MANIFEST" \
   --java "$GEN_DIR" \
   --min-sdk-version "$MIN_SDK" \
   --target-sdk-version "$TARGET_SDK" \
   --auto-add-overlay \
+  $EXTRA_LINK_ARGS \
   "$RES_DIR/resources.zip"
 [ -f "$GEN_DIR/dev/swiftui/android/R.java" ] \
   || die "aapt2 link did not generate dev/swiftui/android/R.java"
@@ -574,7 +626,16 @@ run "$JAVA_HOME/bin/javac" \
   -d "$CLASSES_DIR" \
   @"$TMP_DIR/sources.txt"
 run "$JAVA_HOME/bin/jar" cf "$TMP_DIR/classes.jar" -C "$CLASSES_DIR" .
-run "$D8" --min-api "$MIN_SDK" --lib "$ANDROID_JAR" --output "$TMP_DIR/dex" "$TMP_DIR/classes.jar"
+# d8 (8.2.2 in build-tools 34) throws an internal NullPointerException on any class that captures
+# its enclosing instance — i.e. an anonymous inner class or a non-static nested class. Javac
+# compiles those with a synthetic `this$0` field, and the failure surfaces as
+# "Cannot invoke String.length() because <parameter1> is null" pointing at SomeOuter$1.class.
+# Declaring listeners as `static` nested classes that take the host explicitly avoids it.
+if ! run "$D8" --min-api "$MIN_SDK" --lib "$ANDROID_JAR" --output "$TMP_DIR/dex" "$TMP_DIR/classes.jar"; then
+  die "d8 failed to dex the Java classes (see the error above).
+       If it reports a NullPointerException about 'String.length()', it is the d8 inner-class bug:
+       declare the offending listener as a static nested class instead of an anonymous/non-static one."
+fi
 [ -f "$TMP_DIR/dex/classes.dex" ] || die "d8 did not produce classes.dex"
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -646,6 +707,7 @@ printf '\n\033[1;32m✓ APK built\033[0m\n'
 printf '  path   : %s\n' "${APK_OUT#$REPO_ROOT/}"
 printf '  size   : %s (%s bytes)\n' "$SIZE_HUMAN" "$SIZE_BYTES"
 printf '  abis   : %s\n' "${ABIS[*]}"
+printf '  demo   : %s (%s)\n' "$DEMO" "$APP_PACKAGE"
 printf '  mode   : %s\n' "$([ "$DUMMY" = "1" ] && echo 'dummy native stub — packaging validation only' || echo 'release Swift build')"
 printf '  sha256 : %s\n' "$(shasum -a 256 "$APK_OUT" | awk '{print $1}')"
 

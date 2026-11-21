@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">SwiftUI</string>
+    <!-- The control-gallery demo is packaged as a second, independent app (scripts/gallery.sh). -->
+    <string name="app_name_gallery">SwiftUI Gallery</string>
 </resources>
