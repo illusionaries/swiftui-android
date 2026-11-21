@@ -1,0 +1,40 @@
+# port-impl/implemented.txt — declaration overrides for the SwiftUI port.
+#
+# One qualified symbol per line, spelled exactly as the `bodies[].symbol` entries in
+# `build/port-sdk/injected-bodies.json`:
+#
+#     <Apple module>.<Type path>.<member>(<external labels, each with ':'>)
+#
+#   * the Apple module is `SwiftUICore` or `SwiftUI` (where Apple declares it), even though
+#     both generated files compile into the single port module `SwiftUI`;
+#   * the type path drops module qualifiers and generic arguments:
+#       `SwiftUICore.Text.body`            (not `Text<...>.body`)
+#       `SwiftUICore.ForEach.body`
+#   * functions / initializers / subscripts include their external parameter labels:
+#       `SwiftUICore.Text.font(_:)`
+#       `SwiftUICore.ForEach.init(_:content:)`
+#       `SwiftUI.VStack._makeView(view:inputs:)`
+#   * properties have no labels: `SwiftUI.Link.body`.
+#
+# For every symbol listed here, `scripts/port/inject_bodies.py` OMITS the declaration from
+# `Sources/SwiftUI/Generated/`, so the engine can declare it with a real body in an extension
+# in the same module (`Sources/SwiftUI/Engine/Implemented/`). If the symbol is an opaque
+# witness (`var body: some View`), the type's `@_opaqueReturnTypeOf`/`typealias Body` spelling
+# is omitted with it, so Swift infers `Body` from the engine's witness.
+#
+# Rules:
+#   * a symbol must match a bodyless (stubbed) declaration; typo = hard generator error;
+#   * stored instance properties cannot be overridden (extensions cannot add storage);
+#   * class designated initializers cannot move to an extension either;
+#   * `scripts/port/generate.sh --check` fails if the generated files are stale, so commit the
+#     regenerated output together with any edit of this file;
+#   * write `#` comments freely; blank lines are ignored.
+#
+# Highest-value engine seams (see the `seams` section of build/port-sdk/injected-bodies.json):
+#   SwiftUI.VStack._makeView(view:inputs:)        SwiftUI.VStack._makeViewList(view:inputs:)
+#   SwiftUI.HStack._makeView(view:inputs:)        SwiftUI.HStack._makeViewList(view:inputs:)
+#   SwiftUI.ZStack._makeView(view:inputs:)        SwiftUI.ZStack._makeViewList(view:inputs:)
+#   SwiftUICore.Text._makeView(view:inputs:)      SwiftUICore.Text.body
+#   SwiftUICore.Color.body                        SwiftUICore.Spacer.body
+#
+# Nothing is overridden yet: the engine starts from the stub bodies and moves symbols here.

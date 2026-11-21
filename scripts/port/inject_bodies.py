@@ -212,7 +212,11 @@ class ModuleSpec:
 
 MODULE_SPECS = (
     ModuleSpec("SwiftUICore", "SwiftUICore", strip_qualifiers=("SwiftUICore",), drop_imports=()),
-    ModuleSpec("SwiftUI", "SwiftUI", strip_qualifiers=("SwiftUICore",), drop_imports=("SwiftUICore",)),
+    ModuleSpec(
+        "SwiftUI", "SwiftUI",
+        strip_qualifiers=("SwiftUICore", "SwiftUI"),
+        drop_imports=("SwiftUICore",),
+    ),
 )
 MODULES = tuple(spec.interface_module for spec in MODULE_SPECS)
 
@@ -570,6 +574,8 @@ class Container:
     conformances: list[str] = field(default_factory=list)
     #: True for `@propertyWrapper` types (their attribute spellings are not source-legal here)
     is_property_wrapper: bool = False
+    #: True when the declaration carries a `where` clause (used to tell unconstrained defaults)
+    has_where: bool = False
 
 
 # ---------------------------------------------------------------------------
@@ -964,6 +970,7 @@ class Parser:
                 path=path,
                 start=start,
                 conformances=conformances,
+                has_where=" where " in header,
                 is_property_wrapper=any(
                     kind == "attr" and name_ == "propertyWrapper" for kind, name_ in prefix
                 ),
@@ -1016,7 +1023,7 @@ class Parser:
             elif ch == ":" and depth == 0:
                 conformances = []
                 for part in split_top_level_comma(text[index + 1:]):
-                    name = normalize_type_path(part.replace(":", " "))
+                    name = normalize_type_path(part)
                     if name:
                         conformances.append(name.split(".")[-1])
                 return conformances
@@ -1437,6 +1444,7 @@ class ModuleStats:
     overridden: int = 0
     synthesized_witnesses: int = 0
     wrapper_attributes_removed: int = 0
+    convenience_init_rewrites: int = 0
 
     def as_dict(self) -> dict[str, int]:
         return {
@@ -1452,6 +1460,7 @@ class ModuleStats:
             "overridden": self.overridden,
             "synthesized_witnesses": self.synthesized_witnesses,
             "wrapper_attributes_removed": self.wrapper_attributes_removed,
+            "convenience_init_rewrites": self.convenience_init_rewrites,
         }
 
 
@@ -1588,6 +1597,7 @@ class Generator:
     # -- edit generation --------------------------------------------------
     def generate_edits(self, shared: "SharedModel") -> None:
         assert self.root is not None
+        self.shared = shared
 
         def visit(container: Container, protocol_requirements: bool) -> None:
             for member in container.members:
@@ -1743,6 +1753,23 @@ class Generator:
         return True
 
     def handle_callable(self, container: Container, member: Member, symbol: str) -> None:
+        if member.kind == "init" and container.kind == "extension" and not member.has_body:
+            # Swift forbids *designated* initializers in extensions of Swift classes. Apple's
+            # interfaces declare `init` in extensions of ObjC-imported classes (ObjC interop
+            # allows it); on the port those classes are plain Swift classes in shims, so the
+            # initializer is emitted as `convenience init` (R9).
+            kind = self.shared.type_kind(container.path) if self.shared else None
+            if kind == "class" and not any(
+                value == "convenience" for kind_name, value in member.prefix if kind_name == "mod"
+            ):
+                self.add_comment(
+                    member.start,
+                    "initializer declared in an extension of a class; emitted as "
+                    "`convenience init` (R9)",
+                )
+                if member.keyword_span is not None:
+                    self.edits.append(Edit(member.keyword_span[0], member.keyword_span[0], "convenience "))
+                self.stats.convenience_init_rewrites += 1
         if member.accessors:
             # A subscript with an accessor block (`{ get set }`), not a function body.
             self.maybe_rewrite_opaque(
@@ -2046,6 +2073,31 @@ class Generator:
 # ---------------------------------------------------------------------------
 
 
+def load_shim_type_kinds() -> dict[str, str]:
+    """Scan `port-shims/**/*.swift` for the kind of each shimmed foreign type.
+
+    Needed for R9 (initializers in extensions): whether the extended type is a class is a
+    property of the shim, not of Apple's interface. Unknown names return no kind.
+    """
+    import glob
+
+    kinds: dict[str, str] = {}
+    pattern = re.compile(
+        r"^[ \t]*(?:@\w+(?:\([^)]*\))?\s+)*(?:public |open |final |internal |package )*"
+        r"(struct|class|enum|actor)\s+([A-Za-z_]\w*)",
+        re.M,
+    )
+    for path in sorted(glob.glob(os.path.join(ROOT, "port-shims", "*", "*.swift"))):
+        try:
+            with open(path, encoding="utf-8") as handle:
+                text = handle.read()
+        except OSError:
+            continue
+        for match in pattern.finditer(text):
+            kinds.setdefault(match.group(2), match.group(1))
+    return kinds
+
+
 @dataclass
 class Requirement:
     """One protocol requirement, in the spelling the protocol declaration used."""
@@ -2112,6 +2164,8 @@ class SharedModel:
         self.synthesized: dict[str, set[str]] = {}
         self.unsupported: list[str] = []
         self.attribute_names: set[str] = {"_projectedValueProperty"}
+        self.type_kinds: dict[str, str] = {}
+        self.shim_type_kinds: dict[str, str] = {}
         self._requirements: dict[str, list[Requirement]] = {}
 
         for generator in generators:
@@ -2120,6 +2174,8 @@ class SharedModel:
                     continue
                 if container.is_property_wrapper:
                     self.attribute_names.add(container.path.split(".")[-1])
+                if container.kind in ("struct", "class", "enum", "actor"):
+                    self.type_kinds[container.path] = container.kind
                 self.implemented.setdefault(container.path, set()).update(
                     member.name for member in container.members if member.kind != "import"
                 )
@@ -2154,10 +2210,23 @@ class SharedModel:
 
         for generator in generators:
             for container in walk_containers(generator.root):
-                if container.kind == "extension" and container.path in self.protocols:
+                if (
+                    container.kind == "extension"
+                    and container.path in self.protocols
+                    and not container.has_where
+                ):
                     self.defaults.setdefault(container.path, set()).update(
                         member.name for member in container.members if member.kind != "import"
                     )
+
+        self.shim_type_kinds = load_shim_type_kinds()
+
+    def type_kind(self, path: str) -> str | None:
+        """Kind (struct/class/enum/actor) of a type: local declaration first, then shims."""
+        kind = self.type_kinds.get(path)
+        if kind:
+            return kind
+        return self.shim_type_kinds.get(path.split(".")[-1])
 
     def resolve(self, path: str) -> str | None:
         candidates = self.protocol_by_name.get(path.split(".")[-1])
@@ -2406,7 +2475,9 @@ def main(argv: list[str]) -> int:
             f"module qualifiers removed {stats['self_qualifiers_removed']}  "
             f"projections omitted {stats['synthesized_projections_omitted']}  "
             f"overridden {stats['overridden']}  "
-            f"synthesized witnesses {stats['synthesized_witnesses']}"
+            f"synthesized witnesses {stats['synthesized_witnesses']}  "
+            f"wrapper attrs removed {stats['wrapper_attributes_removed']}  "
+            f"convenience inits {stats['convenience_init_rewrites']}"
         )
         if shared.unsupported:
             print(

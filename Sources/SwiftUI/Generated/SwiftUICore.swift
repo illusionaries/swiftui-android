@@ -249,7 +249,6 @@ extension View {
         return modifier(_EnvironmentKeyTransformModifier(
             keyPath: \.isEnabled, transform: { $0 = $0 && !disabled }))
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -370,6 +369,8 @@ nonisolated public struct _CALayerView<LayerType> : View, ~Swift::Sendable where
   public var update: (LayerType) -> Swift::Void
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore._CALayerView.body") } }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -409,7 +410,6 @@ extension View {
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @_Concurrency::MainActor @preconcurrency public func _automaticPadding(_ edgeInsets: EdgeInsets? = nil) -> Swift.Never { _suiUnimplemented("SwiftUICore.View._automaticPadding(_:)") }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -426,6 +426,8 @@ extension View {
   public static func _makeView(view: _GraphValue<ZStack<Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.ZStack._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.ZStack.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -459,6 +461,8 @@ extension View {
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for Animatable (R7); Apple implements it with an internal member
+  public var animatableData: EmptyAnimatableData { get { _suiUnimplemented("SwiftUICore._ZStackLayout.animatableData") } set { _suiUnimplemented("SwiftUICore._ZStackLayout.animatableData") } }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -489,6 +493,14 @@ extension _ZStackLayout : Layout {
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Cache = Swift::Void
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public func makeCache(subviews: LayoutSubviews) -> Swift::Void { _suiUnimplemented("SwiftUICore.ZStackLayout.makeCache(subviews:)") }
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public func sizeThatFits(proposal: ProposedViewSize, subviews: LayoutSubviews, cache: inout Swift::Void) -> CoreGraphics::CGSize { _suiUnimplemented("SwiftUICore.ZStackLayout.sizeThatFits(proposal:subviews:cache:)") }
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public func placeSubviews(in bounds: CoreGraphics::CGRect, proposal: ProposedViewSize, subviews: LayoutSubviews, cache: inout Swift::Void) { _suiUnimplemented("SwiftUICore.ZStackLayout.placeSubviews(in:proposal:subviews:cache:)") }
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public var animatableData: EmptyAnimatableData { get { _suiUnimplemented("SwiftUICore.ZStackLayout.animatableData") } set { _suiUnimplemented("SwiftUICore.ZStackLayout.animatableData") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -617,6 +629,10 @@ extension ShapeStyle where Self == AngularGradient {
   public typealias Body = _ShapeView<Rectangle, LinearGradient>
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.LinearGradient.resolve(in:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: _ShapeView<Rectangle, LinearGradient> { get { _suiUnimplemented("SwiftUICore.LinearGradient.body") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -645,6 +661,10 @@ extension ShapeStyle where Self == AngularGradient {
   public typealias Body = _ShapeView<Rectangle, RadialGradient>
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.RadialGradient.resolve(in:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: _ShapeView<Rectangle, RadialGradient> { get { _suiUnimplemented("SwiftUICore.RadialGradient.body") } }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -663,6 +683,10 @@ extension ShapeStyle where Self == AngularGradient {
   public typealias Body = _ShapeView<Rectangle, EllipticalGradient>
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.EllipticalGradient.resolve(in:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: _ShapeView<Rectangle, EllipticalGradient> { get { _suiUnimplemented("SwiftUICore.EllipticalGradient.body") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -700,6 +724,10 @@ extension ShapeStyle where Self == AngularGradient {
   public typealias Body = _ShapeView<Rectangle, AngularGradient>
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.AngularGradient.resolve(in:)") }
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: _ShapeView<Rectangle, AngularGradient> { get { _suiUnimplemented("SwiftUICore.AngularGradient.body") } }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -881,7 +909,6 @@ public struct ContentMarginGuide {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func contentMargins(for guide: ContentMarginGuide, edges: Edge.Set = .all, alignment: Alignment? = nil) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.contentMargins(for:edges:alignment:)") }
-  
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @frozen public enum HorizontalDirection : Swift::Int8, Swift::CaseIterable, Swift::Codable {
@@ -1032,6 +1059,8 @@ extension ScrollTarget : Swift::Hashable, Swift::Equatable {
   public typealias AnimatableData = CoreGraphics::CGSize.AnimatableData
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for GeometryEffect (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._OffsetEffect.body(content:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -1046,7 +1075,6 @@ extension View {
   @inlinable nonisolated public func offset(x: CoreGraphics::CGFloat = 0, y: CoreGraphics::CGFloat = 0) -> some View {
         return offset(CGSize(width: x, height: y))
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -1107,7 +1135,6 @@ public func offset(_ offset: CoreGraphics::CGSize) -> Swift.Never { _suiUnimplem
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func offset(x: CoreGraphics::CGFloat = 0, y: CoreGraphics::CGFloat = 0) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.offset(x:y:)") }
-  
 }
 @available(visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 26.0)
@@ -1119,7 +1146,6 @@ public func offset(_ offset: CoreGraphics::CGSize) -> Swift.Never { _suiUnimplem
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func offset(x: CoreGraphics::CGFloat = 0, y: CoreGraphics::CGFloat = 0) -> Swift.Never { _suiUnimplemented("SwiftUICore.HoverEffectContent.offset(x:y:)") }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -1242,6 +1268,8 @@ package class _AnyAnimatableDataVTable {
   public typealias Body = Swift::Never
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias ResolvedModifier = _ColorMonochromeEffect._Resolved
+  // port: synthesized witness for EnvironmentalModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._ColorMonochromeEffect.body(content:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -1292,7 +1320,6 @@ extension View {
         return modifier(_ColorMonochromeEffect(
             color: color, amount: amount, bias: bias))
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -1323,6 +1350,8 @@ extension Gesture {
   public static func _makeGesture(gesture: _GraphValue<SimultaneousGesture<First, Second>>, inputs: _GestureInputs) -> _GestureOutputs<SimultaneousGesture<First, Second>.Value> { _suiUnimplemented("SwiftUICore.SimultaneousGesture._makeGesture(gesture:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.SimultaneousGesture.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -1390,6 +1419,8 @@ extension SimultaneousGesture.Value : Swift::Hashable where First.Value : Swift:
   public static func _makeView(view: _GraphValue<VStack<Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.VStack._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.VStack.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -1456,6 +1487,14 @@ extension _VStackLayout : Layout {
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Cache = _VStackLayout.Cache
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public func makeCache(subviews: LayoutSubviews) -> _VStackLayout.Cache { _suiUnimplemented("SwiftUICore.VStackLayout.makeCache(subviews:)") }
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public func sizeThatFits(proposal: ProposedViewSize, subviews: LayoutSubviews, cache: inout _VStackLayout.Cache) -> CoreGraphics::CGSize { _suiUnimplemented("SwiftUICore.VStackLayout.sizeThatFits(proposal:subviews:cache:)") }
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public func placeSubviews(in bounds: CoreGraphics::CGRect, proposal: ProposedViewSize, subviews: LayoutSubviews, cache: inout _VStackLayout.Cache) { _suiUnimplemented("SwiftUICore.VStackLayout.placeSubviews(in:proposal:subviews:cache:)") }
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public var animatableData: EmptyAnimatableData { get { _suiUnimplemented("SwiftUICore.VStackLayout.animatableData") } set { _suiUnimplemented("SwiftUICore.VStackLayout.animatableData") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -1681,14 +1720,12 @@ extension View {
   @export(implementation) nonisolated public func fixedSize() -> some View {
         return fixedSize(horizontal: true, vertical: true)
     }
-  
 }
 @available(iOS 26.0, macOS 26.0, watchOS 26.0, tvOS 26.0, visionOS 26.0, *)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @usableFromInline
   nonisolated internal func _fixedSize() -> Swift.Never { _suiUnimplemented("SwiftUICore.View._fixedSize()") }
-  
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension ForEach where ID == Data.Element.ID, Data.Element : Swift::Identifiable {
@@ -1797,6 +1834,8 @@ public struct EmptyHoverEffect : CustomHoverEffect, ~Swift::Sendable {
   @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
     @available(watchOS, unavailable)
   public typealias Body = Swift::Never
+  // port: synthesized witness for CustomHoverEffect (R7); Apple implements it with an internal member
+  public func body(content: EmptyHoverEffect) -> Swift::Never { _suiUnimplemented("SwiftUICore.EmptyHoverEffect.body(content:)") }
 }
 #else
 @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
@@ -1910,6 +1949,8 @@ extension Gesture {
   public static func _makeGesture(gesture: _GraphValue<ExclusiveGesture<First, Second>>, inputs: _GestureInputs) -> _GestureOutputs<ExclusiveGesture<First, Second>.Value> { _suiUnimplemented("SwiftUICore.ExclusiveGesture._makeGesture(gesture:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.ExclusiveGesture.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -1968,6 +2009,8 @@ extension ExclusiveGesture.Value : Swift::Equatable where First.Value : Swift::E
   public static func == (a: _RotationEffect, b: _RotationEffect) -> Swift::Bool { _suiUnimplemented("SwiftUICore._RotationEffect.==(a:b:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for GeometryEffect (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._RotationEffect.body(content:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -1978,7 +2021,6 @@ extension View {
   @inlinable nonisolated public func rotationEffect(_ angle: Angle, anchor: UnitPoint = .center) -> some View {
         return modifier(_RotationEffect(angle: angle, anchor: anchor))
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -1987,7 +2029,6 @@ extension View {
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func rotationEffect(_ angle: Angle, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.rotationEffect(_:anchor:)") }
-  
 }
 @available(visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 26.0)
@@ -1996,7 +2037,6 @@ public func rotationEffect(_ angle: Angle, anchor: UnitPoint = .center) -> Swift
 extension HoverEffectContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func rotationEffect(_ angle: Angle, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.HoverEffectContent.rotationEffect(_:anchor:)") }
-  
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2014,6 +2054,8 @@ public func rotationEffect(_ angle: Angle, anchor: UnitPoint = .center) -> Swift
   public var hashValue: Swift::Int {
     get { _suiUnimplemented("SwiftUICore.AnyGradient.hashValue") }
   }
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.AnyGradient.resolve(in:)") }
 }
 @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2035,7 +2077,6 @@ extension ShapeStyle where Self == LinearGradient {
         return _AnyLinearGradient(gradient: gradient,
             startPoint: startPoint, endPoint: endPoint)
     }
-  
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2047,7 +2088,6 @@ extension ShapeStyle where Self == RadialGradient {
         return _AnyRadialGradient(gradient: gradient, center: center,
             startRadius: startRadius, endRadius: endRadius)
     }
-  
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2060,7 +2100,6 @@ extension ShapeStyle where Self == EllipticalGradient {
             startRadiusFraction: startRadiusFraction,
             endRadiusFraction: endRadiusFraction)
     }
-  
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2077,7 +2116,6 @@ extension ShapeStyle where Self == AngularGradient {
         return _AnyAngularGradient(gradient: gradient, center: center,
             startAngle: angle, endAngle: angle + .radians(2 * .pi))
     }
-  
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2098,6 +2136,8 @@ extension ShapeStyle where Self == AngularGradient {
     }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore._AnyLinearGradient.resolve(in:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2121,6 +2161,8 @@ extension ShapeStyle where Self == AngularGradient {
     }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore._AnyRadialGradient.resolve(in:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2144,6 +2186,8 @@ extension ShapeStyle where Self == AngularGradient {
     }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore._AnyEllipticalGradient.resolve(in:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2163,6 +2207,8 @@ extension ShapeStyle where Self == AngularGradient {
   internal init(gradient: AnyGradient, center: UnitPoint, startAngle: Angle, endAngle: Angle) { _suiUnimplemented("SwiftUICore._AnyAngularGradient.init(gradient:center:startAngle:endAngle:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore._AnyAngularGradient.resolve(in:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -2181,6 +2227,8 @@ nonisolated public struct _ViewModifier_Content<Modifier> : View, ~Swift::Sendab
     }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore._ViewModifier_Content.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -2213,6 +2261,8 @@ nonisolated public struct PlaceholderContentView<Value> : View, ~Swift::Sendable
   public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.PlaceholderContentView._viewListCount(inputs:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.PlaceholderContentView.body") } }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -2259,6 +2309,8 @@ public struct KeyframeTrack<Root, Value, Content> : Keyframes, ~Swift::Sendable 
   public func _resolve(into resolved: inout _ResolvedKeyframes<Root>, initialValue: Root, initialVelocity: Root?) { _suiUnimplemented("SwiftUICore.KeyframeTrack._resolve(into:initialValue:initialVelocity:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for Keyframes (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.KeyframeTrack.body") } }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -2282,7 +2334,6 @@ public struct KeyframeTrack<Root, Value, Content> : Keyframes where Value == Con
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func hoverEffect(_ effect: some CustomHoverEffect = .automatic, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.hoverEffect(_:isEnabled:)") }
-  
 }
 @available(visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 27.0)
@@ -2291,7 +2342,6 @@ nonisolated public func hoverEffect(_ effect: some CustomHoverEffect = .automati
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func hoverEffect(_ effect: some CustomHoverEffect, in group: HoverEffectGroup?, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.hoverEffect(_:in:isEnabled:)") }
-  
 }
 @available(iOS 13.4, tvOS 16.0, visionOS 1.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
@@ -2303,7 +2353,6 @@ extension View {
 @available(iOS 13.4, tvOS 16.0, visionOS 1.0, *)
     @available(watchOS, unavailable)
   @_disfavoredOverload nonisolated public func hoverEffect(_ effect: HoverEffect = .automatic) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.hoverEffect(_:)") }
-  
 }
 @available(iOS 17.0, tvOS 17.0, visionOS 1.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
@@ -2324,7 +2373,6 @@ nonisolated public func defaultHoverEffect(_ effect: HoverEffect?) -> Swift.Neve
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func hoverEffectDisabled(_ disabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.hoverEffectDisabled(_:)") }
-  
 }
 @available(visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 27.0)
@@ -2333,7 +2381,6 @@ nonisolated public func hoverEffectDisabled(_ disabled: Swift::Bool = true) -> S
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func hoverEffect(in group: HoverEffectGroup? = nil, isEnabled: Swift::Bool = true, body: @escaping (EmptyHoverEffectContent, Swift::Bool, GeometryProxy) -> some HoverEffectContent) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.hoverEffect(in:isEnabled:body:)") }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.4, tvOS 16.0, *)
@@ -2401,7 +2448,6 @@ extension View {
   @inlinable nonisolated public func foregroundColor(_ color: Color?) -> some View {
         return environment(\.foregroundColor, color)
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2470,7 +2516,6 @@ extension View {
   @inlinable nonisolated public func accentColor(_ accentColor: Color?) -> some View {
         return environment(\.accentColor, accentColor)
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2538,6 +2583,8 @@ extension ShapeStyle where Self == ImagePaint {
     }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.ImagePaint.resolve(in:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
@@ -2559,6 +2606,8 @@ extension ShapeStyle where Self == FillShapeStyle {
   public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore.FillShapeStyle._apply(to:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.FillShapeStyle.resolve(in:)") }
 }
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
@@ -2566,7 +2615,6 @@ extension View {
       @available(watchOS, unavailable)
   @available(tvOS, unavailable)
   nonisolated public func contentCaptureProtected(_ isActive: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.contentCaptureProtected(_:)") }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -2582,7 +2630,6 @@ public func distortionEffect(_ shader: Shader, maxSampleOffset: CoreGraphics::CG
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func layerEffect(_ shader: Shader, maxSampleOffset: CoreGraphics::CGSize, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.layerEffect(_:maxSampleOffset:isEnabled:)") }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -2877,7 +2924,6 @@ extension Text {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public func textVariant<V>(_ preference: V) -> Swift.Never where V : TextVariantPreference { _suiUnimplemented("SwiftUICore.Text.textVariant(_:)") }
-  
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -2951,7 +2997,6 @@ nonisolated public func keyframeAnimator<Value>(initialValue: Value, trigger: so
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func keyframeAnimator<Value>(initialValue: Value, repeating: Swift::Bool = true, @ContentBuilder content: @escaping @Sendable (PlaceholderContentView<Self>, Value) -> some View, @KeyframesBuilder<Value> keyframes: @escaping (Value) -> some Keyframes<Value>) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.keyframeAnimator(initialValue:repeating:?:?:)") }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -2965,6 +3010,8 @@ nonisolated public struct KeyframeAnimator<Value, KeyframePath, Content> : View,
   public static func _makeView(view: _GraphValue<KeyframeAnimator<Value, KeyframePath, Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.KeyframeAnimator._makeView(view:inputs:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.KeyframeAnimator.body") } }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -3023,7 +3070,6 @@ extension View {
       @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   nonisolated public func onWorldRecenter(action: @escaping @_Concurrency::MainActor () -> Swift::Void) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.onWorldRecenter(action:)") }
-  
 }
 @available(macOS 26.0, visionOS 26.0, *)
 @available(watchOS, unavailable)
@@ -3129,14 +3175,12 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   @_Concurrency::MainActor @preconcurrency public func _tightPadding() -> Swift.Never { _suiUnimplemented("SwiftUICore.View._tightPadding()") }
-  
 }
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
   @available(visionOS, unavailable)
   nonisolated public func glassEffect(_ glass: Glass = .regular, in shape: some Shape = DefaultGlassEffectShape()) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.glassEffect(_:in:)") }
-  
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
 @available(visionOS, unavailable)
@@ -3156,6 +3200,8 @@ public struct DefaultGlassEffectShape : Shape {
   @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, *)
   @available(visionOS, unavailable)
   public typealias Body = _ShapeView<DefaultGlassEffectShape, ForegroundStyle>
+  // port: synthesized witness for Shape (R7); Apple implements it with an internal member
+  public var animatableData: EmptyAnimatableData { get { _suiUnimplemented("SwiftUICore.DefaultGlassEffectShape.animatableData") } set { _suiUnimplemented("SwiftUICore.DefaultGlassEffectShape.animatableData") } }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 @frozen public struct RectangleCornerInsets : Swift::Hashable, Swift::Sendable {
@@ -3183,7 +3229,6 @@ extension EdgeInsets {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func _defaultContext() -> Swift.Never { _suiUnimplemented("SwiftUICore.View._defaultContext()") }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -3200,6 +3245,8 @@ nonisolated public func _defaultContext() -> Swift.Never { _suiUnimplemented("Sw
   public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.TupleView._viewListCount(inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.TupleView.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -3243,13 +3290,11 @@ extension View {
   @inlinable nonisolated public func blendMode(_ blendMode: BlendMode) -> some View {
         return modifier(_BlendModeEffect(blendMode: blendMode))
     }
-  
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func blendMode(_ blendMode: BlendMode) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.blendMode(_:)") }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -3307,7 +3352,6 @@ public struct _Placement : Swift::Equatable {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func _colorMatrix(_ matrix: _ColorMatrix) -> Swift.Never { _suiUnimplemented("SwiftUICore.View._colorMatrix(_:)") }
-  
 }
 extension Swift::Collection {
   #if compiler(>=5.3) && $InlineAlways
@@ -3540,7 +3584,6 @@ package struct IsSectionFooterTraitKey : _ViewTraitKey {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func privacySensitive(_ sensitive: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.privacySensitive(_:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -3571,7 +3614,6 @@ extension View {
   @inlinable nonisolated public func contrast(_ amount: Swift::Double) -> some View {
         return modifier(_ContrastEffect(amount: amount))
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -3581,7 +3623,6 @@ extension View {
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func contrast(_ amount: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.contrast(_:)") }
-  
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
 @available(visionOS, unavailable)
@@ -3601,7 +3642,6 @@ extension View {
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
   @available(visionOS, unavailable)
   @_Concurrency::MainActor @preconcurrency public func glassEffectTransition(_ transition: GlassEffectTransition) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.glassEffectTransition(_:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -3744,7 +3784,6 @@ extension View {
             namespace: namespace, properties: properties,
             anchor: anchor, isSource: isSource))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -3799,6 +3838,8 @@ extension View {
   public static func _makeInputs(modifier: _GraphValue<_EnvironmentKeyWritingModifier<Value>>, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUICore._EnvironmentKeyWritingModifier._makeInputs(modifier:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._EnvironmentKeyWritingModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -3827,7 +3868,6 @@ extension View {
   @inlinable nonisolated public func environment<V>(_ keyPath: Swift::WritableKeyPath<EnvironmentValues, V>, _ value: V) -> some View {
         modifier(_EnvironmentKeyWritingModifier(keyPath: keyPath, value: value))
     }
-  
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -3886,7 +3926,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   @_Concurrency::MainActor @preconcurrency public func onOpenURL(prefersInApp: Swift::Bool) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.onOpenURL(prefersInApp:)") }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -4029,6 +4068,8 @@ extension Animation {
   public static func _makeView(modifier: _GraphValue<_OverlayModifier<Overlay>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._OverlayModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._OverlayModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -4072,6 +4113,8 @@ extension _OverlayModifier : Swift::Equatable where Overlay : Swift::Equatable {
   public static func _makeView(modifier: _GraphValue<_OverlayStyleModifier<Style>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._OverlayStyleModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._OverlayStyleModifier.body(content:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -4109,6 +4152,8 @@ extension _OverlayModifier : Swift::Equatable where Overlay : Swift::Equatable {
   public static func _makeView(modifier: _GraphValue<_OverlayShapeModifier<Style, Bounds>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._OverlayShapeModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._OverlayShapeModifier.body(content:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -4149,7 +4194,6 @@ extension View {
   @inlinable nonisolated public func border<S>(_ content: S, width: CoreGraphics::CGFloat = 1) -> some View where S : ShapeStyle {
         return overlay(Rectangle().strokeBorder(content, lineWidth: width))
     }
-  
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -4170,7 +4214,6 @@ extension View {
         modifier(_OverlayShapeModifier(
             style: style, shape: shape, fillStyle: fillStyle))
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -4301,6 +4344,8 @@ nonisolated public struct LazyHStack<Content> : View, ~Swift::Sendable where Con
   public static func _makeView(view: _GraphValue<LazyHStack<Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.LazyHStack._makeView(view:inputs:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.LazyHStack.body") } }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -4452,7 +4497,6 @@ extension EnvironmentValues {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func buttonSizing(_ sizing: ButtonSizing) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.buttonSizing(_:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -4657,7 +4701,6 @@ extension View {
   @inlinable nonisolated public func blur(radius: CoreGraphics::CGFloat, opaque: Swift::Bool = false) -> some View {
         return modifier(_BlurEffect(radius: radius, opaque: opaque))
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -4667,7 +4710,6 @@ extension View {
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func blur(radius: CoreGraphics::CGFloat, opaque: Swift::Bool = false) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.blur(radius:opaque:)") }
-  
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -4705,7 +4747,6 @@ nonisolated public struct SplitArrangementViewStyle : ArrangementViewStyle, ~Swi
   nonisolated public func axes(_ axes: Axis.Set) -> SplitArrangementViewStyle { _suiUnimplemented("SwiftUICore.SplitArrangementViewStyle.axes(_:)") }
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: SplitArrangementViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUICore.SplitArrangementViewStyle.makeBody(configuration:)") }
-  
 }
 #else
 @available(anyAppleOS 27.1, *)
@@ -4713,7 +4754,6 @@ nonisolated public struct SplitArrangementViewStyle : ArrangementViewStyle {
   nonisolated public init()
   nonisolated public func axes(_ axes: Axis.Set) -> SplitArrangementViewStyle
   nonisolated public func makeBody(configuration: SplitArrangementViewStyle.Configuration) -> some View
-  
 }
 #endif
 extension View {
@@ -4732,7 +4772,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(anyAppleOS 27.1, *)
   nonisolated public func splitArrangementFixedLayoutSize(horizontal: Swift::Bool = true, vertical: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.splitArrangementFixedLayoutSize(horizontal:vertical:)") }
-  
 }
 extension EnvironmentValues {
   @available(anyAppleOS 27.1, *)
@@ -4793,7 +4832,6 @@ extension View {
   @inlinable nonisolated public func colorInvert() -> some View {
         return modifier(_ColorInvertEffect())
     }
-  
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -4814,7 +4852,6 @@ extension View {
   @inlinable nonisolated public func _trait<K>(_ key: K.Type, _ value: K.Value) -> some View where K : _ViewTraitKey {
         return modifier(_TraitWritingModifier<K>(value: value))
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -4911,7 +4948,6 @@ extension View {
         modifier(_ConditionalTraitWritingModifier<K>(
             value: value, isEnabled: isEnabled))
     }
-  
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -5100,7 +5136,6 @@ extension View {
   @inlinable nonisolated public func grayscale(_ amount: Swift::Double) -> some View {
         return modifier(_GrayscaleEffect(amount: amount))
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -5110,7 +5145,6 @@ extension View {
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func grayscale(_ amount: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.grayscale(_:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -5233,6 +5267,8 @@ extension Anchor.Source {
   public static func == (lhs: _Rotation3DEffect, rhs: _Rotation3DEffect) -> Swift::Bool { _suiUnimplemented("SwiftUICore._Rotation3DEffect.==(lhs:rhs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for GeometryEffect (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._Rotation3DEffect.body(content:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -5246,7 +5282,6 @@ extension View {
             perspective: perspective
         ))
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -5256,7 +5291,6 @@ extension View {
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func rotation3DEffect(_ angle: Angle, axis: (x: CoreGraphics::CGFloat, y: CoreGraphics::CGFloat, z: CoreGraphics::CGFloat), anchor: UnitPoint = .center, anchorZ: CoreGraphics::CGFloat = 0, perspective: CoreGraphics::CGFloat = 1) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.rotation3DEffect(_:axis:anchor:anchorZ:perspective:)") }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -5284,7 +5318,6 @@ extension View {
   @inlinable nonisolated public func layoutDirectionBehavior(_ behavior: LayoutDirectionBehavior) -> some View {
         modifier(_LayoutDirectionBehaviorEffect(behavior: behavior))
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
@@ -5299,6 +5332,8 @@ extension View {
   public static func _makeView(modifier: _GraphValue<_LayoutDirectionBehaviorEffect>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._LayoutDirectionBehaviorEffect._makeView(modifier:inputs:body:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._LayoutDirectionBehaviorEffect.body(content:)") }
 }
 @available(visionOS 2.0, *)
 @available(watchOS, unavailable)
@@ -5383,7 +5418,6 @@ extension View {
   @inlinable nonisolated public func opacity(_ opacity: Swift::Double) -> some View {
         return modifier(_OpacityEffect(opacity: opacity))
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -5392,7 +5426,6 @@ extension View {
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func opacity(_ opacity: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.opacity(_:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -5423,7 +5456,6 @@ extension ShapeStyle where Self == AnyShapeStyle {
         return _OpacityShapeStyle(
             style: _ImplicitShapeStyle(), opacity: Float(opacity))
     }
-  
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -5441,6 +5473,8 @@ extension ShapeStyle where Self == AnyShapeStyle {
   public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore._OpacityShapeStyle._apply(to:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore._OpacityShapeStyle.resolve(in:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -5480,7 +5514,6 @@ extension ShapeStyle {
   @inlinable @_disfavoredOverload public func opacity(_ opacity: Swift::Double) -> some ShapeStyle {
         _OpacityShapeStyle(style: self, opacity: Float(opacity))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -5520,6 +5553,8 @@ extension ShapeStyle {
   public typealias Body = Swift::Never
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias ResolvedModifier = _ShadowEffect._Resolved
+  // port: synthesized witness for EnvironmentalModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._ShadowEffect.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -5575,7 +5610,6 @@ extension View {
                 offset: CGSize(width: x, height: y)
         ))
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -5612,6 +5646,8 @@ nonisolated public struct _DrawingGroupEffect : ViewModifier, Swift::Equatable, 
   public static func == (a: _DrawingGroupEffect, b: _DrawingGroupEffect) -> Swift::Bool { _suiUnimplemented("SwiftUICore._DrawingGroupEffect.==(a:b:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._DrawingGroupEffect.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -5643,7 +5679,6 @@ nonisolated public struct _DrawingGroupEffect : ViewModifier, Swift::Equatable {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func drawingGroup(opaque: Swift::Bool = false, colorMode: ColorRenderingMode = .nonLinear) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.drawingGroup(opaque:colorMode:)") }
-  
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -5685,7 +5720,6 @@ extension View {
   @inlinable nonisolated public func brightness(_ amount: Swift::Double) -> some View {
         return modifier(_BrightnessEffect(amount: amount))
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -5695,7 +5729,6 @@ extension View {
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func brightness(_ amount: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.brightness(_:)") }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -5719,7 +5752,6 @@ extension View {
   @export(implementation) nonisolated public func geometryGroup() -> some View {
         return modifier(_GeometryGroupEffect())
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -5959,7 +5991,6 @@ extension View {
   @inlinable nonisolated public func environmentObject<T>(_ object: T) -> some View where T : Combine::ObservableObject {
         environment(T.environmentStore, object)
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -5982,7 +6013,6 @@ extension View {
         return modifier(_MaskAlignmentEffect(
             alignment: alignment, mask: mask()))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -6000,6 +6030,8 @@ extension View {
   public static func _makeView(modifier: _GraphValue<_MaskAlignmentEffect<Mask>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._MaskAlignmentEffect._makeView(modifier:inputs:body:)") }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._MaskAlignmentEffect.body(content:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -6041,7 +6073,6 @@ extension View {
   @inlinable nonisolated public func mask<Mask>(_ mask: Mask) -> some View where Mask : View {
         return modifier(_MaskEffect(mask: mask))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6057,6 +6088,8 @@ extension View {
   public static func _makeView(modifier: _GraphValue<_MaskEffect<Mask>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._MaskEffect._makeView(modifier:inputs:body:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._MaskEffect.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6103,7 +6136,6 @@ extension View {
   @inlinable nonisolated public func edgesIgnoringSafeArea(_ edges: Edge.Set) -> some View {
         return modifier(_SafeAreaIgnoringLayout(edges: edges))
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -6159,6 +6191,8 @@ extension Swift::Comparable {
   public typealias Body = Swift::Never
   @available(macOS 15.4, iOS 18.4, tvOS 18.4, watchOS 11.4, visionOS 2.4, *)
   public typealias ResolvedModifier = _AlphaThresholdEffect._Resolved
+  // port: synthesized witness for EnvironmentalModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._AlphaThresholdEffect.body(content:)") }
 }
 #else
 @available(iOS 18.4, macOS 15.4, tvOS 18.4, watchOS 11.4, visionOS 2.4, *)
@@ -6248,7 +6282,6 @@ public struct AutomaticHoverEffect : CustomHoverEffect, ~Swift::Sendable {
   public init() { _suiUnimplemented("SwiftUICore.AutomaticHoverEffect.init()") }
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func body(content: AutomaticHoverEffect.Content) -> Swift.Never { _suiUnimplemented("SwiftUICore.AutomaticHoverEffect.body(content:)") }
-  
 }
 #else
 @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
@@ -6259,7 +6292,6 @@ public func body(content: AutomaticHoverEffect.Content) -> Swift.Never { _suiUni
 public struct AutomaticHoverEffect : CustomHoverEffect {
   public init()
   public func body(content: AutomaticHoverEffect.Content) -> some CustomHoverEffect
-  
 }
 #endif
 @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
@@ -6282,7 +6314,6 @@ public struct HighlightHoverEffect : CustomHoverEffect, ~Swift::Sendable {
   public init() { _suiUnimplemented("SwiftUICore.HighlightHoverEffect.init()") }
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func body(content: HighlightHoverEffect.Content) -> Swift.Never { _suiUnimplemented("SwiftUICore.HighlightHoverEffect.body(content:)") }
-  
 }
 #else
 @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
@@ -6293,7 +6324,6 @@ public func body(content: HighlightHoverEffect.Content) -> Swift.Never { _suiUni
 public struct HighlightHoverEffect : CustomHoverEffect {
   public init()
   public func body(content: HighlightHoverEffect.Content) -> some CustomHoverEffect
-  
 }
 #endif
 @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
@@ -6316,7 +6346,6 @@ public struct LiftHoverEffect : CustomHoverEffect, ~Swift::Sendable {
   public init() { _suiUnimplemented("SwiftUICore.LiftHoverEffect.init()") }
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func body(content: LiftHoverEffect.Content) -> Swift.Never { _suiUnimplemented("SwiftUICore.LiftHoverEffect.body(content:)") }
-  
 }
 #else
 @available(iOS 18.0, tvOS 18.0, visionOS 2.0, *)
@@ -6327,7 +6356,6 @@ public func body(content: LiftHoverEffect.Content) -> Swift.Never { _suiUnimplem
 public struct LiftHoverEffect : CustomHoverEffect {
   public init()
   public func body(content: LiftHoverEffect.Content) -> some CustomHoverEffect
-  
 }
 #endif
 @available(visionOS 1.0, *)
@@ -6383,6 +6411,7 @@ public static var back: DepthAlignment { get { _suiUnimplemented("SwiftUICore.De
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text {
+  @_semantics("swiftui.init_with_localization") public init(_ key: LocalizedStringKey, tableName: Swift::String? = nil, bundle: Foundation::Bundle? = nil, comment: Swift::StaticString? = nil) { _suiUnimplemented("SwiftUICore.Text.init(_:tableName:bundle:comment:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6749,6 +6778,8 @@ nonisolated public struct DebugReplaceableView : View, ~Swift::Sendable {
   public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.DebugReplaceableView._viewListCount(inputs:)") }
   @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.DebugReplaceableView.body") } }
 }
 #else
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -6871,6 +6902,8 @@ extension Text {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension LocalizedStringKey.StringInterpolation {
+  @available(iOS 16.0, macOS 13, tvOS 16.0, watchOS 9.0, *)
+  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(_ resource: FoundationShims.LocalizedStringResource) { _suiUnimplemented("SwiftUICore.LocalizedStringKey.SwiftUICore.StringInterpolation.appendInterpolation(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 11.0, tvOS 17.0, watchOS 10.0, *)
@@ -6998,6 +7031,8 @@ extension ViewDimensions3D : Swift::Equatable {
   public static func _makeView(view: _GraphValue<HStack<Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.HStack._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.HStack.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -7064,6 +7099,14 @@ extension _HStackLayout : Layout {
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias Cache = _HStackLayout.Cache
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public func makeCache(subviews: LayoutSubviews) -> _HStackLayout.Cache { _suiUnimplemented("SwiftUICore.HStackLayout.makeCache(subviews:)") }
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public func sizeThatFits(proposal: ProposedViewSize, subviews: LayoutSubviews, cache: inout _HStackLayout.Cache) -> CoreGraphics::CGSize { _suiUnimplemented("SwiftUICore.HStackLayout.sizeThatFits(proposal:subviews:cache:)") }
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public func placeSubviews(in bounds: CoreGraphics::CGRect, proposal: ProposedViewSize, subviews: LayoutSubviews, cache: inout _HStackLayout.Cache) { _suiUnimplemented("SwiftUICore.HStackLayout.placeSubviews(in:proposal:subviews:cache:)") }
+  // port: synthesized witness for Layout (R7); Apple implements it with an internal member
+  public var animatableData: EmptyAnimatableData { get { _suiUnimplemented("SwiftUICore.HStackLayout.animatableData") } set { _suiUnimplemented("SwiftUICore.HStackLayout.animatableData") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -7087,7 +7130,6 @@ extension View {
   @inlinable nonisolated public func compositingGroup() -> some View {
         return modifier(_CompositingGroupEffect())
     }
-  
 }
 @available(anyAppleOS 27.0, *)
 @frozen nonisolated public struct _ConditionalCompositingGroupEffect : Swift::Equatable {
@@ -7179,6 +7221,8 @@ extension TupleContent : Swift::Sendable where repeat each Content : Swift::Send
   public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.AnyShapeStyle._apply(to:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.AnyShapeStyle.resolve(in:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -7213,6 +7257,8 @@ package class AnyShapeStyleBox : @unchecked Swift::Sendable {
   public static func _makeView(view: _GraphValue<_PreferenceReadingView<Key, Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._PreferenceReadingView._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore._PreferenceReadingView.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -7270,7 +7316,6 @@ extension View {
   @inlinable nonisolated public func position(x: CoreGraphics::CGFloat = 0, y: CoreGraphics::CGFloat = 0) -> some View {
         return position(CGPoint(x: x, y: y))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -7374,7 +7419,6 @@ extension Shape {
         return _TrimmedShape(shape: self, startFraction: startFraction,
             endFraction: endFraction)
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -7542,7 +7586,6 @@ extension View {
         return modifier(
             _AccessibilityIgnoresInvertColorsViewModifier(active: active))
     }
-  
 }
 @available(visionOS 1.0, *)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 1.0)
@@ -7645,7 +7688,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   nonisolated public func strikethrough(_ isActive: Swift::Bool = true, pattern: Text.LineStyle.Pattern = .solid, color: Color? = nil) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.strikethrough(_:pattern:color:)") }
-  
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
@@ -7675,7 +7717,6 @@ nonisolated public func speechAdjustedPitch(_ value: Swift::Double) -> Swift.Nev
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func speechAnnouncementsQueued(_ value: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.speechAnnouncementsQueued(_:)") }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -7923,7 +7964,6 @@ extension View {
   @export(implementation) @preconcurrency nonisolated public func onGeometryChange<T>(for type: T.Type, of transform: @escaping @Sendable (GeometryProxy) -> T, action: @escaping (_ newValue: T) -> Swift::Void) -> some View where T : Swift::Equatable, T : Swift::Sendable {
         modifier(_GeometryActionModifier<T>(value: transform, action: action))
     }
-  
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -7933,7 +7973,6 @@ extension View {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @preconcurrency nonisolated public func onGeometryChange<T>(for type: T.Type, of transform: @escaping @Sendable (GeometryProxy) -> T, action: @escaping (_ oldValue: T, _ newValue: T) -> Swift::Void) -> Swift.Never where T : Swift::Equatable, T : Swift::Sendable { _suiUnimplemented("SwiftUICore.View.onGeometryChange(for:of:action:)") }
-  
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -7969,7 +8008,6 @@ nonisolated public func redacted(reason: RedactionReasons) -> Swift.Never { _sui
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func unredacted() -> Swift.Never { _suiUnimplemented("SwiftUICore.View.unredacted()") }
-  
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8034,7 +8072,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   nonisolated public func controlSize<T>(_ range: T) -> Swift.Never where T : Swift::RangeExpression, T.Bound == ControlSize { _suiUnimplemented("SwiftUICore.View.controlSize(_:)") }
-  
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension Foundation::FormatStyle where Self == SystemFormatStyle.DateOffset {
@@ -8185,7 +8222,6 @@ extension ShapeStyle {
   @_disfavoredOverload @inlinable public func blendMode(_ mode: BlendMode) -> some ShapeStyle {
         _BlendModeShapeStyle(style: self, blendMode: mode)
     }
-  
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8197,7 +8233,6 @@ extension ShapeStyle where Self == AnyShapeStyle {
         return _BlendModeShapeStyle(
             style: _ImplicitShapeStyle(), blendMode: mode)
     }
-  
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8215,6 +8250,8 @@ extension ShapeStyle where Self == AnyShapeStyle {
   public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore._BlendModeShapeStyle._apply(to:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore._BlendModeShapeStyle.resolve(in:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8354,7 +8391,6 @@ extension Material {
 extension ShapeStyle {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func materialActiveAppearance(_ appearance: MaterialActiveAppearance) -> Swift.Never { _suiUnimplemented("SwiftUICore.ShapeStyle.materialActiveAppearance(_:)") }
-  
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8365,7 +8401,6 @@ public func materialActiveAppearance(_ appearance: MaterialActiveAppearance) -> 
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func materialActiveAppearance(_ appearance: MaterialActiveAppearance) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.materialActiveAppearance(_:)") }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
@@ -8430,6 +8465,10 @@ extension Image {
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for GeometryEffect (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._TransformEffect.body(content:)") }
+  // port: synthesized witness for GeometryEffect (R7); Apple implements it with an internal member
+  public var animatableData: EmptyAnimatableData { get { _suiUnimplemented("SwiftUICore._TransformEffect.animatableData") } set { _suiUnimplemented("SwiftUICore._TransformEffect.animatableData") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -8439,7 +8478,6 @@ extension View {
   @inlinable nonisolated public func transformEffect(_ transform: CoreGraphics::CGAffineTransform) -> some View {
         return modifier(_TransformEffect(transform: transform))
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -8451,7 +8489,6 @@ public func transformEffect(_ transform: ProjectionTransform) -> Swift.Never { _
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func transformEffect(_ transform: CoreGraphics::CGAffineTransform) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.transformEffect(_:)") }
-  
 }
 @available(visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 26.0)
@@ -8460,7 +8497,6 @@ public func transformEffect(_ transform: CoreGraphics::CGAffineTransform) -> Swi
 extension HoverEffectContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func transformEffect(_ transform: CoreGraphics::CGAffineTransform) -> Swift.Never { _suiUnimplemented("SwiftUICore.HoverEffectContent.transformEffect(_:)") }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8676,6 +8712,8 @@ public static var quaternary: HierarchicalShapeStyle { get { _suiUnimplemented("
   public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.HierarchicalShapeStyle._apply(to:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.HierarchicalShapeStyle.resolve(in:)") }
 }
 @available(iOS 16.0, macOS 12.0, macCatalyst 15.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8730,6 +8768,8 @@ extension ShapeStyle {
   public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.HierarchicalShapeStyleModifier._apply(to:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.HierarchicalShapeStyleModifier.resolve(in:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8746,6 +8786,8 @@ extension ShapeStyle {
   public static func == (a: _CoordinateSpaceModifier<Name>, b: _CoordinateSpaceModifier<Name>) -> Swift::Bool { _suiUnimplemented("SwiftUICore._CoordinateSpaceModifier.==(a:b:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._CoordinateSpaceModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8778,7 +8820,6 @@ extension View {
   @inlinable nonisolated public func coordinateSpace<T>(name: T) -> some View where T : Swift::Hashable {
         return modifier(_CoordinateSpaceModifier(name: name))
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
@@ -8788,7 +8829,6 @@ extension View {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func coordinateSpace(_ name: NamedCoordinateSpace) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.coordinateSpace(_:)") }
-  
 }
 @available(visionOS 26.0, *)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 27.0)
@@ -8873,7 +8913,6 @@ extension View {
   @inlinable nonisolated public func symbolRenderingMode(_ mode: SymbolRenderingMode?) -> some View {
         return environment(\.symbolRenderingMode, mode)
     }
-  
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -8907,7 +8946,6 @@ extension View {
   @export(implementation) nonisolated public func symbolVariableValueMode(_ mode: SymbolVariableValueMode?) -> some View {
         return environment(\.symbolVariableValueMode, mode)
     }
-  
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Image {
@@ -8933,7 +8971,6 @@ extension View {
   @export(implementation) nonisolated public func symbolColorRenderingMode(_ mode: SymbolColorRenderingMode?) -> some View {
         return environment(\.symbolColorRenderingMode, mode)
     }
-  
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Image {
@@ -9075,7 +9112,6 @@ nonisolated public func distortionEffect(_ shader: Shader, maxSampleOffset: Core
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func layerEffect(_ shader: Shader, maxSampleOffset: CoreGraphics::CGSize, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.layerEffect(_:maxSampleOffset:isEnabled:)") }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -9894,10 +9930,10 @@ extension View {
   @inlinable nonisolated public func scaledToFill() -> some View {
         return aspectRatio(contentMode: .fill)
     }
-  
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension LocalizedStringKey.StringInterpolation {
+  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(accessibilityName color: Color) { _suiUnimplemented("SwiftUICore.LocalizedStringKey.SwiftUICore.StringInterpolation.appendInterpolation(accessibilityName:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -9943,6 +9979,7 @@ extension Text {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension LocalizedStringKey.StringInterpolation {
+  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(_ image: Image) { _suiUnimplemented("SwiftUICore.LocalizedStringKey.SwiftUICore.StringInterpolation.appendInterpolation(_:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -9980,6 +10017,9 @@ extension Text {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension LocalizedStringKey.StringInterpolation {
+  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(_ date: Foundation::Date, style: Text.DateStyle) { _suiUnimplemented("SwiftUICore.LocalizedStringKey.SwiftUICore.StringInterpolation.appendInterpolation(_:style:)") }
+  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(_ dates: Swift::ClosedRange<Foundation::Date>) { _suiUnimplemented("SwiftUICore.LocalizedStringKey.SwiftUICore.StringInterpolation.appendInterpolation(_:)") }
+  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(_ interval: Foundation::DateInterval) { _suiUnimplemented("SwiftUICore.LocalizedStringKey.SwiftUICore.StringInterpolation.appendInterpolation(_:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -9987,6 +10027,7 @@ extension LocalizedStringKey.StringInterpolation {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension LocalizedStringKey.StringInterpolation {
+  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(timerInterval: Swift::ClosedRange<Foundation::Date>, pauseTime: Foundation::Date? = nil, countsDown: Swift::Bool = true, showsHours: Swift::Bool = true) { _suiUnimplemented("SwiftUICore.LocalizedStringKey.SwiftUICore.StringInterpolation.appendInterpolation(timerInterval:pauseTime:countsDown:showsHours:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension Text.DateStyle : Swift::Equatable {
@@ -10301,6 +10342,8 @@ public struct SeparatorShapeStyle : ShapeStyle {
   nonisolated public static func _makeView<S>(view: _GraphValue<_ShapeView<S, SeparatorShapeStyle>>, inputs: _ViewInputs) -> _ViewOutputs where S : Shape { _suiUnimplemented("SwiftUICore.SeparatorShapeStyle._makeView(view:inputs:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.SeparatorShapeStyle.resolve(in:)") }
 }
 @available(iOS 17.0, macOS 12.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -10416,6 +10459,8 @@ extension Color.ResolvedHDR : Swift::Codable {
   public static func _makeView(view: _GraphValue<GeometryReader<Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.GeometryReader._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.GeometryReader.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -10581,7 +10626,6 @@ extension View {
         return modifier(_BackgroundPreferenceModifier<K, V>(
             alignment: alignment, transform: transform))
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -10604,7 +10648,6 @@ extension View {
   @inlinable @_disfavoredOverload nonisolated public func backgroundPreferenceValue<Key, T>(_ key: Key.Type = Key.self, @ContentBuilder _ transform: @escaping (Key.Value) -> T) -> some View where Key : PreferenceKey, T : View {
         return Key._delay { self.background($0._force(transform)) }
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -10731,7 +10774,6 @@ extension View {
   @inlinable nonisolated public func zIndex(_ value: Swift::Double) -> some View {
         return _trait(ZIndexTraitKey.self, value)
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -10944,7 +10986,6 @@ extension View {
   @inlinable nonisolated public func layoutValue<K>(key: K.Type, value: K.Value) -> some View where K : LayoutValueKey {
         return _trait(_LayoutTrait<K>.self, value)
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -10982,7 +11023,6 @@ extension Layout {
   @export(implementation) @_disfavoredOverload public func callAsFunction<V>(@ContentBuilder _ content: () -> V) -> some View where V : View {
         return _VariadicView.Tree(_LayoutRoot(self)) { content() }
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -11058,6 +11098,8 @@ nonisolated public struct LazyVStack<Content> : View, ~Swift::Sendable where Con
   public static func _makeView(view: _GraphValue<LazyVStack<Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.LazyVStack._makeView(view:inputs:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.LazyVStack.body") } }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -11113,7 +11155,6 @@ nonisolated public struct SlideTransition : Transition, ~Swift::Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUICore.SlideTransition.init()") }
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func body(content: SlideTransition.Content, phase: TransitionPhase) -> Swift.Never { _suiUnimplemented("SwiftUICore.SlideTransition.body(content:phase:)") }
-  
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -11124,7 +11165,6 @@ nonisolated public func body(content: SlideTransition.Content, phase: Transition
 nonisolated public struct SlideTransition : Transition {
   nonisolated public init()
   nonisolated public func body(content: SlideTransition.Content, phase: TransitionPhase) -> some View
-  
 }
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -11227,7 +11267,6 @@ extension View {
   @inlinable nonisolated public func textCase(_ textCase: Text.Case?) -> some View {
         environment(\.textCase, textCase)
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11257,7 +11296,6 @@ extension ShapeStyle {
   @inlinable public func shadow(_ style: ShadowStyle) -> some ShapeStyle {
         return _ShadowShapeStyle(style: self, shadowStyle: style)
     }
-  
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11269,7 +11307,6 @@ extension ShapeStyle where Self == AnyShapeStyle {
         return _ShadowShapeStyle(
             style: _ImplicitShapeStyle(), shadowStyle: style)
     }
-  
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11289,6 +11326,8 @@ extension ShapeStyle where Self == AnyShapeStyle {
   public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore._ShadowShapeStyle._apply(to:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore._ShadowShapeStyle.resolve(in:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11305,6 +11344,8 @@ extension ShapeStyle where Self == AnyShapeStyle {
   nonisolated public static func _makeView<T>(view: _GraphValue<_ShapeView<T, _AnchoredShapeStyle<S>>>, inputs: _ViewInputs) -> _ViewOutputs where T : Shape { _suiUnimplemented("SwiftUICore._AnchoredShapeStyle._makeView(view:inputs:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore._AnchoredShapeStyle.resolve(in:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11324,7 +11365,6 @@ extension ShapeStyle {
   @inlinable public func `in`(_ rect: CoreGraphics::CGRect) -> some ShapeStyle {
         return _AnchoredShapeStyle(style: self, bounds: rect)
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11385,7 +11425,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
   nonisolated public func typesettingLanguage(_ language: TypesettingLanguage, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.typesettingLanguage(_:isEnabled:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11492,7 +11531,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   nonisolated public func lineLimit(_ limit: Swift::Int, reservesSpace: Swift::Bool) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.lineLimit(_:reservesSpace:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11784,6 +11822,8 @@ public struct ForEachSubviewCollection<Content> : Swift::RandomAccessCollection 
   public static func _makeView(modifier: _GraphValue<_AlignmentWritingModifier>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._AlignmentWritingModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._AlignmentWritingModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -11819,7 +11859,6 @@ extension View {
         return modifier(
             _AlignmentWritingModifier(key: g.key, computeValue: computeValue))
     }
-  
 }
 extension EnvironmentValues {
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -11833,7 +11872,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   nonisolated public func lineHeight(_ lineHeight: Foundation::AttributedString.CoreText::LineHeight?) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.lineHeight(_:)") }
-  
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
 @available(visionOS, unavailable)
@@ -11914,6 +11952,8 @@ extension ShapeStyle where Self == BackgroundStyle {
   public static func _apply(to type: inout _ShapeStyle_ShapeType) { _suiUnimplemented("SwiftUICore.BackgroundStyle._apply(to:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.BackgroundStyle.resolve(in:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11931,7 +11971,6 @@ extension View {
   @inlinable nonisolated public func backgroundStyle<S>(_ style: S) -> some View where S : ShapeStyle {
         return modifier(_EnvironmentBackgroundStyleModifier(style: style))
     }
-  
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -11994,7 +12033,6 @@ extension View {
         modifier(_ForegroundStyleModifier3(
             primary: primary, secondary: secondary, tertiary: tertiary))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -12121,6 +12159,8 @@ extension ShapeStyle where Self == ForegroundStyle {
   nonisolated public static func _makeView<S>(view: _GraphValue<_ShapeView<S, ForegroundStyle>>, inputs: _ViewInputs) -> _ViewOutputs where S : Shape { _suiUnimplemented("SwiftUICore.ForegroundStyle._makeView(view:inputs:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.ForegroundStyle.resolve(in:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -12141,6 +12181,8 @@ extension ForegroundStyle {
   public func _apply(to shape: inout _ShapeStyle_Shape) { _suiUnimplemented("SwiftUICore._ImplicitShapeStyle._apply(to:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore._ImplicitShapeStyle.resolve(in:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -12242,7 +12284,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   nonisolated public func attributedTextFormattingDefinition<S>(_ path: Swift::KeyPath<Foundation::AttributeScopes, S.Type>) -> Swift.Never where S : Foundation::AttributeScope { _suiUnimplemented("SwiftUICore.View.attributedTextFormattingDefinition(_:)") }
-  
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 public protocol AttributedTextFormattingDefinition<Scope> {
@@ -12720,7 +12761,6 @@ extension Shape {
   @inlinable nonisolated public func stroke(lineWidth: CoreGraphics::CGFloat = 1) -> some Shape {
         return stroke(style: StrokeStyle(lineWidth: lineWidth))
     }
-  
 }
 @_hasMissingDesignatedInitializers @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -12817,6 +12857,8 @@ extension UnitPoint : Swift::Codable {
         self.transform = transform
     }
   public static func _makeView(modifier: _GraphValue<_PreferenceTransformModifier<Key>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._PreferenceTransformModifier._makeView(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._PreferenceTransformModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -12842,7 +12884,6 @@ extension View {
   @inlinable nonisolated public func transformPreference<K>(_ key: K.Type = K.self, _ callback: @escaping (inout K.Value) -> Swift::Void) -> some View where K : PreferenceKey {
         return modifier(_PreferenceTransformModifier<K>(transform: callback))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -12875,6 +12916,8 @@ public struct _ViewOutputs {
     }
   public static func _makeView(modifier: _GraphValue<_PreferenceWritingModifier<Key>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._PreferenceWritingModifier._makeView(modifier:inputs:body:)") }
   public static func _makeViewList(modifier: _GraphValue<_PreferenceWritingModifier<Key>>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore._PreferenceWritingModifier._makeViewList(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._PreferenceWritingModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -12909,7 +12952,6 @@ extension View {
   @inlinable nonisolated public func preference<K>(key: K.Type = K.self, value: K.Value) -> some View where K : PreferenceKey {
         return modifier(_PreferenceWritingModifier<K>(value: value))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.5, macOS 11.3, tvOS 14.5, watchOS 7.4, *)
@@ -12964,14 +13006,12 @@ extension View {
   @inlinable nonisolated public func luminanceToAlpha() -> some View {
         return modifier(_LuminanceToAlphaEffect())
     }
-  
 }
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
   @available(visionOS, unavailable)
   @_Concurrency::MainActor @preconcurrency public func glassEffectUnion(id: (some (Hashable & Sendable))?, namespace: Namespace.ID) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.glassEffectUnion(id:namespace:)") }
-  
 }
 @available(anyAppleOS 27.1, *)
 extension ArrangementViewStyle where Self == OverlayArrangementViewStyle {
@@ -12986,7 +13026,6 @@ nonisolated public struct OverlayArrangementViewStyle : ArrangementViewStyle, ~S
   nonisolated public func axes(_ axes: Axis.Set) -> OverlayArrangementViewStyle { _suiUnimplemented("SwiftUICore.OverlayArrangementViewStyle.axes(_:)") }
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: OverlayArrangementViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUICore.OverlayArrangementViewStyle.makeBody(configuration:)") }
-  
 }
 #else
 @available(anyAppleOS 27.1, *)
@@ -12994,7 +13033,6 @@ nonisolated public struct OverlayArrangementViewStyle : ArrangementViewStyle {
   nonisolated public init()
   nonisolated public func axes(_ axes: Axis.Set) -> OverlayArrangementViewStyle
   nonisolated public func makeBody(configuration: OverlayArrangementViewStyle.Configuration) -> some View
-  
 }
 #endif
 extension View {
@@ -13005,7 +13043,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(anyAppleOS 27.1, *)
   nonisolated public func overlayArrangementEdge(_ edge: HorizontalEdge?) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.overlayArrangementEdge(_:)") }
-  
 }
 extension EnvironmentValues {
   @available(anyAppleOS 27.1, *)
@@ -13108,6 +13145,8 @@ nonisolated public struct _MapGesture<Content, Value> where Content : Gesture {
   public static func _makeGesture(gesture: _GraphValue<AnyGesture<Value>>, inputs: _GestureInputs) -> _GestureOutputs<Value> { _suiUnimplemented("SwiftUICore.AnyGesture._makeGesture(gesture:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.AnyGesture.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -13396,6 +13435,8 @@ extension Shape where Self == Rectangle {
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = _ShapeView<Rectangle, ForegroundStyle>
+  // port: synthesized witness for Shape (R7); Apple implements it with an internal member
+  public var animatableData: EmptyAnimatableData { get { _suiUnimplemented("SwiftUICore.Rectangle.animatableData") } set { _suiUnimplemented("SwiftUICore.Rectangle.animatableData") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -13514,6 +13555,8 @@ extension Shape where Self == Capsule {
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = _ShapeView<Capsule, ForegroundStyle>
+  // port: synthesized witness for Shape (R7); Apple implements it with an internal member
+  public var animatableData: EmptyAnimatableData { get { _suiUnimplemented("SwiftUICore.Capsule.animatableData") } set { _suiUnimplemented("SwiftUICore.Capsule.animatableData") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -13541,6 +13584,8 @@ extension Shape where Self == Ellipse {
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = _ShapeView<Ellipse, ForegroundStyle>
+  // port: synthesized witness for Shape (R7); Apple implements it with an internal member
+  public var animatableData: EmptyAnimatableData { get { _suiUnimplemented("SwiftUICore.Ellipse.animatableData") } set { _suiUnimplemented("SwiftUICore.Ellipse.animatableData") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -13568,6 +13613,8 @@ extension Shape where Self == Circle {
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = _ShapeView<Circle, ForegroundStyle>
+  // port: synthesized witness for Shape (R7); Apple implements it with an internal member
+  public var animatableData: EmptyAnimatableData { get { _suiUnimplemented("SwiftUICore.Circle.animatableData") } set { _suiUnimplemented("SwiftUICore.Circle.animatableData") } }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -13613,7 +13660,6 @@ extension InsettableShape {
         return strokeBorder(style: StrokeStyle(lineWidth: lineWidth),
             antialiased: antialiased)
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -13956,7 +14002,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
   nonisolated public func containerRelativeFrame(_ axes: Axis.Set, alignment: Alignment = .center, _ length: @escaping (CoreGraphics::CGFloat, Axis) -> CoreGraphics::CGFloat) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.containerRelativeFrame(_:alignment:_:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14132,6 +14177,8 @@ extension EdgeInsets {
   public static func _makeViewList(modifier: _GraphValue<_AppearanceActionModifier>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore._AppearanceActionModifier._makeViewList(modifier:inputs:body:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._AppearanceActionModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14167,7 +14214,6 @@ extension View {
         return modifier(
             _AppearanceActionModifier(appear: nil, disappear: action))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14200,6 +14246,8 @@ public struct _PreferenceValue<Key> where Key : PreferenceKey {
   public static func _makeView(view: _GraphValue<_DelayedPreferenceView<Key, Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._DelayedPreferenceView._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore._DelayedPreferenceView.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14226,7 +14274,6 @@ extension PreferenceKey {
   @inlinable public static func _delay<T>(_ transform: @escaping (_PreferenceValue<Self>) -> T) -> some View where T : View {
         return _DelayedPreferenceView(transform: transform)
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14244,6 +14291,8 @@ extension PreferenceKey {
   public static func _makeInputs(modifier: _GraphValue<_EnvironmentKeyTransformModifier<Value>>, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUICore._EnvironmentKeyTransformModifier._makeInputs(modifier:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._EnvironmentKeyTransformModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14273,7 +14322,6 @@ extension View {
         return modifier(_EnvironmentKeyTransformModifier(
             keyPath: keyPath, transform: transform))
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -14337,6 +14385,8 @@ extension _Detachable {
   public static func _makeView(view: _GraphValue<_DetachedView<Detached, Content, Child>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._DetachedView._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore._DetachedView.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14369,7 +14419,6 @@ extension View {
   @inlinable @_Concurrency::MainActor @preconcurrency public func _detached<T>(_ transform: @escaping (_DetachedPlaceholder<_EmptyDetached>) -> T) -> some View where T : View {
         return _DetachedView(content: self, transform: transform)
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14425,6 +14474,8 @@ nonisolated public struct _DetachedPlaceholder<Detached> : View, ~Swift::Sendabl
   public static func _makeView(view: _GraphValue<_DetachedPlaceholder<Detached>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._DetachedPlaceholder._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore._DetachedPlaceholder.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14887,7 +14938,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @usableFromInline
   @_Concurrency::MainActor @preconcurrency internal func tag<V>(_ tag: V) -> Swift.Never where V : Swift::Hashable { _suiUnimplemented("SwiftUICore.View.tag(_:)") }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -15166,7 +15216,6 @@ nonisolated public func dynamicTypeSize(_ size: DynamicTypeSize) -> Swift.Never 
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func dynamicTypeSize<T>(_ range: T) -> Swift.Never where T : Swift::RangeExpression, T.Bound == DynamicTypeSize { _suiUnimplemented("SwiftUICore.View.dynamicTypeSize(_:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -15195,6 +15244,8 @@ extension Animation {
   public typealias AnimatableData = ClipShape.AnimatableData
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._ScrollClipEffect.body(content:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -15217,6 +15268,8 @@ extension Animation {
   public typealias AnimatableData = ClipShape.AnimatableData
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._EnabledScrollClipEffect.body(content:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -15247,7 +15300,6 @@ extension Shape {
   @export(implementation) nonisolated public func lineSubtraction<T>(_ other: T, eoFill: Swift::Bool = false) -> some Shape where T : Shape {
         return _ShapeLineSubtraction(self, other, eoFill: eoFill)
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -15828,7 +15880,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   nonisolated public func writingDirection(strategy: Text.WritingDirectionStrategy) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.writingDirection(strategy:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.2)
@@ -15851,7 +15902,6 @@ extension View {
   @export(implementation) nonisolated public func containerValue<V>(_ keyPath: Swift::WritableKeyPath<ContainerValues, V>, _ value: V) -> some View {
         modifier(_ContainerValueWritingModifier(keyPath: keyPath, value: value))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -16014,7 +16064,6 @@ extension View {
         return modifier(_AnchorWritingModifier<A, K>(
             anchor: value, transform: transform))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -16032,6 +16081,8 @@ extension View {
   public static func _makeView(modifier: _GraphValue<_AnchorWritingModifier<AnchorValue, Key>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._AnchorWritingModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._AnchorWritingModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -16093,7 +16144,6 @@ extension View {
   @inlinable nonisolated public func frame() -> some View {
         return frame(width: nil, height: nil, alignment: .center)
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -16147,7 +16197,6 @@ extension View {
                 idealHeight: idealHeight, maxHeight: maxHeight,
                 alignment: alignment))
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -16254,7 +16303,6 @@ extension View {
   @export(implementation) nonisolated public func textRenderer<T>(_ renderer: T) -> some View where T : TextRenderer {
         return modifier(_TextRendererViewModifier(renderer: renderer))
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -16789,7 +16837,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
   nonisolated public func textScale(_ scale: Text.Scale, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.textScale(_:isEnabled:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, visionOS 1.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -16802,7 +16849,6 @@ extension View {
         modifier(_ContentShapeModifier(
             shape: shape, eoFill: eoFill))
     }
-  
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, visionOS 1.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -16815,7 +16861,6 @@ extension View {
         modifier(_ContentShapeKindModifier(
             shape: shape, eoFill: eoFill, kind: kind))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, visionOS 1.0, watchOS 6.0, *)
@@ -16834,6 +16879,8 @@ extension View {
   public static func _makeView(modifier: _GraphValue<_ContentShapeModifier<ContentShape>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._ContentShapeModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, visionOS 1.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._ContentShapeModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, visionOS 1.0, watchOS 6.0, *)
@@ -16873,6 +16920,8 @@ extension View {
   public static func _makeView(modifier: _GraphValue<_ContentShapeKindModifier<ContentShape>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._ContentShapeKindModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, visionOS 1.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._ContentShapeKindModifier.body(content:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, visionOS 1.0, watchOS 8.0, *)
@@ -16920,7 +16969,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(anyAppleOS 27.1, *)
   nonisolated public func arrangementViewStyle(_ style: some ArrangementViewStyle) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.arrangementViewStyle(_:)") }
-  
 }
 @available(anyAppleOS 27.1, *)
 @preconcurrency @_Concurrency::MainActor public protocol ArrangementViewStyle {
@@ -16934,11 +16982,15 @@ public struct ArrangementViewStyleConfiguration : ~Swift::Sendable {
   @_Concurrency::MainActor @preconcurrency public struct Primary : View {
     @available(anyAppleOS 27.1, *)
     public typealias Body = Swift::Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.ArrangementViewStyleConfiguration.Primary.body") } }
+}
   @_Concurrency::MainActor @preconcurrency public struct Secondary : View {
     @available(anyAppleOS 27.1, *)
     public typealias Body = Swift::Never
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.ArrangementViewStyleConfiguration.Secondary.body") } }
+}
   public var primary: ArrangementViewStyleConfiguration.Primary {
     get { _suiUnimplemented("SwiftUICore.ArrangementViewStyleConfiguration.primary") }
   }
@@ -17033,7 +17085,6 @@ extension View {
         return modifier(_DiscreteSymbolEffectModifier(
             effect: effect, options: options, value: value))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
@@ -17057,6 +17108,8 @@ extension View {
   public static func _makeInputs(modifier: _GraphValue<_IndefiniteSymbolEffectModifier>, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUICore._IndefiniteSymbolEffectModifier._makeInputs(modifier:inputs:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._IndefiniteSymbolEffectModifier.body(content:)") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
@@ -17104,6 +17157,8 @@ extension View {
   public static func _makeInputs(modifier: _GraphValue<_DiscreteSymbolEffectModifier<T>>, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUICore._DiscreteSymbolEffectModifier._makeInputs(modifier:inputs:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._DiscreteSymbolEffectModifier.body(content:)") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
@@ -17151,6 +17206,8 @@ extension View {
   public static func _makeInputs(modifier: _GraphValue<_ConditionalSymbolEffectModifier>, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUICore._ConditionalSymbolEffectModifier._makeInputs(modifier:inputs:)") }
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._ConditionalSymbolEffectModifier.body(content:)") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -17353,6 +17410,8 @@ extension Animation {
   public static func _makeViewList(modifier: _GraphValue<_AnimationModifier<Value>>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore._AnimationModifier._makeViewList(modifier:inputs:body:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._AnimationModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -17391,6 +17450,8 @@ extension Animation {
   public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore._AnimationView._viewListCount(inputs:)") }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore._AnimationView.body") } }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -17429,7 +17490,6 @@ extension View {
   @inlinable nonisolated public func animation<V>(_ animation: Animation?, value: V) -> some View where V : Swift::Equatable {
         return modifier(_AnimationModifier(animation: animation, value: value))
     }
-  
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -17441,7 +17501,6 @@ extension View where Self : Swift::Equatable {
   @inlinable nonisolated public func animation(_ animation: Animation?) -> some View {
         return _AnimationView(content: self, animation: animation)
     }
-  
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 public struct ConcentricRectangle : Shape, Animatable {
@@ -17594,7 +17653,6 @@ extension View {
   @inlinable nonisolated public func containerShape(_ shape: some RoundedRectangularShape) -> some View {
         modifier(_ContainerRoundedRectangularShapeModifier(shape: shape))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -17766,7 +17824,6 @@ extension View {
         return modifier(_BindingActionModifier(
             binding: binding, action: action))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -17784,6 +17841,8 @@ extension View {
   public static func _makeViewList(modifier: _GraphValue<_BindingActionModifier<Value>>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore._BindingActionModifier._makeViewList(modifier:inputs:body:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._BindingActionModifier.body(content:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -17817,7 +17876,6 @@ extension View {
   @inlinable nonisolated public func onChange<V>(of value: V, perform action: @escaping (_ newValue: V) -> Swift::Void) -> some View where V : Swift::Equatable {
         modifier(_ValueActionModifier(value: value, action: action))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -17834,6 +17892,8 @@ extension View {
     }
   public static func _makeView(modifier: _GraphValue<_ValueActionModifier<Value>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._ValueActionModifier._makeView(modifier:inputs:body:)") }
   public static func _makeViewList(modifier: _GraphValue<_ValueActionModifier<Value>>, inputs: _ViewListInputs, body: @escaping (_Graph, _ViewListInputs) -> _ViewListOutputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore._ValueActionModifier._makeViewList(modifier:inputs:body:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._ValueActionModifier.body(content:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -17863,7 +17923,6 @@ nonisolated public func onChange<V>(of value: V, initial: Swift::Bool = false, _
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func onChange<V>(of value: V, initial: Swift::Bool = false, _ action: @escaping () -> Swift::Void) -> Swift.Never where V : Swift::Equatable { _suiUnimplemented("SwiftUICore.View.onChange(of:initial:_:)") }
-  
 }
 @available(anyAppleOS 27.0, *)
 @usableFromInline
@@ -17893,6 +17952,8 @@ nonisolated package struct _AsyncValueActionModifier<V> : ViewModifier, _GraphIn
   #endif
   @usableFromInline
   package static func _makeInputs(modifier: _GraphValue<_AsyncValueActionModifier<V>>, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUICore._AsyncValueActionModifier._makeInputs(modifier:inputs:)") }
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._AsyncValueActionModifier.body(content:)") }
 }
 @available(*, unavailable)
 extension _AsyncValueActionModifier : Swift::Sendable {
@@ -17987,6 +18048,8 @@ extension Transaction {
   public static func _makeView(view: _GraphValue<_UnaryViewAdaptor<Content>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._UnaryViewAdaptor._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore._UnaryViewAdaptor.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -18171,7 +18234,6 @@ nonisolated public func accessibilityShowsLargeContentViewer<V>(@ContentBuilder 
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func accessibilityShowsLargeContentViewer() -> Swift.Never { _suiUnimplemented("SwiftUICore.View.accessibilityShowsLargeContentViewer()") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -18215,6 +18277,8 @@ extension ViewModifier where Self : Animatable {
   public static func _viewListCount(inputs: _ViewListCountInputs) -> Swift::Int? { _suiUnimplemented("SwiftUICore.EmptyView._viewListCount(inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.EmptyView.body") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -18249,7 +18313,9 @@ extension _VariadicView_Children : Swift::RandomAccessCollection {
     public typealias Body = Swift::Never
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias ID = Swift::AnyHashable
-  }
+      // port: synthesized witness for View (R7); Apple implements it with an internal member
+    public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore._VariadicView_Children.Element.body") } }
+}
   #else
   nonisolated public struct Element : View, Swift::Identifiable {
     nonisolated public var id: Swift::AnyHashable {
@@ -18374,6 +18440,8 @@ extension LocalizedStringKey.StringInterpolation {
   public typealias AnimatableData = EmptyAnimatableData
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = _ShapeView<ContainerRelativeShape, ForegroundStyle>
+  // port: synthesized witness for Shape (R7); Apple implements it with an internal member
+  public var animatableData: EmptyAnimatableData { get { _suiUnimplemented("SwiftUICore.ContainerRelativeShape.animatableData") } set { _suiUnimplemented("SwiftUICore.ContainerRelativeShape.animatableData") } }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -18433,7 +18501,6 @@ extension ContainerRelativeShape : InsettableShape {
 extension ShapeStyle {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func _fillingContainerShape() -> Swift.Never { _suiUnimplemented("SwiftUICore.ShapeStyle._fillingContainerShape()") }
-  
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -18444,7 +18511,6 @@ extension View {
   @inlinable nonisolated public func containerShape<T>(_ shape: T) -> some View where T : InsettableShape {
         modifier(_ContainerShapeModifier(shape: shape))
     }
-  
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -18454,7 +18520,6 @@ extension View {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @_Concurrency::MainActor @preconcurrency public func _containerShape<T>(_ shape: T) -> Swift.Never where T : InsettableShape { _suiUnimplemented("SwiftUICore.View._containerShape(_:)") }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -18530,6 +18595,8 @@ public struct CubicKeyframe<Value> : KeyframeTrackContent, ~Swift::Sendable wher
   public func _resolve(into resolved: inout _ResolvedKeyframeTrackContent<Value>) { _suiUnimplemented("SwiftUICore.CubicKeyframe._resolve(into:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Body = CubicKeyframe<Value>
+  // port: synthesized witness for KeyframeTrackContent (R7); Apple implements it with an internal member
+  public var body: CubicKeyframe<Value> { get { _suiUnimplemented("SwiftUICore.CubicKeyframe.body") } }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -18555,6 +18622,8 @@ public struct SpringKeyframe<Value> : KeyframeTrackContent, ~Swift::Sendable whe
   public func _resolve(into resolved: inout _ResolvedKeyframeTrackContent<Value>) { _suiUnimplemented("SwiftUICore.SpringKeyframe._resolve(into:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Body = SpringKeyframe<Value>
+  // port: synthesized witness for KeyframeTrackContent (R7); Apple implements it with an internal member
+  public var body: SpringKeyframe<Value> { get { _suiUnimplemented("SwiftUICore.SpringKeyframe.body") } }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -18580,6 +18649,8 @@ public struct LinearKeyframe<Value> : KeyframeTrackContent, ~Swift::Sendable whe
   public func _resolve(into resolved: inout _ResolvedKeyframeTrackContent<Value>) { _suiUnimplemented("SwiftUICore.LinearKeyframe._resolve(into:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Body = LinearKeyframe<Value>
+  // port: synthesized witness for KeyframeTrackContent (R7); Apple implements it with an internal member
+  public var body: LinearKeyframe<Value> { get { _suiUnimplemented("SwiftUICore.LinearKeyframe.body") } }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -18605,6 +18676,8 @@ public struct MoveKeyframe<Value> : KeyframeTrackContent, ~Swift::Sendable where
   public func _resolve(into resolved: inout _ResolvedKeyframeTrackContent<Value>) { _suiUnimplemented("SwiftUICore.MoveKeyframe._resolve(into:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Body = MoveKeyframe<Value>
+  // port: synthesized witness for KeyframeTrackContent (R7); Apple implements it with an internal member
+  public var body: MoveKeyframe<Value> { get { _suiUnimplemented("SwiftUICore.MoveKeyframe.body") } }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -18675,7 +18748,6 @@ nonisolated public func phaseAnimator<Phase>(_ phases: some Sequence<Phase>, tri
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func phaseAnimator<Phase>(_ phases: some Sequence<Phase>, @ContentBuilder content: @escaping (PlaceholderContentView<Self>, Phase) -> some View, animation: @escaping (Phase) -> Animation? = { _ in .default }) -> Swift.Never where Phase : Swift::Equatable { _suiUnimplemented("SwiftUICore.View.phaseAnimator(_:?:animation:)") }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -18773,6 +18845,8 @@ nonisolated public struct TapGesture : Gesture, ~Swift::Sendable {
   public typealias Body = Swift::Never
   @available(macOS 10.15, iOS 13.0, tvOS 16.0, watchOS 6.0, *)
   public typealias Value = Swift::Void
+  // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.TapGesture.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 16.0, watchOS 6.0, *)
@@ -18802,7 +18876,6 @@ extension TapGesture {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func onTapGesture(count: Swift::Int = 1, perform action: @escaping () -> Swift::Void) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.onTapGesture(count:perform:)") }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -18823,7 +18896,6 @@ public static func buildPartialBlock(accumulated: some KeyframeTrackContent<Valu
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public static func buildBlock() -> Swift.Never { _suiUnimplemented("SwiftUICore.KeyframeTrackContentBuilder.buildBlock()") }
-  
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -18841,7 +18913,6 @@ public static func buildBlock() -> Swift.Never { _suiUnimplemented("SwiftUICore.
   public static func buildPartialBlock(accumulated: some KeyframeTrackContent<Value>, next: some KeyframeTrackContent<Value>) -> some KeyframeTrackContent<Value>
   
   public static func buildBlock() -> some KeyframeTrackContent<Value>
-  
 }
 #endif
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -18858,7 +18929,9 @@ extension KeyframeTrackContentBuilder {
     public typealias Body = KeyframeTrackContentBuilder<Value>.Conditional<ConditionalValue, First, Second>
     @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
     public typealias Value = ConditionalValue
-  }
+      // port: synthesized witness for KeyframeTrackContent (R7); Apple implements it with an internal member
+    public var body: KeyframeTrackContentBuilder<Value>.Conditional<ConditionalValue, First, Second> { get { _suiUnimplemented("SwiftUICore.KeyframeTrackContentBuilder.Conditional.body") } }
+}
   #else
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
   public struct Conditional<ConditionalValue, First, Second> : KeyframeTrackContent where ConditionalValue == First.Value, First : KeyframeTrackContent, Second : KeyframeTrackContent, First.Value == Second.Value {
@@ -18917,7 +18990,6 @@ extension View {
   @inlinable nonisolated public func layoutPriority(_ value: Swift::Double) -> some View {
         return _trait(LayoutPriorityTraitKey.self, value)
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -18982,7 +19054,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
   nonisolated public func environment<T>(_ object: T?) -> Swift.Never where T : AnyObject, T : Observation::Observable { _suiUnimplemented("SwiftUICore.View.environment(_:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.2)
@@ -18993,7 +19064,6 @@ extension View {
   @inlinable nonisolated public func onPreferenceChange<K>(_ key: K.Type = K.self, perform action: @escaping (K.Value) -> Swift::Void) -> some View where K : PreferenceKey, K.Value : Swift::Equatable {
         return modifier(_PreferenceActionModifier<K>(action: action))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -19009,6 +19079,8 @@ extension View {
   public static func _makeView(modifier: _GraphValue<_PreferenceActionModifier<Key>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._PreferenceActionModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._PreferenceActionModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -19043,6 +19115,8 @@ extension View {
   public static func _makeViewList(view: _GraphValue<AnyView>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.AnyView._makeViewList(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.AnyView.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -19178,7 +19252,6 @@ extension EnvironmentValues {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func headerProminence(_ prominence: Prominence) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.headerProminence(_:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -19257,14 +19330,12 @@ nonisolated public struct AutomaticArrangementViewStyle : ArrangementViewStyle, 
   nonisolated public init() { _suiUnimplemented("SwiftUICore.AutomaticArrangementViewStyle.init()") }
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func makeBody(configuration: AutomaticArrangementViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUICore.AutomaticArrangementViewStyle.makeBody(configuration:)") }
-  
 }
 #else
 @available(anyAppleOS 27.1, *)
 nonisolated public struct AutomaticArrangementViewStyle : ArrangementViewStyle {
   nonisolated public init()
   nonisolated public func makeBody(configuration: AutomaticArrangementViewStyle.Configuration) -> some View
-  
 }
 #endif
 #if compiler(>=5.3) && $TildeSendable
@@ -19435,7 +19506,6 @@ extension View {
   @inlinable nonisolated package func _backdropEffect<T>(_ effect: (_BackdropEffectPlaceholder) -> T) -> some View where T : View {
         modifier(_BackdropEffect(backdrop: effect(.init())))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -19736,6 +19806,8 @@ nonisolated public struct MeshGradient : ShapeStyle, Swift::Equatable, Swift::Se
   public typealias Body = _ShapeView<Rectangle, MeshGradient>
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.MeshGradient.resolve(in:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -19880,7 +19952,6 @@ extension Shape {
   @inlinable nonisolated public func size(width: CoreGraphics::CGFloat, height: CoreGraphics::CGFloat) -> some Shape {
         return size(.init(width: width, height: height))
     }
-  
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -19893,7 +19964,6 @@ nonisolated public func size(_ size: CoreGraphics::CGSize, anchor: UnitPoint) ->
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func size(width: CoreGraphics::CGFloat, height: CoreGraphics::CGFloat, anchor: UnitPoint) -> Swift.Never { _suiUnimplemented("SwiftUICore.Shape.size(width:height:anchor:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -20066,7 +20136,6 @@ extension View {
   @export(implementation) nonisolated public func allowedDynamicRange(_ range: Image.DynamicRange?) -> some View {
         return environment(\.allowedDynamicRange, range)
     }
-  
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -20116,7 +20185,6 @@ public static var slash: SymbolVariants { get { _suiUnimplemented("SwiftUICore.S
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func symbolVariant(_ variant: SymbolVariants) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.symbolVariant(_:)") }
-  
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -20179,6 +20247,8 @@ extension ContentMarginGuide {
   public static func _makeView(modifier: _GraphValue<_BackgroundModifier<Background>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._BackgroundModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._BackgroundModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -20222,6 +20292,8 @@ extension _BackgroundModifier : Swift::Equatable where Background : Swift::Equat
   public static func _makeView(modifier: _GraphValue<_BackgroundStyleModifier<Style>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._BackgroundStyleModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._BackgroundStyleModifier.body(content:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -20259,6 +20331,8 @@ extension _BackgroundModifier : Swift::Equatable where Background : Swift::Equat
   public static func _makeView(modifier: _GraphValue<_BackgroundShapeModifier<Style, Bounds>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._BackgroundShapeModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._BackgroundShapeModifier.body(content:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -20298,6 +20372,8 @@ extension _BackgroundModifier : Swift::Equatable where Background : Swift::Equat
   public static func _makeView(modifier: _GraphValue<_InsettableBackgroundShapeModifier<Style, Bounds>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._InsettableBackgroundShapeModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._InsettableBackgroundShapeModifier.body(content:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -20334,7 +20410,6 @@ extension View {
         return modifier(
             _BackgroundModifier(background: background, alignment: alignment))
     }
-  
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -20376,7 +20451,6 @@ extension View {
         modifier(_InsettableBackgroundShapeModifier(
             style: style, shape: shape, fillStyle: fillStyle))
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -20487,6 +20561,8 @@ extension ModifiedContent : DynamicViewContent where Content : DynamicViewConten
   public typealias AnimatableData = Base.AnimatableData
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for GeometryEffect (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._IgnoredByLayoutEffect.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -20841,7 +20917,6 @@ public func hoverEffectGroup(id: Swift::String? = nil, in namespace: Namespace.I
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func hoverEffectGroup(_ group: HoverEffectGroup?) -> Swift.Never { _suiUnimplemented("SwiftUICore.CustomHoverEffect.hoverEffectGroup(_:)") }
-  
 }
 @available(visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 27.0)
@@ -20856,7 +20931,6 @@ nonisolated public func hoverEffectGroup(_ group: HoverEffectGroup?) -> Swift.Ne
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func hoverEffectGroup() -> Swift.Never { _suiUnimplemented("SwiftUICore.View.hoverEffectGroup()") }
-  
 }
 @available(visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 27.0)
@@ -20920,7 +20994,6 @@ extension GroupHoverEffect : CustomHoverEffect {
 extension CustomHoverEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func hoverEffectDisabled(_ isDisabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.CustomHoverEffect.hoverEffectDisabled(_:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -20938,7 +21011,6 @@ extension AnyTransition {
 extension Transition {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @_Concurrency::MainActor @preconcurrency public func animation(_ animation: Animation?) -> Swift.Never { _suiUnimplemented("SwiftUICore.Transition.animation(_:)") }
-  
 }
 @available(iOS 26.4, macOS 26.4, tvOS 26.4, watchOS 26.4, *)
 public struct _ArchivedViewHostDelegate_URLConfiguration {
@@ -20965,7 +21037,6 @@ extension AnyTransition {
 extension Transition {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @_Concurrency::MainActor @preconcurrency public func combined<T>(with other: T) -> Swift.Never where T : Transition { _suiUnimplemented("SwiftUICore.Transition.combined(with:)") }
-  
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -20993,7 +21064,6 @@ extension View {
   @export(implementation) nonisolated public func contentTransition(_ transition: ContentTransition) -> some View {
         return environment(\.contentTransition, transition)
     }
-  
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -21076,7 +21146,6 @@ extension Transition {
   nonisolated public func _makeContentTransition(transition: inout _Transition_ContentTransition) { _suiUnimplemented("SwiftUICore.Transition._makeContentTransition(transition:)") }
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func apply<V>(content: V, phase: TransitionPhase) -> Swift.Never where V : View { _suiUnimplemented("SwiftUICore.Transition.apply(content:phase:)") }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -21213,7 +21282,6 @@ extension VisualEffect {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func visualEffect(_ effect: @escaping @Sendable (EmptyVisualEffect, GeometryProxy) -> some VisualEffect) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.visualEffect(_:)") }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -21225,6 +21293,8 @@ public struct EmptyVisualEffect : VisualEffect {
   public static func _makeVisualEffect(effect: _GraphValue<EmptyVisualEffect>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.EmptyVisualEffect._makeVisualEffect(effect:inputs:body:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias AnimatableData = EmptyAnimatableData
+  // port: synthesized witness for VisualEffect (R7); Apple implements it with an internal member
+  public var animatableData: EmptyAnimatableData { get { _suiUnimplemented("SwiftUICore.EmptyVisualEffect.animatableData") } set { _suiUnimplemented("SwiftUICore.EmptyVisualEffect.animatableData") } }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension ModifiedContent : VisualEffect where Content : VisualEffect, Modifier : VisualEffect {
@@ -21750,7 +21820,6 @@ extension View {
   @inlinable nonisolated public func saturation(_ amount: Swift::Double) -> some View {
         return modifier(_SaturationEffect(amount: amount))
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -21759,7 +21828,6 @@ extension View {
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func saturation(_ amount: Swift::Double) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.saturation(_:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -21811,7 +21879,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   nonisolated public func multilineTextAlignment(strategy: Text.AlignmentStrategy) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.multilineTextAlignment(strategy:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -21923,7 +21990,6 @@ extension View {
         return modifier(_SafeAreaRegionsIgnoringLayout(
             regions: regions, edges: edges))
     }
-  
 }
 @available(anyAppleOS 27.0, *)
 extension View {
@@ -21931,7 +21997,6 @@ extension View {
         return modifier(_AligningSafeAreaRegionsIgnoringLayout2(
             regions: regions, edges: edges, alignment: alignment))
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -22069,7 +22134,6 @@ extension View {
   @inlinable nonisolated public func allowsHitTesting(_ enabled: Swift::Bool) -> some View {
         return modifier(_AllowsHitTestingModifier(allowsHitTesting: enabled))
     }
-  
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -22224,7 +22288,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   nonisolated public func baselineOffset(_ baselineOffset: CoreGraphics::CGFloat) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.baselineOffset(_:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -22494,6 +22557,8 @@ extension ForEach where Data == Swift::Range<Swift::Int>, ID == Swift::Int {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ForEach where Data == Swift::Range<Swift::Int>, ID == Swift::Int, Content : View {
+  @usableFromInline
+  @_semantics("swiftui.requires_constant_range") internal init(_ data: Swift::Range<Swift::Int>, @ContentBuilder content: @escaping (Swift::Int) -> Content) { _suiUnimplemented("SwiftUICore.ForEach.init(_:?:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -22673,7 +22738,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   nonisolated public func containerCornerOffset(_ edges: Edge.Set, sizeToFit: Swift::Bool = false) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.containerCornerOffset(_:sizeToFit:)") }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -22709,6 +22773,8 @@ extension View {
   public typealias Body = Swift::Never
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias ResolvedModifier = _ColorMultiplyEffect._Resolved
+  // port: synthesized witness for EnvironmentalModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._ColorMultiplyEffect.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -22755,7 +22821,6 @@ extension View {
   @inlinable nonisolated public func colorMultiply(_ color: Color) -> some View {
         return modifier(_ColorMultiplyEffect(color: color))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -22834,7 +22899,6 @@ extension View {
         return modifier(_AnchorTransformModifier<A, K>(
             anchor: value, transform: transform))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -22852,6 +22916,8 @@ extension View {
   public static func _makeView(modifier: _GraphValue<_AnchorTransformModifier<AnchorValue, Key>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._AnchorTransformModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._AnchorTransformModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -22916,7 +22982,6 @@ extension View {
         return clipShape(RoundedRectangle(cornerRadius: radius),
             style: FillStyle(antialiased: antialiased))
     }
-  
 }
 @available(visionOS 2.0, *)
 @available(watchOS, unavailable)
@@ -22924,14 +22989,12 @@ extension View {
 extension HoverEffectContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func clipShape<S>(_ shape: S, style: FillStyle = FillStyle()) -> Swift.Never where S : Shape { _suiUnimplemented("SwiftUICore.HoverEffectContent.clipShape(_:style:)") }
-  
 }
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
   @available(visionOS, unavailable)
   nonisolated public func glassEffectID(_ id: (some (Hashable & Sendable))?, in namespace: Namespace.ID) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.glassEffectID(_:in:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -22960,7 +23023,6 @@ extension View {
             }
         }
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -22979,7 +23041,6 @@ extension ViewModifier {
             }
         }
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -22992,7 +23053,6 @@ nonisolated public func transaction<V>(_ transform: @escaping (inout Transaction
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func animation<V>(_ animation: Animation?, @ContentBuilder body: (PlaceholderContentView<Self>) -> V) -> Swift.Never where V : View { _suiUnimplemented("SwiftUICore.View.animation(_:?:)") }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -23008,6 +23068,8 @@ nonisolated public func animation<V>(_ animation: Animation?, @ContentBuilder bo
   public static func _makeInputs(modifier: _GraphValue<_TransactionModifier>, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUICore._TransactionModifier._makeInputs(modifier:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._TransactionModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -23041,6 +23103,8 @@ nonisolated public func animation<V>(_ animation: Animation?, @ContentBuilder bo
   public static func _makeInputs(modifier: _GraphValue<_ValueTransactionModifier<Value>>, inputs: inout _GraphInputs) { _suiUnimplemented("SwiftUICore._ValueTransactionModifier._makeInputs(modifier:inputs:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._ValueTransactionModifier.body(content:)") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -23076,6 +23140,8 @@ nonisolated public func animation<V>(_ animation: Animation?, @ContentBuilder bo
   public static func _makeView(modifier: _GraphValue<_PushPopTransactionModifier<Content>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._PushPopTransactionModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._PushPopTransactionModifier.body(content:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -23210,7 +23276,6 @@ extension Shape {
             shape: stroke(style: StrokeStyle(lineWidth: lineWidth)),
             style: content)
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -23259,6 +23324,8 @@ extension ShapeStyle where Self : View, Self.Body == _ShapeView<Rectangle, Self>
   public static func _makeView(view: _GraphValue<_ShapeView<Content, Style>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._ShapeView._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore._ShapeView.body") } }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -23363,6 +23430,8 @@ extension _ShapeView : ShapeView {
   public static func _makeView(view: _GraphValue<FillShapeView<Content, Style, Background>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.FillShapeView._makeView(view:inputs:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ShapeView (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.FillShapeView.body") } }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -23441,6 +23510,8 @@ extension _ShapeView : ShapeView {
   public static func _makeView(view: _GraphValue<StrokeShapeView<Content, Style, Background>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.StrokeShapeView._makeView(view:inputs:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ShapeView (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.StrokeShapeView.body") } }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -23524,6 +23595,8 @@ extension _ShapeView : ShapeView {
   public static func _makeView(view: _GraphValue<StrokeBorderShapeView<Content, Style, Background>>, inputs: _ViewInputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore.StrokeBorderShapeView._makeView(view:inputs:)") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ShapeView (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.StrokeBorderShapeView.body") } }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -24295,7 +24368,6 @@ extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   @_Concurrency::MainActor @preconcurrency public func _safeAreaInsets(_ insets: EdgeInsets) -> Swift.Never { _suiUnimplemented("SwiftUICore.View._safeAreaInsets(_:)") }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -24355,7 +24427,6 @@ extension View {
   @inlinable nonisolated public func id<ID>(_ id: ID) -> some View where ID : Swift::Hashable {
         return IDView(self, id: id)
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -24429,7 +24500,6 @@ extension View {
   @inlinable nonisolated public func colorScheme(_ colorScheme: ColorScheme) -> some View {
         return environment(\.colorScheme, colorScheme)
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -24480,6 +24550,8 @@ extension _Test {
 public struct PreferredColorSchemeKey : PreferenceKey, ~Swift::Sendable {
   public typealias Value = ColorScheme?
   public static func reduce(value: inout PreferredColorSchemeKey.Value, nextValue: () -> PreferredColorSchemeKey.Value) { _suiUnimplemented("SwiftUICore.PreferredColorSchemeKey.reduce(value:nextValue:)") }
+  // port: synthesized witness for PreferenceKey (R7); Apple implements it with an internal member
+  public static var defaultValue: ColorScheme? { get { _suiUnimplemented("SwiftUICore.PreferredColorSchemeKey.defaultValue") } }
 }
 #else
 @available(iOS 13.0, macOS 11.0, tvOS 13.0, watchOS 6.0, *)
@@ -24502,7 +24574,6 @@ extension View {
         return preference(key: PreferredColorSchemeKey.self,
             value: colorScheme)
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -24540,7 +24611,6 @@ package class AnyImageProviderBox : @unchecked Swift::Sendable {
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func onHingeChange(isEnabled: Swift::Bool = true, _ action: @escaping (_ oldContext: DeviceHingeContext, _ newContext: DeviceHingeContext) -> Swift::Void) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.onHingeChange(isEnabled:_:)") }
-  
 }
 extension CoreGraphics::CGRect {
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -24700,7 +24770,6 @@ nonisolated public func simultaneousGesture<T>(_ gesture: T, including mask: Ges
   @export(implementation) nonisolated public func simultaneousGesture<T>(_ gesture: T, isEnabled: Swift::Bool) -> some View where T : Gesture {
         simultaneousGesture(gesture, including: isEnabled ? .all : .subviews)
     }
-  
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension View {
@@ -24712,7 +24781,6 @@ nonisolated public func highPriorityGesture<T>(_ gesture: T, name: Swift::String
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func simultaneousGesture<T>(_ gesture: T, name: Swift::String, isEnabled: Swift::Bool = true) -> Swift.Never where T : Gesture { _suiUnimplemented("SwiftUICore.View.simultaneousGesture(_:name:isEnabled:)") }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -24759,6 +24827,8 @@ public static var all: GestureMask { get { _suiUnimplemented("SwiftUICore.Gestur
   public static func == (a: _ScaleEffect, b: _ScaleEffect) -> Swift::Bool { _suiUnimplemented("SwiftUICore._ScaleEffect.==(a:b:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for GeometryEffect (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._ScaleEffect.body(content:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -24777,7 +24847,6 @@ extension View {
   @inlinable nonisolated public func scaleEffect(x: CoreGraphics::CGFloat = 1.0, y: CoreGraphics::CGFloat = 1.0, anchor: UnitPoint = .center) -> some View {
         return scaleEffect(CGSize(width: x, height: y), anchor: anchor)
     }
-  
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -24847,7 +24916,6 @@ public func scaleEffect(_ scale: CoreGraphics::CGFloat, anchor: UnitPoint = .cen
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func scaleEffect(x: CoreGraphics::CGFloat = 1.0, y: CoreGraphics::CGFloat = 1.0, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.scaleEffect(x:y:anchor:)") }
-  
 }
 @available(visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 26.0)
@@ -24862,7 +24930,6 @@ public func scaleEffect(_ scale: CoreGraphics::CGFloat, anchor: UnitPoint = .cen
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func scaleEffect(x: CoreGraphics::CGFloat = 1.0, y: CoreGraphics::CGFloat = 1.0, anchor: UnitPoint = .center) -> Swift.Never { _suiUnimplemented("SwiftUICore.HoverEffectContent.scaleEffect(x:y:anchor:)") }
-  
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -24883,7 +24950,6 @@ extension View {
             regions: .container, spacing: spacing,
             alignmentKey: alignment.key))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -24903,6 +24969,8 @@ extension View {
   public static func _makeView(modifier: _GraphValue<_InsetViewModifier<Content>>, inputs: _ViewInputs, body: @escaping (_Graph, _ViewInputs) -> _ViewOutputs) -> _ViewOutputs { _suiUnimplemented("SwiftUICore._InsetViewModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
+  public func body(content: _ViewModifier_Content<Self>) -> Swift::Never { _suiUnimplemented("SwiftUICore._InsetViewModifier.body(content:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -24937,7 +25005,6 @@ nonisolated package struct SafeAreaPaddingModifier : ViewModifier, ~Swift::Senda
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @usableFromInline
   nonisolated package func body(content: SafeAreaPaddingModifier.Content) -> Swift.Never { _suiUnimplemented("SwiftUICore.SafeAreaPaddingModifier.body(content:)") }
-  
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -24951,7 +25018,6 @@ nonisolated package struct SafeAreaPaddingModifier : ViewModifier {
   nonisolated package init(edges: Edge.Set, insets: EdgeInsets?)
   @usableFromInline
   nonisolated package func body(content: SafeAreaPaddingModifier.Content) -> some View
-  
 }
 #endif
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -24981,7 +25047,6 @@ extension View {
   @export(implementation) nonisolated public func safeAreaPadding(_ length: CoreGraphics::CGFloat) -> some View {
         safeAreaPadding(.all, length)
     }
-  
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.2)
@@ -25343,7 +25408,6 @@ extension View {
   @inlinable nonisolated public func tint<S>(_ tint: S?) -> some View where S : ShapeStyle {
         return environment(\.tint, tint.map(AnyShapeStyle.init))
     }
-  
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -25354,7 +25418,6 @@ extension View {
   @inlinable @_disfavoredOverload nonisolated public func tint(_ tint: Color?) -> some View {
         environment(\.tintColor, tint)
     }
-  
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -25401,6 +25464,8 @@ public struct TintShapeStyle : ShapeStyle {
   public init() { _suiUnimplemented("SwiftUICore.TintShapeStyle.init()") }
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   public typealias Resolved = Swift::Never
+  // port: synthesized witness for ShapeStyle (R7); Apple implements it with an internal member
+  public func resolve(in environment: EnvironmentValues) -> Swift::Never { _suiUnimplemented("SwiftUICore.TintShapeStyle.resolve(in:)") }
 }
 @available(visionOS 1.0, *)
 @_originallyDefinedIn(module: "SwiftUI", visionOS 26.0)
@@ -25584,6 +25649,8 @@ nonisolated public struct Subview : View, Swift::Identifiable, ~Swift::Sendable 
   public static func _makeViewList(view: _GraphValue<Subview>, inputs: _ViewListInputs) -> _ViewListOutputs { _suiUnimplemented("SwiftUICore.Subview._makeViewList(view:inputs:)") }
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias Body = Swift::Never
+  // port: synthesized witness for View (R7); Apple implements it with an internal member
+  public var body: Swift::Never { get { _suiUnimplemented("SwiftUICore.Subview.body") } }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -25641,7 +25708,6 @@ extension View {
   @inlinable nonisolated public func hueRotation(_ angle: Angle) -> some View {
         return modifier(_HueRotationEffect(angle: angle))
     }
-  
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
@@ -25651,13 +25717,11 @@ extension View {
 extension VisualEffect {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 public func hueRotation(_ angle: Angle) -> Swift.Never { _suiUnimplemented("SwiftUICore.VisualEffect.hueRotation(_:)") }
-  
 }
 @available(anyAppleOS 27.0, *)
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 nonisolated public func textInputBorderShape(_ shape: TextInputBorderShape) -> Swift.Never { _suiUnimplemented("SwiftUICore.View.textInputBorderShape(_:)") }
-  
 }
 @available(anyAppleOS 27.0, *)
 public struct TextInputBorderShape : Swift::Sendable, Swift::Equatable {
@@ -25742,7 +25806,6 @@ extension View {
   @export(implementation) nonisolated public func transition<T>(_ transition: T) -> some View where T : Transition {
         self.transition(AnyTransition(transition))
     }
-  
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
