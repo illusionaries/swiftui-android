@@ -62,7 +62,7 @@ declare -A umbrella_imports=(
 )
 # Modules that do not exist on Android; port-shims/<Module>/<Module>.swift declares the
 # subset of their API that the retargeted interfaces reference.
-shim_modules=(CoreGraphics CoreTransferable UIKit CoreFoundation QuartzCore CoreText CoreMedia CoreData DataDetection UniformTypeIdentifiers Accessibility Spatial simd Darwin OSLog os)
+shim_modules=(FoundationShims ObjectiveC CoreGraphics CoreTransferable UIKit CoreFoundation QuartzCore CoreText CoreMedia CoreData DataDetection UniformTypeIdentifiers Accessibility Spatial simd Darwin OSLog os)
 
 retarget() {
     local module="$1"

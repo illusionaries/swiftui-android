@@ -23,12 +23,14 @@ R2  Drop the self-import `@_exported [public] import <Self>`.  In Apple's SDK th
 R3  Drop `import <Self>.<submodule>` (same reasoning, dotted form).
 R4  `import X.Y` -> `import X`: Clang submodules (`os.log`, `os.lock`, ...) have no
     equivalent; the parent module carries the declarations.
-R5  Materialize upside imports: a Darwin framework interface may reference a module
-    (e.g. `CoreGraphics.CGPoint`, `Foundation.LocalizedStringResource`) that it only
-    sees because its ObjC umbrella header imported it.  Such imports are passed in by
-    the caller (`--imports=...`) and inserted after the module header; they add no
-    declarations.  (Passed together with the CG/Foundation requalification below: the
-    port *can* provide CoreGraphics, it cannot provide the Darwin Foundation.)
+R5  Materialize the imports an interface only sees through its Darwin umbrella / SDK
+    context.  Several retargeted interfaces reference another module by *qualified name*
+    without importing it (`SwiftUICore` names `QuartzCore::CALayer`, `CoreText::CTFont`,
+    `ObjectiveC::NSObject`), which works on Darwin because those modules are implicitly
+    loadable from the SDK.  On the port a qualified name needs the module imported, so
+    every module in PROVIDED_MODULES that is referenced by qualified name and not yet
+    imported gets an `import` inserted after the module header.  Extra imports can also
+    be forced with `--imports=...`.  No declarations are added.
 R6  CG scalar qualification.  On Darwin `CGFloat`, `CGPoint`, `CGSize`, `CGRect`,
     `CGVector` and `CGAffineTransform` are declared in `CoreFoundation/CFCGTypes.h`, so
     the interface names them through `CoreFoundation`.  Android's `CoreFoundation` is
@@ -60,6 +62,14 @@ R10 Foundation API that the Swift SDK for Android's Foundation does not ship.
     is *not* re-declared: on Android it lives in the real `FoundationNetworking`
     module, so it is requalified there instead (`Foundation.URLRequest` ->
     `FoundationNetworking.URLRequest`, and `import FoundationNetworking` is added).
+R12 Drop `typealias X = @_opaqueReturnTypeOf("<mangled>", 0) __` declarations.  That
+    attribute binds a name to an opaque result type of a declaration *in a prebuilt
+    binary module*, looked up by mangled symbol.  When a module is recompiled from text
+    there is no binary to look the symbol up in ("unable to resolve type for
+    _opaqueReturnTypeOf attribute").  Dropping the alias leaves the associated type to be
+    inferred from the `some`-typed witness in the same extension — exactly the mechanism
+    ordinary SwiftUI code uses with `var body: some View`.  Declaration text is otherwise
+    untouched.
 R11 Supplement: a module whose Swift interface is pure Swift but which also references
     types Apple only ships in a Clang header (CoreText's `CTFont`, Accessibility's
     `AXChartDescriptor`) gets a declaration-only supplement appended to the interface
@@ -73,6 +83,19 @@ import re
 import sys
 
 TARGET = "aarch64-unknown-linux-android28"
+
+# ---- R5 ------------------------------------------------------------------
+# Modules the Port SDK provides (retargeted or shimmed). A qualified reference such as
+# `QuartzCore::CALayer` makes the corresponding module importable in Swift, but the
+# module must also be imported for the name to be visible while the interface is
+# recompiled, so references to these are turned into imports.
+PROVIDED_MODULES = (
+    "Accessibility", "Combine", "CoreData", "CoreGraphics", "CoreFoundation",
+    "CoreMedia", "CoreText", "CoreTransferable", "DeveloperToolsSupport", "Dispatch",
+    "FoundationNetworking", "FoundationShims", "ObjectiveC", "Observation", "OSLog",
+    "QuartzCore", "Spatial", "SwiftUI", "SwiftUICore", "Symbols",
+    "UniformTypeIdentifiers", "UIKit", "os", "simd",
+)
 
 # ---- R6 ------------------------------------------------------------------
 CG_SCALAR_TYPES = (
@@ -188,20 +211,26 @@ def main() -> int:
     # ---- R4: dotted Clang submodule imports --------------------------------
     text = re.sub(r"^(@_exported )?import (\w+)\.(\w+)\s*$", r"\1import \2", text, flags=re.M)
 
-    # ---- R5: umbrella-derived imports --------------------------------------
-    if extra_imports:
-        def insert_after_header(match: re.Match) -> str:
-            return match.group(0) + "\n" + extra_imports
-
-        text = re.sub(r"^// swift-module-flags-ignorable: .*$", insert_after_header,
-                      text, count=1, flags=re.M)
-
     # ---- R6: CG scalar type qualification ----------------------------------
     text = CORE_FOUNDATION_CG_RE.sub(r"CoreGraphics\1\2", text)
 
     # ---- R10: Foundation API absent from the Android SDK -------------------
     for old, new in FOUNDATION_REQUALIFY:
         text = text.replace(old, new)
+
+    # ---- R5: materialize qualified-module references as imports ------------
+    imported = set(re.findall(r"^(?:@_exported )?(?:public )?import (\w+)", text, re.M))
+    referenced = set(re.findall(r"(?<![\w.])([A-Z]\w*)(?:::|(?=\.)[.])", text))
+    needed = sorted((referenced & set(PROVIDED_MODULES)) - imported - {module_name})
+    added = "\n".join(f"import {m}" for m in needed)
+    if extra_imports:
+        added = (added + "\n" + extra_imports).strip()
+    if added:
+        def insert_after_header(match: re.Match) -> str:
+            return match.group(0) + "\n" + added
+
+        text = re.sub(r"^// swift-module-flags-ignorable: .*$", insert_after_header,
+                      text, count=1, flags=re.M)
 
     # ---- R8: Apple-platform availability noise -----------------------------
     text = text.replace("@available(iOS, unavailable)\n", "")
@@ -210,15 +239,26 @@ def main() -> int:
     # ---- R9: BitwiseCopyable conformance clauses ---------------------------
     # A conformance-only extension (`extension X : BitwiseCopyable {}`) is dropped
     # whole; a clause inside a conformance list is removed from the list.
+    mod = r"(?:[A-Za-z_]\w*(?:::|\\.))*"
     text = re.sub(
-        r"^extension [^\n{]*:\s*(?:[A-Za-z_]\w*::)*BitwiseCopyable\s*\{\s*\}\s*$\n?",
+        r"(?:^@[^\n]*\n)*^extension [^\n{]*:\s*" + mod + r"BitwiseCopyable\s*\{\s*\}\s*$\n?",
         "",
         text,
         flags=re.M,
     )
-    text = re.sub(r",\s*(?:[A-Za-z_]\w*::)*BitwiseCopyable\b", "", text)
-    text = re.sub(r"([:,(])\s*(?:[A-Za-z_]\w*::)*BitwiseCopyable\s*,\s*", r"\1 ", text)
-    text = re.sub(r":\s*(?:[A-Za-z_]\w*::)*BitwiseCopyable\s*(?=[{,\s])", " ", text)
+    text = re.sub(r",\s*" + mod + r"BitwiseCopyable\b", "", text)
+    text = re.sub(r"([:,(])\s*" + mod + r"BitwiseCopyable\s*,\s*", r"\1 ", text)
+    text = re.sub(r":\s*" + mod + r"BitwiseCopyable\s*(?=[{,\s])", " ", text)
+    # A trailing block of attributes whose declaration was the dropped conformance.
+    text = re.sub(r"(?:^@[^\n]*\n)+\s*$", "", text)
+
+    # ---- R12: opaque-return-type aliases -----------------------------------
+    text = re.sub(
+        r"(?:^\s*@[^\n]*\n)*^\s*[^\n]*\btypealias \w+ = @_opaqueReturnTypeOf\([^\n]*__[^\n]*$\n?",
+        "",
+        text,
+        flags=re.M,
+    )
 
     # ---- R7: ObjC annotations ----------------------------------------------
     text = OBJC_ATTR.sub("", text)

@@ -31,7 +31,15 @@ static float g_density = 1.0f;
 static float g_safe_top;
 static float g_safe_bottom;
 
-void swiftui_android_start(ABRuntime *rt) { (void)rt; }
+/* The application target normally provides this weak symbol (see AndroidBridge.h). The stub
+ * has no app scene, so it returns NULL and swiftui_android_start() draws its test frame
+ * unconditionally. */
+void *swiftui_app_entry(void) { return NULL; }
+
+void swiftui_android_start(ABRuntime *rt, void *app_scene) {
+    (void)rt;
+    (void)app_scene;
+}
 
 void swiftui_android_resize(ABRuntime *rt, float width_dp, float height_dp, float density,
                             float safe_top, float safe_bottom, float safe_left, float safe_right) {

@@ -9,6 +9,9 @@
 // Behaviour (drag and drop, share sheets) has no Android counterpart in the port yet; bodies
 // trap and are reachable only through API the demo does not use.
 
+import Foundation
+import UniformTypeIdentifiers
+
 public protocol Transferable {
     associatedtype Representation: TransferRepresentation
     static var transferRepresentation: Representation { get }
@@ -21,7 +24,7 @@ public protocol TransferRepresentation {
 public struct CodableRepresentation<Item, Encoder, Decoder>: TransferRepresentation
 where Item: Transferable & Codable, Encoder: TopLevelEncoder, Decoder: TopLevelDecoder {
     public typealias Item = Item
-    public init(contentType: UniformTypeIdentifiers.UTType, encoder: Encoder, decoder: Decoder) {
+    public init(contentType: UTType, encoder: Encoder, decoder: Decoder) {
         fatalError("CoreTransferable shim: CodableRepresentation is not implemented on Android")
     }
 }
@@ -38,7 +41,7 @@ where Item: Transferable, Proxy: Transferable {
 
 public struct FileRepresentation<Item>: TransferRepresentation where Item: Transferable {
     public typealias Item = Item
-    public init(contentType: UniformTypeIdentifiers.UTType,
+    public init(contentType: UTType,
                 exporting: @escaping (Item) async throws -> SentTransferredFile,
                 importing: @escaping (ReceivedTransferredFile) async throws -> Item) {
         fatalError("CoreTransferable shim: FileRepresentation is not implemented on Android")
@@ -47,7 +50,7 @@ public struct FileRepresentation<Item>: TransferRepresentation where Item: Trans
 
 public struct DataRepresentation<Item>: TransferRepresentation where Item: Transferable {
     public typealias Item = Item
-    public init(contentType: UniformTypeIdentifiers.UTType,
+    public init(contentType: UTType,
                 exporting: @escaping (Item) throws -> Data,
                 importing: @escaping (Data) throws -> Item) {
         fatalError("CoreTransferable shim: DataRepresentation is not implemented on Android")

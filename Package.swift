@@ -8,13 +8,31 @@ import PackageDescription
 // plus the port's engine (Sources/SwiftUI/Engine). Those declarations `import Combine`,
 // `Symbols`, and the platform shims, which come from the Port SDK that
 // scripts/port/build-port-sdk.sh produces. `-I` is how a foreign module is consumed.
+// Absolute paths: SwiftPM does not run the compiler with the package directory as cwd, so
+// relative `-I` flags silently point at the wrong tree (this cost us a "no such module
+// 'Combine'" that looked like a missing interface).
+import Foundation
+
+let packageDirectory = URL(fileURLWithPath: #filePath).deletingLastPathComponent().path
 let portSDKFlags: [String] = [
-    "-I", "build/port-sdk/gen",
-    "-I", "build/port-sdk/shims",
+    "-I", packageDirectory + "/build/port-sdk/gen",
+    "-I", packageDirectory + "/build/port-sdk/shims",
     "-enable-experimental-feature", "AnyAppleOSAvailability",
 ]
 
 let swift5Mode: [SwiftSetting] = [.swiftLanguageMode(.v5)]
+
+// Apple's declarations (Sources/SwiftUI/Generated) are still being brought up against the
+// platform shims: the interface recompiles, but `UIKit` and a handful of Darwin-only types are
+// not yet satisfied on Android. They are therefore opt-in, so the repository always has a
+// building product. Validate the generated port with:
+//
+//   SWIFTUI_PORT_GENERATED=1 swift build --product SwiftUIAndroidApp \
+//       --swift-sdk swift-6.4.3-RELEASE_android --triple aarch64-unknown-linux-android28
+//
+// Once the Port SDK probe is green (scripts/port/build-port-sdk.sh), flip the default below to
+// `true` — the engine and its adapters are written against those declarations.
+let includeGeneratedPort = ProcessInfo.processInfo.environment["SWIFTUI_PORT_GENERATED"] == "1"
 let portSettings: [SwiftSetting] = [
     .swiftLanguageMode(.v5),
     .unsafeFlags(portSDKFlags),
@@ -37,6 +55,7 @@ let package = Package(
         .target(
             name: "SwiftUI",
             path: "Sources/SwiftUI",
+            exclude: includeGeneratedPort ? [] : ["Generated"],
             swiftSettings: portSettings
         ),
         .target(

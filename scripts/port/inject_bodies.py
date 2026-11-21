@@ -28,24 +28,43 @@ needed to make that text legal Swift outside Apple's SDK:
   * `@inlinable` bodies are Apple's own code and are kept byte-for-byte, never touched
   * protocol requirements keep no body (that is legal Swift)
 
-`_suiUnimplemented` is the seam to the port engine: see `Sources/SwiftUI/Engine/PortRuntime.swift`
-for the SwiftUI-module implementation. `SwiftUICore.swift` (which may not import SwiftUI) carries
-an equivalent definition of its own.
+`_suiUnimplemented` is the seam to the port engine: it is defined once in
+`Sources/SwiftUI/Engine/PortRuntime.swift`, which compiles into the same module as the generated
+files. Every synthetic body calls it; the engine replaces a declaration by listing its symbol in
+`port-impl/implemented.txt` (see "ENGINE OVERRIDES" below).
+
+Both generated files compile into the *single* module named `SwiftUI` (`Package.swift` has one
+target). Apple's SwiftUI/SwiftUICore split is their binary layout; here SwiftUICore's
+declarations are simply part of the same module, so their `SwiftUICore::` / `SwiftUICore.`
+qualifiers and the `@_exported import SwiftUICore` are removed (R1).
 
 The result is deterministic: declarations are emitted in Apple's order, no timestamps, no
-environment-dependent text. Re-running the script on the same interface reproduces the same bytes;
-`--check` verifies that.
+environment-dependent text. Re-running the script on the same interface reproduces the same
+bytes; `--check` verifies that.
 
 OUTPUT MANIFEST
 ---------------
-`build/port-sdk/injected-bodies.json` lists every synthetic body the script added and every
-`@inlinable` body it preserved, so engine work can be tracked as coverage:
+`build/port-sdk/injected-bodies.json` describes everything the generator did, per file and in
+total: declarations reproduced, bodies injected, `@inlinable` bodies preserved, rewrite counts,
+the list of stubbed symbols, and the engine seam list.
 
     {
       "schema": 1,
       "target": "aarch64-unknown-linux-android28",
-      "modules": { "SwiftUICore": {"declarations": 123, "bodies_injected": 456, ...} },
-      "stats": {"declarations": ..., "bodies_injected": ..., "inlinable_bodies_preserved": ...},
+      "compiled_module": "SwiftUI",
+      "layout": "single-module: Generated/SwiftUICore.swift + Generated/SwiftUI.swift compile into module SwiftUI",
+      "files": {"SwiftUICore.swift": "SwiftUICore", "SwiftUI.swift": "SwiftUI"},
+      "modules": { "SwiftUICore": {...counts...}, "SwiftUI": {...counts...} },
+      "stats": { ...sums... },
+      "seams": {
+        "body": {"count": 318, "symbols": ["SwiftUICore.Text.body", ...]},
+        "_makeView(view:inputs:)": {"count": 200, "symbols": [...]},
+        "_makeViewList(view:inputs:)": {"count": 40, "symbols": [...]},
+        "_viewListCount(inputs:)": {"count": 20, "symbols": [...]},
+        "total": 578
+      },
+      "overridden": {"count": 12, "symbols": [...]},
+      "synthesized_projections_omitted": {"count": 10, "symbols": [...]},
       "bodies": [
         {"symbol": "SwiftUICore.LayoutDirection.hash(into:)", "module": "SwiftUICore",
          "kind": "func", "inlined": false},
@@ -55,9 +74,52 @@ OUTPUT MANIFEST
       ]
     }
 
+Symbol spelling (also the key used by `port-impl/implemented.txt`)::
+
+    <Apple module>.<Type path>.<member>(<external labels, each with ':'>)
+
+  * the Apple module is `SwiftUICore` or `SwiftUI` (where Apple declares it), even though both
+    compile into module `SwiftUI`;
+  * the type path drops module qualifiers and generic arguments: `SwiftUICore.ForEach.body`,
+    not `ForEach<Data, ID, Content>.body`;
+  * a function / initializer / subscript name includes its external parameter labels:
+    `SwiftUI.VStack._makeView(view:inputs:)`, `SwiftUICore.Text.font(_:)`,
+    `SwiftUICore.ForEach.init(_:content:)`, `SwiftUICore.Text.subscript(dynamicMember:)`;
+  * a property is `Type.name` with no labels: `SwiftUICore.Text.body`, `SwiftUI.Link.body`.
+
 `inlined: false` means "the port must implement this": the body is a placeholder that traps at
 runtime and reports the symbol. `inlined: true` means Apple shipped an `@inlinable` body, which
 is real Apple code (it may still reach stub bodies, but its own logic is Apple's).
+
+ENGINE OVERRIDES (`port-impl/implemented.txt`)
+---------------------------------------------
+The generated module is a scaffold: the engine replaces the entry points it implements. Put one
+qualified symbol per line (exact manifest spelling; `#` comments and blank lines are allowed)::
+
+    # port-impl/implemented.txt
+    SwiftUICore.Text.body
+    SwiftUI.VStack._makeView(view:inputs:)
+    SwiftUICore.Text.font(_:)
+
+For every listed symbol the generator *omits the declaration* from the generated output, so the
+engine can declare it with a real body in an extension in the same module::
+
+    extension Text {
+        public var body: some View { ... }             // witness in an extension is legal
+        public func font(_ font: Font?) -> Text { ... }
+    }
+
+Details:
+  * if the omitted symbol is an opaque witness (`var body: some View`), the generator also omits
+    that type's `@_opaqueReturnTypeOf` associated-type spelling, so Swift infers `Body` from the
+    engine's witness instead of pinning it to `Never`;
+  * a *stored instance property* cannot be omitted (extensions cannot add storage); the
+    generator reports it and refuses;
+  * class designated initializers must be declared in the class body in Swift, so overriding a
+    class's designated `init` cannot move it into an extension either -- keep those generated;
+  * every symbol must match a bodyless declaration; unknown symbols are a hard error so typos in
+    the override file cannot silently do nothing;
+  * if the file does not exist, nothing is overridden.
 
 DOCUMENTED REWRITE RULES
 ------------------------
@@ -65,15 +127,17 @@ Bodies are *additions*: they never change a declaration. Only the rules below ch
 text, and every one of them is listed in the banner of the generated files and explained, with
 the Apple construct it handles and the reason, in `docs/PORT-BODIES.md`:
 
-  R1  self-module qualification removal (SwiftUICore.swift): `SwiftUICore::Foo` -> `Foo`.
-      `::` is interface-only spelling; a module cannot import itself.
+  R1  `SwiftUICore::Foo` / `SwiftUICore.Foo` -> `Foo`, and `@_exported import SwiftUICore` is
+      dropped: both interfaces compile into the one port module, so those names are local
+      (`::` is interface-only spelling; a module cannot import itself).
   R2  interface-only stored `static let` / `static var` -> read-only computed `static var`
       with an injected getter. A `.swiftinterface` describes static storage that lives in
       Apple's binary as `static let x: T` with no initializer; that spelling does not compile
       as source ("`static let` declaration requires an initializer expression or an explicitly
       stated getter"). The public API is unchanged: a read-only type property.
       (`let` becomes `var` because Swift has no computed `let`; both are read-only from the
-      outside, so the API is identical.)
+      outside, so the API is identical.) Stored properties declared in extensions are treated
+      the same way.
   R3  opaque result types that cannot be expressed as source:
         - `@_opaqueReturnTypeOf("$s...", 0) __<...>` typealiases (resolved against Apple's
           binary symbols only) become `Swift.Never`;
@@ -87,9 +151,17 @@ the Apple construct it handles and the reason, in `docs/PORT-BODIES.md`:
       are evaluated for the pinned toolchain (Swift 6.4.3: all true). Bodies are injected only
       into the branch that is compiled; the dead fallback branch is preserved verbatim, so the
       file still shows exactly what Apple declares.
+  R5  `$`-prefixed declarations (`public var $selection: ...`) are omitted: the `$` prefix is
+      reserved for implicitly-synthesised property-wrapper projections, so the spelling cannot
+      exist in source ("cannot declare entity named '$selection'"). Swift synthesises the
+      projection from the wrapper property; the port does not use Apple's wrappers, so the
+      projected value is not part of its surface.
+  R6  symbols listed in `port-impl/implemented.txt` are omitted so the engine can implement them
+      (see "ENGINE OVERRIDES").
 
-Project rule: no public declaration is ever deleted to make an error go away. If the script meets
-a construct it cannot represent, it stops with a precise error rather than skipping it.
+Project rule: no public declaration is deleted to make an error go away. R5 and R6 are the only
+omissions; both are explicit and recorded in the manifest and docs. Anything else that cannot be
+represented stops the generator with a precise error.
 
 USAGE
 -----
@@ -98,8 +170,8 @@ USAGE
     scripts/port/generate.sh                   # regenerate + cross-compile check
     scripts/port/generate.sh --no-build        # regenerate only
 
-See `docs/PORT-BODIES.md` for the rewrite-rule details, the manifest format and the exact
-cross-compile command.
+See `docs/PORT-BODIES.md` for the rewrite-rule details, the manifest format, the override file
+and the exact cross-compile commands.
 """
 
 from __future__ import annotations
@@ -109,6 +181,7 @@ import json
 import os
 import re
 import sys
+import time
 from bisect import bisect_right
 from dataclasses import dataclass, field
 
@@ -122,10 +195,29 @@ GEN_DIR = os.path.join(ROOT, "build", "port-sdk", "gen")
 OUT_DIR = os.path.join(ROOT, "Sources", "SwiftUI", "Generated")
 MANIFEST_PATH = os.path.join(ROOT, "build", "port-sdk", "injected-bodies.json")
 
-MODULES = ("SwiftUICore", "SwiftUI")
-#: Modules whose `.swiftinterface` is a dependency of the module below it. `SwiftUI` re-exports
-#: `SwiftUICore`, so `Never` conformances declared by SwiftUICore are visible in SwiftUI.
-DEPENDENCIES = {"SwiftUI": ("SwiftUICore",)}
+#: Both Apple interfaces are compiled into this one port module (`Package.swift` has a single
+#: `SwiftUI` target). Apple's two-module split is their binary layout, not the port's.
+COMPILED_MODULE = "SwiftUI"
+
+
+@dataclass(frozen=True)
+class ModuleSpec:
+    """One Apple module interface and how it is materialised in the port module."""
+
+    interface_module: str  # Apple module name / directory in build/port-sdk/gen
+    file_stem: str  # output file: Sources/SwiftUI/Generated/<file_stem>.swift
+    strip_qualifiers: tuple[str, ...]  # module qualifiers removed (those names are local)
+    drop_imports: tuple[str, ...]  # prelude imports removed (those names are local)
+
+
+MODULE_SPECS = (
+    ModuleSpec("SwiftUICore", "SwiftUICore", strip_qualifiers=("SwiftUICore",), drop_imports=()),
+    ModuleSpec("SwiftUI", "SwiftUI", strip_qualifiers=("SwiftUICore",), drop_imports=("SwiftUICore",)),
+)
+MODULES = tuple(spec.interface_module for spec in MODULE_SPECS)
+
+#: `port-impl/implemented.txt`: symbols the engine implements, omitted from generated output.
+IMPLEMENTED_PATH = os.path.join(ROOT, "port-impl", "implemented.txt")
 
 # ---------------------------------------------------------------------------
 # Swift lexical knowledge
@@ -160,18 +252,9 @@ STDLIB_NEVER_CONFORMANCES = {
     "CustomStringConvertible", "CustomDebugStringConvertible", "Escapable",
 }
 
-SEAM_FUNCTION = """\
-/// The body-injection seam for this module.
-///
-/// Every declaration in this file that Apple ships without a body calls this function, which
-/// reports the entry point and traps. The port implements real bodies in `Sources/SwiftUI/Engine/`
-/// (see `PortRuntime.swift`); this definition exists because `SwiftUICore` cannot import
-/// `SwiftUI`, so it cannot use SwiftUI's seam.
-@inline(never)
-public func _suiUnimplemented(_ symbol: String) -> Never {
-    fatalError("SwiftUI port: unimplemented entry point \\(symbol). Add it to Sources/SwiftUI/Engine/.")
-}
-"""
+
+class GenerationError(Exception):
+    """Raised when the generator cannot produce a compilable, faithful module."""
 
 
 class ParseError(Exception):
@@ -1208,6 +1291,9 @@ class BodyEntry:
 
 
 @dataclass
+
+
+@dataclass
 class ModuleStats:
     declarations: int = 0
     types: int = 0
@@ -1217,33 +1303,84 @@ class ModuleStats:
     opaque_rewrites: int = 0
     static_storage_rewrites: int = 0
     self_qualifiers_removed: int = 0
+    synthesized_projections_omitted: int = 0
+    overridden: int = 0
+
+    def as_dict(self) -> dict[str, int]:
+        return {
+            "declarations": self.declarations,
+            "types": self.types,
+            "bodies_injected": self.bodies_injected,
+            "bodies_preserved": self.bodies_preserved,
+            "inlinable_bodies_preserved": self.inlinable_bodies_preserved,
+            "opaque_rewrites": self.opaque_rewrites,
+            "static_storage_rewrites": self.static_storage_rewrites,
+            "self_qualifiers_removed": self.self_qualifiers_removed,
+            "synthesized_projections_omitted": self.synthesized_projections_omitted,
+            "overridden": self.overridden,
+        }
 
 
 class Generator:
-    def __init__(self, module: str) -> None:
-        self.module = module
+    """Turns one retargeted interface into one generated Swift file."""
+
+    def __init__(self, spec: "ModuleSpec", implemented: set[str]) -> None:
+        self.spec = spec
+        self.module = spec.interface_module
+        self.implemented = implemented
         self.entries: list[BodyEntry] = []
+        #: (category, symbol) for every engine seam found (stub, inlined or overridden)
+        self.seams: list[tuple[str, str]] = []
+        self.override_hits: set[str] = set()
+        self.omitted_projections: list[str] = []
+        self.omitted_typealiases: set[int] = set()
         self.stats = ModuleStats()
         self.never_conformances: set[str] = set()
+        self.opaque_typealias_members: dict[str, list[Member]] = {}
         self.opaque_typealias_paths: set[str] = set()
+        self.toplevel_types: dict[str, str] = {}
         self.edits: list[Edit] = []
         self.body = ""
         self.root: Container | None = None
 
     # -- input ------------------------------------------------------------
     def interface_path(self) -> str:
-        return os.path.join(GEN_DIR, f"{self.module}.swiftmodule", f"{TARGET}.swiftinterface")
+        directory = os.path.join(GEN_DIR, f"{self.module}.swiftmodule")
+        for name in (
+            f"{TARGET}.swiftinterface",
+            "aarch64-unknown-linux-android.swiftinterface",
+            "aarch64.swiftinterface",
+        ):
+            path = os.path.join(directory, name)
+            if os.path.exists(path):
+                return path
+        raise SystemExit(
+            f"error: no retargeted interface for {self.module} under {directory}.\n"
+            "       Run scripts/port/build-port-sdk.sh first."
+        )
 
     def load(self) -> str:
         path = self.interface_path()
-        if not os.path.exists(path):
+        interface = ""
+        # build-port-sdk.sh may be rewriting the interface concurrently (it deletes and
+        # recreates the directory); retry briefly instead of failing on a transient gap.
+        for attempt in range(10):
+            try:
+                with open(path, encoding="utf-8") as handle:
+                    interface = handle.read()
+            except FileNotFoundError:
+                interface = ""
+            # A complete interface ends with the closing brace of its last declaration;
+            # build-port-sdk.sh rewrites these files in place, so a mid-rebuild snapshot can
+            # be truncated. Retry rather than generating from a partial interface.
+            if len(interface) > 1024 and interface.rstrip().endswith("}"):
+                break
+            time.sleep(0.3)
+        if len(interface) <= 1024 or not interface.rstrip().endswith("}"):
             raise SystemExit(
-                f"error: {path} not found. Run scripts/port/build-port-sdk.sh first."
+                f"error: {path} is missing or truncated (is scripts/port/build-port-sdk.sh "
+                "still running?); rerun it and retry"
             )
-        with open(path, encoding="utf-8") as handle:
-            interface = handle.read()
-        # Drop the interface header (format/compiler/module-flags comments) and keep the body,
-        # which starts at the first import line.
         lines = interface.splitlines(keepends=True)
         body_offset = 0
         for index, line in enumerate(lines):
@@ -1270,12 +1407,13 @@ class Generator:
             for member in container.members:
                 if member.kind == "typealias" and member.opaque_typealias_span is not None:
                     self.opaque_typealias_paths.add(container.path)
+                    self.opaque_typealias_members.setdefault(container.path, []).append(member)
             for child in container.children:
                 visit(child)
 
         visit(root)
 
-    # -- edits ------------------------------------------------------------
+    # -- edit helpers -----------------------------------------------------
     def indent_at(self, offset: int) -> str:
         line_start = self.body.rfind("\n", 0, offset) + 1
         match = re.match(r"[ \t]*", self.body[line_start:offset])
@@ -1291,9 +1429,26 @@ class Generator:
             prefix = f"{self.module}.{container.path}"
         return f"{prefix}.{member.name}"
 
+    def span_text(self, span: tuple[int, int]) -> str:
+        return self.body[span[0]:span[1]]
+
     def record_body(self, symbol: str, kind: str, inlined: bool) -> None:
         self.entries.append(BodyEntry(symbol, self.module, kind, inlined))
 
+    def note_seam(self, member: Member, symbol: str) -> None:
+        category: str | None = None
+        if member.kind in ("var", "let", "func") and member.name == "body":
+            category = "body"
+        elif member.name.startswith("_makeView("):
+            category = "_makeView(view:inputs:)"
+        elif member.name.startswith("_makeViewList("):
+            category = "_makeViewList(view:inputs:)"
+        elif member.name.startswith("_viewListCount("):
+            category = "_viewListCount(inputs:)"
+        if category:
+            self.seams.append((category, symbol))
+
+    # -- edit generation --------------------------------------------------
     def generate_edits(self) -> None:
         assert self.root is not None
 
@@ -1302,6 +1457,18 @@ class Generator:
                 if member.kind == "import":
                     continue
                 self.stats.declarations += 1
+                symbol = self.symbol_for(container, member)
+                self.note_seam(member, symbol)
+
+                # R6: the engine implements this symbol; omit the declaration entirely.
+                if symbol in self.implemented:
+                    self.apply_override(container, member, symbol)
+                    continue
+                # R5: `$`-prefixed projections are synthesised by the compiler, not declarable.
+                if member.kind in ("var", "let") and member.name.startswith("$"):
+                    self.apply_projection_omission(member, symbol)
+                    continue
+                # R3: `@_opaqueReturnTypeOf` typealiases are resolved against Apple's binary.
                 if member.kind == "typealias" and member.opaque_typealias_span is not None:
                     span = member.opaque_typealias_span
                     self.add_comment(
@@ -1314,24 +1481,81 @@ class Generator:
                 if protocol_requirements:
                     continue  # protocol requirements are legal without bodies
                 if member.kind in ("func", "init", "subscript"):
-                    self.handle_callable(container, member)
+                    self.handle_callable(container, member, symbol)
                 elif member.kind in ("var", "let"):
-                    self.handle_property(container, member)
+                    self.handle_property(container, member, symbol)
                 elif member.kind == "deinit":
                     if not member.has_body:
                         self.edits.append(Edit(member.end, member.end, " {}"))
                         self.stats.bodies_injected += 1
-                        self.record_body(self.symbol_for(container, member), "deinit", False)
+                        self.record_body(symbol, "deinit", False)
+                    else:
+                        self.stats.bodies_preserved += 1
                 elif member.has_body:
                     self.stats.bodies_preserved += 1
                     if member.inlinable:
                         self.stats.inlinable_bodies_preserved += 1
-                        self.record_body(self.symbol_for(container, member), member.kind, True)
+                        self.record_body(symbol, member.kind, True)
             for child in container.children:
                 self.stats.types += 1
                 visit(child, child.kind == "protocol")
 
         visit(self.root, False)
+        missing = sorted(self.implemented - self.override_hits)
+        if missing:
+            raise GenerationError(
+                "port-impl/implemented.txt lists symbols that are not bodyless declarations in "
+                f"the {self.module} interface (check spelling against build/port-sdk/"
+                "injected-bodies.json):\n  " + "\n  ".join(missing)
+            )
+
+    def apply_override(self, container: Container, member: Member, symbol: str) -> None:
+        """R6: omit a declaration the engine implements in `Sources/SwiftUI/Engine/Implemented/`."""
+        if (
+            member.kind in ("var", "let")
+            and not member.accessors
+            and member.result_type_span is not None
+            and not member.static
+            and not member.has_body
+        ):
+            raise GenerationError(
+                f"{symbol} is a stored instance property; it cannot be declared in an extension "
+                "and therefore cannot be overridden. Engine storage must be supplied by a "
+                "generated declaration (R6)."
+            )
+        if member.kind in ("var", "let") and member.result_type_span is not None \
+                and "some" in self.span_text(member.result_type_span):
+            # The witness's associated type spelling (`typealias Body = Never`) would conflict
+            # with the engine's real body; drop it so Swift infers `Body` from the extension
+            # witness (same module).
+            for typealias_member in self.opaque_typealias_members.get(container.path, []):
+                if id(typealias_member) in self.omitted_typealiases:
+                    continue
+                self.omitted_typealiases.add(id(typealias_member))
+                self.add_comment(
+                    typealias_member.start,
+                    f"associated type spelling omitted together with {symbol} (R6): the engine "
+                    "supplies the real witness, so Body is inferred from it",
+                )
+                self.edits.append(Edit(typealias_member.start, typealias_member.end, ""))
+        self.add_comment(
+            member.start,
+            f"implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)",
+        )
+        self.edits.append(Edit(member.start, member.end, ""))
+        self.stats.overridden += 1
+        self.override_hits.add(symbol)
+
+    def apply_projection_omission(self, member: Member, symbol: str) -> None:
+        """R5: drop a `$`-named projected value; Swift synthesises those from property wrappers."""
+        self.add_comment(
+            member.start,
+            f"'{member.name}' is an implicitly-synthesised property-wrapper projection; a "
+            "'$'-prefixed declaration cannot be written in source (R5), omitted",
+        )
+        self.edits.append(Edit(member.start, member.end, ""))
+        self.stats.synthesized_projections_omitted += 1
+        self.omitted_projections.append(symbol)
 
     def inject_accessors(self, member: Member, symbol: str, kind: str) -> None:
         """Inject bodies into bodyless accessors of a property/subscript accessor block."""
@@ -1354,42 +1578,17 @@ class Generator:
                 self.stats.inlinable_bodies_preserved += len(preserved)
                 self.record_body(symbol, kind, True)
 
-    def handle_callable(self, container: Container, member: Member) -> None:
-        symbol = self.symbol_for(container, member)
-        if member.accessors:
-            # A subscript with an accessor block (`{ get set }`), not a function body.
-            if member.result_type_span is not None and "some" in self.span_text(member.result_type_span):
-                if self.opaque_needs_never(member.result_type_span, container):
-                    span = member.result_type_span
-                    self.add_comment(
-                        member.start,
-                        "opaque result type is not expressible in source; declared as Never (R3)",
-                    )
-                    self.edits.append(Edit(span[0], span[1], "Swift.Never"))
-                    self.stats.opaque_rewrites += 1
-            self.inject_accessors(member, symbol, "subscript")
+    def maybe_rewrite_opaque(self, container: Container, member: Member, message: str) -> None:
+        if member.result_type_span is None:
             return
-        if member.has_body:
-            self.stats.bodies_preserved += 1
-            if member.inlinable:
-                self.stats.inlinable_bodies_preserved += 1
-                self.record_body(symbol, member.kind, True)
+        if "some" not in self.span_text(member.result_type_span):
             return
-        if member.result_type_span is not None and "some" in self.span_text(member.result_type_span):
-            if self.opaque_needs_never(member.result_type_span, container):
-                span = member.result_type_span
-                self.add_comment(
-                    member.start,
-                    "opaque result type is not expressible in source; declared as Never (R3)",
-                )
-                self.edits.append(Edit(span[0], span[1], "Swift.Never"))
-                self.stats.opaque_rewrites += 1
-        self.edits.append(Edit(member.end, member.end, f' {{ _suiUnimplemented("{symbol}") }}'))
-        self.stats.bodies_injected += 1
-        self.record_body(symbol, member.kind, False)
-
-    def span_text(self, span: tuple[int, int]) -> str:
-        return self.body[span[0]:span[1]]
+        if not self.opaque_needs_never(member.result_type_span, container):
+            return
+        span = member.result_type_span
+        self.add_comment(member.start, message)
+        self.edits.append(Edit(span[0], span[1], "Swift.Never"))
+        self.stats.opaque_rewrites += 1
 
     def opaque_needs_never(self, span: tuple[int, int], container: Container) -> bool:
         base = base_protocol_name(self.span_text(span))
@@ -1401,15 +1600,38 @@ class Generator:
             return False
         return True
 
-    def handle_property(self, container: Container, member: Member) -> None:
-        symbol = self.symbol_for(container, member)
+    def handle_callable(self, container: Container, member: Member, symbol: str) -> None:
+        if member.accessors:
+            # A subscript with an accessor block (`{ get set }`), not a function body.
+            self.maybe_rewrite_opaque(
+                container, member,
+                "opaque result type is not expressible in source; declared as Never (R3)",
+            )
+            self.inject_accessors(member, symbol, "subscript")
+            return
+        if member.has_body:
+            self.stats.bodies_preserved += 1
+            if member.inlinable:
+                self.stats.inlinable_bodies_preserved += 1
+                self.record_body(symbol, member.kind, True)
+            return
+        self.maybe_rewrite_opaque(
+            container, member,
+            "opaque result type is not expressible in source; declared as Never (R3)",
+        )
+        self.edits.append(Edit(member.end, member.end, f' {{ _suiUnimplemented("{symbol}") }}'))
+        self.stats.bodies_injected += 1
+        self.record_body(symbol, member.kind, False)
 
-        # Stored static storage cannot compile as source: give it a computed getter (R2).
+    def handle_property(self, container: Container, member: Member, symbol: str) -> None:
+        # R2: stored static storage / stored properties in extensions cannot compile as source.
         stored_static = (
             member.static and not member.accessors and member.result_type_span is not None
+            and not member.has_body
         )
         stored_in_extension = (
-            container.kind == "extension" and not member.accessors and member.result_type_span is not None
+            container.kind == "extension" and not member.accessors
+            and member.result_type_span is not None and not member.has_body
         )
         if stored_static or stored_in_extension:
             reason = (
@@ -1431,56 +1653,104 @@ class Generator:
             self.record_body(symbol, "var", False)
             return
 
-        if member.result_type_span is not None and "some" in self.span_text(member.result_type_span):
-            if self.opaque_needs_never(member.result_type_span, container):
-                span = member.result_type_span
-                self.add_comment(
-                    member.start,
-                    "opaque type is a witness for a declared associated type / has no Never "
-                    "conformance; declared as Never (R3)",
-                )
-                self.edits.append(Edit(span[0], span[1], "Swift.Never"))
-                self.stats.opaque_rewrites += 1
+        self.maybe_rewrite_opaque(
+            container, member,
+            "opaque type is a witness for a declared associated type / has no Never "
+            "conformance; declared as Never (R3)",
+        )
 
         if member.accessors:
             self.inject_accessors(member, symbol, "var")
             return
 
-        # A stored instance property with no initializer is legal Swift (it is initialised by the
-        # type's initialisers, whose bodies never return thanks to `_suiUnimplemented`).
+        # A stored instance property with no initializer is legal Swift: it is initialised by
+        # the type's initialisers, whose bodies never return thanks to `_suiUnimplemented`.
         if member.has_body:
             self.stats.bodies_preserved += 1
             if member.inlinable:
                 self.stats.inlinable_bodies_preserved += 1
                 self.record_body(symbol, "var", True)
 
-    # -- self-module qualification (R1) ------------------------------------
-    def strip_self_qualification(self, text: str) -> str:
-        if self.module != "SwiftUICore":
+    # -- module qualification (R1) ----------------------------------------
+    def strip_qualifiers(self, text: str) -> str:
+        """Remove ``Module::`` / ``Module.`` for modules that are local in the port module."""
+        if not self.spec.strip_qualifiers:
             return text
         tokens = tokenize(text)
         removals: list[Edit] = []
+        removed = 0
         index = 0
         while index < len(tokens):
             token = tokens[index]
-            if (
-                token.kind == "id"
-                and token.text == self.module
-                and index + 2 < len(tokens)
-                and tokens[index + 1].text == ":"
-                and tokens[index + 2].text == ":"
-            ):
-                removals.append(Edit(token.start, tokens[index + 2].end, ""))
-                index += 3
-                continue
+            if token.kind == "id" and token.text in self.spec.strip_qualifiers:
+                # `Module::Name`
+                if (
+                    index + 2 < len(tokens)
+                    and tokens[index + 1].text == ":"
+                    and tokens[index + 2].text == ":"
+                    and tokens[index + 1].end == tokens[index + 2].start
+                ):
+                    removals.append(Edit(token.start, tokens[index + 2].end, ""))
+                    removed += 1
+                    index += 3
+                    continue
+                # `Module.Name`
+                if (
+                    index + 2 < len(tokens)
+                    and tokens[index + 1].text == "."
+                    and tokens[index + 2].kind == "id"
+                ):
+                    removals.append(Edit(token.start, tokens[index + 1].end, ""))
+                    removed += 1
+                    index += 2
+                    continue
             index += 1
-        self.stats.self_qualifiers_removed = len(removals)
+        self.stats.self_qualifiers_removed += removed
         return apply_edits(text, removals)
+
+    def drop_imports(self, text: str) -> str:
+        """Drop prelude imports of modules that are local declarations in the port module."""
+        if not self.spec.drop_imports:
+            return text
+        lines = text.splitlines(keepends=True)
+        kept: list[str] = []
+        in_prelude = True
+        for line in lines:
+            if in_prelude:
+                match = re.match(r"^(@\w+\s+)?import\s+([A-Za-z_][A-Za-z0-9_]*)\s*$", line.rstrip("\n"))
+                if match:
+                    if match.group(2) in self.spec.drop_imports:
+                        continue
+                    kept.append(line)
+                    continue
+                if line.strip() == "":
+                    kept.append(line)
+                    continue
+                in_prelude = False
+            kept.append(line)
+        return "".join(kept)
 
     # -- rendering ---------------------------------------------------------
     def banner(self) -> str:
+        rules = [
+            "//   R1  `Module::Foo` / `Module.Foo` qualifiers for the two Apple modules are",
+            "//       dropped: the port compiles Apple's SwiftUICore + SwiftUI declarations into",
+            "//       one Swift module (`SwiftUI`), so their names are local. `@_exported import",
+            "//       SwiftUICore` is dropped for the same reason.",
+            "//   R2  stored static `let x: T` -> computed read-only `static var x: T { get { ... } }`",
+            "//       (interface-only spelling of Apple's binary storage; no initializer in source).",
+            "//       Stored properties in extensions become computed for the same reason.",
+            "//   R3  `@_opaqueReturnTypeOf(...)` typealiases and opaque results that cannot be",
+            "//       expressed in source -> `Swift.Never`.",
+            "//   R4  Apple-compiler `#if` feature conditions are evaluated for the pinned toolchain;",
+            "//       dead fallback branches are preserved verbatim but not injected into.",
+            "//   R5  `$`-prefixed property-wrapper projections are omitted: Swift synthesises them,",
+            "//       and the `$` prefix cannot be declared in source.",
+            "//   R6  declarations listed in `port-impl/implemented.txt` are omitted so the engine",
+            "//       can implement them in an extension in the same module (witnesses supported).",
+        ]
         lines = [
-            f"// {self.module}.swift — GENERATED FILE, DO NOT EDIT BY HAND.",
+            f"// {self.spec.file_stem}.swift — GENERATED FILE, DO NOT EDIT BY HAND.",
             "//",
             "// Source: Apple's own module interface",
             f"//   <iOS Simulator SDK>/{self.module}.framework/Modules/{self.module}.swiftmodule/"
@@ -1489,57 +1759,42 @@ class Generator:
             "// compilable Swift by scripts/port/inject_bodies.py. Regenerate with",
             "// `scripts/port/generate.sh`; see docs/PORT-BODIES.md.",
             "//",
+            f"// Both generated files compile into one module (`{COMPILED_MODULE}`): Apple's",
+            "// SwiftUI/SwiftUICore split is their binary layout, not the port's module layout.",
+            "//",
             "// Every declaration below is Apple's text byte-for-byte. The port adds",
             "//   * `{ _suiUnimplemented(\"<symbol>\") }` bodies for declarations Apple ships bodyless,",
             "//   * bodies for bodyless property accessors,",
             "//   * `{}` for bodyless `deinit`s,",
-            "// and applies the documented rewrite rules (details in docs/PORT-BODIES.md):",
+            f"// and applies the documented rewrite rules (details in docs/PORT-BODIES.md):",
             "//",
-            "//   R1  SwiftUICore::Foo -> Foo  (self-module qualification; a module cannot import itself)",
-            "//   R2  stored static `let x: T` -> computed read-only `static var x: T { get { ... } }`",
-            "//       (interface-only spelling of Apple's binary storage; no initializer in source)",
-            "//   R3  `@_opaqueReturnTypeOf(...)` typealiases and opaque results that cannot be",
-            "//       expressed in source -> `Swift.Never`",
-            "//   R4  Apple-compiler `#if` feature conditions are evaluated for the pinned toolchain;",
-            "//       dead fallback branches are preserved verbatim but not injected into",
+            *rules,
             "//",
-            "// `@inlinable` bodies are Apple's real code and are never modified.",
+            "// `@inlinable` bodies are Apple's real code and are never modified. The",
+            "// `_suiUnimplemented` seam is defined by Sources/SwiftUI/Engine/PortRuntime.swift,",
+            "// which is compiled into this same module.",
             "",
         ]
         return "\n".join(lines)
 
-    def render(self) -> tuple[str, str]:
-        """Return ``(source, manifest_json)``."""
+    def render(self) -> str:
         body = self.load()
-        parse_text = preprocess_conditionals(body)
-        parser = Parser(body, parse_text)
+        parser = Parser(body, preprocess_conditionals(body))
         root = parser.parse()
         self.root = root
         self.body = body
+        self.toplevel_types = {
+            child.path: child.kind
+            for child in root.children
+            if child.kind in ("struct", "class", "enum", "protocol", "actor")
+        }
         self.collect_never_conformances(root)
-        for dependency in DEPENDENCIES.get(self.module, ()):
-            dependency_generator = Generator(dependency)
-            dependency_body = dependency_generator.load()
-            dependency_root = Parser(
-                dependency_body, preprocess_conditionals(dependency_body)
-            ).parse()
-            dependency_generator.collect_never_conformances(dependency_root)
-            self.never_conformances |= dependency_generator.never_conformances
         self.collect_opaque_typealiases(root)
         self.generate_edits()
         edited = apply_edits(body, self.edits)
-        edited = self.strip_self_qualification(edited)
-
-        parts = [self.banner()]
-        if self.module == "SwiftUICore":
-            # The seam must live in this module: SwiftUICore cannot import SwiftUI (circular).
-            parts.append(SEAM_FUNCTION)
-            parts.append("")
-        parts.append(edited)
-        source = "".join(parts)
-
-        manifest = json.dumps(self.manifest(), indent=2, sort_keys=False) + "\n"
-        return source, manifest
+        edited = self.strip_qualifiers(edited)
+        edited = self.drop_imports(edited)
+        return "".join([self.banner(), edited])
 
     def manifest(self) -> dict:
         unique: dict[tuple[str, str, bool], BodyEntry] = {}
@@ -1555,31 +1810,13 @@ class Generator:
             for entry in sorted(unique.values(), key=lambda e: (e.module, e.symbol, e.kind, e.inlined))
         ]
         return {
-            "schema": 1,
-            "target": TARGET,
-            "modules": {
-                self.module: {
-                    "declarations": self.stats.declarations,
-                    "types": self.stats.types,
-                    "bodies_injected": self.stats.bodies_injected,
-                    "bodies_preserved": self.stats.bodies_preserved,
-                    "inlinable_bodies_preserved": self.stats.inlinable_bodies_preserved,
-                    "opaque_rewrites": self.stats.opaque_rewrites,
-                    "static_storage_rewrites": self.stats.static_storage_rewrites,
-                    "self_qualifiers_removed": self.stats.self_qualifiers_removed,
-                }
-            },
-            "stats": {
-                "declarations": self.stats.declarations,
-                "types": self.stats.types,
-                "bodies_injected": self.stats.bodies_injected,
-                "bodies_preserved": self.stats.bodies_preserved,
-                "inlinable_bodies_preserved": self.stats.inlinable_bodies_preserved,
-                "opaque_rewrites": self.stats.opaque_rewrites,
-                "static_storage_rewrites": self.stats.static_storage_rewrites,
-                "self_qualifiers_removed": self.stats.self_qualifiers_removed,
-            },
+            "file": f"{self.spec.file_stem}.swift",
+            "module": self.module,
+            "stats": self.stats.as_dict(),
             "bodies": bodies,
+            "seams": [{"category": category, "symbol": symbol} for category, symbol in self.seams],
+            "overridden": sorted(self.override_hits),
+            "synthesized_projections_omitted": sorted(self.omitted_projections),
         }
 
 
@@ -1588,102 +1825,131 @@ class Generator:
 # ---------------------------------------------------------------------------
 
 
-def generate() -> dict[str, tuple[str, str]]:
-    """Generate both modules in memory: module -> (source, json)."""
-    results: dict[str, tuple[str, str]] = {}
-    for module in MODULES:
-        results[module] = Generator(module).render()
-    return results
+def load_implemented() -> set[str]:
+    """Read `port-impl/implemented.txt`: one qualified symbol per line, `#` comments."""
+    if not os.path.exists(IMPLEMENTED_PATH):
+        return set()
+    symbols: set[str] = set()
+    with open(IMPLEMENTED_PATH, encoding="utf-8") as handle:
+        for number, raw in enumerate(handle, 1):
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            if any(character.isspace() for character in line):
+                raise GenerationError(
+                    f"{os.path.relpath(IMPLEMENTED_PATH, ROOT)}:{number}: expected one symbol "
+                    f"per line, got {line!r}"
+                )
+            symbols.add(line)
+    return symbols
 
 
-def combined_stats(results: dict[str, tuple[str, str]]) -> dict:
-    manifests = {module: json.loads(text) for module, (_, text) in results.items()}
-    total = {
-        "declarations": sum(m["stats"]["declarations"] for m in manifests.values()),
-        "types": sum(m["stats"]["types"] for m in manifests.values()),
-        "bodies_injected": sum(m["stats"]["bodies_injected"] for m in manifests.values()),
-        "bodies_preserved": sum(m["stats"]["bodies_preserved"] for m in manifests.values()),
-        "inlinable_bodies_preserved": sum(
-            m["stats"]["inlinable_bodies_preserved"] for m in manifests.values()
-        ),
-        "opaque_rewrites": sum(m["stats"]["opaque_rewrites"] for m in manifests.values()),
-        "static_storage_rewrites": sum(
-            m["stats"]["static_storage_rewrites"] for m in manifests.values()
-        ),
-        "self_qualifiers_removed": sum(
-            m["stats"]["self_qualifiers_removed"] for m in manifests.values()
-        ),
+def generate() -> tuple[dict[str, str], list[Generator]]:
+    """Return ``({file_stem: source}, generators)``."""
+    implemented = load_implemented()
+    generators = [Generator(spec, implemented) for spec in MODULE_SPECS]
+    sources: dict[str, str] = {}
+    for generator in generators:
+        sources[generator.spec.file_stem] = generator.render()
+
+    # Apple's two interfaces are compiled as one module: a type declared in both would collide.
+    owners: dict[str, tuple[str, str]] = {}
+    collisions: list[str] = []
+    for generator in generators:
+        for path, kind in generator.toplevel_types.items():
+            if path in owners and owners[path][0] != generator.spec.file_stem:
+                collisions.append(
+                    f"{kind} {path}: declared in {owners[path][0]} and {generator.spec.file_stem}"
+                )
+            else:
+                owners[path] = (generator.spec.file_stem, kind)
+    if collisions:
+        raise GenerationError(
+            "the two interfaces declare the same type; the port's single-module layout cannot "
+            "represent that without a rename (report, do not rename):\n  " + "\n  ".join(collisions)
+        )
+    return sources, generators
+
+
+def build_manifest(generators: list[Generator]) -> dict:
+    manifests = [generator.manifest() for generator in generators]
+    modules = {manifest["module"]: manifest["stats"] for manifest in manifests}
+    totals = {key: sum(manifest["stats"][key] for manifest in manifests) for key in modules[manifests[0]["module"]]}
+    bodies = [entry for manifest in manifests for entry in manifest["bodies"]]
+    bodies.sort(key=lambda entry: (entry["module"], entry["symbol"], entry["kind"], entry["inlined"]))
+
+    seam_symbols: dict[str, list[str]] = {}
+    for manifest in manifests:
+        for seam in manifest["seams"]:
+            seam_symbols.setdefault(seam["category"], set()).add(seam["symbol"])
+    seams = {
+        category: {"count": len(sorted(symbols)), "symbols": sorted(symbols)}
+        for category, symbols in sorted(seam_symbols.items())
     }
-    total["manifest_entries"] = sum(len(m["bodies"]) for m in manifests.values())
-    return {"stats": total, "modules": {k: v["stats"] for k, v in manifests.items()}}
+    overridden = sorted({symbol for manifest in manifests for symbol in manifest["overridden"]})
+    projections = sorted({
+        symbol for manifest in manifests for symbol in manifest["synthesized_projections_omitted"]
+    })
+    return {
+        "schema": 1,
+        "target": TARGET,
+        "compiled_module": COMPILED_MODULE,
+        "layout": "single-module: Generated/SwiftUICore.swift + Generated/SwiftUI.swift compile into module SwiftUI",
+        "files": {manifest["file"]: manifest["module"] for manifest in manifests},
+        "modules": modules,
+        "stats": totals,
+        "seams": {**seams, "total": sum(entry["count"] for entry in seams.values())},
+        "overridden": {"count": len(overridden), "symbols": overridden},
+        "synthesized_projections_omitted": {"count": len(projections), "symbols": projections},
+        "bodies": bodies,
+    }
 
 
-def write_outputs(results: dict[str, tuple[str, str]]) -> dict:
+def write_outputs(sources: dict[str, str], manifest: dict) -> None:
     os.makedirs(OUT_DIR, exist_ok=True)
     os.makedirs(os.path.dirname(MANIFEST_PATH), exist_ok=True)
-    for module, (source, _) in results.items():
-        path = os.path.join(OUT_DIR, f"{module}.swift")
-        with open(path, "w", encoding="utf-8") as handle:
+    for file_stem, source in sources.items():
+        with open(os.path.join(OUT_DIR, f"{file_stem}.swift"), "w", encoding="utf-8") as handle:
             handle.write(source)
-    summary = combined_stats(results)
-    manifests = {module: json.loads(text) for module, (_, text) in results.items()}
-    for module in MODULES:
-        summary["modules"][module] = manifests[module]["stats"]
-    summary["schema"] = 1
-    summary["target"] = TARGET
-    summary["bodies"] = [entry for module in MODULES for entry in manifests[module]["bodies"]]
-    summary["bodies"].sort(key=lambda e: (e["module"], e["symbol"], e["kind"], e["inlined"]))
     with open(MANIFEST_PATH, "w", encoding="utf-8") as handle:
-        handle.write(json.dumps(summary, indent=2) + "\n")
-    return summary
+        handle.write(json.dumps(manifest, indent=2) + "\n")
 
 
-def check_outputs(results: dict[str, tuple[str, str]]) -> list[str]:
+def check_outputs(sources: dict[str, str], manifest: dict) -> list[str]:
     problems: list[str] = []
-    for module, (source, _) in results.items():
-        path = os.path.join(OUT_DIR, f"{module}.swift")
+    for file_stem, source in sources.items():
+        path = os.path.join(OUT_DIR, f"{file_stem}.swift")
         if not os.path.exists(path):
             problems.append(f"missing {os.path.relpath(path, ROOT)}")
             continue
         with open(path, encoding="utf-8") as handle:
             if handle.read() != source:
                 problems.append(f"stale {os.path.relpath(path, ROOT)}")
-    manifests = {module: json.loads(text) for module, (_, text) in results.items()}
-    expected = {
-        "schema": 1,
-        "target": TARGET,
-        "modules": {module: manifests[module]["stats"] for module in MODULES},
-        "stats": combined_stats(results)["stats"],
-        "bodies": sorted(
-            (entry for module in MODULES for entry in manifests[module]["bodies"]),
-            key=lambda e: (e["module"], e["symbol"], e["kind"], e["inlined"]),
-        ),
-    }
     if not os.path.exists(MANIFEST_PATH):
         problems.append(f"missing {os.path.relpath(MANIFEST_PATH, ROOT)}")
     else:
         with open(MANIFEST_PATH, encoding="utf-8") as handle:
-            if json.load(handle) != expected:
+            if json.load(handle) != manifest:
                 problems.append(f"stale {os.path.relpath(MANIFEST_PATH, ROOT)}")
     return problems
 
 
 def main(argv: list[str]) -> int:
     argument_parser = argparse.ArgumentParser(
-        description="Generate compilable SwiftUI/SwiftUICore source from Apple's module interfaces."
+        description="Generate compilable SwiftUI source from Apple's retargeted module interfaces."
     )
     argument_parser.add_argument(
         "--check", action="store_true",
         help="do not write anything; exit 1 if the generated files or manifest are stale",
     )
-    argument_parser.add_argument(
-        "--quiet", action="store_true", help="only print errors",
-    )
+    argument_parser.add_argument("--quiet", action="store_true", help="only print errors")
     arguments = argument_parser.parse_args(argv)
 
-    results = generate()
+    sources, generators = generate()
+    manifest = build_manifest(generators)
+
     if arguments.check:
-        problems = check_outputs(results)
+        problems = check_outputs(sources, manifest)
         if problems:
             for problem in problems:
                 print(f"stale: {problem}", file=sys.stderr)
@@ -1693,13 +1959,11 @@ def main(argv: list[str]) -> int:
             print("generated sources are up to date")
         return 0
 
-    summary = write_outputs(results)
+    write_outputs(sources, manifest)
     if not arguments.quiet:
-        stats = summary["stats"]
-        print(
-            "generated Sources/SwiftUI/Generated/{SwiftUICore,SwiftUI}.swift and "
-            f"{os.path.relpath(MANIFEST_PATH, ROOT)}"
-        )
+        stats = manifest["stats"]
+        print(f"generated {', '.join('Sources/SwiftUI/Generated/' + name for name in sources)}")
+        print(f"manifest: {os.path.relpath(MANIFEST_PATH, ROOT)}")
         print(
             f"  declarations: {stats['declarations']}  types: {stats['types']}  "
             f"bodies injected: {stats['bodies_injected']}  "
@@ -1709,10 +1973,22 @@ def main(argv: list[str]) -> int:
         print(
             f"  rewrites: opaque->Never {stats['opaque_rewrites']}  "
             f"static storage {stats['static_storage_rewrites']}  "
-            f"self-qualifiers removed {stats['self_qualifiers_removed']}"
+            f"module qualifiers removed {stats['self_qualifiers_removed']}  "
+            f"projections omitted {stats['synthesized_projections_omitted']}  "
+            f"overridden {stats['overridden']}"
+        )
+        seams = manifest["seams"]
+        print(
+            "  seams: "
+            + "  ".join(
+                f"{category} {entry['count']}"
+                for category, entry in seams.items()
+                if category != "total"
+            )
+            + f"  (total {seams['total']})"
         )
         for module in MODULES:
-            module_stats = summary["modules"][module]
+            module_stats = manifest["modules"][module]
             print(
                 f"  {module}: {module_stats['declarations']} declarations, "
                 f"{module_stats['types']} types, "
@@ -1725,6 +2001,6 @@ def main(argv: list[str]) -> int:
 if __name__ == "__main__":
     try:
         raise SystemExit(main(sys.argv[1:]))
-    except ParseError as error:
-        print(f"inject_bodies: unsupported interface construct: {error}", file=sys.stderr)
+    except (ParseError, GenerationError) as error:
+        print(f"inject_bodies: {error}", file=sys.stderr)
         raise SystemExit(2)

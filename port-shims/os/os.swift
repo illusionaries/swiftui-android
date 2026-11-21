@@ -54,3 +54,24 @@ public struct OSLogInterpolation: StringInterpolationProtocol, Sendable {
 
     public mutating func appendInterpolation(_ value: Bool) { fatalError() }
 }
+
+/// `OSLogType` — Android has no unified-logging equivalent; the port's diagnostics go to
+/// stderr through the JNI layer, so these are declaration-only.
+public struct OSLogType: RawRepresentable, Equatable, Hashable, Sendable {
+    public var rawValue: UInt8
+    public init(rawValue: UInt8) { self.rawValue = rawValue }
+    public static let `default` = OSLogType(rawValue: 0)
+    public static let info = OSLogType(rawValue: 1)
+    public static let debug = OSLogType(rawValue: 2)
+    public static let error = OSLogType(rawValue: 16)
+    public static let fault = OSLogType(rawValue: 17)
+}
+
+/// Apple's `os_log` takes an `OSLogMessage`; the port accepts the same shape and drops it.
+public func os_log(_ message: OSLogMessage,
+                   dso: UnsafeRawPointer = #dsohandle,
+                   log: OSLog = .default,
+                   type: OSLogType = .default,
+                   _ args: any CVarArg...) {
+    // Diagnostics are emitted by the Android runtime; the shim stays silent.
+}

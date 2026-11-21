@@ -6,31 +6,34 @@
 // compilable Swift by scripts/port/inject_bodies.py. Regenerate with
 // `scripts/port/generate.sh`; see docs/PORT-BODIES.md.
 //
+// Both generated files compile into one module (`SwiftUI`): Apple's
+// SwiftUI/SwiftUICore split is their binary layout, not the port's module layout.
+//
 // Every declaration below is Apple's text byte-for-byte. The port adds
 //   * `{ _suiUnimplemented("<symbol>") }` bodies for declarations Apple ships bodyless,
 //   * bodies for bodyless property accessors,
 //   * `{}` for bodyless `deinit`s,
 // and applies the documented rewrite rules (details in docs/PORT-BODIES.md):
 //
-//   R1  SwiftUICore::Foo -> Foo  (self-module qualification; a module cannot import itself)
+//   R1  `Module::Foo` / `Module.Foo` qualifiers for the two Apple modules are
+//       dropped: the port compiles Apple's SwiftUICore + SwiftUI declarations into
+//       one Swift module (`SwiftUI`), so their names are local. `@_exported import
+//       SwiftUICore` is dropped for the same reason.
 //   R2  stored static `let x: T` -> computed read-only `static var x: T { get { ... } }`
-//       (interface-only spelling of Apple's binary storage; no initializer in source)
+//       (interface-only spelling of Apple's binary storage; no initializer in source).
+//       Stored properties in extensions become computed for the same reason.
 //   R3  `@_opaqueReturnTypeOf(...)` typealiases and opaque results that cannot be
-//       expressed in source -> `Swift.Never`
+//       expressed in source -> `Swift.Never`.
 //   R4  Apple-compiler `#if` feature conditions are evaluated for the pinned toolchain;
-//       dead fallback branches are preserved verbatim but not injected into
+//       dead fallback branches are preserved verbatim but not injected into.
+//   R5  `$`-prefixed property-wrapper projections are omitted: Swift synthesises them,
+//       and the `$` prefix cannot be declared in source.
+//   R6  declarations listed in `port-impl/implemented.txt` are omitted so the engine
+//       can implement them in an extension in the same module (witnesses supported).
 //
-// `@inlinable` bodies are Apple's real code and are never modified.
-/// The body-injection seam for this module.
-///
-/// Every declaration in this file that Apple ships without a body calls this function, which
-/// reports the entry point and traps. The port implements real bodies in `Sources/SwiftUI/Engine/`
-/// (see `PortRuntime.swift`); this definition exists because `SwiftUICore` cannot import
-/// `SwiftUI`, so it cannot use SwiftUI's seam.
-@inline(never)
-public func _suiUnimplemented(_ symbol: String) -> Never {
-    fatalError("SwiftUI port: unimplemented entry point \(symbol). Add it to Sources/SwiftUI/Engine/.")
-}
+// `@inlinable` bodies are Apple's real code and are never modified. The
+// `_suiUnimplemented` seam is defined by Sources/SwiftUI/Engine/PortRuntime.swift,
+// which is compiled into this same module.
 import CoreGraphics
 import Accessibility
 import Combine
@@ -733,12 +736,12 @@ extension ScrollPhase : Swift::CustomDebugStringConvertible {
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension Foundation::FormatStyle where Self == SystemFormatStyle.DateReference {
-  public static func reference(to date: Foundation::Date, allowedFields: Swift::Set<Foundation::Date.Foundation::RelativeFormatStyle.Foundation::Field> = [.year, .month, .day, .hour, .minute], maxFieldCount: Swift::Int = 2, thresholdField: Foundation::Date.Foundation::RelativeFormatStyle.Foundation::Field = .day) -> SystemFormatStyle.DateReference { _suiUnimplemented("SwiftUICore.Foundation.reference(to:allowedFields:maxFieldCount:thresholdField:)") }
+  public static func reference(to date: Foundation::Date, allowedFields: Swift::Set<FoundationShims.RelativeFormatStyleField> = [.year, .month, .day, .hour, .minute], maxFieldCount: Swift::Int = 2, thresholdField: FoundationShims.RelativeFormatStyleField = .day) -> SystemFormatStyle.DateReference { _suiUnimplemented("SwiftUICore.Foundation.reference(to:allowedFields:maxFieldCount:thresholdField:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SystemFormatStyle {
   public struct DateReference : Swift::Sendable {
-    public init(to date: Foundation::Date, allowedFields: Swift::Set<Foundation::Date.Foundation::RelativeFormatStyle.Foundation::Field> = [.year, .month, .day, .hour, .minute], maxFieldCount: Swift::Int = 2, thresholdField: Foundation::Date.Foundation::RelativeFormatStyle.Foundation::Field = .day) { _suiUnimplemented("SwiftUICore.SwiftUICore.DateReference.init(to:allowedFields:maxFieldCount:thresholdField:)") }
+    public init(to date: Foundation::Date, allowedFields: Swift::Set<FoundationShims.RelativeFormatStyleField> = [.year, .month, .day, .hour, .minute], maxFieldCount: Swift::Int = 2, thresholdField: FoundationShims.RelativeFormatStyleField = .day) { _suiUnimplemented("SwiftUICore.SwiftUICore.DateReference.init(to:allowedFields:maxFieldCount:thresholdField:)") }
     public func calendar(_ calendar: Foundation::Calendar) -> SystemFormatStyle.DateReference { _suiUnimplemented("SwiftUICore.SwiftUICore.DateReference.calendar(_:)") }
   }
 }
@@ -6901,7 +6904,7 @@ public struct DisabledTextSelectability : TextSelectability {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text {
   @available(iOS 16.0, macOS 13, tvOS 16.0, watchOS 9.0, *)
-  @_disfavoredOverload public init(_ resource: Foundation::LocalizedStringResource) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
+  @_disfavoredOverload public init(_ resource: FoundationShims.LocalizedStringResource) { _suiUnimplemented("SwiftUICore.SwiftUICore.init(_:)") }
 }
 @available(iOS 16.0, macOS 13, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -6910,7 +6913,7 @@ extension Text {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension LocalizedStringKey.StringInterpolation {
   @available(iOS 16.0, macOS 13, tvOS 16.0, watchOS 9.0, *)
-  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(_ resource: Foundation::LocalizedStringResource) { _suiUnimplemented("SwiftUICore.SwiftUICore.appendInterpolation(_:)") }
+  @_semantics("swiftui.localized.appendInterpolation_@_specifier") public mutating func appendInterpolation(_ resource: FoundationShims.LocalizedStringResource) { _suiUnimplemented("SwiftUICore.SwiftUICore.appendInterpolation(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 11.0, tvOS 17.0, watchOS 10.0, *)
@@ -7322,12 +7325,12 @@ public struct AccessibilityCustomContentKey : ~Swift::Sendable {
   public init(_ label: Text, id: Swift::String) { _suiUnimplemented("SwiftUICore.AccessibilityCustomContentKey.init(_:id:)") }
   public init(_ labelKey: LocalizedStringKey, id: Swift::String) { _suiUnimplemented("SwiftUICore.AccessibilityCustomContentKey.init(_:id:)") }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  @_disfavoredOverload @export(implementation) public init(_ label: Foundation::LocalizedStringResource, id: Swift::String) {
+  @_disfavoredOverload @export(implementation) public init(_ label: FoundationShims.LocalizedStringResource, id: Swift::String) {
         self.init(Text(label), id: id)
     }
   public init(_ labelKey: LocalizedStringKey) { _suiUnimplemented("SwiftUICore.AccessibilityCustomContentKey.init(_:)") }
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  @_disfavoredOverload public init(_ label: Foundation::LocalizedStringResource) { _suiUnimplemented("SwiftUICore.AccessibilityCustomContentKey.init(_:)") }
+  @_disfavoredOverload public init(_ label: FoundationShims.LocalizedStringResource) { _suiUnimplemented("SwiftUICore.AccessibilityCustomContentKey.init(_:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -7339,12 +7342,12 @@ public struct AccessibilityCustomContentKey {
   public init(_ label: Text, id: Swift::String)
   public init(_ labelKey: LocalizedStringKey, id: Swift::String)
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  @_disfavoredOverload @export(implementation) public init(_ label: Foundation::LocalizedStringResource, id: Swift::String) {
+  @_disfavoredOverload @export(implementation) public init(_ label: FoundationShims.LocalizedStringResource, id: Swift::String) {
         self.init(Text(label), id: id)
     }
   public init(_ labelKey: LocalizedStringKey)
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  @_disfavoredOverload public init(_ label: Foundation::LocalizedStringResource)
+  @_disfavoredOverload public init(_ label: FoundationShims.LocalizedStringResource)
 }
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -8078,12 +8081,12 @@ extension View {
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension Foundation::FormatStyle where Self == SystemFormatStyle.DateOffset {
-  public static func offset(to anchor: Foundation::Date, allowedFields: Swift::Set<Foundation::Date.Foundation::ComponentsFormatStyle.Foundation::Field> = [.year, .month, .day, .hour, .minute, .second], maxFieldCount: Swift::Int = 2, sign: Foundation::NumberFormatStyleConfiguration.Foundation::SignDisplayStrategy = .automatic) -> SystemFormatStyle.DateOffset { _suiUnimplemented("SwiftUICore.Foundation.offset(to:allowedFields:maxFieldCount:sign:)") }
+  public static func offset(to anchor: Foundation::Date, allowedFields: Swift::Set<FoundationShims.ComponentsFormatStyleField> = [.year, .month, .day, .hour, .minute, .second], maxFieldCount: Swift::Int = 2, sign: FoundationShims.SignDisplayStrategy = .automatic) -> SystemFormatStyle.DateOffset { _suiUnimplemented("SwiftUICore.Foundation.offset(to:allowedFields:maxFieldCount:sign:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SystemFormatStyle {
   public struct DateOffset : Swift::Sendable {
-    public init(to anchor: Foundation::Date, allowedFields: Swift::Set<Foundation::Date.Foundation::ComponentsFormatStyle.Foundation::Field> = [.year, .month, .week, .day, .hour, .minute, .second], maxFieldCount: Swift::Int = 2, sign: Foundation::NumberFormatStyleConfiguration.Foundation::SignDisplayStrategy = .automatic) { _suiUnimplemented("SwiftUICore.SwiftUICore.DateOffset.init(to:allowedFields:maxFieldCount:sign:)") }
+    public init(to anchor: Foundation::Date, allowedFields: Swift::Set<FoundationShims.ComponentsFormatStyleField> = [.year, .month, .week, .day, .hour, .minute, .second], maxFieldCount: Swift::Int = 2, sign: FoundationShims.SignDisplayStrategy = .automatic) { _suiUnimplemented("SwiftUICore.SwiftUICore.DateOffset.init(to:allowedFields:maxFieldCount:sign:)") }
     public func calendar(_ calendar: Foundation::Calendar) -> SystemFormatStyle.DateOffset { _suiUnimplemented("SwiftUICore.SwiftUICore.DateOffset.calendar(_:)") }
     public func locale(_ locale: Foundation::Locale) -> SystemFormatStyle.DateOffset { _suiUnimplemented("SwiftUICore.SwiftUICore.DateOffset.locale(_:)") }
   }
@@ -10195,7 +10198,7 @@ extension Foundation::AttributeScopes {
     @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
     public let adaptiveImageGlyph: Foundation::AttributeScopes.SwiftUIAttributes.AdaptiveImageGlyphAttribute
     public let accessibility: Foundation::AttributeScopes.Accessibility::AccessibilityAttributes
-    public let foundation: Foundation::AttributeScopes.Foundation::FoundationAttributes
+    public let foundation: FoundationShims.FoundationAttributes
     @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
     public typealias DecodingConfiguration = Foundation::AttributeScopeCodableConfiguration
     @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
@@ -10219,7 +10222,7 @@ extension Foundation::AttributeScopes {
     @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
     public let adaptiveImageGlyph: Foundation::AttributeScopes.SwiftUIAttributes.AdaptiveImageGlyphAttribute
     public let accessibility: Foundation::AttributeScopes.Accessibility::AccessibilityAttributes
-    public let foundation: Foundation::AttributeScopes.Foundation::FoundationAttributes
+    public let foundation: FoundationShims.FoundationAttributes
     @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
     public typealias DecodingConfiguration = Foundation::AttributeScopeCodableConfiguration
     @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
@@ -10288,7 +10291,7 @@ public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.Fou
 public static var name: Swift::String { get { _suiUnimplemented("SwiftUICore.Foundation.AdaptiveImageGlyphAttribute.name") } }
         // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
 nonisolated(unsafe) public static var inheritedByAddedText: Swift::Bool { get { _suiUnimplemented("SwiftUICore.Foundation.AdaptiveImageGlyphAttribute.inheritedByAddedText") } }
-    public static var runBoundaries: Foundation::AttributedString.Foundation::AttributeRunBoundaries? {
+    public static var runBoundaries: FoundationShims.AttributeRunBoundaries? {
       get { _suiUnimplemented("SwiftUICore.Foundation.AdaptiveImageGlyphAttribute.runBoundaries") }
     }
   }
@@ -11424,7 +11427,7 @@ extension Image {
 public struct TypesettingLanguage : Swift::Sendable, Swift::Equatable {
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
 public static var automatic: TypesettingLanguage { get { _suiUnimplemented("SwiftUICore.TypesettingLanguage.automatic") } }
-  public static func explicit(_ language: Foundation::Locale.Foundation::Language) -> TypesettingLanguage { _suiUnimplemented("SwiftUICore.TypesettingLanguage.explicit(_:)") }
+  public static func explicit(_ language: FoundationShims.Language) -> TypesettingLanguage { _suiUnimplemented("SwiftUICore.TypesettingLanguage.explicit(_:)") }
   public static func == (a: TypesettingLanguage, b: TypesettingLanguage) -> Swift::Bool { _suiUnimplemented("SwiftUICore.TypesettingLanguage.==(a:b:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -11435,7 +11438,7 @@ public static var automatic: TypesettingLanguage { get { _suiUnimplemented("Swif
 extension View {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func typesettingLanguage(_ language: Foundation::Locale.Foundation::Language, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.typesettingLanguage(_:isEnabled:)") }
+  nonisolated public func typesettingLanguage(_ language: FoundationShims.Language, isEnabled: Swift::Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUICore.SwiftUICore.typesettingLanguage(_:isEnabled:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -11449,7 +11452,7 @@ extension View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text {
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  public func typesettingLanguage(_ language: Foundation::Locale.Foundation::Language, isEnabled: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.typesettingLanguage(_:isEnabled:)") }
+  public func typesettingLanguage(_ language: FoundationShims.Language, isEnabled: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.typesettingLanguage(_:isEnabled:)") }
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
   public func typesettingLanguage(_ language: TypesettingLanguage, isEnabled: Swift::Bool = true) -> Text { _suiUnimplemented("SwiftUICore.SwiftUICore.typesettingLanguage(_:isEnabled:)") }
 }
@@ -17074,7 +17077,7 @@ public static var `default`: AccessibilityActionCategory { get { _suiUnimplement
 public static var edit: AccessibilityActionCategory { get { _suiUnimplemented("SwiftUICore.AccessibilityActionCategory.edit") } }
   public init(_ name: Text) { _suiUnimplemented("SwiftUICore.AccessibilityActionCategory.init(_:)") }
   public init(_ nameKey: LocalizedStringKey) { _suiUnimplemented("SwiftUICore.AccessibilityActionCategory.init(_:)") }
-  @_disfavoredOverload @export(implementation) public init(_ nameResource: Foundation::LocalizedStringResource) {
+  @_disfavoredOverload @export(implementation) public init(_ nameResource: FoundationShims.LocalizedStringResource) {
         self.init(Text(nameResource))
     }
   @_disfavoredOverload public init(_ name: some StringProtocol) { _suiUnimplemented("SwiftUICore.AccessibilityActionCategory.init(_:)") }
@@ -25988,12 +25991,6 @@ extension EventModifiers : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension EventModifiers : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image.ResizingMode : Swift::Equatable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -26006,25 +26003,7 @@ extension Image.ResizingMode : Swift::Hashable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _ZStackLayout : Swift::BitwiseCopyable {}
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension ZStackLayout : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Alignment : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Alignment : Swift::BitwiseCopyable {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26037,12 +26016,6 @@ extension ScrollPhase : Swift::Hashable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ScrollPhase : Swift::Sendable {}
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension ScrollPhase : Swift::BitwiseCopyable {}
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26061,12 +26034,6 @@ extension TransitionPhase : Swift::Hashable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension TransitionPhase : Swift::Sendable {}
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension TransitionPhase : Swift::BitwiseCopyable {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension HorizontalDirection : Swift::Equatable {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -26076,11 +26043,7 @@ extension HorizontalDirection : Swift::RawRepresentable {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension HorizontalDirection : Swift::Sendable {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-extension HorizontalDirection : Swift::BitwiseCopyable {}
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension HorizontalDirection.Set : Swift::Sendable {}
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-extension HorizontalDirection.Set : Swift::BitwiseCopyable {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension VerticalDirection : Swift::Equatable {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -26090,23 +26053,13 @@ extension VerticalDirection : Swift::RawRepresentable {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension VerticalDirection : Swift::Sendable {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-extension VerticalDirection : Swift::BitwiseCopyable {}
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension VerticalDirection.Set : Swift::Sendable {}
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-extension VerticalDirection.Set : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _OffsetEffect : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _OffsetEffect : Swift::BitwiseCopyable {}
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 14.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 11.0)
@@ -26119,18 +26072,6 @@ extension _ColorMonochromeEffect._Resolved : Animatable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 14.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 7.0)
 extension _ColorMonochromeEffect._Resolved : ViewModifier {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _VStackLayout : Swift::BitwiseCopyable {}
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension VStackLayout : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26160,19 +26101,7 @@ extension Edge : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Edge : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Edge.Set : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Edge.Set : Swift::BitwiseCopyable {}
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26202,19 +26131,7 @@ extension HorizontalEdge : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension HorizontalEdge : Swift::BitwiseCopyable {}
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension HorizontalEdge.Set : Swift::Sendable {}
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension HorizontalEdge.Set : Swift::BitwiseCopyable {}
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26244,41 +26161,15 @@ extension VerticalEdge : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension VerticalEdge : Swift::BitwiseCopyable {}
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension VerticalEdge.Set : Swift::Sendable {}
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension VerticalEdge.Set : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _FixedSizeLayout : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _FixedSizeLayout : Swift::BitwiseCopyable {}
 extension _FixedSizeLayout : Animatable {}
 extension _FixedSizeLayout : ViewModifier {}
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Color.Resolved : Swift::BitwiseCopyable {}
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-extension Color.ResolvedHDR : Swift::BitwiseCopyable {}
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Color.ResolvedHDR : ShapeStyle {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -26287,12 +26178,6 @@ extension Color.ResolvedHDR : ShapeStyle {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _RotationEffect : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _RotationEffect : Swift::BitwiseCopyable {}
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26305,25 +26190,7 @@ extension _ForegroundColorModifier : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Namespace : Swift::BitwiseCopyable {}
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Namespace.ID : Swift::Sendable {}
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Namespace.ID : Swift::BitwiseCopyable {}
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 27.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 27.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
-extension FillShapeStyle : Swift::BitwiseCopyable {}
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26385,19 +26252,7 @@ extension Axis : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Axis : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Axis.Set : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Axis.Set : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26421,33 +26276,13 @@ extension _PaddingLayout : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _PaddingLayout : Swift::BitwiseCopyable {}
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-extension RectangleCornerInsets : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EdgeInsets : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension EdgeInsets : Swift::BitwiseCopyable {}
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension GraphicsContext.BlendMode : Swift::Sendable {}
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension GraphicsContext.BlendMode : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26478,12 +26313,6 @@ extension _ColorMatrixEffect : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _ColorMatrixEffect : Swift::Sendable {}
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _ColorMatrixEffect : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26507,12 +26336,6 @@ extension _ContrastEffect : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _ContrastEffect : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image.Orientation : Swift::RawRepresentable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -26520,24 +26343,12 @@ extension Image.Orientation : Swift::RawRepresentable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Image.Orientation : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Image.Orientation : Swift::BitwiseCopyable {}
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension MatchedGeometryProperties : Swift::Sendable {}
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension MatchedGeometryProperties : Swift::BitwiseCopyable {}
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26561,12 +26372,6 @@ extension Font.Weight : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Font.Weight : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Spacer : View {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -26574,12 +26379,6 @@ extension Spacer : View {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Spacer : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Spacer : Swift::BitwiseCopyable {}
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26592,12 +26391,6 @@ extension _TextBaselineRelativeSpacer : View {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _TextBaselineRelativeSpacer : Swift::Sendable {}
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _TextBaselineRelativeSpacer : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26615,12 +26408,6 @@ extension _HSpacer : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _HSpacer : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _VSpacer : View {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -26628,12 +26415,6 @@ extension _VSpacer : View {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _VSpacer : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _VSpacer : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26669,19 +26450,7 @@ extension _BlurEffect : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _BlurEffect : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ProjectionTransform : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension ProjectionTransform : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26700,12 +26469,6 @@ extension _ColorInvertEffect : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _ColorInvertEffect : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _ColorInvertEffect : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26741,12 +26504,6 @@ extension _ForegroundLayerViewModifier : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _ForegroundLayerViewModifier : Swift::BitwiseCopyable {}
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _ForegroundLayerColorMatrixEffect : ViewModifier {}
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -26754,16 +26511,8 @@ extension _ForegroundLayerColorMatrixEffect : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _ForegroundLayerColorMatrixEffect : Swift::Sendable {}
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _ForegroundLayerColorMatrixEffect : Swift::BitwiseCopyable {}
 @available(anyAppleOS 27.1, *)
 extension ReservedRegion.QueryOptions : Swift::Sendable {}
-@available(anyAppleOS 27.1, *)
-extension ReservedRegion.QueryOptions : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26787,19 +26536,7 @@ extension _GrayscaleEffect : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _GrayscaleEffect : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _Rotation3DEffect : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _Rotation3DEffect : Swift::BitwiseCopyable {}
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 27.0)
@@ -26824,12 +26561,6 @@ extension _OpacityEffect : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _OpacityEffect : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _OpacityEffect : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26872,12 +26603,6 @@ extension _BrightnessEffect : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _BrightnessEffect : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _BrightnessEffect : Swift::BitwiseCopyable {}
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26896,24 +26621,12 @@ extension _GeometryGroupEffect : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _GeometryGroupEffect : Swift::Sendable {}
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _GeometryGroupEffect : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension UnitPoint : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension UnitPoint : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26944,34 +26657,10 @@ extension _SafeAreaIgnoringLayout : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _SafeAreaIgnoringLayout : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _SafeAreaIgnoringLayout : Swift::BitwiseCopyable {}
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _ColorMatrix : Swift::BitwiseCopyable {}
 @available(iOS 18.4, macOS 15.4, tvOS 18.4, watchOS 11.4, visionOS 2.4, *)
 extension _AlphaThresholdEffect._Resolved : Animatable {}
 @available(iOS 18.4, macOS 15.4, tvOS 18.4, watchOS 11.4, visionOS 2.4, *)
 extension _AlphaThresholdEffect._Resolved : ViewModifier {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _HStackLayout : Swift::BitwiseCopyable {}
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension HStackLayout : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -26990,20 +26679,12 @@ extension _CompositingGroupEffect : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _CompositingGroupEffect : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _CompositingGroupEffect : Swift::BitwiseCopyable {}
 @available(anyAppleOS 27.0, *)
 extension _ConditionalCompositingGroupEffect : Animatable {}
 @available(anyAppleOS 27.0, *)
 extension _ConditionalCompositingGroupEffect : ViewModifier {}
 @available(anyAppleOS 27.0, *)
 extension _ConditionalCompositingGroupEffect : Swift::Sendable {}
-@available(anyAppleOS 27.0, *)
-extension _ConditionalCompositingGroupEffect : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 26.0)
@@ -27022,12 +26703,6 @@ extension _PositionLayout : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 extension _PositionLayout : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 26.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
-extension _PositionLayout : Swift::BitwiseCopyable {}
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27052,12 +26727,6 @@ extension AccessibilityHeadingLevel : Swift::RawRepresentable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AccessibilityHeadingLevel : Swift::Sendable {}
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension AccessibilityHeadingLevel : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27082,12 +26751,6 @@ extension _AccessibilityIgnoresInvertColorsViewModifier : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 27.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
 extension _AccessibilityIgnoresInvertColorsViewModifier : Swift::Sendable {}
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 27.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 27.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
-extension _AccessibilityIgnoresInvertColorsViewModifier : Swift::BitwiseCopyable {}
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 26.0)
@@ -27117,12 +26780,6 @@ extension FillStyle : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension FillStyle : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension BlendMode : Swift::Equatable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -27147,17 +26804,6 @@ extension Image.Interpolation : Swift::Hashable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 extension _TransformEffect : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 26.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
-extension _TransformEffect : Swift::BitwiseCopyable {}
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension HierarchicalShapeStyle : Swift::BitwiseCopyable {}
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
 @available(watchOS, unavailable)
 extension Shader : ShapeStyle {}
@@ -27172,19 +26818,7 @@ extension GraphicsContext.ClipOptions : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension GraphicsContext.ClipOptions : Swift::BitwiseCopyable {}
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension GraphicsContext.ShadowOptions : Swift::Sendable {}
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension GraphicsContext.ShadowOptions : Swift::BitwiseCopyable {}
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27196,43 +26830,19 @@ extension GraphicsContext.BlurOptions : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension GraphicsContext.BlurOptions : Swift::BitwiseCopyable {}
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension GraphicsContext.FilterOptions : Swift::Sendable {}
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension GraphicsContext.FilterOptions : Swift::BitwiseCopyable {}
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension GraphicsContext.GradientOptions : Swift::Sendable {}
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension GraphicsContext.GradientOptions : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ContentMode : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension ContentMode : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27251,12 +26861,6 @@ extension _AspectRatioLayout : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _AspectRatioLayout : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _AspectRatioLayout : Swift::BitwiseCopyable {}
 @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27268,19 +26872,7 @@ extension Foundation::AttributeScopes.SwiftUIAttributes.FontAttribute : Swift::S
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Foundation::AttributeScopes.SwiftUIAttributes.FontAttribute : Swift::BitwiseCopyable {}
-@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Foundation::AttributeScopes.SwiftUIAttributes.ForegroundColorAttribute : Swift::Sendable {}
-@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Foundation::AttributeScopes.SwiftUIAttributes.ForegroundColorAttribute : Swift::BitwiseCopyable {}
 @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27292,19 +26884,7 @@ extension Foundation::AttributeScopes.SwiftUIAttributes.BackgroundColorAttribute
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Foundation::AttributeScopes.SwiftUIAttributes.BackgroundColorAttribute : Swift::BitwiseCopyable {}
-@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Foundation::AttributeScopes.SwiftUIAttributes.StrikethroughStyleAttribute : Swift::Sendable {}
-@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Foundation::AttributeScopes.SwiftUIAttributes.StrikethroughStyleAttribute : Swift::BitwiseCopyable {}
 @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27316,19 +26896,7 @@ extension Foundation::AttributeScopes.SwiftUIAttributes.UnderlineStyleAttribute 
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Foundation::AttributeScopes.SwiftUIAttributes.UnderlineStyleAttribute : Swift::BitwiseCopyable {}
-@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Foundation::AttributeScopes.SwiftUIAttributes.KerningAttribute : Swift::Sendable {}
-@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Foundation::AttributeScopes.SwiftUIAttributes.KerningAttribute : Swift::BitwiseCopyable {}
 @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27340,31 +26908,13 @@ extension Foundation::AttributeScopes.SwiftUIAttributes.TrackingAttribute : Swif
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Foundation::AttributeScopes.SwiftUIAttributes.TrackingAttribute : Swift::BitwiseCopyable {}
-@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Foundation::AttributeScopes.SwiftUIAttributes.BaselineOffsetAttribute : Swift::Sendable {}
-@available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Foundation::AttributeScopes.SwiftUIAttributes.BaselineOffsetAttribute : Swift::BitwiseCopyable {}
 @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Foundation::AttributeScopes.SwiftUIAttributes.AdaptiveImageGlyphAttribute : Swift::Sendable {}
-@available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Foundation::AttributeScopes.SwiftUIAttributes.AdaptiveImageGlyphAttribute : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27395,12 +26945,6 @@ extension _BackgroundPreferenceModifier : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ProposedViewSize : Swift::Sendable {}
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension ProposedViewSize : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27446,12 +26990,6 @@ extension UserInterfaceSizeClass : Swift::Hashable {}
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
 @available(visionOS, unavailable)
 extension GlassEffectContainer : Swift::Sendable {}
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension BackgroundStyle : Swift::BitwiseCopyable {}
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27476,18 +27014,6 @@ extension _ForegroundStyleModifier2 : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _ForegroundStyleModifier3 : ViewModifier {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension ForegroundStyle : Swift::BitwiseCopyable {}
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _ImplicitShapeStyle : Swift::BitwiseCopyable {}
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27523,12 +27049,6 @@ extension _LuminanceToAlphaEffect : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _LuminanceToAlphaEffect : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _MapGesture : Gesture {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -27536,54 +27056,6 @@ extension _MapGesture : Gesture {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Path.Element : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Path.Element : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Rectangle : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Ellipse : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Circle : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Rectangle._Inset : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Capsule._Inset : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Ellipse._Inset : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Circle._Inset : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27607,12 +27079,6 @@ extension _VAlignment : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _VAlignment : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _AlignmentLayout : Animatable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -27626,12 +27092,6 @@ extension _AlignmentLayout : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _AlignmentLayout : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _AlignmentLayout : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 27.0)
@@ -27655,31 +27115,13 @@ extension HorizontalAlignment : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension HorizontalAlignment : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension VerticalAlignment : Swift::Sendable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension VerticalAlignment : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension AlignmentKey : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension AlignmentKey : Swift::BitwiseCopyable {}
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, visionOS 26.0, watchOS 26.0, *)
 extension _TagTraitWritingModifier : ViewModifier {}
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -27737,8 +27179,6 @@ extension SemanticRequirement : Swift::Equatable {}
 extension SemanticRequirement : Swift::Hashable {}
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension SemanticRequirement : Swift::Sendable {}
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-extension SemanticRequirement : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27762,12 +27202,6 @@ extension _FrameLayout : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _FrameLayout : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _FlexFrameLayout : Animatable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -27781,12 +27215,6 @@ extension _FlexFrameLayout : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _FlexFrameLayout : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _FlexFrameLayout : Swift::BitwiseCopyable {}
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27798,25 +27226,7 @@ extension _TextRendererViewModifier : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Text.Layout.CharacterIndex : Swift::BitwiseCopyable {}
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Text.Layout.TypographicBounds : Swift::BitwiseCopyable {}
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Text.Layout.DrawingOptions : Swift::Sendable {}
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Text.Layout.DrawingOptions : Swift::BitwiseCopyable {}
 @available(anyAppleOS 27.1, *)
 extension ArrangementViewStyleConfiguration.Primary : Swift::Sendable {}
 @available(anyAppleOS 27.1, *)
@@ -27834,24 +27244,6 @@ extension _DeviceVariant : Swift::Hashable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EmptyView : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension EmptyView : Swift::BitwiseCopyable {}
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension ContainerRelativeShape : Swift::BitwiseCopyable {}
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension ContainerRelativeShape._Inset : Swift::BitwiseCopyable {}
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27890,12 +27282,6 @@ extension Prominence : Swift::Hashable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension ColorMatrix : Swift::Sendable {}
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension ColorMatrix : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -27920,60 +27306,30 @@ extension _BackdropEffectPlaceholder : View {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _BackdropEffectPlaceholder : Swift::Sendable {}
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _BackdropEffectPlaceholder : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EmptyAnimatableData : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension EmptyAnimatableData : Swift::BitwiseCopyable {}
 @available(iOS 18.0, macOS 15.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension MeshGradient : View {}
-@available(iOS 18.0, macOS 15.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension MeshGradient.BezierPoint : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension EmptyModifier : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension EmptyModifier : Swift::BitwiseCopyable {}
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.2)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.2)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.2)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.2)
 extension Visibility : Swift::Sendable {}
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.2)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.2)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.2)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.2)
-extension Visibility : Swift::BitwiseCopyable {}
 @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 27.0)
@@ -27992,12 +27348,6 @@ extension AccessibilityZoomGestureAction.Direction : Swift::Hashable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 27.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
 extension AccessibilityZoomGestureAction.Direction : Swift::Sendable {}
-@available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 27.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 27.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 27.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 27.0)
-extension AccessibilityZoomGestureAction.Direction : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -28021,31 +27371,13 @@ extension _SaturationEffect : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _SaturationEffect : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension TextAlignment : Swift::Sendable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension TextAlignment : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension Angle : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension Angle : Swift::BitwiseCopyable {}
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -28064,20 +27396,12 @@ extension _SafeAreaRegionsIgnoringLayout : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _SafeAreaRegionsIgnoringLayout : Swift::Sendable {}
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _SafeAreaRegionsIgnoringLayout : Swift::BitwiseCopyable {}
 @available(anyAppleOS 27.0, *)
 extension _AligningSafeAreaRegionsIgnoringLayout2 : Animatable {}
 @available(anyAppleOS 27.0, *)
 extension _AligningSafeAreaRegionsIgnoringLayout2 : ViewModifier {}
 @available(anyAppleOS 27.0, *)
 extension _AligningSafeAreaRegionsIgnoringLayout2 : Swift::Sendable {}
-@available(anyAppleOS 27.0, *)
-extension _AligningSafeAreaRegionsIgnoringLayout2 : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -28096,12 +27420,6 @@ extension RoundedCornerStyle : Swift::Hashable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension RectangleCornerRadii : Swift::Sendable {}
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension RectangleCornerRadii : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 26.0)
@@ -28114,12 +27432,6 @@ extension _AllowsHitTestingModifier : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
 extension _AllowsHitTestingModifier : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 26.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 26.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 26.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 26.0)
-extension _AllowsHitTestingModifier : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -28181,12 +27493,6 @@ extension _ClipEffect : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SafeAreaRegions : Swift::Sendable {}
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension SafeAreaRegions : Swift::BitwiseCopyable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
@@ -28222,19 +27528,7 @@ extension GestureMask : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension GestureMask : Swift::BitwiseCopyable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _ScaleEffect : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _ScaleEffect : Swift::BitwiseCopyable {}
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension Edge.Corner : Swift::RawRepresentable {}
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -28255,9 +27549,3 @@ extension _HueRotationEffect : ViewModifier {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension _HueRotationEffect : Swift::Sendable {}
-@available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", macOS 15.0)
-@_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
-@_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
-extension _HueRotationEffect : Swift::BitwiseCopyable {}

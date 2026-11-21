@@ -24,8 +24,10 @@ What this repository does instead is a genuine port of the framework's *publisha
 |---|---|---|
 | OSS Swift 6.4.3 toolchain, official Swift SDK for Android, NDK r30 | working | `swift build --swift-sdk swift-6.4.3-RELEASE_android --triple aarch64-unknown-linux-android28` → ELF aarch64 |
 | Apple interface retargeting (`build-port-sdk.sh`) | `SwiftUICore`, `SwiftUI`, `Symbols`, `Combine` retarget clean | `build/port-sdk/gen/**` |
-| Fidelity probe (`scripts/port/probe.swift`, real SwiftUI source) | converging | `build/port-sdk/probe.log` |
-| Platform shims (`UIKit`, `CoreGraphics`, …) | in progress | `port-shims/**` |
+| Fidelity probe (`scripts/port/probe.swift`, real SwiftUI source) | 108 errors, all first-wave `SwiftUICore` (`FoundationShims`, `Spatial.Size3D`, `CoreText.LineHeight`, `ObjectiveC.NSObject`, `Accessibility.AXChartDescriptor`) | `build/port-sdk/probe.log` |
+| Platform shims | `CoreGraphics` (incl. `CGBlendMode`), `CoreTransferable`, `os`/`OSLog` done; `FoundationShims`, `ObjectiveC`, `QuartzCore`, `CoreText`, `Accessibility`, `Spatial`, `UIKit` in progress | `port-shims/**` |
+| Apple declarations → compilable source | **62,189 lines generated**: 11,419 declarations, 4,169 types, 7,083 bodies injected, 704 `@inlinable` bodies preserved verbatim | `Sources/SwiftUI/Generated/`, `build/port-sdk/injected-bodies.json` |
+| Generated port in the app target | **opt-in** (`SWIFTUI_PORT_GENERATED=1`), until the shims close | `Package.swift` |
 | C JNI bridge (`AndroidBridge.c`) | complete: 10 JNI entry points, 22 drawing primitives, cached paints/typefaces, exception-safe | compiles for arm64 + x86_64 with `-Wall -Wextra` |
 | Java host (`MainActivity`, `SwiftUIHostView`) | complete: edge-to-edge, insets, gestures, back, config survival | APK validated with `apksigner`/`zipalign` |
 | APK pipeline (`build-apk.sh`) | complete: aapt2 → javac → d8 → zip → zipalign → sign, bundles Swift runtime dylibs from `llvm-readelf` NEEDED | `build/SwiftUI-Android.apk` |
@@ -51,6 +53,21 @@ public protocol View {
 `_ViewListCountInputs` are opaque in the interface (their storage is internal), which means the
 port can define their real contents. That is the architecture the port implements: a value graph
 per frame → node tree → propose/measure/place → `DisplayList` → Android canvas.
+
+## Two compiler-level discoveries worth recording
+
+Both were found by trying to compile Apple's interface back from text, and both are genuine
+Swift 6.4.3 behaviour, not port bugs:
+
+1. **`$`-prefixed declarations are illegal in source and crash the frontend.** Apple's interface
+   lists a property's projected value explicitly (`public var $isOn: Binding<Bool> { get }`).
+   Declared literally, the compiler first rejects the name, and once the wrapper is present it
+   segfaults in `PropertyWrapperAuxiliaryVariablesRequest`. The projection is synthesized from
+   the wrapped property anyway, so the declaration is dropped
+   (`scripts/port/strip_projected_vars.py`).
+2. **A property-wrapper attribute on a declaration that spells out its own accessors is
+   malformed** — interfaces emit exactly that shape (`@Binding public var isOn: Bool { get }`).
+   The port drops the attribute and supplies wrapper semantics in the engine.
 
 ## Known semantic gaps (by construction, not by accident)
 

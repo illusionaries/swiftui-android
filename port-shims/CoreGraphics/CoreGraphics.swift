@@ -164,3 +164,39 @@ public enum CGLineJoin: Int32, Sendable {
     case round
     case bevel
 }
+
+/// `CGBlendMode` — case set and raw values copied from CoreGraphics' `CGContext.h`
+/// (`typedef CF_ENUM(int32_t, CGBlendMode)`), in Apple's declaration order.
+public struct CGBlendMode: RawRepresentable, Equatable, Hashable, Sendable {
+    public var rawValue: Int32
+    public init(rawValue: Int32) { self.rawValue = rawValue }
+
+    public static let normal = CGBlendMode(rawValue: 0)
+    public static let multiply = CGBlendMode(rawValue: 1)
+    public static let screen = CGBlendMode(rawValue: 2)
+    public static let overlay = CGBlendMode(rawValue: 3)
+    public static let darken = CGBlendMode(rawValue: 4)
+    public static let lighten = CGBlendMode(rawValue: 5)
+    public static let colorDodge = CGBlendMode(rawValue: 6)
+    public static let colorBurn = CGBlendMode(rawValue: 7)
+    public static let softLight = CGBlendMode(rawValue: 8)
+    public static let hardLight = CGBlendMode(rawValue: 9)
+    public static let difference = CGBlendMode(rawValue: 10)
+    public static let exclusion = CGBlendMode(rawValue: 11)
+    public static let hue = CGBlendMode(rawValue: 12)
+    public static let saturation = CGBlendMode(rawValue: 13)
+    public static let color = CGBlendMode(rawValue: 14)
+    public static let luminosity = CGBlendMode(rawValue: 15)
+    public static let clear = CGBlendMode(rawValue: 16)
+    public static let copy = CGBlendMode(rawValue: 17)
+    public static let sourceIn = CGBlendMode(rawValue: 18)
+    public static let sourceOut = CGBlendMode(rawValue: 19)
+    public static let sourceAtop = CGBlendMode(rawValue: 20)
+    public static let destinationOver = CGBlendMode(rawValue: 21)
+    public static let destinationIn = CGBlendMode(rawValue: 22)
+    public static let destinationOut = CGBlendMode(rawValue: 23)
+    public static let destinationAtop = CGBlendMode(rawValue: 24)
+    public static let xor = CGBlendMode(rawValue: 25)
+    public static let plusDarker = CGBlendMode(rawValue: 26)
+    public static let plusLighter = CGBlendMode(rawValue: 27)
+}
