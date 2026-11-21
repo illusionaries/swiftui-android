@@ -19292,6 +19292,7 @@ extension SwiftUICore::KeyframeTrackContentBuilder {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @propertyWrapper @frozen  @preconcurrency @_Concurrency::MainActor public struct StateObject<ObjectType> : SwiftUICore::DynamicProperty where ObjectType : Combine::ObservableObject {
+  internal var _portSlot: Int = -1
   @usableFromInline
   @preconcurrency @_Concurrency::MainActor @frozen internal enum Storage {
     case initially(() -> ObjectType)
@@ -19301,11 +19302,10 @@ extension SwiftUICore::KeyframeTrackContentBuilder {
 }
   @usableFromInline
   @_Concurrency::MainActor @preconcurrency internal var storage: SwiftUICore::StateObject<ObjectType>.Storage
-  @inlinable nonisolated public init(wrappedValue thunk: @autoclosure @escaping () -> ObjectType) {
-        storage = .initially(thunk)
-    }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @_Concurrency::MainActor @preconcurrency public var wrappedValue: ObjectType {
-    get { { switch storage { case let .object(observed): return observed.wrappedValue; case let .initially(thunk): return PortObjectStore.stateObject(thunk) } }() }
+    get { switch storage { case let .object(observed): return observed.wrappedValue; case let .initially(thunk): return PortObjectStore.object(at: _portSlot, create: thunk) } }
   }
   @_Concurrency::MainActor @preconcurrency public var projectedValue: SwiftUICore::ObservedObject<ObjectType>.Wrapper {
     get { ObservedObject(wrappedValue: wrappedValue).projectedValue }
@@ -22539,11 +22539,11 @@ extension SwiftUICore::View {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 public struct PinnedScrollableViews : Swift::OptionSet, Swift::Sendable {
   public let rawValue: Swift::UInt32
-  public init(rawValue: Swift::UInt32) { _suiUnimplemented("SwiftUICore.PinnedScrollableViews.init(rawValue:)") }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var sectionHeaders: SwiftUICore::PinnedScrollableViews { get { _suiUnimplemented("SwiftUICore.PinnedScrollableViews.sectionHeaders") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var sectionFooters: SwiftUICore::PinnedScrollableViews { get { _suiUnimplemented("SwiftUICore.PinnedScrollableViews.sectionFooters") } }
+  public init(rawValue: Swift::UInt32) { self.rawValue = rawValue }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias ArrayLiteralElement = SwiftUICore::PinnedScrollableViews
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)

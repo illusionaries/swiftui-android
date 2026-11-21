@@ -164,3 +164,6 @@ SwiftUICore.UnitPoint.topLeading
 SwiftUICore.UnitPoint.topTrailing
 SwiftUICore.UnitPoint.bottomLeading
 SwiftUICore.UnitPoint.bottomTrailing
+SwiftUICore.StateObject.init(wrappedValue:)
+SwiftUICore.PinnedScrollableViews.sectionHeaders
+SwiftUICore.PinnedScrollableViews.sectionFooters

@@ -95,3 +95,10 @@ extension UnitPoint {
     public static var bottomLeading: UnitPoint { UnitPoint(x: 0, y: 1) }
     public static var bottomTrailing: UnitPoint { UnitPoint(x: 1, y: 1) }
 }
+
+// MARK: - PinnedScrollableViews
+
+extension PinnedScrollableViews {
+    public static var sectionHeaders: PinnedScrollableViews { _optionSet(1 << 0, as: PinnedScrollableViews.self) }
+    public static var sectionFooters: PinnedScrollableViews { _optionSet(1 << 1, as: PinnedScrollableViews.self) }
+}

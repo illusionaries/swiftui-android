@@ -62,6 +62,7 @@ SwiftUICore.State.projectedValue => Binding(get: { self.wrappedValue }, set: { s
 SwiftUICore.LazyState.wrappedValue#1 => (_location as? any PortLocationBox<Value>)?.value ?? { switch _storage { case let .value(value): return value; case let .thunk(thunk): return thunk() } }()
 SwiftUICore.LazyState.wrappedValue#2 => (_location as? any PortLocationBox<Value>)?.value = newValue; PortStateStore.markDirty()
 SwiftUICore.LazyState.projectedValue => Binding(get: { self.wrappedValue }, set: { self.wrappedValue = $0 })
-SwiftUICore.StateObject.wrappedValue => { switch storage { case let .object(observed): return observed.wrappedValue; case let .initially(thunk): return PortObjectStore.stateObject(thunk) } }()
-SwiftUICore.StateObject.projectedValue => ObservedObject(wrappedValue: wrappedValue).projectedValue
 SwiftUICore.ObservedObject.projectedValue => Wrapper(root: wrappedValue)
+SwiftUICore.StateObject.wrappedValue => switch storage { case let .object(observed): return observed.wrappedValue; case let .initially(thunk): return PortObjectStore.object(at: _portSlot, create: thunk) }
+SwiftUICore.StateObject.projectedValue => ObservedObject(wrappedValue: wrappedValue).projectedValue
+SwiftUICore.PinnedScrollableViews.init(rawValue:) => self.rawValue = rawValue

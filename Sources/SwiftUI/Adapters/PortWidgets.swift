@@ -154,6 +154,13 @@ extension Color {
 // object its owner holds. The port never needs change notifications because it re-evaluates the
 // view tree every frame — what it does need is stable storage, which the slot store provides.
 
+/// Object storage for `@StateObject`.
+///
+/// The view struct — and with it the wrapper — is rebuilt every frame, so an object needs an
+/// identity that survives that. `StateObject`'s initialiser takes a slot id: initialisers run once
+/// per wrapper per frame in a fixed order, whereas *reads* of `wrappedValue` happen many times
+/// (label, conditional, child views). Keying by read order gave each read its own object — the tab
+/// bar showed one model while the screen's conditional saw another.
 public enum PortObjectStore {
     nonisolated(unsafe) private static var cursor = 0
     nonisolated(unsafe) private static var objects: [Int: AnyObject] = [:]
@@ -162,12 +169,17 @@ public enum PortObjectStore {
         cursor = 0
     }
 
-    static func stateObject<Object: AnyObject>(_ create: () -> Object) -> Object {
-        let index = cursor
+    /// Called from `StateObject.init` once per wrapper per frame.
+    static func reserveSlot() -> Int {
+        let slot = cursor
         cursor += 1
-        if let existing = objects[index] as? Object { return existing }
+        return slot
+    }
+
+    static func object<Object: AnyObject>(at slot: Int, create: () -> Object) -> Object {
+        if let existing = objects[slot] as? Object { return existing }
         let created = create()
-        objects[index] = created
+        if slot >= 0 { objects[slot] = created }
         return created
     }
 }
@@ -177,4 +189,26 @@ extension ObservedObject.Wrapper {
         Binding(get: { self.root[keyPath: keyPath] },
                 set: { self.root[keyPath: keyPath] = $0 })
     }
+}
+
+// MARK: - StateObject
+//
+// The wrapper is rebuilt every frame, so the object needs an identity that survives: the
+// initialiser reserves a slot (initialisers run once per wrapper per frame, in a fixed order) and
+// every `wrappedValue` read of that wrapper uses it. Keying by *read* order instead gave each read
+// its own object — the tab bar showed one model while the root view's conditional saw another.
+
+extension StateObject {
+    @MainActor public init(wrappedValue value: ObjectType) {
+        let boxed = value
+        self.storage = .initially { boxed }
+        self._portSlot = PortObjectStore.reserveSlot()
+    }
+
+    @_disfavoredOverload
+    @MainActor public init(wrappedValue thunk: @autoclosure @escaping () -> ObjectType) {
+        self.storage = .initially(thunk)
+        self._portSlot = PortObjectStore.reserveSlot()
+    }
+
 }
