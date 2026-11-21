@@ -8754,7 +8754,7 @@ extension SwiftUI::_VariadicView_Root {
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   nonisolated static func _viewListCount(inputs: SwiftUI::_ViewListCountInputs, body: (SwiftUI::_ViewListCountInputs) -> Swift::Int?) -> Swift::Int?
   associatedtype Body : SwiftUI::View
-  @SwiftUI::ContentBuilder @_Concurrency::MainActor @preconcurrency func body(children: SwiftUI::_VariadicView.Children) -> Self.Body
+   @_Concurrency::MainActor @preconcurrency func body(children: SwiftUI::_VariadicView.Children) -> Self.Body
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -17256,7 +17256,7 @@ extension SwiftUI::View {
 @preconcurrency @_Concurrency::MainActor public protocol ArrangementViewStyle {
   associatedtype Body : SwiftUI::View
   typealias Configuration = SwiftUI::ArrangementViewStyleConfiguration
-  @SwiftUI::ContentBuilder @_Concurrency::MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency::MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(anyAppleOS 27.1, *)
@@ -18335,7 +18335,7 @@ extension SwiftUI::Transaction {
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   nonisolated static func _viewListCount(inputs: SwiftUI::_ViewListCountInputs) -> Swift::Int?
   associatedtype Body : SwiftUI::View
-  @SwiftUI::ContentBuilder @_Concurrency::MainActor @preconcurrency var body: Self.Body { get }
+   @_Concurrency::MainActor @preconcurrency var body: Self.Body { get }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -20325,7 +20325,7 @@ nonisolated public func size(width: CoreGraphics::CGFloat, height: CoreGraphics:
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
   nonisolated static func _viewListCount(inputs: SwiftUI::_ViewListCountInputs, body: (SwiftUI::_ViewListCountInputs) -> Swift::Int?) -> Swift::Int?
   associatedtype Body : SwiftUI::View
-  @SwiftUI::ContentBuilder @_Concurrency::MainActor @preconcurrency func body(content: Self.Content) -> Self.Body
+   @_Concurrency::MainActor @preconcurrency func body(content: Self.Content) -> Self.Body
   typealias Content = SwiftUI::_ViewModifier_Content<Self>
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -21483,7 +21483,7 @@ extension SwiftUI::_BenchmarkHost {
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 @preconcurrency @_Concurrency::MainActor public protocol Transition {
   associatedtype Body : SwiftUI::View
-  @SwiftUI::ContentBuilder @_Concurrency::MainActor @preconcurrency func body(content: Self.Content, phase: SwiftUI::TransitionPhase) -> Self.Body
+   @_Concurrency::MainActor @preconcurrency func body(content: Self.Content, phase: SwiftUI::TransitionPhase) -> Self.Body
   @_Concurrency::MainActor @preconcurrency static var properties: SwiftUI::TransitionProperties { get }
   typealias Content = SwiftUI::PlaceholderContentView<Self>
   nonisolated func _makeContentTransition(transition: inout SwiftUI::_Transition_ContentTransition)

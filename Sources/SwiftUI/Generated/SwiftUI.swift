@@ -3081,7 +3081,7 @@ extension SwiftUI.Transaction {
   associatedtype Body : SwiftUI.View
   typealias Content = SwiftUI.PreviewModifierContent
   @_Concurrency.MainActor static func makeSharedContext() async throws -> Self.Context
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor func body(content: Self.Content, context: Self.Context) -> Self.Body
+   @_Concurrency.MainActor func body(content: Self.Content, context: Self.Context) -> Self.Body
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.PreviewModifier where Self.Context == () {
@@ -3751,7 +3751,7 @@ extension SwiftUI.View {
 @available(watchOS, unavailable)
 @preconcurrency @_Concurrency.MainActor public protocol MenuStyle {
   associatedtype Body : SwiftUI.View
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
   typealias Configuration = SwiftUI.MenuStyleConfiguration
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -4011,7 +4011,7 @@ public struct TitleBarWindowStyle : SwiftUI.WindowStyle {
 @available(watchOS, unavailable)
 @preconcurrency @_Concurrency.MainActor public protocol TextEditorStyle {
   associatedtype Body : SwiftUI.View
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
   typealias Configuration = SwiftUI.TextEditorStyleConfiguration
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -4073,7 +4073,7 @@ nonisolated public struct TextEditor : SwiftUI.View {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @preconcurrency @_Concurrency.MainActor public protocol ToggleStyle {
   associatedtype Body : SwiftUI.View
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
   typealias Configuration = SwiftUI.ToggleStyleConfiguration
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -5131,7 +5131,7 @@ extension SwiftUI.View {
 @available(iOS 14.0, tvOS 14.0, watchOS 8.0, *)
 public protocol IndexViewStyle {
   associatedtype _Body : SwiftUI.View
-  @SwiftUI.ContentBuilder func _makeBody(configuration: Self._Configuration) -> Self._Body
+   func _makeBody(configuration: Self._Configuration) -> Self._Body
   typealias _Configuration = SwiftUI._IndexViewStyleConfiguration
 }
 @available(iOS 14.0, tvOS 14.0, watchOS 8.0, *)
@@ -5424,7 +5424,7 @@ extension SwiftUI.View {
 @available(watchOS, unavailable)
 @preconcurrency @_Concurrency.MainActor public protocol DisclosureGroupStyle {
   associatedtype Body : SwiftUI.View
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
   typealias Configuration = SwiftUI.DisclosureGroupStyleConfiguration
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -7336,7 +7336,7 @@ extension SwiftUI.View {
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @preconcurrency @_Concurrency.MainActor public protocol NavigationSplitViewStyle {
   associatedtype Body : SwiftUI.View
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
   typealias Configuration = SwiftUI.NavigationSplitViewStyleConfiguration
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -10068,7 +10068,7 @@ extension SwiftUI.TableRowContent {
   nonisolated static func _makeEntries(content: SwiftUI._GraphValue<Self>, inputs: SwiftUI._AccessibilityRotorEntryInputs) -> SwiftUI._AccessibilityRotorEntryOutputs
   nonisolated static func _entryCount(inputs: SwiftUI._AccessibilityRotorEntryInputs) -> Swift.Int?
   associatedtype Body : SwiftUI.AccessibilityRotorContent
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
+   @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.AccessibilityRotorContent {
@@ -10333,7 +10333,7 @@ extension SwiftUI.EnvironmentValues {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @preconcurrency @_Concurrency.MainActor public protocol PrimitiveButtonStyle {
   associatedtype Body : SwiftUI.View
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
   typealias Configuration = SwiftUI.PrimitiveButtonStyleConfiguration
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -11546,7 +11546,7 @@ public static var cancel: SwiftUI.ButtonRole { get { _suiUnimplemented("SwiftUI.
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @preconcurrency @_Concurrency.MainActor public protocol ToolbarContent {
   associatedtype Body : SwiftUI.ToolbarContent
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
+   @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   nonisolated static func _makeToolbar(content: SwiftUI._GraphValue<Self>, inputs: SwiftUI._ToolbarInputs) -> SwiftUI._ToolbarOutputs
   nonisolated static func _makeContent(content: SwiftUI._GraphValue<Self>, inputs: SwiftUI._GraphInputs, resolved: inout SwiftUI._ToolbarItemList)
@@ -11759,10 +11759,10 @@ nonisolated public struct IconOnlyLabelStyle : SwiftUI.LabelStyle {
 @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
 public protocol NavigationViewStyle {
   associatedtype _Body : SwiftUI.View
-  @SwiftUI.ContentBuilder func _body(configuration: SwiftUI._NavigationViewStyleConfiguration) -> Self._Body
+   func _body(configuration: SwiftUI._NavigationViewStyleConfiguration) -> Self._Body
   associatedtype _Body2 : SwiftUI.View = SwiftUI.EmptyView
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  @SwiftUI.ContentBuilder func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> Self._Body2
+   func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> Self._Body2
 }
 extension SwiftUI.NavigationViewStyle {
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -12819,7 +12819,7 @@ extension SwiftUI.GaugeStyle where Self == SwiftUI.AccessoryCircularCapacityGaug
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @preconcurrency @_Concurrency.MainActor public protocol ButtonStyle {
   associatedtype Body : SwiftUI.View
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
   typealias Configuration = SwiftUI.ButtonStyleConfiguration
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -12887,7 +12887,7 @@ nonisolated public struct CircularGaugeStyle : SwiftUI.GaugeStyle {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 public protocol TextFieldStyle {
   associatedtype _Body : SwiftUI.View
-  @SwiftUI.ContentBuilder func _body(configuration: SwiftUI.TextField<Self._Label>) -> Self._Body
+   func _body(configuration: SwiftUI.TextField<Self._Label>) -> Self._Body
   typealias _Label = SwiftUI._TextFieldStyleLabel
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -14369,7 +14369,7 @@ public struct DropConfiguration {
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @preconcurrency @_Concurrency.MainActor public protocol ProgressViewStyle {
   associatedtype Body : SwiftUI.View
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
   typealias Configuration = SwiftUI.ProgressViewStyleConfiguration
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -14670,7 +14670,7 @@ public protocol _PreviewProviderLocator {
 @available(anyAppleOS, deprecated: 27.0, message: "Use #Preview instead.")
 @preconcurrency @_Concurrency.MainActor public protocol PreviewProvider : SwiftUI._PreviewProvider {
   associatedtype Previews : SwiftUI.View
-  @SwiftUI.ContentBuilder @preconcurrency @_Concurrency.MainActor static var previews: Self.Previews { get }
+   @preconcurrency @_Concurrency.MainActor static var previews: Self.Previews { get }
   @preconcurrency @_Concurrency.MainActor static var platform: SwiftUI.PreviewPlatform? { get }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -16708,7 +16708,7 @@ extension SwiftUI.Form where Content == SwiftUI.FormStyleConfiguration.Content {
 @available(watchOS, unavailable)
 @preconcurrency @_Concurrency.MainActor public protocol Commands {
   associatedtype Body : SwiftUI.Commands
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
+   @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
   @available(iOS 15.0, macOS 12.0, *)
   nonisolated static func _makeCommands(content: SwiftUI._GraphValue<Self>, inputs: SwiftUI._CommandsInputs) -> SwiftUI._CommandsOutputs
   @_Concurrency.MainActor @preconcurrency func _resolve(into resolved: inout SwiftUI._ResolvedCommands)
@@ -19524,7 +19524,7 @@ public func __designTimeApplyIncrementalValues(_ updates: [[Swift.String : Any]]
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @preconcurrency @_Concurrency.MainActor public protocol FormStyle {
   associatedtype Body : SwiftUI.View
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
   typealias Configuration = SwiftUI.FormStyleConfiguration
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -21906,7 +21906,7 @@ public struct SearchUnavailableContent {
 @available(visionOS, unavailable)
 @_Concurrency.MainActor public protocol SceneAccessoryContent {
   associatedtype Body : SwiftUI.SceneAccessoryContent
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor var body: Self.Body { get }
+   @_Concurrency.MainActor var body: Self.Body { get }
   nonisolated static func _makeSceneAccessory(content: SwiftUI._GraphValue<Self>, inputs: SwiftUI._SceneAccessoryInputs) -> SwiftUI._SceneAccessoryOutputs
 }
 @available(iOS 27.0, *)
@@ -25062,7 +25062,7 @@ nonisolated public struct GroupedTabViewStyle : SwiftUI.TabViewStyle {
 @available(watchOS, unavailable)
 @preconcurrency @_Concurrency.MainActor public protocol TableStyle {
   associatedtype Body : SwiftUI.View
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
   typealias Configuration = SwiftUI.TableStyleConfiguration
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -25096,7 +25096,7 @@ extension SwiftUI.View {
 @available(tvOS, unavailable)
 @preconcurrency @_Concurrency.MainActor public protocol GaugeStyle {
   associatedtype Body : SwiftUI.View
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
   typealias Configuration = SwiftUI.GaugeStyleConfiguration
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -25647,7 +25647,7 @@ extension SwiftUI.View {
 @available(watchOS, unavailable)
 @preconcurrency @_Concurrency.MainActor public protocol ControlGroupStyle {
   associatedtype Body : SwiftUI.View
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
   typealias Configuration = SwiftUI.ControlGroupStyleConfiguration
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -26549,7 +26549,7 @@ public static var `default`: SwiftUI.PointerStyle { get { _suiUnimplemented("Swi
 @available(watchOS, unavailable)
 @preconcurrency @_Concurrency.MainActor public protocol GroupBoxStyle {
   associatedtype Body : SwiftUI.View
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
   typealias Configuration = SwiftUI.GroupBoxStyleConfiguration
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -27419,7 +27419,7 @@ extension SwiftUI.View {
 @available(visionOS, unavailable)
 public protocol MenuButtonStyle {
   associatedtype _Body : SwiftUI.View
-  @SwiftUI.ContentBuilder func _body(configuration: Self._Configuration) -> Self._Body
+   func _body(configuration: Self._Configuration) -> Self._Body
   typealias _Configuration = SwiftUI._MenuButtonStyleConfiguration
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -29182,7 +29182,7 @@ nonisolated public struct RemoteImmersiveSpace<Content, Data> : SwiftUI.Scene wh
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @preconcurrency @_Concurrency.MainActor public protocol LabeledContentStyle {
   associatedtype Body : SwiftUI.View
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
   typealias Configuration = SwiftUI.LabeledContentStyleConfiguration
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -30591,7 +30591,7 @@ public struct _ScrollableLayoutItem : Swift.Equatable {
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @preconcurrency @_Concurrency.MainActor public protocol LabelStyle {
   associatedtype Body : SwiftUI.View
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
   typealias Configuration = SwiftUI.LabelStyleConfiguration
 }
 #if compiler(>=5.3) && $TildeSendable
@@ -30937,11 +30937,11 @@ nonisolated public struct Window<Content> : SwiftUI.Scene where Content : SwiftU
 @preconcurrency @_Concurrency.MainActor public protocol DatePickerStyle {
   associatedtype Body : SwiftUI.View
   @available(iOS 16.0, macOS 13.0, *)
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
+   @_Concurrency.MainActor @preconcurrency func makeBody(configuration: Self.Configuration) -> Self.Body
   @available(iOS 16.0, macOS 13.0, *)
   typealias Configuration = SwiftUI.DatePickerStyleConfiguration
   associatedtype _Body : SwiftUI.View = SwiftUI.EmptyView
-  @SwiftUI.ContentBuilder @_Concurrency.MainActor @preconcurrency func _body(configuration: SwiftUI.DatePicker<Self._Label>) -> Self._Body
+   @_Concurrency.MainActor @preconcurrency func _body(configuration: SwiftUI.DatePicker<Self._Label>) -> Self._Body
   typealias _Label = SwiftUI._DatePickerStyleLabel
 }
 #if compiler(>=5.3) && $TildeSendable

@@ -30,3 +30,20 @@ public enum PortDiagnostics {
         unimplementedHits.append(symbol)
     }
 }
+
+/// Placeholder `Sequence.Iterator` for generated conformances whose real iterator type lives in
+/// a constrained extension Apple splits across its two interfaces.
+///
+/// A `.swiftinterface` can leave an associated type to be inferred from a witness in a *different*
+/// module's interface half; merged into one module that inference has no witness to lean on. The
+/// generator substitutes this concrete iterator so the conformance still exists and is callable —
+/// it just traps, because iteration over these SPI collections is not part of the port yet.
+public struct _PortIterator: IteratorProtocol {
+    public typealias Element = Never
+
+    public init() {}
+
+    public mutating func next() -> Never? {
+        _suiUnimplemented("_PortIterator.next")
+    }
+}

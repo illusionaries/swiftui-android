@@ -2405,6 +2405,30 @@ class SharedModel:
                     simple = container.path.split(".")[-1]
                     self.protocol_by_name.setdefault(simple, []).append(container.path)
 
+        # Result builders are also spelled through typealiases (`public typealias ContentBuilder =
+        # ViewBuilder` in the interfaces themselves); a requirement or declaration carrying such an
+        # attribute must be recognised as a builder too, so resolve aliases to a fixpoint.
+        alias_targets: dict[str, str] = {}
+        for generator in self.generators:
+            for container in walk_containers(generator.root):
+                for member in container.members:
+                    if member.kind != "typealias" or member.name in alias_targets:
+                        continue
+                    text = generator.body[member.start:member.end]
+                    equals = text.find("=")
+                    if equals < 0:
+                        continue
+                    target = re.sub(r"<.*$", "", text[equals + 1:].strip(), flags=re.S).strip()
+                    target = target.replace("::", ".")
+                    alias_targets[member.name] = target.split(".")[-1].strip()
+        changed = True
+        while changed:
+            changed = False
+            for name, target in alias_targets.items():
+                if name not in self.builder_names and target in self.builder_names:
+                    self.builder_names.add(name)
+                    changed = True
+
         for path, (container, _, body) in self.protocols.items():
             inherited: list[str] = []
             for conformance in container.conformances:
