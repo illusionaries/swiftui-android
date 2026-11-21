@@ -145,10 +145,6 @@ These are real and visible, not hypothetical:
   count shifts later slots.
 * **Focus does not always end with the IME.** BACK closes the keyboard but the session stays live
   until another field is tapped.
-* **Open defect: both apps render about 12 % dark at launch** until the first window resize (for
-  instance when the IME opens). It is not the engine — a plain white `View` in the same window
-  measures 255, while a white fill from the view that hosts SwiftUI measures 224 — and the cause
-  has not been identified yet.
 
 Text input, styles, scrolling and `Link` are covered in more detail — including which parts
 deliberately stop where — in [docs/GALLERY.md](docs/GALLERY.md).

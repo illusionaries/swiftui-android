@@ -224,6 +224,9 @@ public class SwiftUIHostView extends FrameLayout {
         setWillNotDraw(false);
         setFocusable(true);
         setFocusableInTouchMode(true);
+        // This view owns keyboard focus for the whole SwiftUI tree. Android's default
+        // focus highlight would tint the entire canvas until an EditText takes focus.
+        setDefaultFocusHighlightEnabled(false);
         setClickable(true);
         setSaveEnabled(false);
 

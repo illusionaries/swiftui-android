@@ -9,21 +9,16 @@ with 0 errors, and 38 host tests cover the engine ([`test.sh`](../scripts/test.s
 missing is enumerated in [`GALLERY.md`](GALLERY.md) and in *Known semantic gaps* below. The rest of
 this file is the log of how it got here.
 
-### Open: both demos start about 12% dark
+### Resolved: both demos started about 12% dark
 
-At launch, everything both apps draw is multiplied by ≈0.875 until the first window resize; opening
-the IME (which resizes the window) makes it correct, and it stays correct afterwards. Measured, not
-guessed: a page background of `Color(white: 0.96)` reads 215 instead of 245, a white card reads 224
-instead of 255, and a white rectangle painted *by the Java view* reads 224 while a sibling plain
-`View` with a white background in the same frame reads 255.
+The focusable `SwiftUIHostView` requests keyboard focus when attached. Android's default focus
+highlight then paints a translucent overlay over the entire custom canvas: white cards read 224
+instead of 255. Focusing the gallery's transparent `EditText` removes that highlight by moving
+focus away from the host; the window resize was incidental.
 
-Ruled out: the engine (the Java-painted rectangle is dimmed too), the window and its background, the
-compositor (no dim layer, no colour transform, window alpha 1.0), display power state, hardware vs
-software rendering, the theme's `windowAnimationStyle`, the text-input child view, and a forced
-relayout. `View.getAlpha()` and `getTransitionAlpha()` both report 1.0 inside `onDraw`, so the
-multiply is not a view alpha; the remaining suspects are a per-layer state leaked by the app-launch
-transition and the `RenderNode`/`ViewRootImpl` path. The next step is to instrument that path rather
-than keep bisecting the app.
+The host now calls `setDefaultFocusHighlightEnabled(false)`, retaining keyboard focus and input
+handling while leaving control focus rendering to SwiftUI. Both demos launch at full brightness
+on the existing emulator without opening the IME.
 
 ### Resolved: the build assumed one particular machine
 
