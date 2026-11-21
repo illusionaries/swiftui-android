@@ -1,66 +1,88 @@
 // CoreTransferable — platform shim for the Android port.
 //
-// WHY THIS IS NOT RETARGETED
-// --------------------------
-// Apple ships CoreTransferable.framework/Modules/CoreTransferable.swiftmodule/
-// arm64-apple-ios-simulator.swiftinterface (258 lines), but it cannot be recompiled
-// off-Darwin:
+// NOT retargeted on purpose: Apple's interface declares `Data`/`URL`/`AttributedString`
+// conformances to `Transferable` that depend on a library-evolution build of Foundation.
+// The Android Swift SDK ships Foundation as a *dynamic, non-resilient* module, so those
+// conformances cannot be satisfied and the interface refuses to load. SwiftUI only references
+// the protocol and a handful of supporting types, declared here with Apple's signatures.
 //
-//  1. Its conformances (`AttributedString: Transferable`, `Data: Transferable`,
-//     `URL: Transferable`) are witnesses whose associated type is spelled
-//     `@_opaqueReturnTypeOf("$s...transferRepresentationQrvpZ", 0) __`.  That attribute
-//     resolves the opaque type against a *prebuilt binary* module; when the module is
-//     rebuilt from text there is nothing to resolve against, and the conformances fail.
-//  2. Its `CodableRepresentation` requires `Foundation.JSONEncoder : Combine.TopLevelEncoder`,
-//     an Apple-only conformance, and `CFSwifted`/`NSItemProvider` plumbing.
-//  3. Recompiling it with `-enable-library-evolution` against the Swift SDK for
-//     Android's `Foundation` (which is *not* ABI-stable) is rejected outright.
-//
-// What the retargeted SwiftUI interface actually uses from this module is exactly two
-// protocols — `Transferable` and `TransferRepresentation` — plus the conformance
-// `extension SwiftUICore.Color : Transferable` and the drag-and-drop entry points
-// constrained to `T : Transferable`. Those declarations are copied below from Apple's
-// interface (lines 88-92 and 249-252 of the `.swiftinterface`).
-//
-// Bodies are `fatalError()` on purpose: this shim only has to make Apple's interface
-// compile. Real drag-and-drop / document transfer is Android-runtime work.
-public import Swift
+// Behaviour (drag and drop, share sheets) has no Android counterpart in the port yet; bodies
+// trap and are reachable only through API the demo does not use.
 
-// MARK: - TransferRepresentation  (interface line 88)
-
-public protocol TransferRepresentation<Item>: Sendable {
-    associatedtype Item: Transferable
-    associatedtype Body: TransferRepresentation
-
-    @TransferRepresentationBuilder<Self.Item> var body: Self.Body { get }
-}
-
-// MARK: - TransferRepresentationBuilder  (interface line 94)
-
-@resultBuilder
-public struct TransferRepresentationBuilder<Item> where Item: Transferable {
-    public static func buildBlock<Content>(_ content: Content) -> Content
-        where Item == Content.Item, Content: TransferRepresentation { fatalError() }
-}
-
-// MARK: - Transferable  (interface line 249)
-
-public protocol Transferable: Sendable {
+public protocol Transferable {
     associatedtype Representation: TransferRepresentation
-
-    @TransferRepresentationBuilder<Self> static var transferRepresentation: Self.Representation { get }
+    static var transferRepresentation: Representation { get }
 }
 
-// MARK: - TransferRepresentationVisibility  (interface line ~231)
+public protocol TransferRepresentation {
+    associatedtype Item: Transferable
+}
 
-public struct TransferRepresentationVisibility: Sendable, Equatable {
-    public static let all = TransferRepresentationVisibility()
-
-    public static let ownProcess = TransferRepresentationVisibility()
-
-    private init() { fatalError() }
-
-    public static func == (a: TransferRepresentationVisibility, b: TransferRepresentationVisibility) -> Bool {
-        fatalError()
+public struct CodableRepresentation<Item, Encoder, Decoder>: TransferRepresentation
+where Item: Transferable & Codable, Encoder: TopLevelEncoder, Decoder: TopLevelDecoder {
+    public typealias Item = Item
+    public init(contentType: UniformTypeIdentifiers.UTType, encoder: Encoder, decoder: Decoder) {
+        fatalError("CoreTransferable shim: CodableRepresentation is not implemented on Android")
     }
+}
+
+public struct ProxyRepresentation<Item, Proxy>: TransferRepresentation
+where Item: Transferable, Proxy: Transferable {
+    public typealias Item = Item
+    public typealias Proxy = Proxy
+    public init(exporting: @escaping (Item) throws -> Proxy,
+                importing: @escaping (Proxy) throws -> Item) {
+        fatalError("CoreTransferable shim: ProxyRepresentation is not implemented on Android")
+    }
+}
+
+public struct FileRepresentation<Item>: TransferRepresentation where Item: Transferable {
+    public typealias Item = Item
+    public init(contentType: UniformTypeIdentifiers.UTType,
+                exporting: @escaping (Item) async throws -> SentTransferredFile,
+                importing: @escaping (ReceivedTransferredFile) async throws -> Item) {
+        fatalError("CoreTransferable shim: FileRepresentation is not implemented on Android")
+    }
+}
+
+public struct DataRepresentation<Item>: TransferRepresentation where Item: Transferable {
+    public typealias Item = Item
+    public init(contentType: UniformTypeIdentifiers.UTType,
+                exporting: @escaping (Item) throws -> Data,
+                importing: @escaping (Data) throws -> Item) {
+        fatalError("CoreTransferable shim: DataRepresentation is not implemented on Android")
+    }
+}
+
+public struct SentTransferredFile {
+    public var file: URL
+    public var allowAccessingOriginalFile: Bool
+    public init(_ file: URL, allowAccessingOriginalFile: Bool = false) {
+        self.file = file
+        self.allowAccessingOriginalFile = allowAccessingOriginalFile
+    }
+}
+
+public struct ReceivedTransferredFile {
+    public var file: URL
+    public var isOriginalFile: Bool
+    public init(file: URL, isOriginalFile: Bool) {
+        self.file = file
+        self.isOriginalFile = isOriginalFile
+    }
+}
+
+public protocol TopLevelEncoder {
+    associatedtype Output
+    func encode<T: Encodable>(_ value: T) throws -> Output
+}
+
+public protocol TopLevelDecoder {
+    associatedtype Input
+    func decode<T: Decodable>(from input: Input) throws -> T
+}
+
+public struct TransferableProxy<Item: Transferable> {
+    public init(_ item: Item) { self.item = item }
+    public var item: Item
 }

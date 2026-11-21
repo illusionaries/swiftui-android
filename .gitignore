@@ -8,3 +8,5 @@ build/
 *.swiftdoc
 *.swiftsourceinfo
 .port-tmp/
+__pycache__/
+*.pyc
