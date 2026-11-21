@@ -45,10 +45,18 @@
 //       implicit memberwise initializer is internal and cannot be used in default
 //       arguments); duplicate extension `init()`s are omitted.
 //   R13 result-builder attributes are removed from declarations that receive a stub
-//       body: the builder would transform the `Never`-typed stub and fail.
+//       body: the builder would transform the `Never`-typed stub and fail. Builder
+//       names reached through typealiases (`ContentBuilder = ViewBuilder`) count too.
+//   R14 three conformance clauses are omitted because a single module has one
+//       associated-type witness per type and these protocols demand incompatible
+//       ones (Optional/_ConditionalContent: SliderTickContent, GestureStateGesture:
+//       Gesture). Only the clause is removed; the reason is recorded in the manifest
+//       and docs/PORT-BODIES.md.
 //       (There is no R12: the `never`-conformance pass it named was removed because
 //       `Body = Self` made it unnecessary and `Never` cannot satisfy constrained
 //       associated types such as `Scope : AttributeScope`.)
+//   R15 SE-0293 `init(initialValue)` accessors copy the initial value into their
+//       `@storageRestrictions(initializes:)` storage first (definite initialization).
 //
 // `@inlinable` bodies are Apple's real code and are never modified. The
 // `_suiUnimplemented` seam is defined by Sources/SwiftUI/Engine/PortRuntime.swift,
@@ -4806,8 +4814,9 @@ extension SwiftUI.Gesture {
     }
 }
 #if compiler(>=5.3) && $TildeSendable
+// port: omitted conformance GestureStateGesture: Gesture — single-module witness conflict (see PORT-BODIES.md)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@frozen nonisolated public struct GestureStateGesture<Base, State> : SwiftUI.Gesture, ~Swift.Sendable where Base : SwiftUI.Gesture {
+@frozen nonisolated public struct GestureStateGesture<Base, State>: ~Swift.Sendable where Base : SwiftUI.Gesture {
   public typealias Value = Base.Value
   public var base: Base
   public var state: SwiftUI.GestureState<State>
@@ -21613,9 +21622,10 @@ public struct SliderTickContentForEach<Data, ID, Content> : SwiftUI.SliderTickCo
   }
 }
 #endif
+// port: omitted conformance _ConditionalContent: SliderTickContent — single-module witness conflict (see PORT-BODIES.md)
 @available(iOS 26.0, macOS 26.0, watchOS 26.0, visionOS 26.0, *)
 @available(tvOS, unavailable)
-extension SwiftUI._ConditionalContent : SwiftUI.SliderTickContent where TrueContent : SwiftUI.SliderTickContent, FalseContent : SwiftUI.SliderTickContent, TrueContent.Body == FalseContent.Body {
+extension SwiftUI._ConditionalContent where TrueContent : SwiftUI.SliderTickContent, FalseContent : SwiftUI.SliderTickContent, TrueContent.Body == FalseContent.Body {
   public typealias Value = TrueContent.Value
   @usableFromInline
   internal init(storage: SwiftUI._ConditionalContent<TrueContent, FalseContent>.Storage) { _suiUnimplemented("SwiftUI._ConditionalContent.init(storage:)") }
@@ -21624,9 +21634,10 @@ extension SwiftUI._ConditionalContent : SwiftUI.SliderTickContent where TrueCont
     // port: omitted: a single-module port can only keep one witness per associated type (R10)
 
 }
+// port: omitted conformance Optional: SliderTickContent — single-module witness conflict (see PORT-BODIES.md)
 @available(iOS 26.0, macOS 26.0, watchOS 26.0, visionOS 26.0, *)
 @available(tvOS, unavailable)
-extension Swift.Optional : SwiftUI.SliderTickContent where Wrapped : SwiftUI.SliderTickContent {
+extension Swift.Optional where Wrapped : SwiftUI.SliderTickContent {
   public typealias Value = Wrapped.Value
   public typealias TicksCollection = [SwiftUI.SliderTick<Wrapped.Value>]
     // port: omitted: a single-module port can only keep one witness per associated type (R10)

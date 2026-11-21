@@ -303,6 +303,41 @@ is a client-side convenience: without it the signature and every call site are u
 is removed from declarations that receive a stub body (and from protocol requirements), and
 never from Apple's `@inlinable` bodies.
 
+### R14 — three conformance clauses are omitted (recorded single-module conflicts)
+
+Apple splits each type's conformance witnesses between its `SwiftUI` and `SwiftUICore` modules, so
+each conformance can use its own module's associated-type witness. A single module has exactly one
+witness per associated type, and three conformances require witnesses that are mutually
+incompatible with the type's other conformances:
+
+| Type | Protocol | Conflicting witness | Recorded in |
+|---|---|---|---|
+| `Optional` | `SliderTickContent` | `Body: RandomAccessCollection` with `Body.Element == SliderTick<Self.Value>` vs `Body: View` (from `View`) and `Body: TabContent` (from `TabContent`) | manifest `incompatible_conformances_omitted` |
+| `_ConditionalContent` | `SliderTickContent` | the same conflict; the shipped `SliderTickContent` half is also internally inconsistent (`typealias Body = TrueContent` but `body: TrueContent.Body`) | manifest `incompatible_conformances_omitted` |
+| `GestureStateGesture` | `Gesture` | the public **stored** `body: (Value, inout State, inout Transaction) -> Void` property shadows `Gesture`'s requirement `body: Self.Body` (`Never`), and the stored property cannot be dropped because Apple's `@inlinable init` assigns it | manifest `incompatible_conformances_omitted` |
+
+Only the conformance **clause** is removed (the extension keeps its members, the struct keeps its
+other conformances); no other declaration is touched. Each omission is emitted as a grep-able
+marker comment at the site
+
+```swift
+// port: omitted conformance <Type>: <Protocol> — single-module witness conflict (see PORT-BODIES.md)
+```
+
+counted in `stats.incompatible_conformances_omitted`, and recorded in the manifest with type,
+protocol, declaring module and the exact conflicting-witness reason. `docs/PORT-STATUS.md` mirrors
+the table under "semantic gaps".
+
+### R15 — SE-0293 init accessors initialize their storage
+
+**Apple construct:** a property with an init accessor, e.g.
+`@storageRestrictions(initializes: _value) init(initialValue)` (used by layout modifiers such as
+`_GeometryActionModifier2.value`).
+**Why:** Swift's definite-initialization pass requires an init accessor to initialize every
+storage property named by `@storageRestrictions(initializes:)`; a `Never`-returning stub is
+rejected ("property '_value' not initialized by init accessor"). The injected body copies the
+initial value into the storage and then reports the unimplemented accessor.
+
 ## 5. Symbol spelling (used by the manifest and by `port-impl/implemented.txt`)
 
 ```
@@ -376,6 +411,13 @@ Details:
   "synthesized_projections_omitted": {"count": N, "symbols": [ … ]},
   "synthesized_witnesses": {"count": N},
   "unsupported_requirements": {"count": N, "symbols": [ … ]},
+  "incompatible_conformances_omitted": {
+    "count": 3,
+    "entries": [
+      {"type": "Optional", "protocol": "SliderTickContent", "declared_in": "SwiftUI",
+       "compiled_in": "SwiftUI", "conflicting_witness": "Body: RandomAccessCollection … vs Body: View"}
+    ]
+  },
   "bodies": [
     {"symbol": "SwiftUICore.LayoutDirection.hash(into:)", "module": "SwiftUICore",
      "kind": "func", "inlined": false},
@@ -392,6 +434,8 @@ Details:
   stubbed entry points, but its own logic is Apple's).
 * `seams` is the list the engine is written against: every `body`, `_makeView(view:inputs:)`,
   `_makeViewList(view:inputs:)` and `_viewListCount(inputs:)`, including synthesised witnesses.
+* `incompatible_conformances_omitted` is the audit trail for R14: every omitted conformance
+  clause with its exact reason. Nothing is dropped silently.
 
 `kind` is `func`, `var`, `init`, `subscript` (and `deinit` for destructors).
 
@@ -438,11 +482,13 @@ generation of the pinned toolchain:
 * 11,197 declarations reproduced, 4,018 types;
 * 8,102 stub bodies injected (functions, initializers, subscripts, accessors, deinit);
 * 1,797 bodies kept as printed, of which 704 are Apple's `@inlinable` bodies (never modified);
-* 815 opaque-result rewrites (R3), 669 static-storage rewrites (R2), 384 synthesised
+* 108 opaque-result rewrites (R3), 669 static-storage rewrites (R2), 384 synthesised
   witnesses (R7), 35 duplicate-witness omissions (R10), 646 synthesised initializers (R11),
-  24,766 module requalifications (R1);
+  25,437 module requalifications (R1), 3 omitted conformance clauses (R14);
 * engine seams: 178 `_makeView(view:inputs:)`, 87 `_makeViewList(view:inputs:)`,
-  42 `_viewListCount(inputs:)`, 304 `body` (the manifest lists them all).
+  42 `_viewListCount(inputs:)`, 304 `body` (611 total; the manifest lists them all);
+* **the package gate is green**: `SWIFTUI_PORT_GENERATED=1 swift build -c release
+  --product SwiftUIAndroidApp --swift-sdk swift-6.4.3-RELEASE_android` succeeds with 0 errors.
 
 ## 10. Known gaps outside this generator (report, do not work around)
 
@@ -483,30 +529,14 @@ into the generated files but are *caused* by the Port SDK:
   declarations now present in the generated files; that is a same-module redeclaration and
   shows up as `'FillStyle' is ambiguous for type lookup`. Engine-internal types should be
   namespaced/prefixed (`PortFillStyle`, …) or renamed.
-* **`Never` conformances missing from shims** (open, 3 diagnostics): the generated code implements
-  `Transferable.transferRepresentation` (`some CoreTransferable.TransferRepresentation`) by
-  returning `Never`; that requires `extension Never : CoreTransferable.TransferRepresentation`
-  (and the associated-type inference it needs) in the CoreTransferable shim, as Apple's binary
-  module has. Affected symbols: `SwiftUI.Color.transferRepresentation`,
-  `SwiftUI.Image.transferRepresentation`,
-  `SwiftUI.AttributedTextFormatting.Transferable.transferRepresentation`.
-* **Open generator gaps after this cycle** (44 diagnostics in the `SWIFTUI_PORT_GENERATED=1`
-  package gate, down from 244). Remaining buckets, all reported rather than suppressed:
-  1. `cannot convert return expression of type 'Never' to return type '<Body type>'` (12):
-     the destination types (`_ShapeView<Rectangle, Style>`, `EmptyView`,
-     `DefaultTextFieldStyle._Body`, `AutomaticTextEditorStyle.Body`,
-     `_TabContentBodyAdaptor<C>.body: C.Body._IdentifiedView`,
-     `IdentityTransition.Content`) are `Body`/style-witness types whose own conformance or
-     generic constraints are satisfied only through synthesised witnesses; the compiler reports
-     the conversion instead of the underlying gap and emits no note. Needs a dedicated probe.
-  2. `SliderTickContent` conformance of `Optional`/`_ConditionalContent` (2): their `TabValue`
-     and `TicksCollection` witnesses are declared in constrained extensions, so the single
-     unconditional `Body = Self` witness is not enough for that protocol.
-  3. `GestureStateGesture: Gesture` (1): the public stored `body` closure property (R10 keeps it)
-     has a different type than `Gesture`'s `body` requirement.
-  4. `AttributedTextSelection.Attributes<Text>: Sequence` (1): needs a concrete `Iterator`
-     witness; R7's `Never` fallback cannot satisfy `IteratorProtocol`.
-  5. `Transferable` (3): see the shim gap above.
+## 10.1 Status: the generated port compiles cleanly
+
+As of this cycle the package gate is green: `SWIFTUI_PORT_GENERATED=1 swift build -c release
+--product SwiftUIAndroidApp --swift-sdk swift-6.4.3-RELEASE_android` completes with **0 errors**
+(155 warnings, all shim/availability/Sendable diagnostics that also exist in Apple's own
+interface compile). The single-module port therefore reproduces all 11,197 Apple declarations;
+the only losses are the three recorded conformance clauses (R14), and the external gaps listed
+above belong to the Port SDK / retarget workstreams.
 
 ## 11. What the engine must implement first for a screen to render
 

@@ -26,7 +26,7 @@ What this repository does instead is a genuine port of the framework's *publisha
 | Apple interface retargeting (`build-port-sdk.sh`) | `SwiftUICore`, `SwiftUI`, `Symbols`, `Combine` retarget clean | `build/port-sdk/gen/**` |
 | Fidelity probe (`scripts/port/probe.swift`, real SwiftUI source) | 108 errors, all first-wave `SwiftUICore` (`FoundationShims`, `Spatial.Size3D`, `CoreText.LineHeight`, `ObjectiveC.NSObject`, `Accessibility.AXChartDescriptor`) | `build/port-sdk/probe.log` |
 | Platform shims | `CoreGraphics` (incl. `CGBlendMode`), `CoreTransferable`, `os`/`OSLog` done; `FoundationShims`, `ObjectiveC`, `QuartzCore`, `CoreText`, `Accessibility`, `Spatial`, `UIKit` in progress | `port-shims/**` |
-| Apple declarations → compilable source | **62,189 lines generated**: 11,419 declarations, 4,169 types, 7,083 bodies injected, 704 `@inlinable` bodies preserved verbatim | `Sources/SwiftUI/Generated/`, `build/port-sdk/injected-bodies.json` |
+| Apple declarations → compilable source | 11,197 declarations, 4,018 types, 8,102 bodies injected, 1,797 printed bodies kept (704 `@inlinable` ones verbatim) | `Sources/SwiftUI/Generated/`, `build/port-sdk/injected-bodies.json` |
 | Generated port in the app target | **opt-in** (`SWIFTUI_PORT_GENERATED=1`), until the shims close | `Package.swift` |
 | C JNI bridge (`AndroidBridge.c`) | complete: 10 JNI entry points, 22 drawing primitives, cached paints/typefaces, exception-safe | compiles for arm64 + x86_64 with `-Wall -Wextra` |
 | Java host (`MainActivity`, `SwiftUIHostView`) | complete: edge-to-edge, insets, gestures, back, config survival | APK validated with `apksigner`/`zipalign` |
@@ -35,8 +35,8 @@ What this repository does instead is a genuine port of the framework's *publisha
 | Engine: display list, painter, frame loop | complete for the proof path | 8 host tests green (`swift test`) |
 | Engine: layout/scroll/hit-test/display list | complete, exercised by the Atlas demo | `Sources/SwiftUI/Engine/**`, `docs/DEMO.md` |
 | Demo app (Atlas: home / discover / detail / profile, tabs, scrolling, toggles) | running on the emulator | `Sources/DemoApp/**`, `build/screenshots` |
-| Apple declarations generated (11,197 decls, 7,351 bodies, 704 inlinable preserved) | committed, opt-in, 244 errors left in the package gate | `Sources/SwiftUI/Generated/**`, `docs/PORT-BODIES.md` |
-| Engine: view graph adapters (`_makeView` for Text/stacks/modifiers) | next — needs the generated gate at 0 | 594 seams listed in `build/port-sdk/injected-bodies.json` |
+| Apple declarations generated (11,197 decls, 8,102 bodies, 704 inlinable preserved) | committed, opt-in, **0 errors** in the package gate | `Sources/SwiftUI/Generated/**`, `docs/PORT-BODIES.md` |
+| Engine: view graph adapters (`_makeView` for Text/stacks/modifiers) | next — the generated gate is green, engine work can start | 611 seams listed in `build/port-sdk/injected-bodies.json` |
 
 ## What the interfaces actually expose (and why that matters)
 
@@ -68,6 +68,9 @@ Swift 6.4.3 behaviour, not port bugs:
    segfaults in `PropertyWrapperAuxiliaryVariablesRequest`. The projection is synthesized from
    the wrapped property anyway, so the declaration is dropped
    (`scripts/port/strip_projected_vars.py`).
+
+The generated declaration module now compiles for Android with **0 errors**
+(`SWIFTUI_PORT_GENERATED=1 swift build … --product SwiftUIAndroidApp`).
 2. **A property-wrapper attribute on a declaration that spells out its own accessors is
    malformed** — interfaces emit exactly that shape (`@Binding public var isOn: Bool { get }`).
    The port drops the attribute and supplies wrapper semantics in the engine.
@@ -81,6 +84,7 @@ Swift 6.4.3 behaviour, not port bugs:
 | No CoreText | text shaping uses Android's `Paint`/`Typeface` (HarfBuzz under the hood) through the bridge. |
 | No UIKit | `UIView`/`UIColor`/`UIImage` are declaration-faithful shims; bridging an actual `UIView` into the tree is impossible on Android. |
 | Foundation must be dynamic | the Android SDK ships Foundation as dylibs (~74 MB bundled), so APK size is dominated by the Swift/Foundation runtime, not the port. |
+| Three conformance clauses omitted | `Optional`/`_ConditionalContent`: `SliderTickContent` and `GestureStateGesture`: `Gesture` require associated-type witnesses that contradict the same type's `View`/`TabContent` witnesses; Apple relies on per-module witness shadowing, which one module cannot express. Only the clause is omitted; every omission is recorded in `injected-bodies.json` (`incompatible_conformances_omitted`) and `docs/PORT-BODIES.md` R14. |
 
 ## Reproduce
 

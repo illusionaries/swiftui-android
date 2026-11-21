@@ -1619,6 +1619,12 @@ class Generator:
         self.shared = shared
 
         def visit(container: Container, protocol_requirements: bool) -> None:
+            incompatible = shared.incompatible_matches(container)
+            if incompatible:
+                # Drop only the conformance clause (in the type's declaration or in an extension
+                # header). The members stay: they are still valid declarations, and some are
+                # `@usableFromInline` initializers that Apple's `@inline(always)` builders call.
+                self.drop_conformance_clauses(container, incompatible)
             for member in container.members:
                 if member.kind == "import":
                     continue
@@ -1786,6 +1792,105 @@ class Generator:
             return True
         return any(accessor.has_body for accessor in member.accessors)
 
+    #: Characters after which a `:` starts a conformance list rather than a generic constraint.
+    _DECL_KEYWORDS = ("extension", "struct", "class", "enum", "actor", "protocol")
+
+    def _top_level_spans(self, text: str) -> list[tuple[int, int]]:
+        """Offsets of `<...>`, `(...)`, `[...]` groups and string spans in ``text``."""
+        spans: list[tuple[int, int]] = []
+        depth = 0
+        start = 0
+        index = 0
+        while index < len(text):
+            char = text[index]
+            if char in "<([":
+                if depth == 0:
+                    start = index
+                depth += 1
+            elif char in ">)]":
+                depth = max(0, depth - 1)
+                if depth == 0:
+                    spans.append((start, index + 1))
+            elif char == '"' and depth == 0:
+                close = text.find('"', index + 1)
+                if close > 0:
+                    spans.append((index, close + 1))
+                    index = close
+            index += 1
+        return spans
+
+    @staticmethod
+    def _outside(spans: list[tuple[int, int]], index: int) -> bool:
+        return not any(start <= index < end for start, end in spans)
+
+    def drop_conformance_clauses(
+        self, container: Container, entries: list[dict[str, str]]
+    ) -> None:
+        """Remove conformance clauses from a declaration header (R14).
+
+        Only the conformance is inexpressible in a single module; the declaration itself (a
+        type's members, or an extension's members) is kept, because the remaining members are
+        still valid and some are `@usableFromInline` initializers that Apple's
+        `@inline(always)` builder bodies call.
+        """
+        header_end = self.body.find("{", container.start)
+        if header_end < 0:
+            return
+        header = self.body[container.start:header_end]
+        spans = self._top_level_spans(header)
+        colon = -1
+        for index, char in enumerate(header):
+            if char == ":" and self._outside(spans, index):
+                colon = index
+                break
+        if colon < 0:
+            return
+        where_index = -1
+        for index in range(colon, len(header)):
+            if (
+                header.startswith(" where ", index)
+                and self._outside(spans, index)
+            ):
+                where_index = index
+                break
+        region_end = where_index if where_index >= 0 else len(header)
+        conformance_text = header[colon + 1:region_end]
+        parts = [part.strip() for part in conformance_text.split(",") if part.strip()]
+        omitted = {entry["protocol"] for entry in entries}
+        keep = [
+            part for part in parts
+            if part.replace("::", ".").split(".")[-1].lstrip("~") not in omitted
+        ]
+        for entry in entries:
+            self.add_comment(container.start, (
+                f"omitted conformance {container.path}: {entry['protocol']} — single-module "
+                f"witness conflict (see PORT-BODIES.md)"
+            ))
+            self.stats.incompatible_conformances_omitted += 1
+            self.shared.incompatible_records.append(
+                {
+                    "type": container.path,
+                    "protocol": entry["protocol"],
+                    "declared_in": entry["declared_in"],
+                    "compiled_in": self.module,
+                    "conflicting_witness": entry["conflicting_witness"],
+                }
+            )
+        if keep:
+            replacement = ": " + ", ".join(keep)
+            if where_index >= 0:
+                replacement += ""
+            new_header = header[:colon].rstrip() + replacement + header[region_end:]
+            if where_index >= 0 and not new_header[region_end].startswith(" "):
+                new_header = header[:colon].rstrip() + replacement + " " + header[region_end:].lstrip()
+        else:
+            tail = header[region_end:]
+            new_header = header[:colon].rstrip()
+            new_header += tail if tail.strip() else ""
+            if tail and not tail.startswith(" "):
+                new_header += " "
+        self.edits.append(Edit(container.start, header_end, new_header))
+
     def strip_builder_attributes(self, member: Member) -> None:
         """Remove result-builder attributes from a declaration that is about to get a stub body.
 
@@ -1845,16 +1950,46 @@ class Generator:
                     )
                 )
 
+    def init_accessor_body(self, member: Member, accessor: Accessor, symbol: str) -> str:
+        """Body for an SE-0293 `init(initialValue)` accessor (R15).
+
+        Swift requires an init accessor to initialize every storage property named by its
+        `@storageRestrictions(initializes:)` attribute ("property '_x' not initialized by init
+        accessor"), and a `Never`-returning stub does not satisfy that check. The port copies the
+        initial value into the storage and then reports the unimplemented accessor.
+        """
+        region_start = max(member.start, accessor.keyword_end - 400)
+        region = self.body[region_start:accessor.keyword_end]
+        attribute = None
+        for match in re.finditer(r"@storageRestrictions\s*\(\s*initializes\s*:\s*([^)]*)\)", region):
+            attribute = match
+        if attribute is None:
+            return f' {{ _suiUnimplemented("{symbol}") }}'
+        names = [
+            name.strip() for name in attribute.group(1).split(",") if name.strip()
+        ]
+        signature = region[attribute.end():]
+        parameter = re.search(r"init\s*\(\s*([A-Za-z_]\w*)", signature)
+        if not names or parameter is None:
+            return f' {{ _suiUnimplemented("{symbol}") }}'
+        assignments = "".join(
+            f"self.{name} = {parameter.group(1)}; " for name in names
+        )
+        return f' {{ {assignments}_suiUnimplemented("{symbol}") }}'
+
     def inject_accessors(self, member: Member, symbol: str, kind: str) -> None:
         """Inject bodies into bodyless accessors of a property/subscript accessor block."""
         injected = 0
         for accessor in member.accessors:
             if accessor.has_body:
                 continue
-            self.edits.append(
-                Edit(accessor.keyword_end, accessor.keyword_end,
-                     f' {{ _suiUnimplemented("{symbol}") }}')
-            )
+            body = f' {{ _suiUnimplemented("{symbol}") }}'
+            if accessor.keyword == "init":
+                # SE-0293 init accessor: definite initialization requires the declared storage to
+                # be initialized before the accessor completes, so the stub copies the initial
+                # value into each `@storageRestrictions(initializes:)` property first.
+                body = self.init_accessor_body(member, accessor, symbol)
+            self.edits.append(Edit(accessor.keyword_end, accessor.keyword_end, body))
             injected += 1
         if injected:
             self.stats.bodies_injected += injected
@@ -2211,10 +2346,18 @@ class Generator:
             "//       implicit memberwise initializer is internal and cannot be used in default",
             "//       arguments); duplicate extension `init()`s are omitted.",
             "//   R13 result-builder attributes are removed from declarations that receive a stub",
-            "//       body: the builder would transform the `Never`-typed stub and fail.",
+            "//       body: the builder would transform the `Never`-typed stub and fail. Builder",
+            "//       names reached through typealiases (`ContentBuilder = ViewBuilder`) count too.",
+            "//   R14 three conformance clauses are omitted because a single module has one",
+            "//       associated-type witness per type and these protocols demand incompatible",
+            "//       ones (Optional/_ConditionalContent: SliderTickContent, GestureStateGesture:",
+            "//       Gesture). Only the clause is removed; the reason is recorded in the manifest",
+            "//       and docs/PORT-BODIES.md.",
             "//       (There is no R12: the `never`-conformance pass it named was removed because",
             "//       `Body = Self` made it unnecessary and `Never` cannot satisfy constrained",
             "//       associated types such as `Scope : AttributeScope`.)",
+            "//   R15 SE-0293 `init(initialValue)` accessors copy the initial value into their",
+            "//       `@storageRestrictions(initializes:)` storage first (definite initialization).",
         ]
         lines = [
             f"// {self.spec.file_stem}.swift — GENERATED FILE, DO NOT EDIT BY HAND.",
@@ -3149,6 +3292,13 @@ def build_manifest(generators: list[Generator], shared: "SharedModel") -> dict:
         "unsupported_requirements": {
             "count": len(shared.unsupported),
             "symbols": sorted(shared.unsupported),
+        },
+        "incompatible_conformances_omitted": {
+            "count": len(shared.incompatible_records),
+            "entries": sorted(
+                shared.incompatible_records,
+                key=lambda entry: (entry["type"], entry["protocol"]),
+            ),
         },
         "bodies": bodies,
     }

@@ -45,10 +45,18 @@
 //       implicit memberwise initializer is internal and cannot be used in default
 //       arguments); duplicate extension `init()`s are omitted.
 //   R13 result-builder attributes are removed from declarations that receive a stub
-//       body: the builder would transform the `Never`-typed stub and fail.
+//       body: the builder would transform the `Never`-typed stub and fail. Builder
+//       names reached through typealiases (`ContentBuilder = ViewBuilder`) count too.
+//   R14 three conformance clauses are omitted because a single module has one
+//       associated-type witness per type and these protocols demand incompatible
+//       ones (Optional/_ConditionalContent: SliderTickContent, GestureStateGesture:
+//       Gesture). Only the clause is removed; the reason is recorded in the manifest
+//       and docs/PORT-BODIES.md.
 //       (There is no R12: the `never`-conformance pass it named was removed because
 //       `Body = Self` made it unnecessary and `Never` cannot satisfy constrained
 //       associated types such as `Scope : AttributeScope`.)
+//   R15 SE-0293 `init(initialValue)` accessors copy the initial value into their
+//       `@storageRestrictions(initializes:)` storage first (definite initialization).
 //
 // `@inlinable` bodies are Apple's real code and are never modified. The
 // `_suiUnimplemented` seam is defined by Sources/SwiftUI/Engine/PortRuntime.swift,
@@ -8078,7 +8086,7 @@ public func withTransaction<Result>(_ transaction: SwiftUI::Transaction, _ body:
   private var _value: @Sendable (SwiftUI::GeometryProxy) -> Value
   nonisolated public var value: @Sendable (SwiftUI::GeometryProxy) -> Value {
     @usableFromInline
-    @storageRestrictions(initializes: _value) init(initialValue) { _suiUnimplemented("SwiftUICore._GeometryActionModifier2.value") }
+    @storageRestrictions(initializes: _value) init(initialValue) { self._value = initialValue; _suiUnimplemented("SwiftUICore._GeometryActionModifier2.value") }
     @_silgen_name("$s7SwiftUI24_GeometryActionModifier2V5valueyxAA0C5ProxyVcvg")
     get { _suiUnimplemented("SwiftUICore._GeometryActionModifier2.value") }
     @_silgen_name("$s7SwiftUI24_GeometryActionModifier2V5valueyxAA0C5ProxyVcvs")
