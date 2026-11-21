@@ -15063,7 +15063,7 @@ nonisolated public struct PushTransition : SwiftUICore::Transition {
 
   public var wrappedValue: Value {
     get { (location as? any PortLocationBox<Value>)?.value ?? _value }
-    nonmutating set { _suiUnimplemented("SwiftUICore.Binding.wrappedValue") }
+    nonmutating set { (location as? any PortLocationBox<Value>)?.value = newValue; PortStateStore.markDirty() }
   }
   public var projectedValue: SwiftUICore::Binding<Value> {
     get { self }
@@ -16503,7 +16503,7 @@ extension SwiftUICore::View {
     }
   public var wrappedValue: Value {
     get { (_location as? any PortLocationBox<Value>)?.value ?? { switch _storage { case let .value(value): return value; case let .thunk(thunk): return thunk() } }() }
-    nonmutating set { _suiUnimplemented("SwiftUICore.LazyState.wrappedValue") }
+    nonmutating set { (_location as? any PortLocationBox<Value>)?.value = newValue; PortStateStore.markDirty() }
   }
   public var projectedValue: SwiftUICore::Binding<Value> {
     get { Binding(get: { self.wrappedValue }, set: { self.wrappedValue = $0 }) }
@@ -20993,7 +20993,7 @@ public typealias EmptyContent = SwiftUICore::EmptyView
     }
   public var wrappedValue: Value {
     get { (_location as? any PortLocationBox<Value>)?.value ?? _value }
-    nonmutating set { _suiUnimplemented("SwiftUICore.State.wrappedValue") }
+    nonmutating set { (_location as? any PortLocationBox<Value>)?.value = newValue; PortStateStore.markDirty() }
   }
   public var projectedValue: SwiftUICore::Binding<Value> {
     get { Binding(get: { self.wrappedValue }, set: { self.wrappedValue = $0 }) }

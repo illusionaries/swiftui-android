@@ -6245,12 +6245,12 @@ extension SwiftUICore.Toggle where Label == SwiftUICore.ToggleStyleConfiguration
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUICore.Toggle where Label == SwiftUICore.Text {
-  nonisolated public init(_ titleKey: SwiftUICore.LocalizedStringKey, isOn: SwiftUICore.Binding<Swift.Bool>) { _suiUnimplemented("SwiftUICore.Toggle.init(_:isOn:)") }
-  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  @_disfavoredOverload @export(implementation) nonisolated public init(_ titleResource: FoundationShims.LocalizedStringResource, isOn: SwiftUICore.Binding<Swift.Bool>) {
-        self.init(isOn: isOn) { Text(titleResource) }
-    }
-  @_disfavoredOverload nonisolated public init<S>(_ title: S, isOn: SwiftUICore.Binding<Swift.Bool>) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUICore.Toggle.init(_:isOn:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   nonisolated public init<C>(_ titleKey: SwiftUICore.LocalizedStringKey, sources: C, isOn: Swift.KeyPath<C.Element, SwiftUICore.Binding<Swift.Bool>>) where C : Swift.RandomAccessCollection { _suiUnimplemented("SwiftUICore.Toggle.init(_:sources:isOn:)") }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -15519,7 +15519,8 @@ nonisolated public struct CheckboxToggleStyle : SwiftUICore.ToggleStyle {
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUICore.View {
-  nonisolated public func labelsHidden() -> some SwiftUICore.View { _suiUnimplemented("SwiftUICore.View.labelsHidden()") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(visionOS 2.0, *)
 @available(tvOS, unavailable)

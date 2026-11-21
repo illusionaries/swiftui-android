@@ -93,6 +93,19 @@ extension Toggle {
     }
 }
 
+extension Toggle where Label == Text {
+    public init(_ titleKey: LocalizedStringKey, isOn: Binding<Bool>) {
+        self._portIsOn = isOn
+        self._portLabel = Text(titleKey)
+    }
+
+    @_disfavoredOverload
+    public init<S>(_ title: S, isOn: Binding<Bool>) where S: StringProtocol {
+        self._portIsOn = isOn
+        self._portLabel = Text(verbatim: String(title))
+    }
+}
+
 extension Toggle: _PortRenderable where Label: View {
     nonisolated public func _portMakeNodes(proposal: ProposedSize, context: PortGraphContext) -> [LayoutNode] {
         let isOn = _portIsOn?.wrappedValue ?? false
@@ -140,6 +153,12 @@ extension View {
     public func onTapGesture(count: Int = 1, perform action: @escaping () -> Void) -> some View {
         _PortTappable(content: self, action: action)
     }
+}
+
+/// Layout-neutral modifiers Apple defines in terms of its own internals: the port returns the
+/// value unchanged, which is what "hidden label" means for a renderer with no label chrome.
+extension View {
+    public func labelsHidden() -> some View { self }
 }
 
 // MARK: - accentColor

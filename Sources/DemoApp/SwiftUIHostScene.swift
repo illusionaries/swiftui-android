@@ -154,45 +154,34 @@ public final class SwiftUIHostScene: PortScene {
         graph.endFrame()
 
         let size = root.measure(ProposedSize(width: width, height: height))
-        root.place(in: CGRect(x: 0, y: max(safeArea.top, 0), width: width, height: max(size.height, height)))
+        let topInset = max(safeArea.top, 0)
+        let bottomInset = max(safeArea.bottom, 0)
+        root.place(in: CGRect(x: 0, y: topInset, width: width,
+                              height: max(size.height, height - topInset - bottomInset)))
         tree = root
         root.paint(into: &list)
 
         if PortDiagnostics.verbose {
-            // Frame inspector: dumps the *tab bar* subtree's frames and measures on screen, with a
-            // white plate behind the text so the report stays readable over the app.
-            list.append(.fillRect(CGRect(x: 0, y: 0, width: width, height: 150),
+            // Compact layout report: every vertical stack with its children's heights, so a
+            // collapsing container is obvious at a glance.
+            list.append(.fillRect(CGRect(x: 0, y: 0, width: width, height: 400),
                                   RGBAColor(hex: 0xFFFFFF)))
             var y: CGFloat = 2
-            func describe(_ node: LayoutNode) -> String {
-                switch node.kind {
-                case let .zstack(h, v): return "zstack h\(h) v\(v)"
-                case let .stack(axis, spacing, h, v): return "stack \(axis) sp\(Int(spacing)) h\(h) v\(v)"
-                case .background: return "background"
-                case .overlay: return "overlay"
-                case .scroll: return "scroll"
-                case let .frame(spec): return "frame max(\(spec.maxWidth.map { Int($0) } ?? -1),\(spec.maxHeight.map { Int($0) } ?? -1))"
-                case .padding: return "padding"
-                case .group: return "group"
-                case let .text(spec): return "text(\(spec.text.prefix(10)))"
-                case .shape: return "shape"
-                case .spacer: return "spacer"
-                default: return "other"
+            func report(_ node: LayoutNode, _ path: String, _ depth: Int) {
+                guard depth < 14, y < 395 else { return }
+                if case let .stack(axis, spacing, _, _) = node.kind, axis == .vertical {
+                    let heights = node.children.map { Int($0.frame.height) }
+                    list.append(.text("\(path) v sp\(Int(spacing)) n\(node.children.count) h\(heights)",
+                                      origin: CGPoint(x: 4, y: y),
+                                      style: TextStyleDescriptor(size: 9, weight: .regular,
+                                                                 color: RGBAColor(hex: 0xCC0000))))
+                    y += 11
                 }
-            }
-            func dump(_ node: LayoutNode, _ label: String, _ depth: Int) {
-                guard depth < 5, y < 145 else { return }
-                let f = node.frame
-                list.append(.text("\(label)\(Int(f.minX)),\(Int(f.minY)) \(Int(f.width))x\(Int(f.height)) \(describe(node))",
-                                  origin: CGPoint(x: 4, y: y),
-                                  style: TextStyleDescriptor(size: 8, weight: .regular,
-                                                             color: RGBAColor(hex: 0xCC0000))))
-                y += 10
                 for (index, child) in node.children.enumerated() {
-                    dump(child, label + "\(index).", depth + 1)
+                    report(child, path + ".\(index)", depth + 1)
                 }
             }
-            dump(root, "r.", 0)
+            report(root, "r", 0)
         }
     }
 

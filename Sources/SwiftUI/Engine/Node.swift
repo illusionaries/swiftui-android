@@ -278,10 +278,12 @@ public final class LayoutNode {
             }
         case .padding:
             result = children.first?.isFlexible(along: axis) ?? false
-        case .background, .overlay, .tap, .stack, .zstack, .scroll:
-            // A container absorbs space exactly when one of its children does: that is how a
-            // `.frame(maxWidth: .infinity)` card inside a VStack can still stretch inside an
-            // enclosing HStack.
+        case let .stack(stackAxis, _, _, _):
+            // Flexible along its *own* axis when a child is; across it the stack is content-sized.
+            // A `Spacer()` inside an HStack makes the row flexible horizontally, not vertically —
+            // treating it as flexible in both axes collapsed every highlight row to zero height.
+            result = stackAxis == axis && children.contains { $0.isFlexible(along: axis) }
+        case .background, .overlay, .tap, .zstack, .scroll:
             result = children.contains { $0.isFlexible(along: axis) }
         case .group:
             result = children.contains { $0.isFlexible(along: axis) }
@@ -411,7 +413,12 @@ public final class LayoutNode {
         for child in children {
             if child.isFlexible(along: axis) {
                 flexibleCount += 1
-                sizes.append(.zero)
+                let crossSize = axis == .horizontal
+                    ? child.measure(ProposedSize(width: nil, height: crossProposal))
+                    : child.measure(ProposedSize(width: crossProposal, height: nil))
+                sizes.append(axis == .horizontal
+                             ? CGSize(width: 0, height: crossSize.height)
+                             : CGSize(width: crossSize.width, height: 0))
             } else {
                 let childProposal = axis == .horizontal
                     ? ProposedSize(width: nil, height: crossProposal)

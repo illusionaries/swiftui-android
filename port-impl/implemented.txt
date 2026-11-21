@@ -167,3 +167,5 @@ SwiftUICore.UnitPoint.bottomTrailing
 SwiftUICore.StateObject.init(wrappedValue:)
 SwiftUICore.PinnedScrollableViews.sectionHeaders
 SwiftUICore.PinnedScrollableViews.sectionFooters
+SwiftUICore.Toggle.init(_:isOn:)
+SwiftUICore.View.labelsHidden()
