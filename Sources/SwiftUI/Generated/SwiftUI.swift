@@ -16,20 +16,39 @@
 // and applies the documented rewrite rules (details in docs/PORT-BODIES.md):
 //
 //   R1  `Module::Foo` / `Module.Foo` qualifiers for the two Apple modules are
-//       dropped: the port compiles Apple's SwiftUICore + SwiftUI declarations into
-//       one Swift module (`SwiftUI`), so their names are local. `@_exported import
-//       SwiftUICore` is dropped for the same reason.
+//       requalified to the compiled module (`SwiftUI::Foo` / `SwiftUI.Foo`); nested
+//       duplicate qualifiers (`.SwiftUICore::Foo`) are dropped. `@_exported import
+//       SwiftUICore` is dropped (both interfaces are one module here). Keeping the
+//       leading qualifier avoids generic-parameter shadowing (`Label`).
 //   R2  stored static `let x: T` -> computed read-only `static var x: T { get { ... } }`
 //       (interface-only spelling of Apple's binary storage; no initializer in source).
-//       Stored properties in extensions become computed for the same reason.
+//       Stored properties in extensions and at module scope become computed too.
 //   R3  `@_opaqueReturnTypeOf(...)` typealiases and opaque results that cannot be
-//       expressed in source -> `Swift.Never`.
+//       expressed in source -> `Swift.Never`; `some P<Args>` (primary associated
+//       types) -> `Self`, which satisfies `Self.X == Self.Body.X`.
 //   R4  Apple-compiler `#if` feature conditions are evaluated for the pinned toolchain;
 //       dead fallback branches are preserved verbatim but not injected into.
 //   R5  `$`-prefixed property-wrapper projections are omitted: Swift synthesises them,
 //       and the `$` prefix cannot be declared in source.
 //   R6  declarations listed in `port-impl/implemented.txt` are omitted so the engine
 //       can implement them in an extension in the same module (witnesses supported).
+//   R7  conformance witnesses Apple implements `internal` are synthesised from the
+//       protocol declarations (same-module conformances).
+//   R8  `@propertyWrapper` / `@_projectedValueProperty` attributes are removed: the
+//       port does not use Apple's wrappers, and the compiler recurses through them.
+//   R9  designated initializers Apple declares in extensions of classes become
+//       `convenience init` (Swift forbids the former in source).
+//   R10 duplicate associated-type witnesses from Apple's two interfaces are unified:
+//       one unconditional `Body`/`body` per type (`Body = Self` when the halves
+//       disagree); duplicate witnesses are omitted and listed in the manifest.
+//   R11 value types with no stored properties get one public `init()` stub (the
+//       implicit memberwise initializer is internal and cannot be used in default
+//       arguments); duplicate extension `init()`s are omitted.
+//   R13 result-builder attributes are removed from declarations that receive a stub
+//       body: the builder would transform the `Never`-typed stub and fail.
+//       (There is no R12: the `never`-conformance pass it named was removed because
+//       `Body = Self` made it unnecessary and `Never` cannot satisfy constrained
+//       associated types such as `Scope : AttributeScope`.)
 //
 // `@inlinable` bodies are Apple's real code and are never modified. The
 // `_suiUnimplemented` seam is defined by Sources/SwiftUI/Engine/PortRuntime.swift,
@@ -130,13 +149,11 @@ public struct ContainerBackgroundPlacement : Swift.Sendable, Swift.Hashable {
   }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, tvOS 17.0, macOS 14.0, watchOS 10.0, *)
-  nonisolated public func containerBackground<S>(_ style: S, for container: SwiftUI.ContainerBackgroundPlacement) -> Swift.Never where S : SwiftUI.ShapeStyle { _suiUnimplemented("SwiftUI.View.containerBackground(_:for:)") }
+  @available(iOS 17.0, tvOS 17.0, macOS 14.0, watchOS 10.0, *)
+  nonisolated public func containerBackground<S>(_ style: S, for container: SwiftUI.ContainerBackgroundPlacement) -> some SwiftUI.View where S : SwiftUI.ShapeStyle { _suiUnimplemented("SwiftUI.View.containerBackground(_:for:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, tvOS 17.0, macOS 14.0, watchOS 10.0, *)
-  nonisolated public func containerBackground<V>(for container: SwiftUI.ContainerBackgroundPlacement, alignment: SwiftUI.Alignment = .center, @SwiftUI.ContentBuilder content: () -> V) -> Swift.Never where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.containerBackground(for:alignment:content:)") }
+  @available(iOS 17.0, tvOS 17.0, macOS 14.0, watchOS 10.0, *)
+  nonisolated public func containerBackground<V>(for container: SwiftUI.ContainerBackgroundPlacement, alignment: SwiftUI.Alignment = .center, @SwiftUI.ContentBuilder content: () -> V) -> some SwiftUI.View where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.containerBackground(for:alignment:content:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -148,6 +165,8 @@ internal struct ContainerBackgroundTraitKey : SwiftUI._ViewTraitKey, ~Swift.Send
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   @usableFromInline
   internal typealias Value = SwiftUI.AnyView?
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ContainerBackgroundTraitKey.init()") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -172,6 +191,8 @@ extension SwiftUI._TestApp {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.Link.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.Link.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -198,6 +219,8 @@ public enum _IdentifiedViewTree : ~Swift.Sendable {
   case proxy(SwiftUI._IdentifiedViewProxy)
   case array([SwiftUI._IdentifiedViewTree])
   public func forEach(_ body: (SwiftUI._IdentifiedViewProxy) -> Swift.Void) { _suiUnimplemented("SwiftUI._IdentifiedViewTree.forEach(_:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._IdentifiedViewTree.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -297,13 +320,11 @@ extension SwiftUI.ModifiedContent where Modifier == SwiftUI.AccessibilityAttachm
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityAction<Label>(action: @escaping () -> Swift.Void, @SwiftUI.ContentBuilder label: () -> Label) -> Swift.Never where Label : SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityAction(action:label:)") }
+  nonisolated public func accessibilityAction<Label>(action: @escaping () -> Swift.Void, @SwiftUI.ContentBuilder label: () -> Label) -> some SwiftUI.View where Label : SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityAction(action:label:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityActions<Content>(@SwiftUI.ContentBuilder _ content: () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityActions(_:)") }
+  nonisolated public func accessibilityActions<Content>(@SwiftUI.ContentBuilder _ content: () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityActions(_:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.View {
@@ -363,8 +384,7 @@ extension SwiftUI.ModifiedContent where Modifier == SwiftUI.AccessibilityAttachm
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityActions<Content>(category: SwiftUI.AccessibilityActionCategory, @SwiftUI.ContentBuilder _ content: () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityActions(category:_:)") }
+  nonisolated public func accessibilityActions<Content>(category: SwiftUI.AccessibilityActionCategory, @SwiftUI.ContentBuilder _ content: () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityActions(category:_:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.View {
@@ -387,17 +407,17 @@ extension SwiftUI.ModifiedContent where Modifier == SwiftUI.AccessibilityAttachm
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityValue(_ valueDescription: SwiftUI.Text, isEnabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.accessibilityValue(_:isEnabled:)") }
+nonisolated public func accessibilityValue(_ valueDescription: SwiftUI.Text, isEnabled: Swift.Bool = true) -> Self { _suiUnimplemented("SwiftUI.TabContent.accessibilityValue(_:isEnabled:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityValue(_ valueKey: SwiftUI.LocalizedStringKey, isEnabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.accessibilityValue(_:isEnabled:)") }
+nonisolated public func accessibilityValue(_ valueKey: SwiftUI.LocalizedStringKey, isEnabled: Swift.Bool = true) -> Self { _suiUnimplemented("SwiftUI.TabContent.accessibilityValue(_:isEnabled:)") }
   
   @_disfavoredOverload @export(implementation) nonisolated public func accessibilityValue(_ valueResource: FoundationShims.LocalizedStringResource, isEnabled: Swift.Bool = true) -> some SwiftUI.TabContent<Self.TabValue> {
         accessibilityValue(Text(valueResource), isEnabled: isEnabled)
     }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func accessibilityValue<S>(_ value: S, isEnabled: Swift.Bool = true) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.TabContent.accessibilityValue(_:isEnabled:)") }
+@_disfavoredOverload nonisolated public func accessibilityValue<S>(_ value: S, isEnabled: Swift.Bool = true) -> Self where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.TabContent.accessibilityValue(_:isEnabled:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.View {
@@ -578,6 +598,8 @@ extension SwiftUI.BackgroundTask {
 @available(visionOS, unavailable)
 public struct SnapshotResponse : Swift.Sendable {
   public init(restoredDefaultState: Swift.Bool = false, estimatedSnapshotExpiration: Foundation.Date? = nil, identifier: Swift.String? = nil) { _suiUnimplemented("SwiftUI.SnapshotResponse.init(restoredDefaultState:estimatedSnapshotExpiration:identifier:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SnapshotResponse.init()") }
 }
 @available(watchOS 9.0, *)
 @available(tvOS, unavailable)
@@ -599,7 +621,9 @@ public struct SnapshotData : Swift.Sendable {
     public var hashValue: Swift.Int {
       get { _suiUnimplemented("SwiftUI.SnapshotData.SnapshotReason.hashValue") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.SnapshotData.SnapshotReason.init()") }
+}
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public struct SceneRestorationBehavior : Swift.Sendable {
@@ -662,11 +686,9 @@ extension SwiftUI.UIHostingController {
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func navigationSplitViewColumnWidth(_ width: CoreGraphics.CGFloat) -> Swift.Never { _suiUnimplemented("SwiftUI.View.navigationSplitViewColumnWidth(_:)") }
+  nonisolated public func navigationSplitViewColumnWidth(_ width: CoreGraphics.CGFloat) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationSplitViewColumnWidth(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func navigationSplitViewColumnWidth(min: CoreGraphics.CGFloat? = nil, ideal: CoreGraphics.CGFloat, max: CoreGraphics.CGFloat? = nil) -> Swift.Never { _suiUnimplemented("SwiftUI.View.navigationSplitViewColumnWidth(min:ideal:max:)") }
+  nonisolated public func navigationSplitViewColumnWidth(min: CoreGraphics.CGFloat? = nil, ideal: CoreGraphics.CGFloat, max: CoreGraphics.CGFloat? = nil) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationSplitViewColumnWidth(min:ideal:max:)") }
 }
 @available(iOS 16.0, macOS 12.0, *)
 @available(tvOS, unavailable)
@@ -693,6 +715,8 @@ extension SwiftUI.Table {
   case label
   case content
   public static func == (a: SwiftUI.AccessibilityLabeledPairRole, b: SwiftUI.AccessibilityLabeledPairRole) -> Swift.Bool { _suiUnimplemented("SwiftUI.AccessibilityLabeledPairRole.==(a:b:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.AccessibilityLabeledPairRole.init()") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.AccessibilityLabeledPairRole : Swift.Hashable {
@@ -703,11 +727,9 @@ extension SwiftUI.AccessibilityLabeledPairRole : Swift.Hashable {
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityLinkedGroup<ID>(id: ID, in namespace: SwiftUI.Namespace.ID) -> Swift.Never where ID : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityLinkedGroup(id:in:)") }
+  nonisolated public func accessibilityLinkedGroup<ID>(id: ID, in namespace: SwiftUI.Namespace.ID) -> some SwiftUI.View where ID : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityLinkedGroup(id:in:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityLabeledPair<ID>(role: SwiftUI.AccessibilityLabeledPairRole, id: ID, in namespace: SwiftUI.Namespace.ID) -> Swift.Never where ID : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityLabeledPair(role:id:in:)") }
+  nonisolated public func accessibilityLabeledPair<ID>(role: SwiftUI.AccessibilityLabeledPairRole, id: ID, in namespace: SwiftUI.Namespace.ID) -> some SwiftUI.View where ID : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityLabeledPair(role:id:in:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `Menu` instead.")
@@ -719,6 +741,8 @@ nonisolated public struct MenuButton<Label, Content> : SwiftUI.View, ~Swift.Send
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.MenuButton.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.MenuButton.init()") }
 }
 #else
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `Menu` instead.")
@@ -814,6 +838,8 @@ internal struct NavigationSplitViewOpaqueBackgroundTraitKey : SwiftUI._ViewTrait
       @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   internal typealias Value = Swift.Bool
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.NavigationSplitViewOpaqueBackgroundTraitKey.init()") }
 }
 #else
 @available(macCatalyst 16.2, *)
@@ -834,8 +860,7 @@ internal struct NavigationSplitViewOpaqueBackgroundTraitKey : SwiftUI._ViewTrait
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func handGestureShortcut(_ shortcut: SwiftUI.HandGestureShortcut, isEnabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.View.handGestureShortcut(_:isEnabled:)") }
+  nonisolated public func handGestureShortcut(_ shortcut: SwiftUI.HandGestureShortcut, isEnabled: Swift.Bool = true) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.handGestureShortcut(_:isEnabled:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, *)
 @available(visionOS, unavailable)
@@ -868,6 +893,8 @@ nonisolated public struct Settings<Content> : SwiftUI.Scene, ~Swift.Sendable whe
   nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.Settings.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.Settings.init()") }
 }
 #else
 @available(macOS 11.0, *)
@@ -882,10 +909,9 @@ nonisolated public struct Settings<Content> : SwiftUI.Scene where Content : Swif
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.0, macOS 26.0, watchOS 26.0, visionOS 26.0, *)
+  @available(iOS 26.0, macOS 26.0, watchOS 26.0, visionOS 26.0, *)
   @available(tvOS, unavailable)
-  nonisolated public func sliderThumbVisibility(_ visibility: SwiftUI.Visibility) -> Swift.Never { _suiUnimplemented("SwiftUI.View.sliderThumbVisibility(_:)") }
+  nonisolated public func sliderThumbVisibility(_ visibility: SwiftUI.Visibility) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.sliderThumbVisibility(_:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct ScenePadding : Swift.Equatable, Swift.Sendable {
@@ -900,12 +926,10 @@ public static var minimum: SwiftUI.ScenePadding { get { _suiUnimplemented("Swift
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func scenePadding(_ edges: SwiftUI.Edge.Set = .all) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scenePadding(_:)") }
+  nonisolated public func scenePadding(_ edges: SwiftUI.Edge.Set = .all) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scenePadding(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func scenePadding(_ padding: SwiftUI.ScenePadding, edges: SwiftUI.Edge.Set = .all) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scenePadding(_:edges:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func scenePadding(_ padding: SwiftUI.ScenePadding, edges: SwiftUI.Edge.Set = .all) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scenePadding(_:edges:)") }
 }
 @available(iOS 13.0, macOS 12.0, tvOS 13.0, watchOS 6.0, *)
 public protocol _PerformanceTest : SwiftUI._Test {
@@ -938,6 +962,8 @@ public struct WindowResizability : Swift.Sendable {
     get { _suiUnimplemented("SwiftUI.WindowResizability.contentMinSize") }
     set { _suiUnimplemented("SwiftUI.WindowResizability.contentMinSize") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.WindowResizability.init()") }
 }
 @available(iOS 17.0, macOS 13.0, visionOS 1.0, *)
 @available(tvOS, unavailable)
@@ -948,6 +974,8 @@ extension SwiftUI.Scene {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 public enum __App : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.__App.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -966,6 +994,8 @@ public protocol ListStyle {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 public struct _ListValue<Style, SelectionValue> : ~Swift.Sendable where Style : SwiftUI.ListStyle, SelectionValue : Swift.Hashable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._ListValue.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -974,8 +1004,7 @@ public struct _ListValue<Style, SelectionValue> where Style : SwiftUI.ListStyle,
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func listStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.ListStyle { _suiUnimplemented("SwiftUI.View.listStyle(_:)") }
+  nonisolated public func listStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.ListStyle { _suiUnimplemented("SwiftUI.View.listStyle(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 26.0, watchOS 26.0, *)
@@ -1020,6 +1049,8 @@ public struct WindowLevel : Swift.Sendable, Swift.Hashable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.WindowLevel.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.WindowLevel.init()") }
 }
 @available(macOS 15.0, *)
 @available(tvOS, unavailable)
@@ -1036,6 +1067,8 @@ extension SwiftUI.Scene {
 public struct ActionSheet : ~Swift.Sendable {
   public init(title: SwiftUI.Text, message: SwiftUI.Text? = nil, buttons: [SwiftUI.ActionSheet.Button] = [.cancel()]) { _suiUnimplemented("SwiftUI.ActionSheet.init(title:message:buttons:)") }
   public typealias Button = SwiftUI.Alert.Button
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ActionSheet.init()") }
 }
 #else
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "use `View.confirmationDialog(title:isPresented:titleVisibility:presenting::actions:)`instead.")
@@ -1048,19 +1081,17 @@ public struct ActionSheet {
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, message: "use `confirmationDialog(title:isPresented:titleVisibility:presenting::actions:)`instead.")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "use `confirmationDialog(title:isPresented:titleVisibility:presenting::actions:)`instead.")
     @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "use `confirmationDialog(title:isPresented:titleVisibility:presenting:actions:)`instead.")
   @available(watchOS, introduced: 6.0, deprecated: 100000.0, message: "use `confirmationDialog(title:isPresented:titleVisibility:presenting:actions:)`instead.")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "use `confirmationDialog(title:isPresented:titleVisibility:presenting:actions:)`instead.")
-  nonisolated public func actionSheet<T>(item: SwiftUI.Binding<T?>, content: (T) -> SwiftUI.ActionSheet) -> Swift.Never where T : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.actionSheet(item:content:)") }
+  nonisolated public func actionSheet<T>(item: SwiftUI.Binding<T?>, content: (T) -> SwiftUI.ActionSheet) -> some SwiftUI.View where T : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.actionSheet(item:content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, message: "use `confirmationDialog(title:isPresented:titleVisibility:presenting::actions:)`instead.")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "use `confirmationDialog(title:isPresented:titleVisibility:presenting::actions:)`instead.")
     @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "use `confirmationDialog(title:isPresented:titleVisibility:presenting:actions:)`instead.")
   @available(watchOS, introduced: 6.0, deprecated: 100000.0, message: "use `confirmationDialog(title:isPresented:titleVisibility:presenting:actions:)`instead.")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "use `confirmationDialog(title:isPresented:titleVisibility:presenting:actions:)`instead.")
-  nonisolated public func actionSheet(isPresented: SwiftUI.Binding<Swift.Bool>, content: () -> SwiftUI.ActionSheet) -> Swift.Never { _suiUnimplemented("SwiftUI.View.actionSheet(isPresented:content:)") }
+  nonisolated public func actionSheet(isPresented: SwiftUI.Binding<Swift.Bool>, content: () -> SwiftUI.ActionSheet) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.actionSheet(isPresented:content:)") }
 }
 @available(iOS 17.4, macOS 14.4, visionOS 1.1, *)
 @available(tvOS, unavailable)
@@ -1159,23 +1190,22 @@ extension SwiftUI.ModifiedContent where Modifier == SwiftUI.AccessibilityAttachm
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityLabel<V>(@SwiftUI.ContentBuilder content: (_ label: SwiftUI.PlaceholderContentView<Self>) -> V) -> Swift.Never where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityLabel(content:)") }
+  nonisolated public func accessibilityLabel<V>(@SwiftUI.ContentBuilder content: (_ label: SwiftUI.PlaceholderContentView<Self>) -> V) -> some SwiftUI.View where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityLabel(content:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityLabel(_ label: SwiftUI.Text, isEnabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.accessibilityLabel(_:isEnabled:)") }
+nonisolated public func accessibilityLabel(_ label: SwiftUI.Text, isEnabled: Swift.Bool = true) -> Self { _suiUnimplemented("SwiftUI.TabContent.accessibilityLabel(_:isEnabled:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityLabel(_ labelKey: SwiftUI.LocalizedStringKey, isEnabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.accessibilityLabel(_:isEnabled:)") }
+nonisolated public func accessibilityLabel(_ labelKey: SwiftUI.LocalizedStringKey, isEnabled: Swift.Bool = true) -> Self { _suiUnimplemented("SwiftUI.TabContent.accessibilityLabel(_:isEnabled:)") }
   
   @_disfavoredOverload @export(implementation) nonisolated public func accessibilityLabel(_ label: FoundationShims.LocalizedStringResource, isEnabled: Swift.Bool = true) -> some SwiftUI.TabContent<Self.TabValue> {
         accessibilityLabel(Text(label), isEnabled: isEnabled)
     }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func accessibilityLabel<S>(_ label: S, isEnabled: Swift.Bool = true) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.TabContent.accessibilityLabel(_:isEnabled:)") }
+@_disfavoredOverload nonisolated public func accessibilityLabel<S>(_ label: S, isEnabled: Swift.Bool = true) -> Self where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.TabContent.accessibilityLabel(_:isEnabled:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.View {
@@ -1294,11 +1324,10 @@ public static var slider: SwiftUI.SensoryFeedback.ReleaseFeedback { get { _suiUn
   }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
+  @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchSelection(_ selection: SwiftUI.Binding<SwiftUI.TextSelection?>) -> Swift.Never { _suiUnimplemented("SwiftUI.View.searchSelection(_:)") }
+  nonisolated public func searchSelection(_ selection: SwiftUI.Binding<SwiftUI.TextSelection?>) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchSelection(_:)") }
 }
 @available(iOS, introduced: 15.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView")
 @available(macOS, introduced: 12.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView")
@@ -1319,14 +1348,12 @@ extension SwiftUI.NavigationViewStyle where Self == SwiftUI.ColumnNavigationView
 public struct ColumnNavigationViewStyle : SwiftUI.NavigationViewStyle, ~Swift.Sendable {
   @usableFromInline
   internal init() { _suiUnimplemented("SwiftUI.ColumnNavigationViewStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func _body(configuration: SwiftUI._NavigationViewStyleConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUI.ColumnNavigationViewStyle._body(configuration:)") }
+  public func _body(configuration: SwiftUI._NavigationViewStyleConfiguration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.ColumnNavigationViewStyle._body(configuration:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 15.0, macOS 12.0, *)
+  @available(iOS 15.0, macOS 12.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  public func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUI.ColumnNavigationViewStyle._columnBasedBody(configuration:)") }
+  public func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.ColumnNavigationViewStyle._columnBasedBody(configuration:)") }
 }
 #else
 @available(iOS, introduced: 15.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationSplitView")
@@ -1348,6 +1375,8 @@ public struct ColumnNavigationViewStyle : SwiftUI.NavigationViewStyle {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct _SceneInputs : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._SceneInputs.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -1364,8 +1393,7 @@ extension SwiftUI.PrimitiveButtonStyle where Self == SwiftUI.DefaultButtonStyle 
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 nonisolated public struct DefaultButtonStyle : SwiftUI.PrimitiveButtonStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.DefaultButtonStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.DefaultButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultButtonStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.DefaultButtonStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.DefaultButtonStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -1408,6 +1436,8 @@ internal struct ListRowInsetsTraitKey : SwiftUI._ViewTraitKey, ~Swift.Sendable {
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   @usableFromInline
   internal typealias Value = SwiftUI.EdgeInsets?
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ListRowInsetsTraitKey.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -1429,14 +1459,12 @@ extension SwiftUI.View {
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func listRowInsets(_ edges: SwiftUI.Edge.Set = .all, _ length: CoreGraphics.CGFloat?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.listRowInsets(_:_:)") }
+  nonisolated public func listRowInsets(_ edges: SwiftUI.Edge.Set = .all, _ length: CoreGraphics.CGFloat?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.listRowInsets(_:_:)") }
 }
 @available(iOS 17.0, macOS 13.0, tvOS 17.0, watchOS 10.0, *)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dialogIcon(_ icon: SwiftUI.Image?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.dialogIcon(_:)") }
+  nonisolated public func dialogIcon(_ icon: SwiftUI.Image?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.dialogIcon(_:)") }
 }
 @available(macOS 15.0, *)
 @available(tvOS, unavailable)
@@ -1451,8 +1479,7 @@ extension SwiftUI.Scene {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dialogPreventsAppTermination(_ prevents: Swift.Bool?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.dialogPreventsAppTermination(_:)") }
+  nonisolated public func dialogPreventsAppTermination(_ prevents: Swift.Bool?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.dialogPreventsAppTermination(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use View.alert(_:isPresented:presenting:actions:) instead.")
@@ -1471,7 +1498,11 @@ public struct Alert : ~Swift.Sendable {
     public static func cancel(_ label: SwiftUI.Text, action: (() -> Swift.Void)? = {}) -> SwiftUI.Alert.Button { _suiUnimplemented("SwiftUI.Alert.Button.cancel(_:action:)") }
     public static func cancel(_ action: (() -> Swift.Void)? = {}) -> SwiftUI.Alert.Button { _suiUnimplemented("SwiftUI.Alert.Button.cancel(_:)") }
     public static func destructive(_ label: SwiftUI.Text, action: (() -> Swift.Void)? = {}) -> SwiftUI.Alert.Button { _suiUnimplemented("SwiftUI.Alert.Button.destructive(_:action:)") }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.Alert.Button.init()") }
+}
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.Alert.init()") }
 }
 #else
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use View.alert(_:isPresented:presenting:actions:) instead.")
@@ -1495,21 +1526,19 @@ public struct Alert {
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, message: "use `alert(title:isPresented:presenting::actions:) instead.")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "use `alert(title:isPresented:presenting::actions:) instead.")
   @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "use `alert(title:isPresented:presenting::actions:) instead.")
   @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "use `alert(title:isPresented:presenting::actions:) instead.")
   @available(watchOS, introduced: 6.0, deprecated: 100000.0, message: "use `alert(title:isPresented:presenting::actions:) instead.")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "use `alert(title:isPresented:presenting::actions:) instead.")
-  nonisolated public func alert<Item>(item: SwiftUI.Binding<Item?>, content: (Item) -> SwiftUI.Alert) -> Swift.Never where Item : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.alert(item:content:)") }
+  nonisolated public func alert<Item>(item: SwiftUI.Binding<Item?>, content: (Item) -> SwiftUI.Alert) -> some SwiftUI.View where Item : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.alert(item:content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, message: "use `alert(title:isPresented:presenting::actions:) instead.")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "use `alert(title:isPresented:presenting::actions:) instead.")
   @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "use `alert(title:isPresented:presenting::actions:) instead.")
   @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "use `alert(title:isPresented:presenting::actions:) instead.")
   @available(watchOS, introduced: 6.0, deprecated: 100000.0, message: "use `alert(title:isPresented:presenting::actions:) instead.")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "use `alert(title:isPresented:presenting::actions:) instead.")
-  nonisolated public func alert(isPresented: SwiftUI.Binding<Swift.Bool>, content: () -> SwiftUI.Alert) -> Swift.Never { _suiUnimplemented("SwiftUI.View.alert(isPresented:content:)") }
+  nonisolated public func alert(isPresented: SwiftUI.Binding<Swift.Bool>, content: () -> SwiftUI.Alert) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(isPresented:content:)") }
 }
 @available(iOS 15.0, macOS 12.0, watchOS 9.0, *)
 @available(tvOS, unavailable)
@@ -1523,8 +1552,7 @@ extension SwiftUI.ToggleStyle where Self == SwiftUI.ButtonToggleStyle {
 @available(tvOS, unavailable)
 nonisolated public struct ButtonToggleStyle : SwiftUI.ToggleStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.ButtonToggleStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.ButtonToggleStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.ButtonToggleStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.ButtonToggleStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.ButtonToggleStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, watchOS 9.0, *)
@@ -1544,6 +1572,8 @@ nonisolated public struct Table<Value, Rows, Columns> : SwiftUI.View, ~Swift.Sen
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.Table.init()") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.Table.body") } }
 }
@@ -1644,6 +1674,8 @@ nonisolated public struct TableOutlineGroupContent<Data> : SwiftUI.TableRowConte
   nonisolated public var tableRowBody: some SwiftUI.TableRowContent {
     get { _suiUnimplemented("SwiftUI.TableOutlineGroupContent.tableRowBody") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TableOutlineGroupContent.init()") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, *)
@@ -1665,6 +1697,8 @@ nonisolated public struct TableForEachContent<Data> : SwiftUI.TableRowContent, ~
   nonisolated public var tableRowBody: some SwiftUI.TableRowContent {
     get { _suiUnimplemented("SwiftUI.TableForEachContent.tableRowBody") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TableForEachContent.init()") }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -1692,8 +1726,7 @@ nonisolated public struct GlassButtonStyle : SwiftUI.PrimitiveButtonStyle, ~Swif
   nonisolated public init() { _suiUnimplemented("SwiftUI.GlassButtonStyle.init()") }
   @available(iOS 26.1, macOS 26.1, tvOS 26.1, watchOS 26.1, *)
   nonisolated public init(_ glass: SwiftUI.Glass) { _suiUnimplemented("SwiftUI.GlassButtonStyle.init(_:)") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.GlassButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.GlassButtonStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.GlassButtonStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.GlassButtonStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
@@ -1711,6 +1744,8 @@ nonisolated public struct DefaultDateProgressLabel : SwiftUI.View, ~Swift.Sendab
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.DefaultDateProgressLabel.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DefaultDateProgressLabel.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -1742,8 +1777,7 @@ extension SwiftUI.LabelStyle where Self == SwiftUI.DefaultLabelStyle {
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 nonisolated public struct DefaultLabelStyle : SwiftUI.LabelStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.DefaultLabelStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.DefaultLabelStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultLabelStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.DefaultLabelStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.DefaultLabelStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -1763,8 +1797,7 @@ extension SwiftUI.EnvironmentValues {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func alternatingRowBackgrounds(_ behavior: SwiftUI.AlternatingRowBackgroundBehavior = .enabled) -> Swift.Never { _suiUnimplemented("SwiftUI.View.alternatingRowBackgrounds(_:)") }
+  nonisolated public func alternatingRowBackgrounds(_ behavior: SwiftUI.AlternatingRowBackgroundBehavior = .enabled) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.alternatingRowBackgrounds(_:)") }
 }
 @available(macOS 14.0, *)
 @available(tvOS, unavailable)
@@ -1827,6 +1860,8 @@ public struct ScrollTargetBehaviorPropertiesContext : ~Swift.Sendable {
   public var axes: SwiftUI.Axis.Set {
     get { _suiUnimplemented("SwiftUI.ScrollTargetBehaviorPropertiesContext.axes") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ScrollTargetBehaviorPropertiesContext.init()") }
 }
 #else
 @available(iOS 18.4, macOS 15.4, tvOS 18.4, watchOS 11.4, visionOS 2.4, *)
@@ -1842,6 +1877,8 @@ public struct ScrollTargetBehaviorPropertiesContext {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public struct _ScrollTargetBehaviorEnvironmentContext : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._ScrollTargetBehaviorEnvironmentContext.init()") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -1869,6 +1906,8 @@ public struct _ScrollTargetBehaviorEnvironmentContext {
   public subscript<T>(dynamicMember keyPath: Swift.KeyPath<SwiftUI.EnvironmentValues, T>) -> T {
     get { _suiUnimplemented("SwiftUI.ScrollTargetBehaviorContext.subscript(dynamicMember:)") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ScrollTargetBehaviorContext.init()") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -1894,18 +1933,18 @@ public struct _ScrollTargetBehaviorEnvironmentContext {
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func scrollTargetBehavior(_ behavior: some ScrollTargetBehavior) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollTargetBehavior(_:)") }
+  @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+  nonisolated public func scrollTargetBehavior(_ behavior: some ScrollTargetBehavior) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollTargetBehavior(_:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func scrollTargetLayout(isEnabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollTargetLayout(isEnabled:)") }
+  @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+  nonisolated public func scrollTargetLayout(isEnabled: Swift.Bool = true) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollTargetLayout(isEnabled:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @preconcurrency @_Concurrency.MainActor public struct DismissAction {
   @_Concurrency.MainActor @preconcurrency public func callAsFunction() { _suiUnimplemented("SwiftUI.DismissAction.callAsFunction()") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DismissAction.init()") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.EnvironmentValues {
@@ -1926,8 +1965,7 @@ extension SwiftUI.PrimitiveButtonStyle where Self == SwiftUI.BorderlessButtonSty
 @available(iOS 13.0, macOS 10.15, tvOS 17.0, watchOS 8.0, *)
 nonisolated public struct BorderlessButtonStyle : SwiftUI.PrimitiveButtonStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.BorderlessButtonStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.BorderlessButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderlessButtonStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.BorderlessButtonStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.BorderlessButtonStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 17.0, watchOS 8.0, *)
@@ -1940,6 +1978,8 @@ nonisolated public struct BorderlessButtonStyle : SwiftUI.PrimitiveButtonStyle {
 @available(iOS 14.0, macOS 11.0, watchOS 9.0, visionOS 1.0, *)
 @available(tvOS, unavailable)
 public struct _WidgetInputs : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._WidgetInputs.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, watchOS 9.0, visionOS 1.0, *)
@@ -2013,6 +2053,8 @@ public struct FileWrapperDocumentWriter<Snapshot> : SwiftUI.DocumentWriter {
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Destination = Foundation.URL
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.FileWrapperDocumentWriter.init()") }
 }
 @available(*, unavailable)
 extension SwiftUI.FileWrapperDocumentWriter : Swift.Sendable {
@@ -2030,6 +2072,8 @@ public struct FileWrapperDocumentReader<Snapshot> : SwiftUI.DocumentReader {
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Source = Foundation.URL
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.FileWrapperDocumentReader.init()") }
 }
 @available(*, unavailable)
 extension SwiftUI.FileWrapperDocumentReader : Swift.Sendable {
@@ -2087,6 +2131,8 @@ public struct DocumentReadConfiguration {
   public var contentType: UniformTypeIdentifiers.UTType {
     get { _suiUnimplemented("SwiftUI.DocumentReadConfiguration.contentType") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DocumentReadConfiguration.init()") }
 }
 @available(*, unavailable)
 extension SwiftUI.DocumentReadConfiguration : Swift.Sendable {
@@ -2121,6 +2167,8 @@ public struct DocumentWriteConfiguration {
   public var contentType: UniformTypeIdentifiers.UTType {
     get { _suiUnimplemented("SwiftUI.DocumentWriteConfiguration.contentType") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DocumentWriteConfiguration.init()") }
 }
 @available(*, unavailable)
 extension SwiftUI.DocumentWriteConfiguration : Swift.Sendable {
@@ -2140,6 +2188,8 @@ public struct DocumentCreationContext {
   public var creationSource: SwiftUI.DocumentCreationSource? {
     get { _suiUnimplemented("SwiftUI.DocumentCreationContext.creationSource") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DocumentCreationContext.init()") }
 }
 @available(*, unavailable)
 extension SwiftUI.DocumentCreationContext : Swift.Sendable {
@@ -2180,33 +2230,28 @@ extension SwiftUI.DocumentGroup where Document : Observation.Observable, Documen
 extension SwiftUI.URLDocumentConfiguration : nonisolated Observation.Observable {
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 16.0, deprecated: 100000.0, message: "use overload that accepts a CoordinateSpaceProtocol instead")
+  @available(iOS, introduced: 16.0, deprecated: 100000.0, message: "use overload that accepts a CoordinateSpaceProtocol instead")
   @available(macOS, introduced: 13.0, deprecated: 100000.0, message: "use overload that accepts a CoordinateSpaceProtocol instead")
   @available(tvOS, introduced: 16.0, deprecated: 100000.0, message: "use overload that accepts a CoordinateSpaceProtocol instead")
   @available(watchOS, unavailable)
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "use overload that accepts a CoordinateSpaceProtocol instead")
-  @_disfavoredOverload nonisolated public func onContinuousHover(coordinateSpace: SwiftUI.CoordinateSpace = .local, perform action: @escaping (SwiftUI.HoverPhase) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onContinuousHover(coordinateSpace:perform:)") }
+  @_disfavoredOverload nonisolated public func onContinuousHover(coordinateSpace: SwiftUI.CoordinateSpace = .local, perform action: @escaping (SwiftUI.HoverPhase) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onContinuousHover(coordinateSpace:perform:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func navigationDestination<D, C>(for data: D.Type, @SwiftUI.ContentBuilder destination: @escaping (D) -> C) -> Swift.Never where D : Swift.Hashable, C : SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationDestination(for:destination:)") }
+  nonisolated public func navigationDestination<D, C>(for data: D.Type, @SwiftUI.ContentBuilder destination: @escaping (D) -> C) -> some SwiftUI.View where D : Swift.Hashable, C : SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationDestination(for:destination:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func navigationDestination<V>(isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder destination: () -> V) -> Swift.Never where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationDestination(isPresented:destination:)") }
+  nonisolated public func navigationDestination<V>(isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder destination: () -> V) -> some SwiftUI.View where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationDestination(isPresented:destination:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func navigationDestination<D, C>(item: SwiftUI.Binding<Swift.Optional<D>>, @SwiftUI.ContentBuilder destination: @escaping (D) -> C) -> Swift.Never where D : Swift.Hashable, C : SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationDestination(item:destination:)") }
+  nonisolated public func navigationDestination<D, C>(item: SwiftUI.Binding<Swift.Optional<D>>, @SwiftUI.ContentBuilder destination: @escaping (D) -> C) -> some SwiftUI.View where D : Swift.Hashable, C : SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationDestination(item:destination:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, visionOS 2.4, *)
+  @available(iOS 18.0, macOS 15.0, visionOS 2.4, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func writingToolsBehavior(_ behavior: SwiftUI.WritingToolsBehavior) -> Swift.Never { _suiUnimplemented("SwiftUI.View.writingToolsBehavior(_:)") }
+  nonisolated public func writingToolsBehavior(_ behavior: SwiftUI.WritingToolsBehavior) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.writingToolsBehavior(_:)") }
 }
 @available(iOS 18.0, macOS 15.0, visionOS 2.4, *)
 @available(tvOS, unavailable)
@@ -2245,8 +2290,8 @@ extension SwiftUI.EnvironmentValues {
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.ForEach : SwiftUI.ToolbarContent where Content : SwiftUI.ToolbarContent {
   nonisolated public static func _makeToolbar(content: SwiftUI._GraphValue<SwiftUI.ForEach<Data, ID, Content>>, inputs: SwiftUI._ToolbarInputs) -> SwiftUI._ToolbarOutputs { _suiUnimplemented("SwiftUI.ForEach._makeToolbar(content:inputs:)") }
-  @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.ForEach : SwiftUI.CustomizableToolbarContent where Content : SwiftUI.CustomizableToolbarContent {
@@ -2257,6 +2302,8 @@ nonisolated public struct _ScrollableLayoutView<Data, Layout> : SwiftUI.View, ~S
   public static func _makeView(view: SwiftUI._GraphValue<SwiftUI._ScrollableLayoutView<Data, Layout>>, inputs: SwiftUI._ViewInputs) -> SwiftUI._ViewOutputs { _suiUnimplemented("SwiftUI._ScrollableLayoutView._makeView(view:inputs:)") }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._ScrollableLayoutView.init()") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._ScrollableLayoutView.body") } }
 }
@@ -2290,6 +2337,8 @@ nonisolated public struct MenuBarExtra<Label, Content> : SwiftUI.Scene, ~Swift.S
   nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.MenuBarExtra.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.MenuBarExtra.init()") }
 }
 #else
 @available(macOS 13.0, *)
@@ -2384,6 +2433,8 @@ internal struct ListRowPlatterColorTraitKey : SwiftUI._ViewTraitKey, ~Swift.Send
       @available(tvOS, unavailable)
   @available(visionOS, unavailable)
   internal typealias Value = SwiftUI.Color?
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ListRowPlatterColorTraitKey.init()") }
 }
 #else
 @available(watchOS 6.0, *)
@@ -2422,6 +2473,8 @@ internal struct ShouldExpandAllTraitKey : SwiftUI._ViewTraitKey, ~Swift.Sendable
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   @usableFromInline
   internal typealias Value = SwiftUI.Binding<SwiftUI.ExpansionState>?
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ShouldExpandAllTraitKey.init()") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -2455,6 +2508,8 @@ internal enum ExpansionState : Swift.CustomStringConvertible, ~Swift.Sendable {
     @usableFromInline
     get { _suiUnimplemented("SwiftUI.ExpansionState.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ExpansionState.init()") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -2488,8 +2543,7 @@ extension SwiftUI.NavigationSplitViewStyle where Self == SwiftUI.BalancedNavigat
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_Concurrency.MainActor @preconcurrency public struct BalancedNavigationSplitViewStyle : SwiftUI.NavigationSplitViewStyle, ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public init() { _suiUnimplemented("SwiftUI.BalancedNavigationSplitViewStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.BalancedNavigationSplitViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BalancedNavigationSplitViewStyle.makeBody(configuration:)") }
+  @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.BalancedNavigationSplitViewStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.BalancedNavigationSplitViewStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -2508,8 +2562,7 @@ extension SwiftUI.FormStyle where Self == SwiftUI.ColumnsFormStyle {
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 nonisolated public struct ColumnsFormStyle : SwiftUI.FormStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.ColumnsFormStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.ColumnsFormStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.ColumnsFormStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.ColumnsFormStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.ColumnsFormStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -2522,8 +2575,7 @@ nonisolated public struct ColumnsFormStyle : SwiftUI.FormStyle {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func textSelection<S>(_ selectability: S) -> Swift.Never where S : SwiftUI.TextSelectability { _suiUnimplemented("SwiftUI.View.textSelection(_:)") }
+  nonisolated public func textSelection<S>(_ selectability: S) -> some SwiftUI.View where S : SwiftUI.TextSelectability { _suiUnimplemented("SwiftUI.View.textSelection(_:)") }
 }
 @available(iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.Image {
@@ -2533,8 +2585,7 @@ extension SwiftUI.Image {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func allowsWindowActivationEvents(_ value: Swift.Bool?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.allowsWindowActivationEvents(_:)") }
+  nonisolated public func allowsWindowActivationEvents(_ value: Swift.Bool?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.allowsWindowActivationEvents(_:)") }
   
   @export(implementation) nonisolated public func allowsWindowActivationEvents() -> some SwiftUI.View {
         if #available(iOS 26.0, macOS 26.0, visionOS 26.0, *) {
@@ -2548,9 +2599,8 @@ nonisolated public func allowsWindowActivationEvents(_ value: Swift.Bool?) -> Sw
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
-  nonisolated internal func staticAllowsWindowActivationEvents() -> Swift.Never { _suiUnimplemented("SwiftUI.View.staticAllowsWindowActivationEvents()") }
+  @usableFromInline
+  nonisolated internal func staticAllowsWindowActivationEvents() -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.staticAllowsWindowActivationEvents()") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.TextFieldStyle where Self == SwiftUI.DefaultTextFieldStyle {
@@ -2567,7 +2617,9 @@ public struct DefaultTextFieldStyle : SwiftUI.TextFieldStyle, ~Swift.Sendable {
     @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI.View {
       get { _suiUnimplemented("SwiftUI.DefaultTextFieldStyle._Body.body") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.DefaultTextFieldStyle._Body.init()") }
+}
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -2635,6 +2687,8 @@ nonisolated public struct WindowGroup<Content> : SwiftUI.Scene, ~Swift.Sendable 
   nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.WindowGroup.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.WindowGroup.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -2694,14 +2748,11 @@ nonisolated public struct WindowGroup<Content> : SwiftUI.Scene where Content : S
 #endif
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, visionOS 26.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func sensoryFeedback<T>(_ feedback: SwiftUI.SensoryFeedback, trigger: T) -> Swift.Never where T : Swift.Equatable { _suiUnimplemented("SwiftUI.View.sensoryFeedback(_:trigger:)") }
+  nonisolated public func sensoryFeedback<T>(_ feedback: SwiftUI.SensoryFeedback, trigger: T) -> some SwiftUI.View where T : Swift.Equatable { _suiUnimplemented("SwiftUI.View.sensoryFeedback(_:trigger:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func sensoryFeedback<T>(_ feedback: SwiftUI.SensoryFeedback, trigger: T, condition: @escaping (_ oldValue: T, _ newValue: T) -> Swift.Bool) -> Swift.Never where T : Swift.Equatable { _suiUnimplemented("SwiftUI.View.sensoryFeedback(_:trigger:condition:)") }
+  nonisolated public func sensoryFeedback<T>(_ feedback: SwiftUI.SensoryFeedback, trigger: T, condition: @escaping (_ oldValue: T, _ newValue: T) -> Swift.Bool) -> some SwiftUI.View where T : Swift.Equatable { _suiUnimplemented("SwiftUI.View.sensoryFeedback(_:trigger:condition:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func sensoryFeedback<T>(trigger: T, _ feedback: @escaping (_ oldValue: T, _ newValue: T) -> SwiftUI.SensoryFeedback?) -> Swift.Never where T : Swift.Equatable { _suiUnimplemented("SwiftUI.View.sensoryFeedback(trigger:_:)") }
+  nonisolated public func sensoryFeedback<T>(trigger: T, _ feedback: @escaping (_ oldValue: T, _ newValue: T) -> SwiftUI.SensoryFeedback?) -> some SwiftUI.View where T : Swift.Equatable { _suiUnimplemented("SwiftUI.View.sensoryFeedback(trigger:_:)") }
   
   @export(implementation) nonisolated public func sensoryFeedback<T>(trigger: T, _ feedback: @escaping () -> SwiftUI.SensoryFeedback?) -> some SwiftUI.View where T : Swift.Equatable {
         self.sensoryFeedback(trigger: trigger, { _, _ in feedback() })
@@ -2711,39 +2762,32 @@ nonisolated public func sensoryFeedback<T>(trigger: T, _ feedback: @escaping (_ 
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onDrop(of supportedContentTypes: [UniformTypeIdentifiers.UTType], isTargeted: SwiftUI.Binding<Swift.Bool>?, perform action: @escaping (_ providers: [FoundationShims.NSItemProvider]) -> Swift.Bool) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onDrop(of:isTargeted:perform:)") }
+  nonisolated public func onDrop(of supportedContentTypes: [UniformTypeIdentifiers.UTType], isTargeted: SwiftUI.Binding<Swift.Bool>?, perform action: @escaping (_ providers: [FoundationShims.NSItemProvider]) -> Swift.Bool) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onDrop(of:isTargeted:perform:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onDrop(of supportedContentTypes: [UniformTypeIdentifiers.UTType], isTargeted: SwiftUI.Binding<Swift.Bool>?, perform action: @escaping (_ providers: [FoundationShims.NSItemProvider], _ location: CoreGraphics.CGPoint) -> Swift.Bool) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onDrop(of:isTargeted:perform:)") }
+  nonisolated public func onDrop(of supportedContentTypes: [UniformTypeIdentifiers.UTType], isTargeted: SwiftUI.Binding<Swift.Bool>?, perform action: @escaping (_ providers: [FoundationShims.NSItemProvider], _ location: CoreGraphics.CGPoint) -> Swift.Bool) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onDrop(of:isTargeted:perform:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onDrop(of supportedContentTypes: [UniformTypeIdentifiers.UTType], delegate: any SwiftUI.DropDelegate) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onDrop(of:delegate:)") }
+  nonisolated public func onDrop(of supportedContentTypes: [UniformTypeIdentifiers.UTType], delegate: any SwiftUI.DropDelegate) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onDrop(of:delegate:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 16.0, deprecated: 100000.0, message: "Use `dropDestination(for:isEnabled:action:)` with an `action` that takes a `DropSession` parameter instead.")
+  @available(iOS, introduced: 16.0, deprecated: 100000.0, message: "Use `dropDestination(for:isEnabled:action:)` with an `action` that takes a `DropSession` parameter instead.")
   @available(macOS, introduced: 13.0, deprecated: 100000.0, message: "Use `dropDestination(for:isEnabled:action:)` with an `action` that takes a `DropSession` parameter instead.")
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_disfavoredOverload nonisolated public func dropDestination<T>(for payloadType: T.Type = T.self, action: @escaping (_ items: [T], _ location: CoreGraphics.CGPoint) -> Swift.Bool, isTargeted: @escaping (Swift.Bool) -> Swift.Void = { _ in }) -> Swift.Never where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.dropDestination(for:action:isTargeted:)") }
+  @_disfavoredOverload nonisolated public func dropDestination<T>(for payloadType: T.Type = T.self, action: @escaping (_ items: [T], _ location: CoreGraphics.CGPoint) -> Swift.Bool, isTargeted: @escaping (Swift.Bool) -> Swift.Void = { _ in }) -> some SwiftUI.View where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.dropDestination(for:action:isTargeted:)") }
 }
 @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dropDestination<T>(for type: T.Type = T.self, isEnabled: Swift.Bool = true, action: @escaping (_ items: [T], _ session: SwiftUI.DropSession) -> Swift.Void) -> Swift.Never where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.dropDestination(for:isEnabled:action:)") }
+  nonisolated public func dropDestination<T>(for type: T.Type = T.self, isEnabled: Swift.Bool = true, action: @escaping (_ items: [T], _ session: SwiftUI.DropSession) -> Swift.Void) -> some SwiftUI.View where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.dropDestination(for:isEnabled:action:)") }
 }
 @available(iOS 27.0, macOS 26.0, visionOS 27.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onDropSessionUpdated(_ onUpdate: @escaping (SwiftUI.DropSession) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onDropSessionUpdated(_:)") }
+  nonisolated public func onDropSessionUpdated(_ onUpdate: @escaping (SwiftUI.DropSession) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onDropSessionUpdated(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dropConfiguration(_ configuration: @escaping (SwiftUI.DropSession) -> SwiftUI.DropConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUI.View.dropConfiguration(_:)") }
+  nonisolated public func dropConfiguration(_ configuration: @escaping (SwiftUI.DropSession) -> SwiftUI.DropConfiguration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.dropConfiguration(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.4, macOS 10.15, *)
@@ -2757,6 +2801,8 @@ public struct DropInfo : ~Swift.Sendable {
   public func hasItemsConforming(to contentTypes: [UniformTypeIdentifiers.UTType]) -> Swift.Bool { _suiUnimplemented("SwiftUI.DropInfo.hasItemsConforming(to:)") }
   @available(iOS 14.0, macOS 11.0, *)
   public func itemProviders(for contentTypes: [UniformTypeIdentifiers.UTType]) -> [FoundationShims.NSItemProvider] { _suiUnimplemented("SwiftUI.DropInfo.itemProviders(for:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DropInfo.init()") }
 }
 #else
 @available(iOS 13.4, macOS 10.15, *)
@@ -2875,6 +2921,8 @@ public static var move: SwiftUI.DropOperation.Set { get { _suiUnimplemented("Swi
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.DropOperation.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DropOperation.init()") }
 }
 @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
 @available(tvOS, unavailable)
@@ -2913,20 +2961,17 @@ extension SwiftUI.DropProposal : Swift.CustomDebugStringConvertible {
 @available(watchOS, unavailable)
 @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Provide `UTType`s as the `supportedContentTypes` instead.")
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
+  @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func onDrop(of supportedTypes: [Swift.String], isTargeted: SwiftUI.Binding<Swift.Bool>?, perform action: @escaping (_ providers: [FoundationShims.NSItemProvider]) -> Swift.Bool) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onDrop(of:isTargeted:perform:)") }
+  nonisolated public func onDrop(of supportedTypes: [Swift.String], isTargeted: SwiftUI.Binding<Swift.Bool>?, perform action: @escaping (_ providers: [FoundationShims.NSItemProvider]) -> Swift.Bool) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onDrop(of:isTargeted:perform:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
+  @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func onDrop(of supportedTypes: [Swift.String], isTargeted: SwiftUI.Binding<Swift.Bool>?, perform action: @escaping (_ providers: [FoundationShims.NSItemProvider], _ location: CoreGraphics.CGPoint) -> Swift.Bool) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onDrop(of:isTargeted:perform:)") }
+  nonisolated public func onDrop(of supportedTypes: [Swift.String], isTargeted: SwiftUI.Binding<Swift.Bool>?, perform action: @escaping (_ providers: [FoundationShims.NSItemProvider], _ location: CoreGraphics.CGPoint) -> Swift.Bool) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onDrop(of:isTargeted:perform:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
+  @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func onDrop(of supportedTypes: [Swift.String], delegate: any SwiftUI.DropDelegate) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onDrop(of:delegate:)") }
+  nonisolated public func onDrop(of supportedTypes: [Swift.String], delegate: any SwiftUI.DropDelegate) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onDrop(of:delegate:)") }
 }
 @available(iOS, introduced: 13.4, deprecated: 100000.0, message: "Provide `UTType`s as the `types` instead.")
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Provide `UTType`s as the `types` instead.")
@@ -2939,8 +2984,7 @@ extension SwiftUI.DropInfo {
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func invalidatableContent(_ invalidatable: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.View.invalidatableContent(_:)") }
+  nonisolated public func invalidatableContent(_ invalidatable: Swift.Bool = true) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.invalidatableContent(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.Gesture {
@@ -2954,7 +2998,9 @@ extension SwiftUI.Gesture {
   @frozen public enum Value {
     case first(First.Value)
     case second(First.Value, Second.Value?)
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.SequenceGesture.Value.init()") }
+}
   public var first: First
   public var second: Second
   @inlinable nonisolated public init(_ first: First, _ second: Second) {
@@ -3046,6 +3092,8 @@ extension SwiftUI.PreviewModifier where Self.Context == () {
 nonisolated public struct PreviewModifierContent : SwiftUI.View, ~Swift.Sendable {
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PreviewModifierContent.init()") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.PreviewModifierContent.body") } }
 }
@@ -3073,24 +3121,23 @@ extension SwiftUI.CustomizableToolbarContent {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func toolbarItemHidden(_ hidden: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.View.toolbarItemHidden(_:)") }
+  nonisolated public func toolbarItemHidden(_ hidden: Swift.Bool = true) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarItemHidden(_:)") }
 }
 @available(visionOS 1.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func listRowHoverEffect(_ effect: SwiftUI.HoverEffect?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.listRowHoverEffect(_:)") }
+  nonisolated public func listRowHoverEffect(_ effect: SwiftUI.HoverEffect?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.listRowHoverEffect(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func listRowHoverEffectDisabled(_ disabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.View.listRowHoverEffectDisabled(_:)") }
+  nonisolated public func listRowHoverEffectDisabled(_ disabled: Swift.Bool = true) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.listRowHoverEffectDisabled(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 public struct _CommandsInputs : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._CommandsInputs.init()") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, *)
@@ -3104,6 +3151,8 @@ public struct _CommandsInputs {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 public struct _CommandsOutputs : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._CommandsOutputs.init()") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, *)
@@ -3131,24 +3180,19 @@ extension SwiftUI.EnvironmentValues {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func findNavigator(isPresented: SwiftUI.Binding<Swift.Bool>) -> Swift.Never { _suiUnimplemented("SwiftUI.View.findNavigator(isPresented:)") }
+  nonisolated public func findNavigator(isPresented: SwiftUI.Binding<Swift.Bool>) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.findNavigator(isPresented:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func findDisabled(_ isDisabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.View.findDisabled(_:)") }
+  nonisolated public func findDisabled(_ isDisabled: Swift.Bool = true) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.findDisabled(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func replaceDisabled(_ isDisabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.View.replaceDisabled(_:)") }
+  nonisolated public func replaceDisabled(_ isDisabled: Swift.Bool = true) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.replaceDisabled(_:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  @_Concurrency.MainActor @preconcurrency public func _onEnvironmentChange<Value>(_ keyPath: Swift.KeyPath<SwiftUI.EnvironmentValues, Value>, perform action: @escaping (_ newValue: Value) -> Swift.Void) -> Swift.Never where Value : Swift.Equatable { _suiUnimplemented("SwiftUI.View._onEnvironmentChange(_:perform:)") }
+  @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+  @_Concurrency.MainActor @preconcurrency public func _onEnvironmentChange<Value>(_ keyPath: Swift.KeyPath<SwiftUI.EnvironmentValues, Value>, perform action: @escaping (_ newValue: Value) -> Swift.Void) -> some SwiftUI.View where Value : Swift.Equatable { _suiUnimplemented("SwiftUI.View._onEnvironmentChange(_:perform:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  @_Concurrency.MainActor @preconcurrency public func _onEnvironmentChange<Value>(_ keyPath: Swift.KeyPath<SwiftUI.EnvironmentValues, Value>, perform action: @escaping (_ oldValue: Value?, _ newValue: Value) -> Swift.Void) -> Swift.Never where Value : Swift.Equatable { _suiUnimplemented("SwiftUI.View._onEnvironmentChange(_:perform:)") }
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+  @_Concurrency.MainActor @preconcurrency public func _onEnvironmentChange<Value>(_ keyPath: Swift.KeyPath<SwiftUI.EnvironmentValues, Value>, perform action: @escaping (_ oldValue: Value?, _ newValue: Value) -> Swift.Void) -> some SwiftUI.View where Value : Swift.Equatable { _suiUnimplemented("SwiftUI.View._onEnvironmentChange(_:perform:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(macOS 15.0, *)
@@ -3160,6 +3204,8 @@ nonisolated public struct WindowVisibilityToggle<Label> : SwiftUI.View, ~Swift.S
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.WindowVisibilityToggle.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.WindowVisibilityToggle.init()") }
 }
 #else
 @available(macOS 15.0, *)
@@ -3182,6 +3228,8 @@ nonisolated public struct DefaultWindowVisibilityToggleLabel : SwiftUI.View, ~Sw
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.DefaultWindowVisibilityToggleLabel.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DefaultWindowVisibilityToggleLabel.init()") }
 }
 #else
 @available(macOS 15.0, *)
@@ -3206,10 +3254,9 @@ extension SwiftUI.Scene {
   nonisolated public func windowBackgroundDragBehavior(_ behavior: SwiftUI.WindowInteractionBehavior) -> some SwiftUI.Scene { _suiUnimplemented("SwiftUI.Scene.windowBackgroundDragBehavior(_:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.4, *)
+  @available(iOS 16.0, macOS 13.0, tvOS 16.4, *)
   @available(watchOS, unavailable)
-  nonisolated public func searchScopes<V, S>(_ scope: SwiftUI.Binding<V>, @SwiftUI.ContentBuilder scopes: () -> S) -> Swift.Never where V : Swift.Hashable, S : SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchScopes(_:scopes:)") }
+  nonisolated public func searchScopes<V, S>(_ scope: SwiftUI.Binding<V>, @SwiftUI.ContentBuilder scopes: () -> S) -> some SwiftUI.View where V : Swift.Hashable, S : SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchScopes(_:scopes:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
@@ -3225,6 +3272,8 @@ public struct SearchScopeActivation : ~Swift.Sendable {
   public static var onSearchPresentation: SwiftUI.SearchScopeActivation {
     get { _suiUnimplemented("SwiftUI.SearchScopeActivation.onSearchPresentation") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SearchScopeActivation.init()") }
 }
 #else
 @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
@@ -3243,18 +3292,16 @@ public struct SearchScopeActivation {
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.4, macOS 13.3, tvOS 16.4, *)
+  @available(iOS 16.4, macOS 13.3, tvOS 16.4, *)
   @available(watchOS, unavailable)
-  nonisolated public func searchScopes<V, S>(_ scope: SwiftUI.Binding<V>, activation: SwiftUI.SearchScopeActivation, @SwiftUI.ContentBuilder _ scopes: () -> S) -> Swift.Never where V : Swift.Hashable, S : SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchScopes(_:activation:_:)") }
+  nonisolated public func searchScopes<V, S>(_ scope: SwiftUI.Binding<V>, activation: SwiftUI.SearchScopeActivation, @SwiftUI.ContentBuilder _ scopes: () -> S) -> some SwiftUI.View where V : Swift.Hashable, S : SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchScopes(_:activation:_:)") }
 }
 @available(macOS 15.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func pointerVisibility(_ visibility: SwiftUI.Visibility) -> Swift.Never { _suiUnimplemented("SwiftUI.View.pointerVisibility(_:)") }
+  nonisolated public func pointerVisibility(_ visibility: SwiftUI.Visibility) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.pointerVisibility(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
@@ -3269,6 +3316,8 @@ nonisolated public struct TabView<SelectionValue, Content> : SwiftUI.View, ~Swif
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.TabView.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TabView.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
@@ -3315,7 +3364,9 @@ extension SwiftUI.Subview {
   public enum ContainerSizingOptions : Swift.Sendable {
     case uniform(axis: SwiftUI.Axis.Set)
     case variable
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.Subview.ContainerSizingOptions.init()") }
+}
 }
 @available(iOS 17.0, visionOS 1.0, *)
 @available(watchOS, unavailable)
@@ -3362,10 +3413,11 @@ extension SwiftUI.View {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.TableRowContent {
-  @available(iOS 17.0, macOS 14.0, *)
+    // port: opaque result type is not expressible in source; declared as Never (R3)
+@available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_Concurrency.MainActor @preconcurrency public func selectionDisabled(_ isDisabled: Swift.Bool = true) -> some SwiftUI.TableRowContent<Self.TableRowValue> { _suiUnimplemented("SwiftUI.TableRowContent.selectionDisabled(_:)") }
+  @_Concurrency.MainActor @preconcurrency public func selectionDisabled(_ isDisabled: Swift.Bool = true) -> Self { _suiUnimplemented("SwiftUI.TableRowContent.selectionDisabled(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -3389,28 +3441,24 @@ internal struct IsSelectionEnabledTraitKey : SwiftUI._ViewTraitKey {
   internal typealias Value = Swift.Bool
 }
 #endif
+// port: extensions cannot declare stored properties; emitted as read-only computed property (R2)
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-public var _defaultSwiftUIActivityEnvironmentLoggingEnabled: Swift.Bool
+public var _defaultSwiftUIActivityEnvironmentLoggingEnabled: Swift.Bool { get { _suiUnimplemented("SwiftUI._defaultSwiftUIActivityEnvironmentLoggingEnabled") } }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func userActivity(_ activityType: Swift.String, isActive: Swift.Bool = true, _ update: @escaping (FoundationShims.NSUserActivity) -> ()) -> Swift.Never { _suiUnimplemented("SwiftUI.View.userActivity(_:isActive:_:)") }
+  nonisolated public func userActivity(_ activityType: Swift.String, isActive: Swift.Bool = true, _ update: @escaping (FoundationShims.NSUserActivity) -> ()) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.userActivity(_:isActive:_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func userActivity<P>(_ activityType: Swift.String, element: P?, _ update: @escaping (P, FoundationShims.NSUserActivity) -> ()) -> Swift.Never { _suiUnimplemented("SwiftUI.View.userActivity(_:element:_:)") }
+  nonisolated public func userActivity<P>(_ activityType: Swift.String, element: P?, _ update: @escaping (P, FoundationShims.NSUserActivity) -> ()) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.userActivity(_:element:_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onContinueUserActivity(_ activityType: Swift.String, perform action: @escaping (FoundationShims.NSUserActivity) -> ()) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onContinueUserActivity(_:perform:)") }
+  nonisolated public func onContinueUserActivity(_ activityType: Swift.String, perform action: @escaping (FoundationShims.NSUserActivity) -> ()) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onContinueUserActivity(_:perform:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onOpenURL(perform action: @escaping (Foundation.URL) -> ()) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onOpenURL(perform:)") }
+  nonisolated public func onOpenURL(perform action: @escaping (Foundation.URL) -> ()) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onOpenURL(perform:)") }
 }
 @available(iOS 14.0, macOS 11.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func handlesExternalEvents(preferring: Swift.Set<Swift.String>, allowing: Swift.Set<Swift.String>) -> Swift.Never { _suiUnimplemented("SwiftUI.View.handlesExternalEvents(preferring:allowing:)") }
+  nonisolated public func handlesExternalEvents(preferring: Swift.Set<Swift.String>, allowing: Swift.Set<Swift.String>) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.handlesExternalEvents(preferring:allowing:)") }
 }
 @available(iOS 16.0, macOS 13.0, *)
 @available(tvOS, unavailable)
@@ -3426,8 +3474,7 @@ extension SwiftUI.DisclosureGroupStyle where Self == SwiftUI.AutomaticDisclosure
 @available(watchOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct AutomaticDisclosureGroupStyle : SwiftUI.DisclosureGroupStyle, ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public init() { _suiUnimplemented("SwiftUI.AutomaticDisclosureGroupStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AutomaticDisclosureGroupStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AutomaticDisclosureGroupStyle.makeBody(configuration:)") }
+  @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AutomaticDisclosureGroupStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.AutomaticDisclosureGroupStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, *)
@@ -3504,6 +3551,8 @@ internal class LimitedAvailabilityCommandContentStorageBase {
 public struct TouchBar<Content> : ~Swift.Sendable where Content : SwiftUI.View {
   public init(@SwiftUI.ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUI.TouchBar.init(content:)") }
   public init(id: Swift.String, @SwiftUI.ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUI.TouchBar.init(id:content:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TouchBar.init()") }
 }
 #else
 @available(macOS 10.15, *)
@@ -3523,23 +3572,23 @@ public enum TouchBarItemPresence : Swift.Sendable {
   case required(_: Swift.String)
   case `default`(_: Swift.String)
   case optional(_: Swift.String)
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TouchBarItemPresence.init()") }
 }
 @available(macOS 10.15, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-        // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
+    @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func touchBar<Content>(_ touchBar: SwiftUI.TouchBar<Content>) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.touchBar(_:)") }
+  nonisolated public func touchBar<Content>(_ touchBar: SwiftUI.TouchBar<Content>) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.touchBar(_:)") }
   
-        // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
+    @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func touchBar<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.touchBar(content:)") }
+  nonisolated public func touchBar<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.touchBar(content:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(macOS 10.15, *)
@@ -3553,6 +3602,8 @@ nonisolated public struct _TouchBarModifier<Content> : SwiftUI.ViewModifier, ~Sw
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._TouchBarModifier.init()") }
   // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
   public func body(content: SwiftUI::_ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._TouchBarModifier.body(content:)") }
 }
@@ -3618,17 +3669,17 @@ extension SwiftUI.ModifiedContent where Modifier == SwiftUI.AccessibilityAttachm
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityHint(_ hint: SwiftUI.Text, isEnabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.accessibilityHint(_:isEnabled:)") }
+nonisolated public func accessibilityHint(_ hint: SwiftUI.Text, isEnabled: Swift.Bool = true) -> Self { _suiUnimplemented("SwiftUI.TabContent.accessibilityHint(_:isEnabled:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityHint(_ hintKey: SwiftUI.LocalizedStringKey, isEnabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.accessibilityHint(_:isEnabled:)") }
+nonisolated public func accessibilityHint(_ hintKey: SwiftUI.LocalizedStringKey, isEnabled: Swift.Bool = true) -> Self { _suiUnimplemented("SwiftUI.TabContent.accessibilityHint(_:isEnabled:)") }
   
   @_disfavoredOverload @export(implementation) nonisolated public func accessibilityHint(_ hint: FoundationShims.LocalizedStringResource, isEnabled: Swift.Bool = true) -> some SwiftUI.TabContent<Self.TabValue> {
         accessibilityHint(Text(hint), isEnabled: isEnabled)
     }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func accessibilityHint<S>(_ hint: S, isEnabled: Swift.Bool = true) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.TabContent.accessibilityHint(_:isEnabled:)") }
+@_disfavoredOverload nonisolated public func accessibilityHint<S>(_ hint: S, isEnabled: Swift.Bool = true) -> Self where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.TabContent.accessibilityHint(_:isEnabled:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.View {
@@ -3711,16 +3762,22 @@ public struct MenuStyleConfiguration : ~Swift.Sendable {
     @available(macOS 11.0, iOS 14.0, tvOS 17.0, *)
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Label.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Label.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct Content : SwiftUI.View, ~Swift.Sendable {
     @available(macOS 11.0, iOS 14.0, tvOS 17.0, *)
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Content.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.Content.body") } }
 }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.MenuStyleConfiguration.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 17.0, *)
@@ -3741,8 +3798,7 @@ public struct MenuStyleConfiguration {
 @available(iOS 14.0, macOS 11.0, tvOS 17.0, *)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func menuStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.MenuStyle { _suiUnimplemented("SwiftUI.View.menuStyle(_:)") }
+  nonisolated public func menuStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.MenuStyle { _suiUnimplemented("SwiftUI.View.menuStyle(_:)") }
 }
 @available(iOS 16.0, macOS 13.0, *)
 @available(tvOS, unavailable)
@@ -3764,6 +3820,8 @@ public static var required: SwiftUI.OpenWindowAction.SharingBehavior { get { _su
   @_Concurrency.MainActor @preconcurrency public func callAsFunction<D>(id: Swift.String, value: D) where D : Swift.Decodable, D : Swift.Encodable, D : Swift.Hashable { _suiUnimplemented("SwiftUI.OpenWindowAction.callAsFunction(id:value:)") }
   @available(macOS 15.0, *)
     @_Concurrency.MainActor public func callAsFunction<D>(id: Swift.String, value: D, sharingBehavior: SwiftUI.OpenWindowAction.SharingBehavior) async throws where D : Swift.Decodable, D : Swift.Encodable, D : Swift.Hashable { _suiUnimplemented("SwiftUI.OpenWindowAction.callAsFunction(id:value:sharingBehavior:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.OpenWindowAction.init()") }
 }
 @available(iOS 16.0, macOS 13.0, *)
 @available(tvOS, unavailable)
@@ -3782,6 +3840,8 @@ nonisolated public struct ToolbarItemGroup<Content> : SwiftUI.ToolbarContent, ~S
   public static func _makeContent(content: SwiftUI._GraphValue<SwiftUI.ToolbarItemGroup<Content>>, inputs: SwiftUI._GraphInputs, resolved: inout SwiftUI._ToolbarItemList) { _suiUnimplemented("SwiftUI.ToolbarItemGroup._makeContent(content:inputs:resolved:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ToolbarItemGroup.init()") }
   // port: synthesized witness for ToolbarContent (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ToolbarItemGroup.body") } }
 }
@@ -3806,6 +3866,8 @@ nonisolated public struct LabeledToolbarItemGroupContent<Content, Label> : Swift
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.LabeledToolbarItemGroupContent.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.LabeledToolbarItemGroupContent.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -3829,6 +3891,8 @@ public struct WorldAlignmentBehavior : Swift.Equatable, Swift.Sendable {
     get { _suiUnimplemented("SwiftUI.WorldAlignmentBehavior.gravityAligned") }
   }
   public static func == (a: SwiftUI.WorldAlignmentBehavior, b: SwiftUI.WorldAlignmentBehavior) -> Swift.Bool { _suiUnimplemented("SwiftUI.WorldAlignmentBehavior.==(a:b:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.WorldAlignmentBehavior.init()") }
 }
 @available(visionOS 2.0, *)
 @available(tvOS, unavailable)
@@ -3865,13 +3929,8 @@ extension SwiftUI._FlipForRTLEffect {
 @available(visionOS, unavailable)
 extension SwiftUI.ForEach : SwiftUI.SceneAccessoryContent where Content : SwiftUI.SceneAccessoryContent {
   nonisolated public static func _makeSceneAccessory(content: SwiftUI._GraphValue<SwiftUI.ForEach<Data, ID, Content>>, inputs: SwiftUI._SceneAccessoryInputs) -> SwiftUI._SceneAccessoryOutputs { _suiUnimplemented("SwiftUI.ForEach._makeSceneAccessory(content:inputs:)") }
-  @available(iOS 27.0, *)
-  @available(macOS, unavailable, introduced: 10.15)
-  @available(tvOS, unavailable, introduced: 13.0)
-  @available(watchOS, unavailable, introduced: 6.0)
-  @available(macCatalyst, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
 }
 @available(macOS 13.0, *)
 @available(tvOS, unavailable)
@@ -3879,6 +3938,8 @@ extension SwiftUI.ForEach : SwiftUI.SceneAccessoryContent where Content : SwiftU
 @available(visionOS, unavailable)
 @_Concurrency.MainActor public struct OpenDocumentAction {
   @_Concurrency.MainActor public func callAsFunction(at url: Foundation.URL) async throws { _suiUnimplemented("SwiftUI.OpenDocumentAction.callAsFunction(at:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.OpenDocumentAction.init()") }
 }
 @available(macOS 13.0, *)
 @available(tvOS, unavailable)
@@ -3888,6 +3949,8 @@ extension SwiftUI.ForEach : SwiftUI.SceneAccessoryContent where Content : SwiftU
   @preconcurrency @_Concurrency.MainActor public func callAsFunction<D>(_ newDocument: @autoclosure @escaping @Sendable () -> D) where D : SwiftUI.FileDocument { _suiUnimplemented("SwiftUI.NewDocumentAction.callAsFunction(_:)") }
   @available(macOS, introduced: 13.0, deprecated: 100000.0, message: "Conform your document type to Document protocol instead.")
   @preconcurrency @_Concurrency.MainActor public func callAsFunction<D>(_ newDocument: @escaping @Sendable () -> D) where D : SwiftUI.ReferenceFileDocument { _suiUnimplemented("SwiftUI.NewDocumentAction.callAsFunction(_:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.NewDocumentAction.init()") }
 }
 @available(macOS 14.0, *)
 @available(tvOS, unavailable)
@@ -3956,6 +4019,8 @@ public struct TitleBarWindowStyle : SwiftUI.WindowStyle {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 public struct TextEditorStyleConfiguration : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TextEditorStyleConfiguration.init()") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, visionOS 1.0, *)
@@ -3968,8 +4033,7 @@ public struct TextEditorStyleConfiguration {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func textEditorStyle(_ style: some TextEditorStyle) -> Swift.Never { _suiUnimplemented("SwiftUI.View.textEditorStyle(_:)") }
+  nonisolated public func textEditorStyle(_ style: some TextEditorStyle) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.textEditorStyle(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, *)
@@ -3986,6 +4050,8 @@ nonisolated public struct TextEditor : SwiftUI.View, ~Swift.Sendable {
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.TextEditor.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TextEditor.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -4016,7 +4082,9 @@ public struct ToggleStyleConfiguration : ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public struct Label : SwiftUI.View, ~Swift.Sendable {
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.ToggleStyleConfiguration.Label.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ToggleStyleConfiguration.Label.body") } }
 }
   public let label: SwiftUI.ToggleStyleConfiguration.Label
@@ -4056,8 +4124,7 @@ public struct ToggleStyleConfiguration {
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func toggleStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.ToggleStyle { _suiUnimplemented("SwiftUI.View.toggleStyle(_:)") }
+  nonisolated public func toggleStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.ToggleStyle { _suiUnimplemented("SwiftUI.View.toggleStyle(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI._ScrollableContentProvider {
@@ -4068,6 +4135,8 @@ nonisolated public struct _ScrollViewRoot<P> : SwiftUI.View where P : SwiftUI._S
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI._ScrollViewRoot.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._ScrollViewRoot.init()") }
 }
 @available(macOS, introduced: 11.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.bordered).")
 @available(tvOS, unavailable)
@@ -4085,8 +4154,7 @@ extension SwiftUI.MenuStyle where Self == SwiftUI.BorderedButtonMenuStyle {
 @available(visionOS, unavailable)
 nonisolated public struct BorderedButtonMenuStyle : SwiftUI.MenuStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.BorderedButtonMenuStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.BorderedButtonMenuStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderedButtonMenuStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.BorderedButtonMenuStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.BorderedButtonMenuStyle.makeBody(configuration:)") }
 }
 #else
 @available(macOS, introduced: 11.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.bordered).")
@@ -4102,10 +4170,13 @@ extension SwiftUI.AttributedTextFormatting {
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public struct Transferable : CoreTransferable.Transferable, Swift.Sendable {
     public init(text: Foundation.AttributedString, in environment: SwiftUI.EnvironmentValues) { _suiUnimplemented("SwiftUI.AttributedTextFormatting.Transferable.init(text:in:)") }
-    public static var transferRepresentation: some CoreTransferable.TransferRepresentation {
+        // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
+public static var transferRepresentation: Swift.Never {
       get { _suiUnimplemented("SwiftUI.AttributedTextFormatting.Transferable.transferRepresentation") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.AttributedTextFormatting.Transferable.init()") }
+}
 }
 extension Foundation.AttributedString {
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -4127,7 +4198,9 @@ public struct DragSession : Swift.Identifiable, ~Swift.Sendable {
     public var hashValue: Swift.Int {
       get { _suiUnimplemented("SwiftUI.DragSession.Phase.hashValue") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.DragSession.Phase.init()") }
+}
   public struct ID : Swift.Sendable, Swift.Hashable {
         public func matches(_ dragSession: any UIKit.UIDragSession) -> Swift.Bool { _suiUnimplemented("SwiftUI.DragSession.ID.matches(_:)") }
     public static func == (a: SwiftUI.DragSession.ID, b: SwiftUI.DragSession.ID) -> Swift.Bool { _suiUnimplemented("SwiftUI.DragSession.ID.==(a:b:)") }
@@ -4135,7 +4208,9 @@ public struct DragSession : Swift.Identifiable, ~Swift.Sendable {
     public var hashValue: Swift.Int {
       get { _suiUnimplemented("SwiftUI.DragSession.ID.hashValue") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.DragSession.ID.init()") }
+}
   public var id: SwiftUI.DragSession.ID {
     get { _suiUnimplemented("SwiftUI.DragSession.id") }
   }
@@ -4207,6 +4282,8 @@ extension SwiftUI.DragSession.ID : Swift.CustomDebugStringConvertible {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 public struct OutlineGroup<Data, ID, Parent, Leaf, Subgroup> : ~Swift.Sendable where Data : Swift.RandomAccessCollection, ID : Swift.Hashable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.OutlineGroup.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -4260,6 +4337,8 @@ nonisolated public struct OutlineSubgroupChildren : SwiftUI.View, ~Swift.Sendabl
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.OutlineSubgroupChildren.init()") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.OutlineSubgroupChildren.body") } }
 }
@@ -4279,8 +4358,7 @@ nonisolated public struct OutlineSubgroupChildren : SwiftUI.View {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func windowResizeAnchor(_ anchor: SwiftUI.UnitPoint?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.windowResizeAnchor(_:)") }
+  nonisolated public func windowResizeAnchor(_ anchor: SwiftUI.UnitPoint?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.windowResizeAnchor(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 12.0, *)
@@ -4296,6 +4374,8 @@ nonisolated public struct TableColumn<RowValue, Sort, Content, Label> : SwiftUI.
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias TableColumnBody = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TableColumn.init()") }
   // port: synthesized witness for TableColumnContent (R7); Apple implements it with an internal member
   public nonisolated var tableColumnBody: Swift.Never { get { _suiUnimplemented("SwiftUI.TableColumn.tableColumnBody") } }
 }
@@ -4372,12 +4452,13 @@ extension SwiftUI.TableColumn {
 @available(watchOS, unavailable)
 @available(tvOS, unavailable)
 extension SwiftUI.CustomHoverEffect {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func hoverEffect(_ effect: some CustomHoverEffect, in group: SwiftUI.HoverEffectGroup? = nil, isEnabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.CustomHoverEffect.hoverEffect(_:in:isEnabled:)") }
+  public func hoverEffect(_ effect: some CustomHoverEffect, in group: SwiftUI.HoverEffectGroup? = nil, isEnabled: Swift.Bool = true) -> some SwiftUI.CustomHoverEffect { _suiUnimplemented("SwiftUI.CustomHoverEffect.hoverEffect(_:in:isEnabled:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct _SceneOutputs : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._SceneOutputs.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -4396,8 +4477,7 @@ extension SwiftUI.PrimitiveButtonStyle where Self == SwiftUI.GlassProminentButto
 @available(visionOS, unavailable)
 nonisolated public struct GlassProminentButtonStyle : SwiftUI.PrimitiveButtonStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.GlassProminentButtonStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.GlassProminentButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.GlassProminentButtonStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.GlassProminentButtonStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.GlassProminentButtonStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
@@ -4425,27 +4505,27 @@ extension SwiftUI.View {
     }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, renamed: "statusBarHidden(_:)")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, renamed: "statusBarHidden(_:)")
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Has no effect on visionOS")
-  nonisolated public func statusBar(hidden: Swift.Bool) -> Swift.Never { _suiUnimplemented("SwiftUI.View.statusBar(hidden:)") }
+  nonisolated public func statusBar(hidden: Swift.Bool) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.statusBar(hidden:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, renamed: "_statusBarHidden(_:)")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, renamed: "_statusBarHidden(_:)")
     @available(tvOS, unavailable)
   @available(watchOS, introduced: 6.0, deprecated: 100000.0, renamed: "_statusBarHidden(_:)")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Has no effect on visionOS")
-  nonisolated public func _statusBar(hidden: Swift.Bool) -> Swift.Never { _suiUnimplemented("SwiftUI.View._statusBar(hidden:)") }
+  nonisolated public func _statusBar(hidden: Swift.Bool) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View._statusBar(hidden:)") }
 }
 @available(iOS 17.0, macOS 14.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.TableRowContent {
-  @_Concurrency.MainActor @preconcurrency public func draggable<T>(_ payload: @autoclosure @escaping () -> T) -> some SwiftUI.TableRowContent<Self.TableRowValue> where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.TableRowContent.draggable(_:)") }
+    // port: opaque result type is not expressible in source; declared as Never (R3)
+@_Concurrency.MainActor @preconcurrency public func draggable<T>(_ payload: @autoclosure @escaping () -> T) -> Self where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.TableRowContent.draggable(_:)") }
   
-  @_Concurrency.MainActor @preconcurrency public func dropDestination<T>(for payloadType: T.Type = T.self, action: @escaping (_ items: [T]) -> Swift.Void) -> some SwiftUI.TableRowContent<Self.TableRowValue> where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.TableRowContent.dropDestination(for:action:)") }
+    // port: opaque result type is not expressible in source; declared as Never (R3)
+@_Concurrency.MainActor @preconcurrency public func dropDestination<T>(for payloadType: T.Type = T.self, action: @escaping (_ items: [T]) -> Swift.Void) -> Self where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.TableRowContent.dropDestination(for:action:)") }
 }
 @available(iOS 16.0, macOS 13.0, *)
 @available(tvOS, unavailable)
@@ -4455,9 +4535,8 @@ extension SwiftUI.DynamicTableRowContent {
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public func dropDestination<T>(for payloadType: T.Type = T.self, action: @escaping (Swift.Int, [T]) -> Swift.Void) -> SwiftUI.ModifiedContent<Self, SwiftUI.OnInsertTableRowModifier> where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.DynamicTableRowContent.dropDestination(for:action:)") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(*, unavailable, message: "Unavailable for DynamicTableRowContent, use `dropDestination(for:action:)` instead.")
-  public func dropDestination<T>(for payloadType: T.Type = T.self, action: @escaping (_ items: [T], _ location: CoreGraphics.CGPoint) -> Swift.Bool, isTargeted: (Swift.Bool) -> Swift.Void = { _ in }) -> Swift.Never where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.DynamicTableRowContent.dropDestination(for:action:isTargeted:)") }
+  @available(*, unavailable, message: "Unavailable for DynamicTableRowContent, use `dropDestination(for:action:)` instead.")
+  public func dropDestination<T>(for payloadType: T.Type = T.self, action: @escaping (_ items: [T], _ location: CoreGraphics.CGPoint) -> Swift.Bool, isTargeted: (Swift.Bool) -> Swift.Void = { _ in }) -> some SwiftUI.View where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.DynamicTableRowContent.dropDestination(for:action:isTargeted:)") }
 }
 @available(iOS 16.0, macOS 12.0, *)
 @available(tvOS, unavailable)
@@ -4479,6 +4558,8 @@ extension SwiftUI.DynamicTableRowContent {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get { _suiUnimplemented("SwiftUI.ItemProviderTableRowModifier.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ItemProviderTableRowModifier.init()") }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -4498,6 +4579,8 @@ extension SwiftUI.DynamicTableRowContent {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get { _suiUnimplemented("SwiftUI.OnInsertTableRowModifier.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.OnInsertTableRowModifier.init()") }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -4513,21 +4596,19 @@ extension SwiftUI.DynamicTableRowContent {
 @available(watchOS, unavailable)
 public protocol UIHostingSceneDelegate : UIKit.UISceneDelegate {
   associatedtype RootScene : SwiftUI.Scene
-  @SwiftUI.SceneBuilder static var rootScene: Self.RootScene { get }
+   static var rootScene: Self.RootScene { get }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 13.0, tvOS 13.0, *)
+  @available(iOS 13.0, tvOS 13.0, *)
     @available(watchOS, unavailable)
-  nonisolated public func keyboardType(_ type: UIKit.UIKeyboardType) -> Swift.Never { _suiUnimplemented("SwiftUI.View.keyboardType(_:)") }
+  nonisolated public func keyboardType(_ type: UIKit.UIKeyboardType) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.keyboardType(_:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, message: "use textInputAutocapitalization(_:)")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "use textInputAutocapitalization(_:)")
     @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "use textInputAutocapitalization(_:)")
   @available(watchOS, unavailable)
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "use textInputAutocapitalization(_:)")
-  nonisolated public func autocapitalization(_ style: UIKit.UITextAutocapitalizationType) -> Swift.Never { _suiUnimplemented("SwiftUI.View.autocapitalization(_:)") }
+  nonisolated public func autocapitalization(_ style: UIKit.UITextAutocapitalizationType) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.autocapitalization(_:)") }
 }
 @available(iOS 15.0, tvOS 15.0, *)
 @available(watchOS, unavailable)
@@ -4536,8 +4617,7 @@ extension SwiftUI.TextInputAutocapitalization {
 }
 @available(iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func textInputAutocapitalization(_ autocapitalization: SwiftUI.TextInputAutocapitalization?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.textInputAutocapitalization(_:)") }
+  nonisolated public func textInputAutocapitalization(_ autocapitalization: SwiftUI.TextInputAutocapitalization?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.textInputAutocapitalization(_:)") }
 }
 @available(iOS 15.0, tvOS 15.0, watchOS 8.0, *)
 public struct TextInputAutocapitalization : Swift.Sendable {
@@ -4553,6 +4633,8 @@ public struct TextInputAutocapitalization : Swift.Sendable {
   public static var characters: SwiftUI.TextInputAutocapitalization {
     get { _suiUnimplemented("SwiftUI.TextInputAutocapitalization.characters") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TextInputAutocapitalization.init()") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, *)
@@ -4665,8 +4747,7 @@ extension SwiftUI.Scene {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func presentedWindowStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.WindowStyle { _suiUnimplemented("SwiftUI.View.presentedWindowStyle(_:)") }
+  nonisolated public func presentedWindowStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.WindowStyle { _suiUnimplemented("SwiftUI.View.presentedWindowStyle(_:)") }
 }
 extension SwiftUI.FocusedValue {
   @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -4674,8 +4755,7 @@ extension SwiftUI.FocusedValue {
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func focusedValue<T>(_ object: T?) -> Swift.Never where T : AnyObject, T : Observation.Observable { _suiUnimplemented("SwiftUI.View.focusedValue(_:)") }
+  nonisolated public func focusedValue<T>(_ object: T?) -> some SwiftUI.View where T : AnyObject, T : Observation.Observable { _suiUnimplemented("SwiftUI.View.focusedValue(_:)") }
   
   @export(implementation) nonisolated public func focusedSceneValue<T>(_ object: T?) -> some SwiftUI.View where T : AnyObject, T : Observation.Observable {
         focusedSceneValue(T.focusedValueKey, object)
@@ -4689,7 +4769,7 @@ extension Observation.Observable {
   }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@propertyWrapper @frozen public struct GestureState<Value> : SwiftUI.DynamicProperty {
+ @frozen public struct GestureState<Value> : SwiftUI.DynamicProperty {
   fileprivate var state: SwiftUI.State<Value>
   fileprivate let reset: (SwiftUI.Binding<Value>) -> Swift.Void
   public init(wrappedValue: Value) { _suiUnimplemented("SwiftUI.GestureState.init(wrappedValue:)") }
@@ -4765,6 +4845,8 @@ nonisolated public struct Slider<Label, ValueLabel> : SwiftUI.View, ~Swift.Senda
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.Slider.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.Slider.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, *)
@@ -4856,41 +4938,35 @@ extension SwiftUI.Slider where ValueLabel == SwiftUI.EmptyView {
   @_disfavoredOverload nonisolated public init<V>(value: SwiftUI.Binding<V>, in bounds: Swift.ClosedRange<V>, step: V.Stride = 1, onEditingChanged: @escaping (Swift.Bool) -> Swift.Void = { _ in }, @SwiftUI.ContentBuilder label: () -> Label) where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUI.Slider.init(value:in:step:onEditingChanged:label:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(macOS 13.0, *)
+  @available(macOS 13.0, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func exportableToServices<T>(_ payload: @autoclosure @escaping () -> [T]) -> Swift.Never where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.exportableToServices(_:)") }
+  nonisolated public func exportableToServices<T>(_ payload: @autoclosure @escaping () -> [T]) -> some SwiftUI.View where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.exportableToServices(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(macOS 13.0, *)
+  @available(macOS 13.0, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func exportableToServices<T>(_ payload: @autoclosure @escaping () -> [T], onEdit: @escaping ([T]) -> Swift.Bool) -> Swift.Never where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.exportableToServices(_:onEdit:)") }
+  nonisolated public func exportableToServices<T>(_ payload: @autoclosure @escaping () -> [T], onEdit: @escaping ([T]) -> Swift.Bool) -> some SwiftUI.View where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.exportableToServices(_:onEdit:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(macOS 13.0, *)
+  @available(macOS 13.0, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func importableFromServices<T>(for payloadType: T.Type = T.self, action: @escaping ([T]) -> Swift.Bool) -> Swift.Never where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.importableFromServices(for:action:)") }
+  nonisolated public func importableFromServices<T>(for payloadType: T.Type = T.self, action: @escaping ([T]) -> Swift.Bool) -> some SwiftUI.View where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.importableFromServices(for:action:)") }
 }
 @available(macOS 12.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func exportsItemProviders(_ contentTypes: [UniformTypeIdentifiers.UTType], onExport: @escaping () -> [FoundationShims.NSItemProvider]) -> Swift.Never { _suiUnimplemented("SwiftUI.View.exportsItemProviders(_:onExport:)") }
+  nonisolated public func exportsItemProviders(_ contentTypes: [UniformTypeIdentifiers.UTType], onExport: @escaping () -> [FoundationShims.NSItemProvider]) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.exportsItemProviders(_:onExport:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func exportsItemProviders(_ contentTypes: [UniformTypeIdentifiers.UTType], onExport: @escaping () -> [FoundationShims.NSItemProvider], onEdit: @escaping ([FoundationShims.NSItemProvider]) -> Swift.Bool) -> Swift.Never { _suiUnimplemented("SwiftUI.View.exportsItemProviders(_:onExport:onEdit:)") }
+  nonisolated public func exportsItemProviders(_ contentTypes: [UniformTypeIdentifiers.UTType], onExport: @escaping () -> [FoundationShims.NSItemProvider], onEdit: @escaping ([FoundationShims.NSItemProvider]) -> Swift.Bool) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.exportsItemProviders(_:onExport:onEdit:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func importsItemProviders(_ contentTypes: [UniformTypeIdentifiers.UTType], onImport: @escaping ([FoundationShims.NSItemProvider]) -> Swift.Bool) -> Swift.Never { _suiUnimplemented("SwiftUI.View.importsItemProviders(_:onImport:)") }
+  nonisolated public func importsItemProviders(_ contentTypes: [UniformTypeIdentifiers.UTType], onImport: @escaping ([FoundationShims.NSItemProvider]) -> Swift.Bool) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.importsItemProviders(_:onImport:)") }
 }
 @available(iOS 17.0, macOS 14.0, *)
 @available(tvOS, unavailable)
@@ -4963,7 +5039,8 @@ nonisolated public struct ProgressView<Label, CurrentValueLabel> : SwiftUI.View 
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.ProgressView where CurrentValueLabel == SwiftUI.EmptyView {
-  nonisolated public init() where Label == SwiftUI.EmptyView { _suiUnimplemented("SwiftUI.ProgressView.init()") }
+    // port: duplicate parameterless initializer; the port declares one public `init()` in the type (R11)
+
   nonisolated public init(@SwiftUI.ContentBuilder label: () -> Label) { _suiUnimplemented("SwiftUI.ProgressView.init(label:)") }
   nonisolated public init(_ titleKey: SwiftUI.LocalizedStringKey) where Label == SwiftUI.Text { _suiUnimplemented("SwiftUI.ProgressView.init(_:)") }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -4999,6 +5076,8 @@ extension SwiftUI.ProgressView {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct LabeledContent<Label, Content> : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.LabeledContent.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -5039,15 +5118,15 @@ extension SwiftUI.LabeledContent where Label == SwiftUI.LabeledContentStyleConfi
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.Color : CoreTransferable.Transferable {
-  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  public static var transferRepresentation: some CoreTransferable.TransferRepresentation {
+    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
+@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  public static var transferRepresentation: Swift.Never {
     get { _suiUnimplemented("SwiftUI.Color.transferRepresentation") }
   }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onInteractiveResizeChange(_ action: @escaping (_ isResizing: Swift.Bool) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onInteractiveResizeChange(_:)") }
+  nonisolated public func onInteractiveResizeChange(_ action: @escaping (_ isResizing: Swift.Bool) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onInteractiveResizeChange(_:)") }
 }
 @available(iOS 14.0, tvOS 14.0, watchOS 8.0, *)
 public protocol IndexViewStyle {
@@ -5057,12 +5136,13 @@ public protocol IndexViewStyle {
 }
 @available(iOS 14.0, tvOS 14.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func indexViewStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.IndexViewStyle { _suiUnimplemented("SwiftUI.View.indexViewStyle(_:)") }
+  nonisolated public func indexViewStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.IndexViewStyle { _suiUnimplemented("SwiftUI.View.indexViewStyle(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, tvOS 14.0, watchOS 8.0, *)
 public struct _IndexViewStyleConfiguration : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._IndexViewStyleConfiguration.init()") }
 }
 #else
 @available(iOS 14.0, tvOS 14.0, watchOS 8.0, *)
@@ -5131,6 +5211,8 @@ nonisolated public struct EmptyTableRowContent<Value> : ~Swift.Sendable where Va
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public static func _containsOutlineSymbol(inputs: SwiftUI._TableRowInputs) -> Swift.Bool { _suiUnimplemented("SwiftUI.EmptyTableRowContent._containsOutlineSymbol(inputs:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.EmptyTableRowContent.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, *)
@@ -5160,6 +5242,8 @@ nonisolated public struct TableHeaderRowContent<Value, Content> : SwiftUI.TableR
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public static func _containsOutlineSymbol(inputs: SwiftUI._TableRowInputs) -> Swift.Bool { _suiUnimplemented("SwiftUI.TableHeaderRowContent._containsOutlineSymbol(inputs:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TableHeaderRowContent.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, *)
@@ -5177,9 +5261,8 @@ nonisolated public struct TableHeaderRowContent<Value, Content> : SwiftUI.TableR
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func menuOrder(_ order: SwiftUI.MenuOrder) -> Swift.Never { _suiUnimplemented("SwiftUI.View.menuOrder(_:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func menuOrder(_ order: SwiftUI.MenuOrder) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.menuOrder(_:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct MenuOrder : Swift.Equatable, Swift.Hashable, Swift.Sendable {
@@ -5227,6 +5310,8 @@ extension SwiftUI.ShapeStyle where Self == SwiftUI.PlaceholderTextShapeStyle {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct _TabViewValue<Style, SelectionValue> : ~Swift.Sendable where Style : SwiftUI.TabViewStyle, SelectionValue : Swift.Hashable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._TabViewValue.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -5235,21 +5320,17 @@ public struct _TabViewValue<Style, SelectionValue> where Style : SwiftUI.TabView
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func tabViewStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.TabViewStyle { _suiUnimplemented("SwiftUI.View.tabViewStyle(_:)") }
+  nonisolated public func tabViewStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.TabViewStyle { _suiUnimplemented("SwiftUI.View.tabViewStyle(_:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func contentMargins(_ edges: SwiftUI.Edge.Set = .all, _ insets: SwiftUI.EdgeInsets, for placement: SwiftUI.ContentMarginPlacement = .automatic) -> Swift.Never { _suiUnimplemented("SwiftUI.View.contentMargins(_:_:for:)") }
+  @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+  nonisolated public func contentMargins(_ edges: SwiftUI.Edge.Set = .all, _ insets: SwiftUI.EdgeInsets, for placement: SwiftUI.ContentMarginPlacement = .automatic) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.contentMargins(_:_:for:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func contentMargins(_ edges: SwiftUI.Edge.Set = .all, _ length: CoreGraphics.CGFloat?, for placement: SwiftUI.ContentMarginPlacement = .automatic) -> Swift.Never { _suiUnimplemented("SwiftUI.View.contentMargins(_:_:for:)") }
+  @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+  nonisolated public func contentMargins(_ edges: SwiftUI.Edge.Set = .all, _ length: CoreGraphics.CGFloat?, for placement: SwiftUI.ContentMarginPlacement = .automatic) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.contentMargins(_:_:for:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func contentMargins(_ length: CoreGraphics.CGFloat, for placement: SwiftUI.ContentMarginPlacement = .automatic) -> Swift.Never { _suiUnimplemented("SwiftUI.View.contentMargins(_:for:)") }
+  @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+  nonisolated public func contentMargins(_ length: CoreGraphics.CGFloat, for placement: SwiftUI.ContentMarginPlacement = .automatic) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.contentMargins(_:for:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 26.0, watchOS 10.0, visionOS 2.0, *)
@@ -5257,6 +5338,8 @@ extension SwiftUI.View {
 internal enum SectionIndexLabel : ~Swift.Sendable {
   case text(SwiftUI.Text)
   case image(SwiftUI.Image)
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SectionIndexLabel.init()") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 26.0, watchOS 10.0, visionOS 2.0, *)
@@ -5276,6 +5359,8 @@ internal struct SectionIndexLabelKey : SwiftUI._ViewTraitKey, ~Swift.Sendable {
   @available(macOS 15.0, iOS 18.0, tvOS 26.0, watchOS 10.0, visionOS 2.0, *)
   @usableFromInline
   internal typealias Value = SwiftUI.SectionIndexLabel?
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SectionIndexLabelKey.init()") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 26.0, watchOS 10.0, visionOS 2.0, *)
@@ -5312,6 +5397,8 @@ internal struct SectionIndexTitleKey : SwiftUI._ViewTraitKey, ~Swift.Sendable {
       @available(tvOS, unavailable)
   @available(watchOS, introduced: 10.0, deprecated: 100000.0, renamed: "SectionIndexLabelKey")
   internal typealias Value = SwiftUI.Text?
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SectionIndexTitleKey.init()") }
 }
 #else
 @available(tvOS, unavailable)
@@ -5328,10 +5415,9 @@ internal struct SectionIndexTitleKey : SwiftUI._ViewTraitKey {
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.0, visionOS 26.0, watchOS 26.0, *)
+  @available(iOS 26.0, visionOS 26.0, watchOS 26.0, *)
     @available(tvOS, unavailable)
-  nonisolated public func listSectionIndexVisibility(_ visibility: SwiftUI.Visibility) -> Swift.Never { _suiUnimplemented("SwiftUI.View.listSectionIndexVisibility(_:)") }
+  nonisolated public func listSectionIndexVisibility(_ visibility: SwiftUI.Visibility) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.listSectionIndexVisibility(_:)") }
 }
 @available(iOS 16.0, macOS 13.0, *)
 @available(tvOS, unavailable)
@@ -5351,7 +5437,9 @@ public struct DisclosureGroupStyleConfiguration : ~Swift.Sendable {
     @available(tvOS, unavailable)
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Label.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Label.body") } }
 }
   public let label: SwiftUI.DisclosureGroupStyleConfiguration.Label
@@ -5360,7 +5448,9 @@ public struct DisclosureGroupStyleConfiguration : ~Swift.Sendable {
     @available(tvOS, unavailable)
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Content.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.DisclosureGroupStyleConfiguration.Content.body") } }
 }
   public let content: SwiftUI.DisclosureGroupStyleConfiguration.Content
@@ -5416,10 +5506,9 @@ public struct DisclosureGroupStyleConfiguration {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, *)
+  @available(iOS 16.0, macOS 13.0, *)
   @available(watchOS, unavailable)
-  nonisolated public func disclosureGroupStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.DisclosureGroupStyle { _suiUnimplemented("SwiftUI.View.disclosureGroupStyle(_:)") }
+  nonisolated public func disclosureGroupStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.DisclosureGroupStyle { _suiUnimplemented("SwiftUI.View.disclosureGroupStyle(_:)") }
 }
 @available(iOS 17.0, visionOS 1.0, *)
 @available(tvOS, unavailable)
@@ -5431,9 +5520,8 @@ extension SwiftUI.EnvironmentValues {
   }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func defaultFocus<V>(_ binding: SwiftUI.FocusState<V>.Binding, _ value: V, priority: SwiftUI.DefaultFocusEvaluationPriority = .automatic) -> Swift.Never where V : Swift.Hashable { _suiUnimplemented("SwiftUI.View.defaultFocus(_:_:priority:)") }
+  @available(iOS 17.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func defaultFocus<V>(_ binding: SwiftUI.FocusState<V>.Binding, _ value: V, priority: SwiftUI.DefaultFocusEvaluationPriority = .automatic) -> some SwiftUI.View where V : Swift.Hashable { _suiUnimplemented("SwiftUI.View.defaultFocus(_:_:priority:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct DefaultFocusEvaluationPriority : Swift.Sendable {
@@ -5445,8 +5533,7 @@ public static var userInitiated: SwiftUI.DefaultFocusEvaluationPriority { get { 
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onContinuousHover(coordinateSpace: some CoordinateSpaceProtocol = .local, perform action: @escaping (SwiftUI.HoverPhase) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onContinuousHover(coordinateSpace:perform:)") }
+  nonisolated public func onContinuousHover(coordinateSpace: some CoordinateSpaceProtocol = .local, perform action: @escaping (SwiftUI.HoverPhase) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onContinuousHover(coordinateSpace:perform:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, *)
 @available(watchOS, unavailable)
@@ -5454,6 +5541,8 @@ nonisolated public func onContinuousHover(coordinateSpace: some CoordinateSpaceP
   case active(CoreGraphics.CGPoint)
   case ended
   public static func == (a: SwiftUI.HoverPhase, b: SwiftUI.HoverPhase) -> Swift.Bool { _suiUnimplemented("SwiftUI.HoverPhase.==(a:b:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.HoverPhase.init()") }
 }
 @available(macOS 15.0, *)
 @available(tvOS, unavailable)
@@ -5472,17 +5561,13 @@ public static var disabled: SwiftUI.WindowInteractionBehavior { get { _suiUnimpl
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func windowDismissBehavior(_ behavior: SwiftUI.WindowInteractionBehavior) -> Swift.Never { _suiUnimplemented("SwiftUI.View.windowDismissBehavior(_:)") }
+  nonisolated public func windowDismissBehavior(_ behavior: SwiftUI.WindowInteractionBehavior) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.windowDismissBehavior(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func windowMinimizeBehavior(_ behavior: SwiftUI.WindowInteractionBehavior) -> Swift.Never { _suiUnimplemented("SwiftUI.View.windowMinimizeBehavior(_:)") }
+  nonisolated public func windowMinimizeBehavior(_ behavior: SwiftUI.WindowInteractionBehavior) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.windowMinimizeBehavior(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func windowResizeBehavior(_ behavior: SwiftUI.WindowInteractionBehavior) -> Swift.Never { _suiUnimplemented("SwiftUI.View.windowResizeBehavior(_:)") }
+  nonisolated public func windowResizeBehavior(_ behavior: SwiftUI.WindowInteractionBehavior) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.windowResizeBehavior(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func windowFullScreenBehavior(_ behavior: SwiftUI.WindowInteractionBehavior) -> Swift.Never { _suiUnimplemented("SwiftUI.View.windowFullScreenBehavior(_:)") }
+  nonisolated public func windowFullScreenBehavior(_ behavior: SwiftUI.WindowInteractionBehavior) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.windowFullScreenBehavior(_:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.Scene {
@@ -5513,8 +5598,7 @@ extension SwiftUI.LabeledContentStyle where Self == SwiftUI.AutomaticLabeledCont
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 nonisolated public struct AutomaticLabeledContentStyle : SwiftUI.LabeledContentStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.AutomaticLabeledContentStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.AutomaticLabeledContentStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AutomaticLabeledContentStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.AutomaticLabeledContentStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.AutomaticLabeledContentStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -5536,7 +5620,9 @@ public struct SpatialEventCollection : Swift.Collection, ~Swift.Sendable {
       public var hashValue: Swift.Int {
         get { _suiUnimplemented("SwiftUI.SpatialEventCollection.Event.ID.hashValue") }
       }
-    }
+          // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+      public init() { _suiUnimplemented("SwiftUI.SpatialEventCollection.Event.ID.init()") }
+}
     public func hash(into hasher: inout Swift.Hasher) { _suiUnimplemented("SwiftUI.SpatialEventCollection.Event.hash(into:)") }
     public enum Kind : Swift.Hashable, ~Swift.Sendable {
       case touch
@@ -5562,7 +5648,9 @@ public struct SpatialEventCollection : Swift.Collection, ~Swift.Sendable {
       public var hashValue: Swift.Int {
         get { _suiUnimplemented("SwiftUI.SpatialEventCollection.Event.Kind.hashValue") }
       }
-    }
+          // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+      public init() { _suiUnimplemented("SwiftUI.SpatialEventCollection.Event.Kind.init()") }
+}
     public enum Phase : Swift.Hashable, ~Swift.Sendable {
       case active
       case ended
@@ -5572,7 +5660,9 @@ public struct SpatialEventCollection : Swift.Collection, ~Swift.Sendable {
       public var hashValue: Swift.Int {
         get { _suiUnimplemented("SwiftUI.SpatialEventCollection.Event.Phase.hashValue") }
       }
-    }
+          // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+      public init() { _suiUnimplemented("SwiftUI.SpatialEventCollection.Event.Phase.init()") }
+}
     public struct InputDevicePose : Swift.Hashable, ~Swift.Sendable {
       public var altitude: SwiftUI.Angle
       public var azimuth: SwiftUI.Angle
@@ -5608,12 +5698,16 @@ public struct SpatialEventCollection : Swift.Collection, ~Swift.Sendable {
     @available(macOS 15.0, iOS 18.0, watchOS 11.0, visionOS 1.0, *)
     @available(tvOS, unavailable)
     public typealias Element = SwiftUI.SpatialEventCollection.Event
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.SpatialEventCollection.Iterator.init()") }
+}
   public func makeIterator() -> SwiftUI.SpatialEventCollection.Iterator { _suiUnimplemented("SwiftUI.SpatialEventCollection.makeIterator()") }
   public struct Index : Swift.Comparable, ~Swift.Sendable {
     public static func < (lhs: SwiftUI.SpatialEventCollection.Index, rhs: SwiftUI.SpatialEventCollection.Index) -> Swift.Bool { _suiUnimplemented("SwiftUI.SpatialEventCollection.Index.<(lhs:rhs:)") }
     public static func == (a: SwiftUI.SpatialEventCollection.Index, b: SwiftUI.SpatialEventCollection.Index) -> Swift.Bool { _suiUnimplemented("SwiftUI.SpatialEventCollection.Index.==(a:b:)") }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.SpatialEventCollection.Index.init()") }
+}
   public var startIndex: SwiftUI.SpatialEventCollection.Index {
     get { _suiUnimplemented("SwiftUI.SpatialEventCollection.startIndex") }
   }
@@ -5633,6 +5727,8 @@ public struct SpatialEventCollection : Swift.Collection, ~Swift.Sendable {
   @available(macOS 15.0, iOS 18.0, watchOS 11.0, visionOS 1.0, *)
   @available(tvOS, unavailable)
   public typealias SubSequence = Swift.Slice<SwiftUI.SpatialEventCollection>
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SpatialEventCollection.init()") }
 }
 #else
 @available(visionOS 1.0, iOS 18.0, macOS 15.0, watchOS 11.0, *)
@@ -5797,8 +5893,7 @@ nonisolated public struct LinearProgressViewStyle : SwiftUI.ProgressViewStyle, ~
   @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "Use ``View/tint(_)`` instead.")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use ``View/tint(_)`` instead.")
   nonisolated public init(tint: SwiftUI.Color) { _suiUnimplemented("SwiftUI.LinearProgressViewStyle.init(tint:)") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.LinearProgressViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.LinearProgressViewStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.LinearProgressViewStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.LinearProgressViewStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -5871,7 +5966,9 @@ public struct ViewAlignedScrollTargetBehavior : SwiftUI.ScrollTargetBehavior, ~S
     public static var never: SwiftUI.ViewAlignedScrollTargetBehavior.LimitBehavior {
       get { _suiUnimplemented("SwiftUI.ViewAlignedScrollTargetBehavior.LimitBehavior.never") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.ViewAlignedScrollTargetBehavior.LimitBehavior.init()") }
+}
   public init(limitBehavior: SwiftUI.ViewAlignedScrollTargetBehavior.LimitBehavior = .automatic) { _suiUnimplemented("SwiftUI.ViewAlignedScrollTargetBehavior.init(limitBehavior:)") }
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public init(limitBehavior: SwiftUI.ViewAlignedScrollTargetBehavior.LimitBehavior, anchor: SwiftUI.UnitPoint?) { _suiUnimplemented("SwiftUI.ViewAlignedScrollTargetBehavior.init(limitBehavior:anchor:)") }
@@ -5879,6 +5976,8 @@ public struct ViewAlignedScrollTargetBehavior : SwiftUI.ScrollTargetBehavior, ~S
   public init(anchor: SwiftUI.UnitPoint?) { _suiUnimplemented("SwiftUI.ViewAlignedScrollTargetBehavior.init(anchor:)") }
   public func updateTarget(_ target: inout SwiftUI.ScrollTarget, context: SwiftUI.ViewAlignedScrollTargetBehavior.TargetContext) { _suiUnimplemented("SwiftUI.ViewAlignedScrollTargetBehavior.updateTarget(_:context:)") }
   public static func _makeInputs(_ behavior: SwiftUI._GraphValue<SwiftUI.ViewAlignedScrollTargetBehavior>, inputs: inout SwiftUI._ViewInputs) { _suiUnimplemented("SwiftUI.ViewAlignedScrollTargetBehavior._makeInputs(_:inputs:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ViewAlignedScrollTargetBehavior.init()") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -5997,19 +6096,18 @@ extension SwiftUI.ImmersiveSpace {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func presentationPreventsAppTermination(_ prevents: Swift.Bool?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.presentationPreventsAppTermination(_:)") }
+  nonisolated public func presentationPreventsAppTermination(_ prevents: Swift.Bool?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.presentationPreventsAppTermination(_:)") }
 }
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func customizationBehavior(_ behavior: SwiftUI.TabCustomizationBehavior, for placements: SwiftUI.AdaptableTabBarPlacement...) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.customizationBehavior(_:for:)") }
+  nonisolated public func customizationBehavior(_ behavior: SwiftUI.TabCustomizationBehavior, for placements: SwiftUI.AdaptableTabBarPlacement...) -> Self { _suiUnimplemented("SwiftUI.TabContent.customizationBehavior(_:for:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  nonisolated public func customizationID(_ id: Swift.String) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.customizationID(_:)") }
+  nonisolated public func customizationID(_ id: Swift.String) -> Self { _suiUnimplemented("SwiftUI.TabContent.customizationID(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -6028,6 +6126,8 @@ public struct TabCustomizationBehavior : Swift.Equatable, ~Swift.Sendable {
     get { _suiUnimplemented("SwiftUI.TabCustomizationBehavior.disabled") }
   }
   public static func == (a: SwiftUI.TabCustomizationBehavior, b: SwiftUI.TabCustomizationBehavior) -> Swift.Bool { _suiUnimplemented("SwiftUI.TabCustomizationBehavior.==(a:b:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TabCustomizationBehavior.init()") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -6054,7 +6154,7 @@ public struct TabCustomizationBehavior : Swift.Equatable {
 @preconcurrency @_Concurrency.MainActor public protocol ControlWidget {
   @_Concurrency.MainActor @preconcurrency init()
   associatedtype Body : SwiftUI.ControlWidgetConfiguration
-  @SwiftUI.ControlWidgetConfigurationBuilder @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
+   @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
 }
 @available(visionOS 2.0, *)
 @available(watchOS, unavailable)
@@ -6064,13 +6164,11 @@ extension SwiftUI.HoverEffectContent {
 public func opacity(_ opacity: Swift.Double) -> Swift.Never { _suiUnimplemented("SwiftUI.HoverEffectContent.opacity(_:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  nonisolated public func onScrollTargetVisibilityChange<ID>(idType: ID.Type, threshold: Swift.Double = 0.5, _ action: @escaping ([ID]) -> Swift.Void) -> Swift.Never where ID : Swift.Hashable { _suiUnimplemented("SwiftUI.View.onScrollTargetVisibilityChange(idType:threshold:_:)") }
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+  nonisolated public func onScrollTargetVisibilityChange<ID>(idType: ID.Type, threshold: Swift.Double = 0.5, _ action: @escaping ([ID]) -> Swift.Void) -> some SwiftUI.View where ID : Swift.Hashable { _suiUnimplemented("SwiftUI.View.onScrollTargetVisibilityChange(idType:threshold:_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  nonisolated public func onScrollVisibilityChange(threshold: Swift.Double = 0.5, _ action: @escaping (Swift.Bool) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onScrollVisibilityChange(threshold:_:)") }
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+  nonisolated public func onScrollVisibilityChange(threshold: Swift.Double = 0.5, _ action: @escaping (Swift.Bool) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onScrollVisibilityChange(threshold:_:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.ProgressViewStyle where Self == SwiftUI.CircularProgressViewStyle {
@@ -6090,8 +6188,7 @@ nonisolated public struct CircularProgressViewStyle : SwiftUI.ProgressViewStyle,
   @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "Use ``View/tint(_)`` instead.")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use ``View/tint(_)`` instead.")
   nonisolated public init(tint: SwiftUI.Color) { _suiUnimplemented("SwiftUI.CircularProgressViewStyle.init(tint:)") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.CircularProgressViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.CircularProgressViewStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.CircularProgressViewStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.CircularProgressViewStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -6115,6 +6212,8 @@ nonisolated public struct Toggle<Label> : SwiftUI.View, ~Swift.Sendable where La
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.Toggle.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.Toggle.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6247,13 +6346,11 @@ extension SwiftUI.TableColumn where Sort == Foundation.KeyPathComparator<RowValu
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
-  @_disfavoredOverload nonisolated internal func task(priority: _Concurrency.TaskPriority = .userInitiated, @_inheritActorContext _ action: @escaping @Sendable () async -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.task(priority:_:)") }
+  @usableFromInline
+  @_disfavoredOverload nonisolated internal func task(priority: _Concurrency.TaskPriority = .userInitiated, @_inheritActorContext _ action: @escaping @Sendable () async -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.task(priority:_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
-  @_disfavoredOverload nonisolated internal func task<T>(id value: T, priority: _Concurrency.TaskPriority = .userInitiated, @_inheritActorContext _ action: @escaping @Sendable () async -> Swift.Void) -> Swift.Never where T : Swift.Equatable { _suiUnimplemented("SwiftUI.View.task(id:priority:_:)") }
+  @usableFromInline
+  @_disfavoredOverload nonisolated internal func task<T>(id value: T, priority: _Concurrency.TaskPriority = .userInitiated, @_inheritActorContext _ action: @escaping @Sendable () async -> Swift.Void) -> some SwiftUI.View where T : Swift.Equatable { _suiUnimplemented("SwiftUI.View.task(id:priority:_:)") }
   
   @export(implementation) nonisolated public func task(name: Swift.String? = nil, priority: _Concurrency.TaskPriority = .userInitiated, file: Swift.String = #fileID, line: Swift.Int = #line, @_inheritActorContext _ action: sending @escaping @isolated(any) () async -> Swift.Void) -> some SwiftUI.View {
         if #available(
@@ -6268,9 +6365,8 @@ extension SwiftUI.View {
         return modifier(_TaskModifier(priority: priority, action: action))
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.4, macOS 26.4, tvOS 26.4, watchOS 26.4, visionOS 26.4, *)
-  nonisolated public func task(name: Swift.String? = nil, executorPreference taskExecutor: any _Concurrency.TaskExecutor, priority: _Concurrency.TaskPriority = .userInitiated, file: Swift.String = #fileID, line: Swift.Int = #line, @_inheritActorContext action: sending @escaping @isolated(any) () async -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.task(name:executorPreference:priority:file:line:action:)") }
+  @available(iOS 26.4, macOS 26.4, tvOS 26.4, watchOS 26.4, visionOS 26.4, *)
+  nonisolated public func task(name: Swift.String? = nil, executorPreference taskExecutor: any _Concurrency.TaskExecutor, priority: _Concurrency.TaskPriority = .userInitiated, file: Swift.String = #fileID, line: Swift.Int = #line, @_inheritActorContext action: sending @escaping @isolated(any) () async -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.task(name:executorPreference:priority:file:line:action:)") }
   
   @export(implementation) nonisolated public func task<T>(id: T, name: Swift.String? = nil, priority: _Concurrency.TaskPriority = .userInitiated, file: Swift.String = #fileID, line: Swift.Int = #line, @_inheritActorContext _ action: sending @escaping @isolated(any) () async -> Swift.Void) -> some SwiftUI.View where T : Swift.Equatable {
         if #available(
@@ -6287,9 +6383,8 @@ extension SwiftUI.View {
             value: id, priority: priority, action: action))
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.4, macOS 26.4, tvOS 26.4, watchOS 26.4, visionOS 26.4, *)
-  nonisolated public func task<T>(id: T, name: Swift.String? = nil, executorPreference taskExecutor: any _Concurrency.TaskExecutor, priority: _Concurrency.TaskPriority = .userInitiated, file: Swift.String = #fileID, line: Swift.Int = #line, @_inheritActorContext _ action: sending @escaping @isolated(any) () async -> Swift.Void) -> Swift.Never where T : Swift.Equatable { _suiUnimplemented("SwiftUI.View.task(id:name:executorPreference:priority:file:line:_:)") }
+  @available(iOS 26.4, macOS 26.4, tvOS 26.4, watchOS 26.4, visionOS 26.4, *)
+  nonisolated public func task<T>(id: T, name: Swift.String? = nil, executorPreference taskExecutor: any _Concurrency.TaskExecutor, priority: _Concurrency.TaskPriority = .userInitiated, file: Swift.String = #fileID, line: Swift.Int = #line, @_inheritActorContext _ action: sending @escaping @isolated(any) () async -> Swift.Void) -> some SwiftUI.View where T : Swift.Equatable { _suiUnimplemented("SwiftUI.View.task(id:name:executorPreference:priority:file:line:_:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @frozen nonisolated public struct _TaskModifier : SwiftUI.ViewModifier {
@@ -6354,6 +6449,8 @@ nonisolated public struct _TaskModifier2 : SwiftUI.ViewModifier, ~Swift.Sendable
   public static func _viewListCount(inputs: SwiftUI._ViewListCountInputs, body: (SwiftUI._ViewListCountInputs) -> Swift.Int?) -> Swift.Int? { _suiUnimplemented("SwiftUI._TaskModifier2._viewListCount(inputs:body:)") }
   @available(macOS 26.4, iOS 26.4, tvOS 26.4, watchOS 26.4, visionOS 26.4, *)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._TaskModifier2.init()") }
   // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
   public func body(content: SwiftUI::_ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._TaskModifier2.body(content:)") }
 }
@@ -6379,6 +6476,8 @@ nonisolated public struct _TaskValueModifier2<ID> : SwiftUI.ViewModifier, ~Swift
   public static func _viewListCount(inputs: SwiftUI._ViewListCountInputs, body: (SwiftUI._ViewListCountInputs) -> Swift.Int?) -> Swift.Int? { _suiUnimplemented("SwiftUI._TaskValueModifier2._viewListCount(inputs:body:)") }
   @available(macOS 26.4, iOS 26.4, tvOS 26.4, watchOS 26.4, visionOS 26.4, *)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._TaskValueModifier2.init()") }
   // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
   public func body(content: SwiftUI::_ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._TaskValueModifier2.body(content:)") }
 }
@@ -6490,6 +6589,8 @@ nonisolated public struct TextField<Label> : SwiftUI.View, ~Swift.Sendable where
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.TextField.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TextField.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -6654,6 +6755,8 @@ internal struct IsLinkedGroupTraitKey : SwiftUI._ViewTraitKey, ~Swift.Sendable {
       @available(tvOS, unavailable)
   @available(visionOS, unavailable)
   internal typealias Value = Swift.Bool
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.IsLinkedGroupTraitKey.init()") }
 }
 #else
 @available(watchOS 6.0, *)
@@ -6713,8 +6816,7 @@ public static var disabled: SwiftUI.SpringLoadingBehavior { get { _suiUnimplemen
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func springLoadingBehavior(_ behavior: SwiftUI.SpringLoadingBehavior) -> Swift.Never { _suiUnimplemented("SwiftUI.View.springLoadingBehavior(_:)") }
+  nonisolated public func springLoadingBehavior(_ behavior: SwiftUI.SpringLoadingBehavior) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.springLoadingBehavior(_:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension SwiftUI.EnvironmentValues {
@@ -6809,6 +6911,8 @@ public enum TabViewBottomAccessoryPlacement : Swift.Hashable, Swift.Sendable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.TabViewBottomAccessoryPlacement.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TabViewBottomAccessoryPlacement.init()") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI._ViewTest {
@@ -6827,6 +6931,8 @@ public enum ScenePhase : Swift.Comparable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.ScenePhase.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ScenePhase.init()") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.ScenePhase : Swift.Sendable {
@@ -6873,11 +6979,10 @@ public struct RadioGroupPickerStyle : SwiftUI.PickerStyle {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-        // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
+    @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func horizontalRadioGroupLayout() -> Swift.Never { _suiUnimplemented("SwiftUI.View.horizontalRadioGroupLayout()") }
+  nonisolated public func horizontalRadioGroupLayout() -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.horizontalRadioGroupLayout()") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.ImageRenderer {
@@ -6982,8 +7087,7 @@ extension SwiftUI.PrimitiveButtonStyle where Self == SwiftUI.LinkButtonStyle {
 @available(visionOS, unavailable)
 nonisolated public struct LinkButtonStyle : SwiftUI.PrimitiveButtonStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.LinkButtonStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.LinkButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.LinkButtonStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.LinkButtonStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.LinkButtonStyle.makeBody(configuration:)") }
 }
 #else
 @available(macOS 10.15, *)
@@ -6997,11 +7101,9 @@ nonisolated public struct LinkButtonStyle : SwiftUI.PrimitiveButtonStyle {
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func searchable(text: SwiftUI.Binding<Swift.String>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil) -> Swift.Never { _suiUnimplemented("SwiftUI.View.searchable(text:placement:prompt:)") }
+  nonisolated public func searchable(text: SwiftUI.Binding<Swift.String>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchable(text:placement:prompt:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func searchable(text: SwiftUI.Binding<Swift.String>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey) -> Swift.Never { _suiUnimplemented("SwiftUI.View.searchable(text:placement:prompt:)") }
+  nonisolated public func searchable(text: SwiftUI.Binding<Swift.String>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchable(text:placement:prompt:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func searchable(text: SwiftUI.Binding<Swift.String>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: FoundationShims.LocalizedStringResource) -> some SwiftUI.View {
@@ -7010,21 +7112,18 @@ nonisolated public func searchable(text: SwiftUI.Binding<Swift.String>, placemen
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func searchable<S>(text: SwiftUI.Binding<Swift.String>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.searchable(text:placement:prompt:)") }
+  @_disfavoredOverload nonisolated public func searchable<S>(text: SwiftUI.Binding<Swift.String>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S) -> some SwiftUI.View where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.searchable(text:placement:prompt:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, *)
+  @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchable(text: SwiftUI.Binding<Swift.String>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil) -> Swift.Never { _suiUnimplemented("SwiftUI.View.searchable(text:isPresented:placement:prompt:)") }
+  nonisolated public func searchable(text: SwiftUI.Binding<Swift.String>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchable(text:isPresented:placement:prompt:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, *)
+  @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchable(text: SwiftUI.Binding<Swift.String>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey) -> Swift.Never { _suiUnimplemented("SwiftUI.View.searchable(text:isPresented:placement:prompt:)") }
+  nonisolated public func searchable(text: SwiftUI.Binding<Swift.String>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchable(text:isPresented:placement:prompt:)") }
   
   @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
@@ -7038,11 +7137,10 @@ extension SwiftUI.View {
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, *)
+  @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_disfavoredOverload nonisolated public func searchable<S>(text: SwiftUI.Binding<Swift.String>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.searchable(text:isPresented:placement:prompt:)") }
+  @_disfavoredOverload nonisolated public func searchable<S>(text: SwiftUI.Binding<Swift.String>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S) -> some SwiftUI.View where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.searchable(text:isPresented:placement:prompt:)") }
 }
 @available(iOS 26.0, macOS 26.0, *)
 @available(tvOS, unavailable)
@@ -7112,6 +7210,8 @@ extension SwiftUI.EditActions where Data : Swift.MutableCollection, Data : Swift
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct EditableCollectionContent<Content, Data> : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.EditableCollectionContent.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -7128,7 +7228,9 @@ extension SwiftUI.EditableCollectionContent : SwiftUI.View where Content : Swift
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct IndexedIdentifierCollection<Base, ID> : Swift.Collection, ~Swift.Sendable where Base : Swift.Collection, ID : Swift.Hashable {
   public struct Element : ~Swift.Sendable {
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.IndexedIdentifierCollection.Element.init()") }
+}
   public typealias Index = Base.Index
   public var startIndex: SwiftUI.IndexedIdentifierCollection<Base, ID>.Index {
     get { _suiUnimplemented("SwiftUI.IndexedIdentifierCollection.startIndex") }
@@ -7146,6 +7248,8 @@ public struct IndexedIdentifierCollection<Base, ID> : Swift.Collection, ~Swift.S
   public typealias Iterator = Swift.IndexingIterator<SwiftUI.IndexedIdentifierCollection<Base, ID>>
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   public typealias SubSequence = Swift.Slice<SwiftUI.IndexedIdentifierCollection<Base, ID>>
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.IndexedIdentifierCollection.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -7219,17 +7323,15 @@ public struct FileDocumentReadConfiguration {
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
+  @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchFocused(_ binding: SwiftUI.FocusState<Swift.Bool>.Binding) -> Swift.Never { _suiUnimplemented("SwiftUI.View.searchFocused(_:)") }
+  nonisolated public func searchFocused(_ binding: SwiftUI.FocusState<Swift.Bool>.Binding) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchFocused(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
+  @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchFocused<V>(_ binding: SwiftUI.FocusState<V>.Binding, equals value: V) -> Swift.Never where V : Swift.Hashable { _suiUnimplemented("SwiftUI.View.searchFocused(_:equals:)") }
+  nonisolated public func searchFocused<V>(_ binding: SwiftUI.FocusState<V>.Binding, equals value: V) -> some SwiftUI.View where V : Swift.Hashable { _suiUnimplemented("SwiftUI.View.searchFocused(_:equals:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @preconcurrency @_Concurrency.MainActor public protocol NavigationSplitViewStyle {
@@ -7240,6 +7342,8 @@ extension SwiftUI.View {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct NavigationSplitViewStyleConfiguration : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.NavigationSplitViewStyleConfiguration.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -7247,14 +7351,12 @@ public struct NavigationSplitViewStyleConfiguration {
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func navigationSplitViewStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.NavigationSplitViewStyle { _suiUnimplemented("SwiftUI.View.navigationSplitViewStyle(_:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func navigationSplitViewStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.NavigationSplitViewStyle { _suiUnimplemented("SwiftUI.View.navigationSplitViewStyle(_:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(macOS 15.4, iOS 18.4, tvOS 18.4, watchOS 11.4, visionOS 2.4, *)
-  nonisolated public func writingToolsAffordanceVisibility(_ visibility: SwiftUI.Visibility) -> Swift.Never { _suiUnimplemented("SwiftUI.View.writingToolsAffordanceVisibility(_:)") }
+  @available(macOS 15.4, iOS 18.4, tvOS 18.4, watchOS 11.4, visionOS 2.4, *)
+  nonisolated public func writingToolsAffordanceVisibility(_ visibility: SwiftUI.Visibility) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.writingToolsAffordanceVisibility(_:)") }
 }
 @available(macOS 11.0, visionOS 1.0, *)
 @available(tvOS, unavailable)
@@ -7285,7 +7387,7 @@ public struct DefaultWindowStyle : SwiftUI.WindowStyle {
 @available(watchOS, unavailable)
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func sectionActions<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.TabContent.sectionActions(content:)") }
+nonisolated public func sectionActions<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> Self where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.TabContent.sectionActions(content:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension SwiftUI.ShapeStyle where Self == SwiftUI.LinkShapeStyle {
@@ -7324,7 +7426,9 @@ public struct NavigationPath : ~Swift.Sendable {
   public struct CodableRepresentation : Swift.Codable, ~Swift.Sendable {
     public init(from decoder: any Swift.Decoder) throws { _suiUnimplemented("SwiftUI.NavigationPath.CodableRepresentation.init(from:)") }
     public func encode(to encoder: any Swift.Encoder) throws { _suiUnimplemented("SwiftUI.NavigationPath.CodableRepresentation.encode(to:)") }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.NavigationPath.CodableRepresentation.init()") }
+}
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -7361,11 +7465,9 @@ extension SwiftUI.NavigationPath.CodableRepresentation : Swift.Equatable {
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func scrollTransition(_ configuration: SwiftUI.ScrollTransitionConfiguration = .interactive, axis: SwiftUI.Axis? = nil, transition: @escaping @Sendable (SwiftUI.EmptyVisualEffect, SwiftUI.ScrollTransitionPhase) -> some VisualEffect) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollTransition(_:axis:transition:)") }
+  nonisolated public func scrollTransition(_ configuration: SwiftUI.ScrollTransitionConfiguration = .interactive, axis: SwiftUI.Axis? = nil, transition: @escaping @Sendable (SwiftUI.EmptyVisualEffect, SwiftUI.ScrollTransitionPhase) -> some VisualEffect) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollTransition(_:axis:transition:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func scrollTransition(topLeading: SwiftUI.ScrollTransitionConfiguration, bottomTrailing: SwiftUI.ScrollTransitionConfiguration, axis: SwiftUI.Axis? = nil, transition: @escaping @Sendable (SwiftUI.EmptyVisualEffect, SwiftUI.ScrollTransitionPhase) -> some VisualEffect) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollTransition(topLeading:bottomTrailing:axis:transition:)") }
+  nonisolated public func scrollTransition(topLeading: SwiftUI.ScrollTransitionConfiguration, bottomTrailing: SwiftUI.ScrollTransitionConfiguration, axis: SwiftUI.Axis? = nil, transition: @escaping @Sendable (SwiftUI.EmptyVisualEffect, SwiftUI.ScrollTransitionPhase) -> some VisualEffect) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollTransition(topLeading:bottomTrailing:axis:transition:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -7439,6 +7541,8 @@ public static var hidden: SwiftUI.ScrollTransitionConfiguration.Threshold { get 
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.ScrollTransitionPhase.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ScrollTransitionPhase.init()") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -7698,26 +7802,23 @@ extension SwiftUI.ToolbarItemPlacement {
   public init<ID>(id: ID) where ID : Swift.Hashable { _suiUnimplemented("SwiftUI.ToolbarItemPlacement.init(id:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use toolbar(_:) with navigationBarLeading or navigationBarTrailing placement")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use toolbar(_:) with navigationBarLeading or navigationBarTrailing placement")
   @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "Use toolbar(_:) with navigationBarLeading or navigationBarTrailing placement")
     @available(watchOS, unavailable)
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use toolbar(_:) with navigationBarLeading or navigationBarTrailing placement")
-  nonisolated public func navigationBarItems<L, T>(leading: L, trailing: T) -> Swift.Never where L : SwiftUI.View, T : SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationBarItems(leading:trailing:)") }
+  nonisolated public func navigationBarItems<L, T>(leading: L, trailing: T) -> some SwiftUI.View where L : SwiftUI.View, T : SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationBarItems(leading:trailing:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use toolbar(_:) with navigationBarLeading or navigationBarTrailing placement")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use toolbar(_:) with navigationBarLeading or navigationBarTrailing placement")
   @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "Use toolbar(_:) with navigationBarLeading or navigationBarTrailing placement")
     @available(watchOS, unavailable)
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use toolbar(_:) with navigationBarLeading or navigationBarTrailing placement")
-  nonisolated public func navigationBarItems<L>(leading: L) -> Swift.Never where L : SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationBarItems(leading:)") }
+  nonisolated public func navigationBarItems<L>(leading: L) -> some SwiftUI.View where L : SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationBarItems(leading:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use toolbar(_:) with navigationBarLeading or navigationBarTrailing placement")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use toolbar(_:) with navigationBarLeading or navigationBarTrailing placement")
   @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "Use toolbar(_:) with navigationBarLeading or navigationBarTrailing placement")
     @available(watchOS, unavailable)
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use toolbar(_:) with navigationBarLeading or navigationBarTrailing placement")
-  nonisolated public func navigationBarItems<T>(trailing: T) -> Swift.Never where T : SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationBarItems(trailing:)") }
+  nonisolated public func navigationBarItems<T>(trailing: T) -> some SwiftUI.View where T : SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationBarItems(trailing:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(macOS 13.0, *)
@@ -7762,6 +7863,8 @@ nonisolated public struct DefaultToolbarItem : SwiftUI.ToolbarContent, ~Swift.Se
   nonisolated public var body: some SwiftUI.ToolbarContent {
     get { _suiUnimplemented("SwiftUI.DefaultToolbarItem.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DefaultToolbarItem.init()") }
 }
 #else
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -7813,6 +7916,8 @@ nonisolated public struct TableRow<Value> : SwiftUI.TableRowContent, ~Swift.Send
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public static func _containsOutlineSymbol(inputs: SwiftUI._TableRowInputs) -> Swift.Bool { _suiUnimplemented("SwiftUI.TableRow._containsOutlineSymbol(inputs:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TableRow.init()") }
   // port: synthesized witness for TableRowContent (R7); Apple implements it with an internal member
   public var tableRowBody: Swift.Never { get { _suiUnimplemented("SwiftUI.TableRow.tableRowBody") } }
 }
@@ -7842,6 +7947,8 @@ internal struct TypeSelectEquivalentKey : SwiftUI._ViewTraitKey, ~Swift.Sendable
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   @usableFromInline
   internal typealias Value = SwiftUI.Text?
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TypeSelectEquivalentKey.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -7881,6 +7988,8 @@ extension SwiftUI.View {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get { _suiUnimplemented("SwiftUI._TypeSelectEquivalentTableRowModifier.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._TypeSelectEquivalentTableRowModifier.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, *)
@@ -8060,6 +8169,8 @@ nonisolated public struct List<SelectionValue, Content> : SwiftUI.View, ~Swift.S
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.List.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.List.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -8322,21 +8433,17 @@ extension SwiftUI.List where SelectionValue == Swift.Never {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func listRowSeparator(_ visibility: SwiftUI.Visibility, edges: SwiftUI.VerticalEdge.Set = .all) -> Swift.Never { _suiUnimplemented("SwiftUI.View.listRowSeparator(_:edges:)") }
+  nonisolated public func listRowSeparator(_ visibility: SwiftUI.Visibility, edges: SwiftUI.VerticalEdge.Set = .all) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.listRowSeparator(_:edges:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func listRowSeparatorTint(_ color: SwiftUI.Color?, edges: SwiftUI.VerticalEdge.Set = .all) -> Swift.Never { _suiUnimplemented("SwiftUI.View.listRowSeparatorTint(_:edges:)") }
+  nonisolated public func listRowSeparatorTint(_ color: SwiftUI.Color?, edges: SwiftUI.VerticalEdge.Set = .all) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.listRowSeparatorTint(_:edges:)") }
 }
 @available(iOS 15.0, macOS 13.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func listSectionSeparator(_ visibility: SwiftUI.Visibility, edges: SwiftUI.VerticalEdge.Set = .all) -> Swift.Never { _suiUnimplemented("SwiftUI.View.listSectionSeparator(_:edges:)") }
+  nonisolated public func listSectionSeparator(_ visibility: SwiftUI.Visibility, edges: SwiftUI.VerticalEdge.Set = .all) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.listSectionSeparator(_:edges:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func listSectionSeparatorTint(_ color: SwiftUI.Color?, edges: SwiftUI.VerticalEdge.Set = .all) -> Swift.Never { _suiUnimplemented("SwiftUI.View.listSectionSeparatorTint(_:edges:)") }
+  nonisolated public func listSectionSeparatorTint(_ color: SwiftUI.Color?, edges: SwiftUI.VerticalEdge.Set = .all) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.listSectionSeparatorTint(_:edges:)") }
 }
 @_hasMissingDesignatedInitializers @available(iOS 27.0, macOS 27.0, visionOS 27.0, *)
 @available(tvOS, unavailable)
@@ -8357,6 +8464,8 @@ nonisolated public struct ToolbarItem<ID, Content> : SwiftUI.ToolbarContent, ~Sw
   public static func _makeContent(content: SwiftUI._GraphValue<SwiftUI.ToolbarItem<ID, Content>>, inputs: SwiftUI._GraphInputs, resolved: inout SwiftUI._ToolbarItemList) { _suiUnimplemented("SwiftUI.ToolbarItem._makeContent(content:inputs:resolved:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ToolbarItem.init()") }
   // port: synthesized witness for ToolbarContent (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ToolbarItem.body") } }
 }
@@ -8438,6 +8547,8 @@ extension SwiftUI.ModifiedContent where Modifier == SwiftUI.AccessibilityAttachm
 @available(watchOS, unavailable)
 public struct WindowLayoutRoot : ~Swift.Sendable {
   public func sizeThatFits(_ proposal: SwiftUI.ProposedViewSize) -> CoreGraphics.CGSize { _suiUnimplemented("SwiftUI.WindowLayoutRoot.sizeThatFits(_:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.WindowLayoutRoot.init()") }
 }
 #else
 @available(macOS 15.0, visionOS 2.0, *)
@@ -8459,59 +8570,45 @@ extension SwiftUI.ModifiedContent where Modifier == SwiftUI.AccessibilityAttachm
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileDialogDefaultDirectory(_ defaultDirectory: Foundation.URL?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.fileDialogDefaultDirectory(_:)") }
+  nonisolated public func fileDialogDefaultDirectory(_ defaultDirectory: Foundation.URL?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.fileDialogDefaultDirectory(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileDialogCustomizationID(_ id: Swift.String) -> Swift.Never { _suiUnimplemented("SwiftUI.View.fileDialogCustomizationID(_:)") }
+  nonisolated public func fileDialogCustomizationID(_ id: Swift.String) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.fileDialogCustomizationID(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileDialogMessage(_ message: SwiftUI.Text?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.fileDialogMessage(_:)") }
+  nonisolated public func fileDialogMessage(_ message: SwiftUI.Text?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.fileDialogMessage(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileDialogMessage(_ messageKey: SwiftUI.LocalizedStringKey) -> Swift.Never { _suiUnimplemented("SwiftUI.View.fileDialogMessage(_:)") }
+  nonisolated public func fileDialogMessage(_ messageKey: SwiftUI.LocalizedStringKey) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.fileDialogMessage(_:)") }
   
   @_disfavoredOverload @export(implementation) nonisolated public func fileDialogMessage(_ messageResource: FoundationShims.LocalizedStringResource) -> some SwiftUI.View {
         fileDialogMessage(Text(messageResource))
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func fileDialogMessage<S>(_ message: S) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.fileDialogMessage(_:)") }
+  @_disfavoredOverload nonisolated public func fileDialogMessage<S>(_ message: S) -> some SwiftUI.View where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.fileDialogMessage(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func fileDialogConfirmationLabel<S>(_ label: S) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.fileDialogConfirmationLabel(_:)") }
+  @_disfavoredOverload nonisolated public func fileDialogConfirmationLabel<S>(_ label: S) -> some SwiftUI.View where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.fileDialogConfirmationLabel(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileDialogConfirmationLabel(_ label: SwiftUI.Text?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.fileDialogConfirmationLabel(_:)") }
+  nonisolated public func fileDialogConfirmationLabel(_ label: SwiftUI.Text?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.fileDialogConfirmationLabel(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileDialogConfirmationLabel(_ labelKey: SwiftUI.LocalizedStringKey) -> Swift.Never { _suiUnimplemented("SwiftUI.View.fileDialogConfirmationLabel(_:)") }
+  nonisolated public func fileDialogConfirmationLabel(_ labelKey: SwiftUI.LocalizedStringKey) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.fileDialogConfirmationLabel(_:)") }
   
   @_disfavoredOverload @export(implementation) nonisolated public func fileDialogConfirmationLabel(_ label: FoundationShims.LocalizedStringResource) -> some SwiftUI.View {
         fileDialogConfirmationLabel(Text(label))
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileExporterFilenameLabel(_ label: SwiftUI.Text?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.fileExporterFilenameLabel(_:)") }
+  nonisolated public func fileExporterFilenameLabel(_ label: SwiftUI.Text?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.fileExporterFilenameLabel(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileExporterFilenameLabel(_ labelKey: SwiftUI.LocalizedStringKey) -> Swift.Never { _suiUnimplemented("SwiftUI.View.fileExporterFilenameLabel(_:)") }
+  nonisolated public func fileExporterFilenameLabel(_ labelKey: SwiftUI.LocalizedStringKey) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.fileExporterFilenameLabel(_:)") }
   
   @_disfavoredOverload @export(implementation) nonisolated public func fileExporterFilenameLabel(_ label: FoundationShims.LocalizedStringResource) -> some SwiftUI.View {
         fileExporterFilenameLabel(Text(label))
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func fileExporterFilenameLabel<S>(_ label: S) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.fileExporterFilenameLabel(_:)") }
+  @_disfavoredOverload nonisolated public func fileExporterFilenameLabel<S>(_ label: S) -> some SwiftUI.View where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.fileExporterFilenameLabel(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileDialogURLEnabled(_ predicate: Foundation.Predicate<Foundation.URL>) -> Swift.Never { _suiUnimplemented("SwiftUI.View.fileDialogURLEnabled(_:)") }
+  nonisolated public func fileDialogURLEnabled(_ predicate: Foundation.Predicate<Foundation.URL>) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.fileDialogURLEnabled(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileDialogImportsUnresolvedAliases(_ imports: Swift.Bool) -> Swift.Never { _suiUnimplemented("SwiftUI.View.fileDialogImportsUnresolvedAliases(_:)") }
+  nonisolated public func fileDialogImportsUnresolvedAliases(_ imports: Swift.Bool) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.fileDialogImportsUnresolvedAliases(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileDialogBrowserOptions(_ options: SwiftUI.FileDialogBrowserOptions) -> Swift.Never { _suiUnimplemented("SwiftUI.View.fileDialogBrowserOptions(_:)") }
+  nonisolated public func fileDialogBrowserOptions(_ options: SwiftUI.FileDialogBrowserOptions) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.fileDialogBrowserOptions(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, *)
@@ -8564,7 +8661,7 @@ public struct FileDialogBrowserOptions : Swift.OptionSet {
 }
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@frozen @propertyWrapper public struct SceneStorage<Value> : SwiftUI.DynamicProperty {
+@frozen  public struct SceneStorage<Value> : SwiftUI.DynamicProperty {
   @usableFromInline
   internal var _key: Swift.String
   @usableFromInline
@@ -8642,6 +8739,8 @@ nonisolated public struct Menu<Label, Content> : SwiftUI.View, ~Swift.Sendable w
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.Menu.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.Menu.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 17.0, *)
@@ -8761,18 +8860,18 @@ extension SwiftUI.TabContent {
 @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_Concurrency.MainActor @preconcurrency public func dropDestination<T>(for payloadType: T.Type = T.self, action: @escaping ([T]) -> Swift.Void) -> Swift.Never where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.TabContent.dropDestination(for:action:)") }
+  @_Concurrency.MainActor @preconcurrency public func dropDestination<T>(for payloadType: T.Type = T.self, action: @escaping ([T]) -> Swift.Void) -> Self where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.TabContent.dropDestination(for:action:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  nonisolated public func springLoadingBehavior(_ behavior: SwiftUI.SpringLoadingBehavior) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.springLoadingBehavior(_:)") }
+  nonisolated public func springLoadingBehavior(_ behavior: SwiftUI.SpringLoadingBehavior) -> Self { _suiUnimplemented("SwiftUI.TabContent.springLoadingBehavior(_:)") }
 }
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 18.1, macOS 15.1, visionOS 2.1, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_Concurrency.MainActor @preconcurrency public func draggable<T>(_ payload: @autoclosure @escaping () -> T) -> Swift.Never where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.TabContent.draggable(_:)") }
+  @_Concurrency.MainActor @preconcurrency public func draggable<T>(_ payload: @autoclosure @escaping () -> T) -> Self where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.TabContent.draggable(_:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.PickerStyle where Self == SwiftUI.InlinePickerStyle {
@@ -8799,6 +8898,8 @@ public struct InlinePickerStyle : SwiftUI.PickerStyle {
 @available(iOS 14.0, macOS 11.0, watchOS 9.0, visionOS 1.0, *)
 @available(tvOS, unavailable)
 public struct _WidgetOutputs : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._WidgetOutputs.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, watchOS 9.0, visionOS 1.0, *)
@@ -8810,7 +8911,8 @@ public struct _WidgetOutputs {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.TableRowContent {
-  @_Concurrency.MainActor @preconcurrency public func onHover(perform action: @escaping (Swift.Bool) -> Swift.Void) -> some SwiftUI.TableRowContent<Self.TableRowValue> { _suiUnimplemented("SwiftUI.TableRowContent.onHover(perform:)") }
+    // port: opaque result type is not expressible in source; declared as Never (R3)
+@_Concurrency.MainActor @preconcurrency public func onHover(perform action: @escaping (Swift.Bool) -> Swift.Void) -> Self { _suiUnimplemented("SwiftUI.TableRowContent.onHover(perform:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(macOS 13.0, *)
@@ -8820,6 +8922,8 @@ extension SwiftUI.TableRowContent {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get { _suiUnimplemented("SwiftUI._HoverTableRowModifier.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._HoverTableRowModifier.init()") }
 }
 #else
 @available(macOS 13.0, *)
@@ -8833,21 +8937,17 @@ extension SwiftUI.TableRowContent {
 #endif
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dialogSuppressionToggle(_ titleKey: SwiftUI.LocalizedStringKey, isSuppressed: SwiftUI.Binding<Swift.Bool>) -> Swift.Never { _suiUnimplemented("SwiftUI.View.dialogSuppressionToggle(_:isSuppressed:)") }
+  nonisolated public func dialogSuppressionToggle(_ titleKey: SwiftUI.LocalizedStringKey, isSuppressed: SwiftUI.Binding<Swift.Bool>) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.dialogSuppressionToggle(_:isSuppressed:)") }
   
   @_disfavoredOverload @export(implementation) nonisolated public func dialogSuppressionToggle(_ titleResource: FoundationShims.LocalizedStringResource, isSuppressed: SwiftUI.Binding<Swift.Bool>) -> some SwiftUI.View {
         dialogSuppressionToggle(Text(titleResource), isSuppressed: isSuppressed)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func dialogSuppressionToggle<S>(_ title: S, isSuppressed: SwiftUI.Binding<Swift.Bool>) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.dialogSuppressionToggle(_:isSuppressed:)") }
+  @_disfavoredOverload nonisolated public func dialogSuppressionToggle<S>(_ title: S, isSuppressed: SwiftUI.Binding<Swift.Bool>) -> some SwiftUI.View where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.dialogSuppressionToggle(_:isSuppressed:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dialogSuppressionToggle(_ label: SwiftUI.Text, isSuppressed: SwiftUI.Binding<Swift.Bool>) -> Swift.Never { _suiUnimplemented("SwiftUI.View.dialogSuppressionToggle(_:isSuppressed:)") }
+  nonisolated public func dialogSuppressionToggle(_ label: SwiftUI.Text, isSuppressed: SwiftUI.Binding<Swift.Bool>) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.dialogSuppressionToggle(_:isSuppressed:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dialogSuppressionToggle(isSuppressed: SwiftUI.Binding<Swift.Bool>) -> Swift.Never { _suiUnimplemented("SwiftUI.View.dialogSuppressionToggle(isSuppressed:)") }
+  nonisolated public func dialogSuppressionToggle(isSuppressed: SwiftUI.Binding<Swift.Bool>) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.dialogSuppressionToggle(isSuppressed:)") }
 }
 @available(macOS 15.0, *)
 @available(tvOS, unavailable)
@@ -8878,20 +8978,20 @@ public enum DigitalCrownRotationalSensitivity : Swift.Sendable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.DigitalCrownRotationalSensitivity.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DigitalCrownRotationalSensitivity.init()") }
 }
 @available(watchOS 6.0, *)
 @available(tvOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-            // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
+      @available(tvOS, unavailable)
   @available(visionOS, unavailable)
-  @_disfavoredOverload nonisolated public func digitalCrownRotation<V>(_ binding: SwiftUI.Binding<V>, from minValue: V, through maxValue: V, by stride: V.Stride? = nil, sensitivity: SwiftUI.DigitalCrownRotationalSensitivity = .high, isContinuous: Swift.Bool = false, isHapticFeedbackEnabled: Swift.Bool = true) -> Swift.Never where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUI.View.digitalCrownRotation(_:from:through:by:sensitivity:isContinuous:isHapticFeedbackEnabled:)") }
+  @_disfavoredOverload nonisolated public func digitalCrownRotation<V>(_ binding: SwiftUI.Binding<V>, from minValue: V, through maxValue: V, by stride: V.Stride? = nil, sensitivity: SwiftUI.DigitalCrownRotationalSensitivity = .high, isContinuous: Swift.Bool = false, isHapticFeedbackEnabled: Swift.Bool = true) -> some SwiftUI.View where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUI.View.digitalCrownRotation(_:from:through:by:sensitivity:isContinuous:isHapticFeedbackEnabled:)") }
   
-            // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
+      @available(tvOS, unavailable)
   @available(visionOS, unavailable)
-  @_disfavoredOverload nonisolated public func digitalCrownRotation<V>(_ binding: SwiftUI.Binding<V>) -> Swift.Never where V : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUI.View.digitalCrownRotation(_:)") }
+  @_disfavoredOverload nonisolated public func digitalCrownRotation<V>(_ binding: SwiftUI.Binding<V>) -> some SwiftUI.View where V : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUI.View.digitalCrownRotation(_:)") }
 }
 @available(watchOS 9.0, *)
 @available(tvOS, unavailable)
@@ -8904,34 +9004,27 @@ public struct DigitalCrownEvent : Swift.Sendable {
 @available(tvOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func digitalCrownRotation<V>(detent: SwiftUI.Binding<V>, from minValue: V, through maxValue: V, by stride: V.Stride, sensitivity: SwiftUI.DigitalCrownRotationalSensitivity = .high, isContinuous: Swift.Bool = false, isHapticFeedbackEnabled: Swift.Bool = true, onChange: @escaping (SwiftUI.DigitalCrownEvent) -> Swift.Void = { _ in }, onIdle: @escaping () -> Swift.Void = { }) -> Swift.Never where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUI.View.digitalCrownRotation(detent:from:through:by:sensitivity:isContinuous:isHapticFeedbackEnabled:onChange:onIdle:)") }
+  nonisolated public func digitalCrownRotation<V>(detent: SwiftUI.Binding<V>, from minValue: V, through maxValue: V, by stride: V.Stride, sensitivity: SwiftUI.DigitalCrownRotationalSensitivity = .high, isContinuous: Swift.Bool = false, isHapticFeedbackEnabled: Swift.Bool = true, onChange: @escaping (SwiftUI.DigitalCrownEvent) -> Swift.Void = { _ in }, onIdle: @escaping () -> Swift.Void = { }) -> some SwiftUI.View where V : Swift.BinaryFloatingPoint, V.Stride : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUI.View.digitalCrownRotation(detent:from:through:by:sensitivity:isContinuous:isHapticFeedbackEnabled:onChange:onIdle:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func digitalCrownRotation<V>(detent: SwiftUI.Binding<V>, from minValue: V, through maxValue: V, by stride: V.Stride, sensitivity: SwiftUI.DigitalCrownRotationalSensitivity = .high, isContinuous: Swift.Bool = false, isHapticFeedbackEnabled: Swift.Bool = true, onChange: @escaping (SwiftUI.DigitalCrownEvent) -> Swift.Void = { _ in }, onIdle: @escaping () -> Swift.Void = { }) -> Swift.Never where V : Swift.BinaryInteger, V.Stride : Swift.BinaryInteger { _suiUnimplemented("SwiftUI.View.digitalCrownRotation(detent:from:through:by:sensitivity:isContinuous:isHapticFeedbackEnabled:onChange:onIdle:)") }
+  nonisolated public func digitalCrownRotation<V>(detent: SwiftUI.Binding<V>, from minValue: V, through maxValue: V, by stride: V.Stride, sensitivity: SwiftUI.DigitalCrownRotationalSensitivity = .high, isContinuous: Swift.Bool = false, isHapticFeedbackEnabled: Swift.Bool = true, onChange: @escaping (SwiftUI.DigitalCrownEvent) -> Swift.Void = { _ in }, onIdle: @escaping () -> Swift.Void = { }) -> some SwiftUI.View where V : Swift.BinaryInteger, V.Stride : Swift.BinaryInteger { _suiUnimplemented("SwiftUI.View.digitalCrownRotation(detent:from:through:by:sensitivity:isContinuous:isHapticFeedbackEnabled:onChange:onIdle:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func digitalCrownRotation<V>(_ binding: SwiftUI.Binding<V>, from minValue: V, through maxValue: V, sensitivity: SwiftUI.DigitalCrownRotationalSensitivity = .high, isContinuous: Swift.Bool = false, isHapticFeedbackEnabled: Swift.Bool = true, onChange: @escaping (SwiftUI.DigitalCrownEvent) -> Swift.Void = { _ in }, onIdle: @escaping () -> Swift.Void = { }) -> Swift.Never where V : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUI.View.digitalCrownRotation(_:from:through:sensitivity:isContinuous:isHapticFeedbackEnabled:onChange:onIdle:)") }
+  nonisolated public func digitalCrownRotation<V>(_ binding: SwiftUI.Binding<V>, from minValue: V, through maxValue: V, sensitivity: SwiftUI.DigitalCrownRotationalSensitivity = .high, isContinuous: Swift.Bool = false, isHapticFeedbackEnabled: Swift.Bool = true, onChange: @escaping (SwiftUI.DigitalCrownEvent) -> Swift.Void = { _ in }, onIdle: @escaping () -> Swift.Void = { }) -> some SwiftUI.View where V : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUI.View.digitalCrownRotation(_:from:through:sensitivity:isContinuous:isHapticFeedbackEnabled:onChange:onIdle:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func digitalCrownRotation<V>(_ binding: SwiftUI.Binding<V>, onChange: @escaping (SwiftUI.DigitalCrownEvent) -> Swift.Void = { _ in }, onIdle: @escaping () -> Swift.Void = { }) -> Swift.Never where V : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUI.View.digitalCrownRotation(_:onChange:onIdle:)") }
+  nonisolated public func digitalCrownRotation<V>(_ binding: SwiftUI.Binding<V>, onChange: @escaping (SwiftUI.DigitalCrownEvent) -> Swift.Void = { _ in }, onIdle: @escaping () -> Swift.Void = { }) -> some SwiftUI.View where V : Swift.BinaryFloatingPoint { _suiUnimplemented("SwiftUI.View.digitalCrownRotation(_:onChange:onIdle:)") }
 }
 @available(iOS 14.0, macOS 11.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileImporter(isPresented: SwiftUI.Binding<Swift.Bool>, allowedContentTypes: [UniformTypeIdentifiers.UTType], onCompletion: @escaping (_ result: Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.fileImporter(isPresented:allowedContentTypes:onCompletion:)") }
+  nonisolated public func fileImporter(isPresented: SwiftUI.Binding<Swift.Bool>, allowedContentTypes: [UniformTypeIdentifiers.UTType], onCompletion: @escaping (_ result: Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.fileImporter(isPresented:allowedContentTypes:onCompletion:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileImporter(isPresented: SwiftUI.Binding<Swift.Bool>, allowedContentTypes: [UniformTypeIdentifiers.UTType], allowsMultipleSelection: Swift.Bool, onCompletion: @escaping (_ result: Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.fileImporter(isPresented:allowedContentTypes:allowsMultipleSelection:onCompletion:)") }
+  nonisolated public func fileImporter(isPresented: SwiftUI.Binding<Swift.Bool>, allowedContentTypes: [UniformTypeIdentifiers.UTType], allowsMultipleSelection: Swift.Bool, onCompletion: @escaping (_ result: Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.fileImporter(isPresented:allowedContentTypes:allowsMultipleSelection:onCompletion:)") }
 }
 @available(iOS 17.0, macOS 14.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileImporter(isPresented: SwiftUI.Binding<Swift.Bool>, allowedContentTypes: [UniformTypeIdentifiers.UTType], allowsMultipleSelection: Swift.Bool, onCompletion: @escaping (_ result: Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.fileImporter(isPresented:allowedContentTypes:allowsMultipleSelection:onCompletion:onCancellation:)") }
+  nonisolated public func fileImporter(isPresented: SwiftUI.Binding<Swift.Bool>, allowedContentTypes: [UniformTypeIdentifiers.UTType], allowsMultipleSelection: Swift.Bool, onCompletion: @escaping (_ result: Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.fileImporter(isPresented:allowedContentTypes:allowsMultipleSelection:onCompletion:onCancellation:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI._EnvironmentKeyWritingModifier : SwiftUI._SceneModifier {
@@ -8966,7 +9059,9 @@ extension SwiftUI.SectionConfiguration {
     @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI.View {
       get { _suiUnimplemented("SwiftUI.SectionConfiguration.Actions.body") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.SectionConfiguration.Actions.init()") }
+}
 }
 @available(iOS 17.0, macOS 14.0, *)
 @available(tvOS, unavailable)
@@ -8982,8 +9077,7 @@ extension SwiftUI.ControlGroupStyle where Self == SwiftUI.PaletteControlGroupSty
 @available(watchOS, unavailable)
 nonisolated public struct PaletteControlGroupStyle : SwiftUI.ControlGroupStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.PaletteControlGroupStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.PaletteControlGroupStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.PaletteControlGroupStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.PaletteControlGroupStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.PaletteControlGroupStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, *)
@@ -8996,30 +9090,24 @@ nonisolated public struct PaletteControlGroupStyle : SwiftUI.ControlGroupStyle {
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func sheet<Item, Content>(item: SwiftUI.Binding<Item?>, onDismiss: (() -> Swift.Void)? = nil, @SwiftUI.ContentBuilder content: @escaping (Item) -> Content) -> Swift.Never where Item : Swift.Identifiable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.sheet(item:onDismiss:content:)") }
+  nonisolated public func sheet<Item, Content>(item: SwiftUI.Binding<Item?>, onDismiss: (() -> Swift.Void)? = nil, @SwiftUI.ContentBuilder content: @escaping (Item) -> Content) -> some SwiftUI.View where Item : Swift.Identifiable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.sheet(item:onDismiss:content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func sheet<Content>(isPresented: SwiftUI.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, @SwiftUI.ContentBuilder content: @escaping () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.sheet(isPresented:onDismiss:content:)") }
+  nonisolated public func sheet<Content>(isPresented: SwiftUI.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, @SwiftUI.ContentBuilder content: @escaping () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.sheet(isPresented:onDismiss:content:)") }
 }
 @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fullScreenCover<Item, Content>(item: SwiftUI.Binding<Item?>, onDismiss: (() -> Swift.Void)? = nil, @SwiftUI.ContentBuilder content: @escaping (Item) -> Content) -> Swift.Never where Item : Swift.Identifiable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.fullScreenCover(item:onDismiss:content:)") }
+  nonisolated public func fullScreenCover<Item, Content>(item: SwiftUI.Binding<Item?>, onDismiss: (() -> Swift.Void)? = nil, @SwiftUI.ContentBuilder content: @escaping (Item) -> Content) -> some SwiftUI.View where Item : Swift.Identifiable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.fullScreenCover(item:onDismiss:content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(*, deprecated, renamed: "fullScreenCover(item:onDismiss:content:)")
-  @_Concurrency.MainActor @preconcurrency public func _cover<Item, Content>(item: SwiftUI.Binding<Item?>, onDismiss: (() -> Swift.Void)? = nil, @SwiftUI.ContentBuilder content: @escaping (Item) -> Content) -> Swift.Never where Item : Swift.Identifiable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View._cover(item:onDismiss:content:)") }
+  @available(*, deprecated, renamed: "fullScreenCover(item:onDismiss:content:)")
+  @_Concurrency.MainActor @preconcurrency public func _cover<Item, Content>(item: SwiftUI.Binding<Item?>, onDismiss: (() -> Swift.Void)? = nil, @SwiftUI.ContentBuilder content: @escaping (Item) -> Content) -> some SwiftUI.View where Item : Swift.Identifiable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View._cover(item:onDismiss:content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fullScreenCover<Content>(isPresented: SwiftUI.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, @SwiftUI.ContentBuilder content: @escaping () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.fullScreenCover(isPresented:onDismiss:content:)") }
+  nonisolated public func fullScreenCover<Content>(isPresented: SwiftUI.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, @SwiftUI.ContentBuilder content: @escaping () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.fullScreenCover(isPresented:onDismiss:content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(*, deprecated, renamed: "fullScreenCover(isPresented:onDismiss:content:)")
-  @_Concurrency.MainActor @preconcurrency public func _cover<Content>(isPresented: SwiftUI.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, @SwiftUI.ContentBuilder content: @escaping () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View._cover(isPresented:onDismiss:content:)") }
+  @available(*, deprecated, renamed: "fullScreenCover(isPresented:onDismiss:content:)")
+  @_Concurrency.MainActor @preconcurrency public func _cover<Content>(isPresented: SwiftUI.Binding<Swift.Bool>, onDismiss: (() -> Swift.Void)? = nil, @SwiftUI.ContentBuilder content: @escaping () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View._cover(isPresented:onDismiss:content:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@frozen @propertyWrapper public struct AppStorage<Value> : SwiftUI.DynamicProperty {
+@frozen  public struct AppStorage<Value> : SwiftUI.DynamicProperty {
   @usableFromInline
   internal var location: SwiftUI.UserDefaultLocation<Value>
   public var wrappedValue: Value {
@@ -9069,8 +9157,7 @@ extension SwiftUI.AppStorage {
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func defaultAppStorage(_ store: Foundation.UserDefaults) -> Swift.Never { _suiUnimplemented("SwiftUI.View.defaultAppStorage(_:)") }
+  nonisolated public func defaultAppStorage(_ store: Foundation.UserDefaults) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.defaultAppStorage(_:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.Scene {
@@ -9103,10 +9190,14 @@ internal class UserDefaultLocation<Value> : @unchecked Swift.Sendable {
   internal static func == (lhs: SwiftUI.UserDefaultLocation<Value>, rhs: SwiftUI.UserDefaultLocation<Value>) -> Swift.Bool { _suiUnimplemented("SwiftUI.UserDefaultLocation.==(lhs:rhs:)") }
   @usableFromInline
   deinit {}
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.UserDefaultLocation.init()") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct _NavigationDestinationCollection : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._NavigationDestinationCollection.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -9303,11 +9394,9 @@ extension SwiftUI.LimitedAvailabilitySceneAccessoryContentStorageBase : Swift.Se
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onSubmit(of triggers: SwiftUI.SubmitTriggers = .text, _ action: @escaping () -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onSubmit(of:_:)") }
+  nonisolated public func onSubmit(of triggers: SwiftUI.SubmitTriggers = .text, _ action: @escaping () -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onSubmit(of:_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func submitScope(_ isBlocking: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.View.submitScope(_:)") }
+  nonisolated public func submitScope(_ isBlocking: Swift.Bool = true) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.submitScope(_:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, visionOS 1.0, *)
 extension SwiftUI.View {
@@ -9357,8 +9446,7 @@ extension SwiftUI.TextFieldStyle where Self == SwiftUI.RoundedBorderTextFieldSty
 @available(watchOS, unavailable)
 public struct RoundedBorderTextFieldStyle : SwiftUI.TextFieldStyle, ~Swift.Sendable {
   public init() { _suiUnimplemented("SwiftUI.RoundedBorderTextFieldStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func _body(configuration: SwiftUI.TextField<SwiftUI.RoundedBorderTextFieldStyle._Label>) -> Swift.Never { _suiUnimplemented("SwiftUI.RoundedBorderTextFieldStyle._body(configuration:)") }
+  public func _body(configuration: SwiftUI.TextField<SwiftUI.RoundedBorderTextFieldStyle._Label>) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.RoundedBorderTextFieldStyle._body(configuration:)") }
 }
 #else
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use BorderedTextFieldStyle with `textInputBorderShape(.roundedRectangle)`")
@@ -9380,8 +9468,7 @@ extension SwiftUI.TextFieldStyle where Self == SwiftUI.BorderedTextFieldStyle {
 @available(anyAppleOS 27.0, *)
 public struct BorderedTextFieldStyle : SwiftUI.TextFieldStyle, ~Swift.Sendable {
   public init() { _suiUnimplemented("SwiftUI.BorderedTextFieldStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func _body(configuration: SwiftUI.TextField<SwiftUI.BorderedTextFieldStyle._Label>) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderedTextFieldStyle._body(configuration:)") }
+  public func _body(configuration: SwiftUI.TextField<SwiftUI.BorderedTextFieldStyle._Label>) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.BorderedTextFieldStyle._body(configuration:)") }
 }
 #else
 @available(anyAppleOS 27.0, *)
@@ -9434,57 +9521,49 @@ internal class LimitedAvailabilityToolbarContentStorageBase {
 #endif
 @available(iOS 13.0, macOS 13.0, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use toolbar(.hidden)")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use toolbar(.hidden)")
     @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "Use toolbar(.hidden)")
   @available(watchOS, introduced: 6.0, deprecated: 100000.0, message: "Use toolbar(.hidden)")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use toolbar(.hidden)")
-  nonisolated public func navigationBarHidden(_ hidden: Swift.Bool) -> Swift.Never { _suiUnimplemented("SwiftUI.View.navigationBarHidden(_:)") }
+  nonisolated public func navigationBarHidden(_ hidden: Swift.Bool) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationBarHidden(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, renamed: "navigationTitle(_:)")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, renamed: "navigationTitle(_:)")
     @available(tvOS, introduced: 13.0, deprecated: 100000.0, renamed: "navigationTitle(_:)")
   @available(watchOS, introduced: 6.0, deprecated: 100000.0, renamed: "navigationTitle(_:)")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, renamed: "navigationTitle(_:)")
-  nonisolated public func navigationBarTitle(_ title: SwiftUI.Text) -> Swift.Never { _suiUnimplemented("SwiftUI.View.navigationBarTitle(_:)") }
+  nonisolated public func navigationBarTitle(_ title: SwiftUI.Text) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationBarTitle(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, renamed: "navigationTitle(_:)")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, renamed: "navigationTitle(_:)")
     @available(tvOS, introduced: 13.0, deprecated: 100000.0, renamed: "navigationTitle(_:)")
   @available(watchOS, introduced: 6.0, deprecated: 100000.0, renamed: "navigationTitle(_:)")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, renamed: "navigationTitle(_:)")
-  nonisolated public func navigationBarTitle(_ titleKey: SwiftUI.LocalizedStringKey) -> Swift.Never { _suiUnimplemented("SwiftUI.View.navigationBarTitle(_:)") }
+  nonisolated public func navigationBarTitle(_ titleKey: SwiftUI.LocalizedStringKey) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationBarTitle(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, renamed: "navigationTitle(_:)")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, renamed: "navigationTitle(_:)")
     @available(tvOS, introduced: 13.0, deprecated: 100000.0, renamed: "navigationTitle(_:)")
   @available(watchOS, introduced: 6.0, deprecated: 100000.0, renamed: "navigationTitle(_:)")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, renamed: "navigationTitle(_:)")
-  @_disfavoredOverload nonisolated public func navigationBarTitle<S>(_ title: S) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.navigationBarTitle(_:)") }
+  @_disfavoredOverload nonisolated public func navigationBarTitle<S>(_ title: S) -> some SwiftUI.View where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.navigationBarTitle(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use navigationTitle(_:) with navigationBarTitleDisplayMode(_:)")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use navigationTitle(_:) with navigationBarTitleDisplayMode(_:)")
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use navigationTitle(_:) with navigationBarTitleDisplayMode(_:)")
-  nonisolated public func navigationBarTitle(_ title: SwiftUI.Text, displayMode: SwiftUI.NavigationBarItem.TitleDisplayMode) -> Swift.Never { _suiUnimplemented("SwiftUI.View.navigationBarTitle(_:displayMode:)") }
+  nonisolated public func navigationBarTitle(_ title: SwiftUI.Text, displayMode: SwiftUI.NavigationBarItem.TitleDisplayMode) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationBarTitle(_:displayMode:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use navigationTitle(_:) with navigationBarTitleDisplayMode(_:)")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use navigationTitle(_:) with navigationBarTitleDisplayMode(_:)")
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use navigationTitle(_:) with navigationBarTitleDisplayMode(_:)")
-  nonisolated public func navigationBarTitle(_ titleKey: SwiftUI.LocalizedStringKey, displayMode: SwiftUI.NavigationBarItem.TitleDisplayMode) -> Swift.Never { _suiUnimplemented("SwiftUI.View.navigationBarTitle(_:displayMode:)") }
+  nonisolated public func navigationBarTitle(_ titleKey: SwiftUI.LocalizedStringKey, displayMode: SwiftUI.NavigationBarItem.TitleDisplayMode) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationBarTitle(_:displayMode:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 14.0, deprecated: 100000.0, message: "Use navigationTitle(_:) with navigationBarTitleDisplayMode(_:)")
+  @available(iOS, introduced: 14.0, deprecated: 100000.0, message: "Use navigationTitle(_:) with navigationBarTitleDisplayMode(_:)")
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use navigationTitle(_:) with navigationBarTitleDisplayMode(_:)")
-  @_disfavoredOverload nonisolated public func navigationBarTitle<S>(_ title: S, displayMode: SwiftUI.NavigationBarItem.TitleDisplayMode) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.navigationBarTitle(_:displayMode:)") }
+  @_disfavoredOverload nonisolated public func navigationBarTitle<S>(_ title: S, displayMode: SwiftUI.NavigationBarItem.TitleDisplayMode) -> some SwiftUI.View where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.navigationBarTitle(_:displayMode:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func navigationBarBackButtonHidden(_ hidesBackButton: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.View.navigationBarBackButtonHidden(_:)") }
+  nonisolated public func navigationBarBackButtonHidden(_ hidesBackButton: Swift.Bool = true) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationBarBackButtonHidden(_:)") }
 }
 @available(iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public struct NavigationBarItem : Swift.Sendable {
@@ -9499,21 +9578,22 @@ public struct NavigationBarItem : Swift.Sendable {
     public var hashValue: Swift.Int {
       get { _suiUnimplemented("SwiftUI.NavigationBarItem.TitleDisplayMode.hashValue") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.NavigationBarItem.TitleDisplayMode.init()") }
+}
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.NavigationBarItem.init()") }
 }
 @available(macOS 15.0, *)
 @available(tvOS, unavailable)
 @available(visionOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func textInputSuggestions<S>(@SwiftUI.ContentBuilder _ suggestions: () -> S) -> Swift.Never where S : SwiftUI.View { _suiUnimplemented("SwiftUI.View.textInputSuggestions(_:)") }
+  nonisolated public func textInputSuggestions<S>(@SwiftUI.ContentBuilder _ suggestions: () -> S) -> some SwiftUI.View where S : SwiftUI.View { _suiUnimplemented("SwiftUI.View.textInputSuggestions(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func textInputSuggestions<Data, ID, Content>(_ data: Data, id: Swift.KeyPath<Data.Element, ID>, @SwiftUI.ContentBuilder content: @escaping (Data.Element) -> Content) -> Swift.Never where Data : Swift.RandomAccessCollection, ID : Swift.Hashable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.textInputSuggestions(_:id:content:)") }
+  nonisolated public func textInputSuggestions<Data, ID, Content>(_ data: Data, id: Swift.KeyPath<Data.Element, ID>, @SwiftUI.ContentBuilder content: @escaping (Data.Element) -> Content) -> some SwiftUI.View where Data : Swift.RandomAccessCollection, ID : Swift.Hashable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.textInputSuggestions(_:id:content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func textInputSuggestions<Data, Content>(_ data: Data, @SwiftUI.ContentBuilder content: @escaping (Data.Element) -> Content) -> Swift.Never where Data : Swift.RandomAccessCollection, Content : SwiftUI.View, Data.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.textInputSuggestions(_:content:)") }
+  nonisolated public func textInputSuggestions<Data, Content>(_ data: Data, @SwiftUI.ContentBuilder content: @escaping (Data.Element) -> Content) -> some SwiftUI.View where Data : Swift.RandomAccessCollection, Content : SwiftUI.View, Data.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.textInputSuggestions(_:content:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 public protocol _ViewTest : SwiftUI._Test {
@@ -9563,8 +9643,7 @@ extension SwiftUI._ViewTest {
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func textInputFormattingControlVisibility(_ visibility: SwiftUI.Visibility, for placement: SwiftUI.TextInputFormattingControlPlacement.Set) -> Swift.Never { _suiUnimplemented("SwiftUI.View.textInputFormattingControlVisibility(_:for:)") }
+  nonisolated public func textInputFormattingControlVisibility(_ visibility: SwiftUI.Visibility, for placement: SwiftUI.TextInputFormattingControlPlacement.Set) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.textInputFormattingControlVisibility(_:for:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 public struct TextInputFormattingControlPlacement : Swift.Sendable {
@@ -9604,11 +9683,13 @@ public static var `default`: SwiftUI.TextInputFormattingControlPlacement.Set { g
     @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
     public typealias RawValue = Swift.UInt
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TextInputFormattingControlPlacement.init()") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public protocol _SceneModifier {
   associatedtype Body : SwiftUI.Scene
-  @SwiftUI.SceneBuilder func body(content: Self.SceneContent) -> Self.Body
+   func body(content: Self.SceneContent) -> Self.Body
   typealias SceneContent = SwiftUI._SceneModifier_Content<Self>
   static func _makeScene(modifier: SwiftUI._GraphValue<Self>, inputs: SwiftUI._SceneInputs, body: @escaping (SwiftUI._Graph, SwiftUI._SceneInputs) -> SwiftUI._SceneOutputs) -> SwiftUI._SceneOutputs
 }
@@ -9640,8 +9721,6 @@ extension SwiftUI.ModifiedContent : SwiftUI.Scene where Content : SwiftUI.Scene,
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.ModifiedContent : SwiftUI._SceneModifier where Content : SwiftUI._SceneModifier, Modifier : SwiftUI._SceneModifier {
   public static func _makeScene(modifier: SwiftUI._GraphValue<SwiftUI.ModifiedContent<Content, Modifier>>, inputs: SwiftUI._SceneInputs, body: @escaping (SwiftUI._Graph, SwiftUI._SceneInputs) -> SwiftUI._SceneOutputs) -> SwiftUI._SceneOutputs { _suiUnimplemented("SwiftUI.ModifiedContent._makeScene(modifier:inputs:body:)") }
-  // port: synthesized witness for _SceneModifier (R7); Apple implements it with an internal member
-  public func body(content: SwiftUI._SceneModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI.ModifiedContent.body(content:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI._SceneModifier {
@@ -9655,6 +9734,8 @@ nonisolated public struct _SceneModifier_Content<Modifier> : SwiftUI.Scene, ~Swi
   public static func _makeScene(scene: SwiftUI._GraphValue<SwiftUI._SceneModifier_Content<Modifier>>, inputs: SwiftUI._SceneInputs) -> SwiftUI._SceneOutputs { _suiUnimplemented("SwiftUI._SceneModifier_Content._makeScene(scene:inputs:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._SceneModifier_Content.init()") }
   // port: synthesized witness for Scene (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._SceneModifier_Content.body") } }
 }
@@ -9674,8 +9755,7 @@ extension SwiftUI._SceneModifier {
 @available(watchOS, unavailable)
 @available(tvOS, unavailable)
 extension SwiftUI.CustomHoverEffect {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func hoverEffect(in group: SwiftUI.HoverEffectGroup? = nil, isEnabled: Swift.Bool = true, body: @escaping (SwiftUI.EmptyHoverEffectContent, Swift.Bool, SwiftUI.GeometryProxy) -> some HoverEffectContent) -> Swift.Never { _suiUnimplemented("SwiftUI.CustomHoverEffect.hoverEffect(in:isEnabled:body:)") }
+  public func hoverEffect(in group: SwiftUI.HoverEffectGroup? = nil, isEnabled: Swift.Bool = true, body: @escaping (SwiftUI.EmptyHoverEffectContent, Swift.Bool, SwiftUI.GeometryProxy) -> some HoverEffectContent) -> some SwiftUI.CustomHoverEffect { _suiUnimplemented("SwiftUI.CustomHoverEffect.hoverEffect(in:isEnabled:body:)") }
 }
 @available(visionOS 26.0, *)
 @available(watchOS, unavailable)
@@ -9688,8 +9768,9 @@ extension SwiftUI.CustomHoverEffect {
 @available(watchOS, unavailable)
 @available(tvOS, unavailable)
 public struct ContentHoverEffect<Effect> : SwiftUI.CustomHoverEffect, ~Swift.Sendable where Effect : SwiftUI.HoverEffectContent {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func body(content: SwiftUI.ContentHoverEffect<Effect>.Content) -> Swift.Never { _suiUnimplemented("SwiftUI.ContentHoverEffect.body(content:)") }
+  public func body(content: SwiftUI.ContentHoverEffect<Effect>.Content) -> some SwiftUI.CustomHoverEffect { _suiUnimplemented("SwiftUI.ContentHoverEffect.body(content:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ContentHoverEffect.init()") }
 }
 #else
 @available(visionOS 26.0, *)
@@ -9712,13 +9793,17 @@ public struct ContentHoverEffect<Effect> : SwiftUI.CustomHoverEffect where Effec
     public var hashValue: Swift.Int {
       get { _suiUnimplemented("SwiftUI.OpenImmersiveSpaceAction.Result.hashValue") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.OpenImmersiveSpaceAction.Result.init()") }
+}
   @discardableResult
   @_Concurrency.MainActor public func callAsFunction(id: Swift.String) async -> SwiftUI.OpenImmersiveSpaceAction.Result { _suiUnimplemented("SwiftUI.OpenImmersiveSpaceAction.callAsFunction(id:)") }
   @discardableResult
   @_Concurrency.MainActor public func callAsFunction<D>(value: D) async -> SwiftUI.OpenImmersiveSpaceAction.Result where D : Swift.Decodable, D : Swift.Encodable, D : Swift.Hashable { _suiUnimplemented("SwiftUI.OpenImmersiveSpaceAction.callAsFunction(value:)") }
   @discardableResult
   @_Concurrency.MainActor public func callAsFunction<D>(id: Swift.String, value: D) async -> SwiftUI.OpenImmersiveSpaceAction.Result where D : Swift.Decodable, D : Swift.Encodable, D : Swift.Hashable { _suiUnimplemented("SwiftUI.OpenImmersiveSpaceAction.callAsFunction(id:value:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.OpenImmersiveSpaceAction.init()") }
 }
 @available(macOS 26.0, visionOS 1.0, *)
 @available(tvOS, unavailable)
@@ -9788,6 +9873,8 @@ extension SwiftUI.ModifiedContent where Modifier == SwiftUI.AccessibilityAttachm
   @usableFromInline
   @available(tvOS, unavailable)
   internal typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TupleWidgetConfiguration.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, watchOS 9.0, visionOS 1.0, *)
@@ -9841,15 +9928,18 @@ public static var visibility: SwiftUI.TableColumnCustomizationBehavior { get { _
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.TableColumnContent {
-  @_Concurrency.MainActor @preconcurrency public func defaultVisibility(_ visibility: SwiftUI.Visibility) -> some SwiftUI.TableColumnContent<Self.TableRowValue, Self.TableColumnSortComparator> { _suiUnimplemented("SwiftUI.TableColumnContent.defaultVisibility(_:)") }
+    // port: opaque result type is not expressible in source; declared as Never (R3)
+@_Concurrency.MainActor @preconcurrency public func defaultVisibility(_ visibility: SwiftUI.Visibility) -> Self { _suiUnimplemented("SwiftUI.TableColumnContent.defaultVisibility(_:)") }
   
-  @_Concurrency.MainActor @preconcurrency public func customizationID(_ id: Swift.String) -> some SwiftUI.TableColumnContent<Self.TableRowValue, Self.TableColumnSortComparator> { _suiUnimplemented("SwiftUI.TableColumnContent.customizationID(_:)") }
+    // port: opaque result type is not expressible in source; declared as Never (R3)
+@_Concurrency.MainActor @preconcurrency public func customizationID(_ id: Swift.String) -> Self { _suiUnimplemented("SwiftUI.TableColumnContent.customizationID(_:)") }
   
-  @_Concurrency.MainActor @preconcurrency public func disabledCustomizationBehavior(_ behavior: SwiftUI.TableColumnCustomizationBehavior) -> some SwiftUI.TableColumnContent<Self.TableRowValue, Self.TableColumnSortComparator> { _suiUnimplemented("SwiftUI.TableColumnContent.disabledCustomizationBehavior(_:)") }
+    // port: opaque result type is not expressible in source; declared as Never (R3)
+@_Concurrency.MainActor @preconcurrency public func disabledCustomizationBehavior(_ behavior: SwiftUI.TableColumnCustomizationBehavior) -> Self { _suiUnimplemented("SwiftUI.TableColumnContent.disabledCustomizationBehavior(_:)") }
 }
 @available(iOS 14.0, tvOS 14.0, *)
 @available(watchOS, unavailable)
-@preconcurrency @_Concurrency.MainActor @propertyWrapper public struct UIApplicationDelegateAdaptor<DelegateType> : SwiftUI.DynamicProperty where DelegateType : ObjectiveC.NSObject, DelegateType : UIKit.UIApplicationDelegate {
+@preconcurrency @_Concurrency.MainActor  public struct UIApplicationDelegateAdaptor<DelegateType> : SwiftUI.DynamicProperty where DelegateType : ObjectiveC.NSObject, DelegateType : UIKit.UIApplicationDelegate {
   nonisolated public static func _makeProperty<V>(in buffer: inout SwiftUI._DynamicPropertyBuffer, container: SwiftUI._GraphValue<V>, fieldOffset: Swift.Int, inputs: inout SwiftUI._GraphInputs) { _suiUnimplemented("SwiftUI.UIApplicationDelegateAdaptor._makeProperty(in:container:fieldOffset:inputs:)") }
   @available(iOS 27.0, macOS 27.0, tvOS 27.0, watchOS 27.0, visionOS 27.0, *)
   nonisolated public static var _propertyStorageSize: Swift.Int? {
@@ -9859,6 +9949,8 @@ extension SwiftUI.TableColumnContent {
     get { _suiUnimplemented("SwiftUI.UIApplicationDelegateAdaptor.wrappedValue") }
   }
   @_Concurrency.MainActor @preconcurrency public init(_ delegateType: DelegateType.Type = DelegateType.self) { _suiUnimplemented("SwiftUI.UIApplicationDelegateAdaptor.init(_:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.UIApplicationDelegateAdaptor.init()") }
 }
 @available(iOS 14.0, tvOS 14.0, *)
 @available(watchOS, unavailable)
@@ -9894,6 +9986,8 @@ public struct WorldScalingBehavior : Swift.Equatable, Swift.Hashable, Swift.Send
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.WorldScalingBehavior.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.WorldScalingBehavior.init()") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(macOS 26.0, *)
@@ -9935,6 +10029,8 @@ extension SwiftUI.TableRowContent {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get { _suiUnimplemented("SwiftUI._ContextMenuTableRowModifier.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._ContextMenuTableRowModifier.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, *)
@@ -9954,6 +10050,8 @@ extension SwiftUI.TableRowContent {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI._TableRowContentModifier {
     get { _suiUnimplemented("SwiftUI._ContextMenuPreviewTableRowModifier.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._ContextMenuPreviewTableRowModifier.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, *)
@@ -9979,12 +10077,12 @@ extension SwiftUI.AccessibilityRotorContent {
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension Swift.Never : SwiftUI.AccessibilityRotorContent {
-  // port: synthesized witness for AccessibilityRotorContent (R7); Apple implements it with an internal member
-  public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.Never.body") } }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 public struct _AccessibilityRotorEntryInputs : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._AccessibilityRotorEntryInputs.init()") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -9993,6 +10091,8 @@ public struct _AccessibilityRotorEntryInputs {
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 public struct _AccessibilityRotorEntryOutputs : Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._AccessibilityRotorEntryOutputs.init()") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -10033,6 +10133,8 @@ public struct _AccessibilityRotorEntryOutputs : Swift.Sendable {
         AccessibilityOptionalRotorContent(content)
     }
   #endif
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.AccessibilityRotorContentBuilder.init()") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -10116,13 +10218,12 @@ public struct _AccessibilityRotorEntryOutputs : Swift.Sendable {
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.ForEach : SwiftUI.AccessibilityRotorContent where Content : SwiftUI.AccessibilityRotorContent {
-  @_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
-    get { _suiUnimplemented("SwiftUI.ForEach.body") }
-  }
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
   nonisolated public static func _entryCount(inputs: SwiftUI._AccessibilityRotorEntryInputs) -> Swift.Int? { _suiUnimplemented("SwiftUI.ForEach._entryCount(inputs:)") }
   nonisolated public static func _makeEntries(content: SwiftUI._GraphValue<SwiftUI.ForEach<Data, ID, Content>>, inputs: SwiftUI._AccessibilityRotorEntryInputs) -> SwiftUI._AccessibilityRotorEntryOutputs { _suiUnimplemented("SwiftUI.ForEach._makeEntries(content:inputs:)") }
-  @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-  public typealias Body = Swift.Never
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.ForEach where ID == Data.Element.ID, Content : SwiftUI.AccessibilityRotorContent, Data.Element : Swift.Identifiable {
@@ -10185,9 +10286,8 @@ extension SwiftUI.AccessibilityRotorEntry : SwiftUI.AccessibilityRotorContent {
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.Group : SwiftUI.AccessibilityRotorContent where Content : SwiftUI.AccessibilityRotorContent {
-  @_Concurrency.MainActor @preconcurrency public var body: Swift.Never {
-    get { _suiUnimplemented("SwiftUI.Group.body") }
-  }
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
   @usableFromInline
   @_disfavoredOverload internal init(@SwiftUI.AccessibilityRotorContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUI.Group.init(content:)") }
   nonisolated public static func _makeEntries(content: SwiftUI._GraphValue<SwiftUI.Group<Content>>, inputs: SwiftUI._AccessibilityRotorEntryInputs) -> SwiftUI._AccessibilityRotorEntryOutputs { _suiUnimplemented("SwiftUI.Group._makeEntries(content:inputs:)") }
@@ -10203,6 +10303,8 @@ public struct PresentationMode : ~Swift.Sendable {
     get { _suiUnimplemented("SwiftUI.PresentationMode.isPresented") }
   }
   public mutating func dismiss() { _suiUnimplemented("SwiftUI.PresentationMode.dismiss()") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PresentationMode.init()") }
 }
 #else
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use EnvironmentValues.isPresented or EnvironmentValues.dismiss")
@@ -10244,7 +10346,9 @@ public struct PrimitiveButtonStyleConfiguration : ~Swift.Sendable {
     nonisolated public static func _viewListCount(inputs: SwiftUI._ViewListCountInputs) -> Swift.Int? { _suiUnimplemented("SwiftUI.PrimitiveButtonStyleConfiguration.Label._viewListCount(inputs:)") }
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.PrimitiveButtonStyleConfiguration.Label.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.PrimitiveButtonStyleConfiguration.Label.body") } }
 }
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -10271,8 +10375,7 @@ public struct PrimitiveButtonStyleConfiguration {
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func buttonStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.PrimitiveButtonStyle { _suiUnimplemented("SwiftUI.View.buttonStyle(_:)") }
+  nonisolated public func buttonStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.PrimitiveButtonStyle { _suiUnimplemented("SwiftUI.View.buttonStyle(_:)") }
 }
 @available(macOS 26.0, visionOS 26.0, *)
 @available(tvOS, unavailable)
@@ -10291,6 +10394,8 @@ public struct RemoteDeviceIdentifier : Swift.Sendable, Swift.Hashable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.RemoteDeviceIdentifier.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.RemoteDeviceIdentifier.init()") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 17.0, *)
 @available(watchOS, unavailable)
@@ -10305,8 +10410,7 @@ extension SwiftUI.ControlGroupStyle where Self == SwiftUI.AutomaticControlGroupS
 nonisolated public struct AutomaticControlGroupStyle : SwiftUI.ControlGroupStyle, ~Swift.Sendable {
   @usableFromInline
   nonisolated internal init() { _suiUnimplemented("SwiftUI.AutomaticControlGroupStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.AutomaticControlGroupStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AutomaticControlGroupStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.AutomaticControlGroupStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.AutomaticControlGroupStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 17.0, *)
@@ -10338,8 +10442,7 @@ extension SwiftUI.GroupBoxStyle where Self == SwiftUI.DefaultGroupBoxStyle {
 @available(watchOS, unavailable)
 nonisolated public struct DefaultGroupBoxStyle : SwiftUI.GroupBoxStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.DefaultGroupBoxStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.DefaultGroupBoxStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultGroupBoxStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.DefaultGroupBoxStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.DefaultGroupBoxStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -10374,7 +10477,7 @@ internal class LimitedAvailabilityPrintContentStorageBase {
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @preconcurrency @_Concurrency.MainActor public protocol App {
   associatedtype Body : SwiftUI.Scene
-  @SwiftUI.SceneBuilder @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
+   @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
   @_Concurrency.MainActor @preconcurrency init()
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -10411,6 +10514,8 @@ extension SwiftUI.App {
   public var rawValue: Swift.Int8 {
     get { _suiUnimplemented("SwiftUI.FrameResizePosition.rawValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.FrameResizePosition.init()") }
 }
 @available(macOS 15.0, *)
 @available(tvOS, unavailable)
@@ -10458,11 +10563,13 @@ public static var all: SwiftUI.FrameResizeDirection.Set { get { _suiUnimplemente
   public var rawValue: Swift.Int8 {
     get { _suiUnimplemented("SwiftUI.FrameResizeDirection.rawValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.FrameResizeDirection.init()") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@frozen @propertyWrapper public struct FocusState<Value> : SwiftUI.DynamicProperty, ~Swift.Sendable where Value : Swift.Hashable {
-  @frozen @propertyWrapper public struct Binding : ~Swift.Sendable {
+@frozen  public struct FocusState<Value> : SwiftUI.DynamicProperty, ~Swift.Sendable where Value : Swift.Hashable {
+  @frozen  public struct Binding : ~Swift.Sendable {
     private var _binding: SwiftUI.Binding<Value>
     public var wrappedValue: Value {
       get { _suiUnimplemented("SwiftUI.FocusState.Binding.wrappedValue") }
@@ -10492,8 +10599,8 @@ public static var all: SwiftUI.FrameResizeDirection.Set { get { _suiUnimplemente
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@frozen @propertyWrapper public struct FocusState<Value> : SwiftUI.DynamicProperty where Value : Swift.Hashable {
-  @frozen @propertyWrapper public struct Binding {
+@frozen  public struct FocusState<Value> : SwiftUI.DynamicProperty where Value : Swift.Hashable {
+  @frozen  public struct Binding {
     private var _binding: SwiftUI.Binding<Value>
     public var wrappedValue: Value {
       get
@@ -10524,11 +10631,9 @@ public static var all: SwiftUI.FrameResizeDirection.Set { get { _suiUnimplemente
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func focused<Value>(_ binding: SwiftUI.FocusState<Value>.Binding, equals value: Value) -> Swift.Never where Value : Swift.Hashable { _suiUnimplemented("SwiftUI.View.focused(_:equals:)") }
+  nonisolated public func focused<Value>(_ binding: SwiftUI.FocusState<Value>.Binding, equals value: Value) -> some SwiftUI.View where Value : Swift.Hashable { _suiUnimplemented("SwiftUI.View.focused(_:equals:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func focused(_ condition: SwiftUI.FocusState<Swift.Bool>.Binding) -> Swift.Never { _suiUnimplemented("SwiftUI.View.focused(_:)") }
+  nonisolated public func focused(_ condition: SwiftUI.FocusState<Swift.Bool>.Binding) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.focused(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
@@ -10537,7 +10642,9 @@ nonisolated public func focused(_ condition: SwiftUI.FocusState<Swift.Bool>.Bind
 public struct DropSession : Swift.Identifiable, ~Swift.Sendable {
   public struct LocalSession : ~Swift.Sendable {
     public func draggedItemIDs<ItemID>(for type: ItemID.Type) -> [ItemID] where ItemID : Swift.Hashable { _suiUnimplemented("SwiftUI.DropSession.LocalSession.draggedItemIDs(for:)") }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.DropSession.LocalSession.init()") }
+}
   public struct ID : Swift.Sendable, Swift.Hashable, Swift.Equatable {
         public func matches(_ dropSession: any UIKit.UIDropSession) -> Swift.Bool { _suiUnimplemented("SwiftUI.DropSession.ID.matches(_:)") }
     public static func == (a: SwiftUI.DropSession.ID, b: SwiftUI.DropSession.ID) -> Swift.Bool { _suiUnimplemented("SwiftUI.DropSession.ID.==(a:b:)") }
@@ -10545,7 +10652,9 @@ public struct DropSession : Swift.Identifiable, ~Swift.Sendable {
     public var hashValue: Swift.Int {
       get { _suiUnimplemented("SwiftUI.DropSession.ID.hashValue") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.DropSession.ID.init()") }
+}
   public enum Phase : Swift.Sendable, Swift.Hashable, Swift.Equatable {
     case entering
     case active
@@ -10557,7 +10666,9 @@ public struct DropSession : Swift.Identifiable, ~Swift.Sendable {
     public var hashValue: Swift.Int {
       get { _suiUnimplemented("SwiftUI.DropSession.Phase.hashValue") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.DropSession.Phase.init()") }
+}
   public var id: SwiftUI.DropSession.ID {
     get { _suiUnimplemented("SwiftUI.DropSession.id") }
   }
@@ -10639,8 +10750,7 @@ extension SwiftUI.DropSession : Swift.CustomDebugStringConvertible {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onModifierKeysChanged(mask: SwiftUI.EventModifiers = .all, initial: Swift.Bool = true, _ action: @escaping (_ old: SwiftUI.EventModifiers, _ new: SwiftUI.EventModifiers) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onModifierKeysChanged(mask:initial:_:)") }
+  nonisolated public func onModifierKeysChanged(mask: SwiftUI.EventModifiers = .all, initial: Swift.Bool = true, _ action: @escaping (_ old: SwiftUI.EventModifiers, _ new: SwiftUI.EventModifiers) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onModifierKeysChanged(mask:initial:_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, visionOS 1.0, *)
@@ -10653,7 +10763,9 @@ nonisolated public func onModifierKeysChanged(mask: SwiftUI.EventModifiers = .al
     @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI.View {
       get { _suiUnimplemented("SwiftUI.AutomaticTextEditorStyle.Body.body") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.AutomaticTextEditorStyle.Body.init()") }
+}
 }
 #else
 @available(iOS 17.0, macOS 14.0, visionOS 1.0, *)
@@ -10696,7 +10808,11 @@ public struct AnimationTimelineSchedule : SwiftUI.TimelineSchedule, Swift.Sendab
     public typealias Element = Foundation.Date
     @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
     public typealias Iterator = SwiftUI.AnimationTimelineSchedule.Entries
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.AnimationTimelineSchedule.Entries.init()") }
+}
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.AnimationTimelineSchedule.init()") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.PrimitiveButtonStyle where Self == SwiftUI.PlainButtonStyle {
@@ -10708,8 +10824,7 @@ extension SwiftUI.PrimitiveButtonStyle where Self == SwiftUI.PlainButtonStyle {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 nonisolated public struct PlainButtonStyle : SwiftUI.PrimitiveButtonStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.PlainButtonStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.PlainButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.PlainButtonStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.PlainButtonStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.PlainButtonStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -10771,11 +10886,12 @@ public struct SubmitLabel : Swift.Sendable {
   public static var `continue`: SwiftUI.SubmitLabel {
     get { _suiUnimplemented("SwiftUI.SubmitLabel.continue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SubmitLabel.init()") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func submitLabel(_ submitLabel: SwiftUI.SubmitLabel) -> Swift.Never { _suiUnimplemented("SwiftUI.View.submitLabel(_:)") }
+  nonisolated public func submitLabel(_ submitLabel: SwiftUI.SubmitLabel) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.submitLabel(_:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public protocol NavigationTransition {
@@ -10783,19 +10899,24 @@ public protocol NavigationTransition {
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public struct _NavigationTransitionInputs : Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._NavigationTransitionInputs.init()") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public struct _NavigationTransitionOutputs : Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._NavigationTransitionOutputs.init()") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  nonisolated public func navigationTransition(_ style: some NavigationTransition) -> Swift.Never { _suiUnimplemented("SwiftUI.View.navigationTransition(_:)") }
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+  nonisolated public func navigationTransition(_ style: some NavigationTransition) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationTransition(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public struct AutomaticNavigationTransition : SwiftUI.NavigationTransition, ~Swift.Sendable {
   public func _outputs(for inputs: SwiftUI._NavigationTransitionInputs) -> SwiftUI._NavigationTransitionOutputs { _suiUnimplemented("SwiftUI.AutomaticNavigationTransition._outputs(for:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.AutomaticNavigationTransition.init()") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -10813,6 +10934,8 @@ extension SwiftUI.NavigationTransition where Self == SwiftUI.AutomaticNavigation
 @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public struct ZoomNavigationTransition : SwiftUI.NavigationTransition, ~Swift.Sendable {
   public func _outputs(for inputs: SwiftUI._NavigationTransitionInputs) -> SwiftUI._NavigationTransitionOutputs { _suiUnimplemented("SwiftUI.ZoomNavigationTransition._outputs(for:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ZoomNavigationTransition.init()") }
 }
 #else
 @available(iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -10827,6 +10950,8 @@ extension SwiftUI.NavigationTransition where Self == SwiftUI.ZoomNavigationTrans
 @available(iOS 27.0, watchOS 27.0, tvOS 27.0, visionOS 27.0, *)
 public struct CrossFadeNavigationTransition : SwiftUI.NavigationTransition, Swift.Sendable {
   public func _outputs(for inputs: SwiftUI._NavigationTransitionInputs) -> SwiftUI._NavigationTransitionOutputs { _suiUnimplemented("SwiftUI.CrossFadeNavigationTransition._outputs(for:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.CrossFadeNavigationTransition.init()") }
 }
 @available(iOS 27.0, watchOS 27.0, tvOS 27.0, visionOS 27.0, *)
 extension SwiftUI.NavigationTransition where Self == SwiftUI.CrossFadeNavigationTransition {
@@ -10839,6 +10964,8 @@ extension SwiftUI.NavigationTransition where Self == SwiftUI.CrossFadeNavigation
 public struct AnyNavigationTransition : SwiftUI.NavigationTransition, ~Swift.Sendable {
   public init(_ transition: some NavigationTransition) { _suiUnimplemented("SwiftUI.AnyNavigationTransition.init(_:)") }
   public func _outputs(for inputs: SwiftUI._NavigationTransitionInputs) -> SwiftUI._NavigationTransitionOutputs { _suiUnimplemented("SwiftUI.AnyNavigationTransition._outputs(for:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.AnyNavigationTransition.init()") }
 }
 #else
 @available(iOS 27.0, macOS 27.0, watchOS 27.0, tvOS 27.0, visionOS 27.0, *)
@@ -10848,9 +10975,8 @@ public struct AnyNavigationTransition : SwiftUI.NavigationTransition {
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  nonisolated public func tabBarMinimizeBehavior(_ behavior: SwiftUI.TabBarMinimizeBehavior) -> Swift.Never { _suiUnimplemented("SwiftUI.View.tabBarMinimizeBehavior(_:)") }
+  @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
+  nonisolated public func tabBarMinimizeBehavior(_ behavior: SwiftUI.TabBarMinimizeBehavior) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.tabBarMinimizeBehavior(_:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 public struct TabBarMinimizeBehavior : Swift.Hashable, Swift.Sendable {
@@ -10911,8 +11037,7 @@ extension SwiftUI.MenuStyle where Self == SwiftUI.ButtonMenuStyle {
 @available(watchOS, unavailable)
 nonisolated public struct ButtonMenuStyle : SwiftUI.MenuStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.ButtonMenuStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.ButtonMenuStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.ButtonMenuStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.ButtonMenuStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.ButtonMenuStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 17.0, *)
@@ -10926,8 +11051,7 @@ nonisolated public struct ButtonMenuStyle : SwiftUI.MenuStyle {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onLongTouchGesture(minimumDuration: Swift.Double = 0.5, perform action: @escaping () -> Swift.Void, onTouchingChanged: ((Swift.Bool) -> Swift.Void)? = nil) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onLongTouchGesture(minimumDuration:perform:onTouchingChanged:)") }
+  nonisolated public func onLongTouchGesture(minimumDuration: Swift.Double = 0.5, perform action: @escaping () -> Swift.Void, onTouchingChanged: ((Swift.Bool) -> Swift.Void)? = nil) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onLongTouchGesture(minimumDuration:perform:onTouchingChanged:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct ToolbarCustomizationBehavior : Swift.Sendable {
@@ -10940,6 +11064,8 @@ public struct ToolbarCustomizationBehavior : Swift.Sendable {
   public static var disabled: SwiftUI.ToolbarCustomizationBehavior {
     get { _suiUnimplemented("SwiftUI.ToolbarCustomizationBehavior.disabled") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ToolbarCustomizationBehavior.init()") }
 }
 extension SwiftUI.CustomizableToolbarContent {
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -10952,6 +11078,8 @@ extension SwiftUI.CustomizableToolbarContent {
   @_Concurrency.MainActor public func callAsFunction<D>(value: D) where D : Swift.Decodable, D : Swift.Encodable, D : Swift.Hashable { _suiUnimplemented("SwiftUI.PushWindowAction.callAsFunction(value:)") }
   @_Concurrency.MainActor public func callAsFunction(id: Swift.String) { _suiUnimplemented("SwiftUI.PushWindowAction.callAsFunction(id:)") }
   @_Concurrency.MainActor public func callAsFunction<D>(id: Swift.String, value: D) where D : Swift.Decodable, D : Swift.Encodable, D : Swift.Hashable { _suiUnimplemented("SwiftUI.PushWindowAction.callAsFunction(id:value:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PushWindowAction.init()") }
 }
 @available(visionOS 2.0, *)
 @available(tvOS, unavailable)
@@ -10986,6 +11114,8 @@ nonisolated public struct TextFieldLink<Label> : SwiftUI.View, ~Swift.Sendable w
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.TextFieldLink.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TextFieldLink.init()") }
 }
 #else
 @available(watchOS 9.0, *)
@@ -11156,25 +11286,24 @@ internal class LimitedAvailabilityConfigurationBase {
 @available(watchOS, unavailable)
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func badge(_ count: Swift.Int) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.badge(_:)") }
+nonisolated public func badge(_ count: Swift.Int) -> Self { _suiUnimplemented("SwiftUI.TabContent.badge(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func badge(_ label: SwiftUI.Text?) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.badge(_:)") }
+nonisolated public func badge(_ label: SwiftUI.Text?) -> Self { _suiUnimplemented("SwiftUI.TabContent.badge(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func badge(_ key: SwiftUI.LocalizedStringKey) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.badge(_:)") }
+nonisolated public func badge(_ key: SwiftUI.LocalizedStringKey) -> Self { _suiUnimplemented("SwiftUI.TabContent.badge(_:)") }
   
   @_disfavoredOverload @export(implementation) nonisolated public func badge(_ resource: FoundationShims.LocalizedStringResource) -> some SwiftUI.TabContent<Self.TabValue> {
         badge(Text(resource))
     }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func badge<S>(_ label: S) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.TabContent.badge(_:)") }
+@_disfavoredOverload nonisolated public func badge<S>(_ label: S) -> Self where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.TabContent.badge(_:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func refreshable(@_inheritActorContext action: @escaping @Sendable () async -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.refreshable(action:)") }
+  nonisolated public func refreshable(@_inheritActorContext action: @escaping @Sendable () async -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.refreshable(action:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.EnvironmentValues {
@@ -11185,13 +11314,15 @@ extension SwiftUI.EnvironmentValues {
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 public struct RefreshAction : Swift.Sendable {
   public func callAsFunction() async { _suiUnimplemented("SwiftUI.RefreshAction.callAsFunction()") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.RefreshAction.init()") }
 }
 @available(macOS 26.0, visionOS 1.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @preconcurrency @_Concurrency.MainActor public protocol ImmersiveSpaceContent {
   associatedtype Body : SwiftUI.ImmersiveSpaceContent
-  @SwiftUI.ImmersiveSpaceContentBuilder @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
+   @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(macOS 26.0, visionOS 1.0, *)
@@ -11199,6 +11330,8 @@ public struct RefreshAction : Swift.Sendable {
 @available(watchOS, unavailable)
 @_functionBuilder public struct ImmersiveSpaceContentBuilder : ~Swift.Sendable {
   public static func buildBlock<Content>(_ content: Content) -> Content where Content : SwiftUI.ImmersiveSpaceContent { _suiUnimplemented("SwiftUI.ImmersiveSpaceContentBuilder.buildBlock(_:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ImmersiveSpaceContentBuilder.init()") }
 }
 #else
 @available(macOS 26.0, visionOS 1.0, *)
@@ -11223,8 +11356,7 @@ extension SwiftUI.NavigationSplitViewStyle where Self == SwiftUI.ProminentDetail
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_Concurrency.MainActor @preconcurrency public struct ProminentDetailNavigationSplitViewStyle : SwiftUI.NavigationSplitViewStyle, ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public init() { _suiUnimplemented("SwiftUI.ProminentDetailNavigationSplitViewStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.ProminentDetailNavigationSplitViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.ProminentDetailNavigationSplitViewStyle.makeBody(configuration:)") }
+  @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.ProminentDetailNavigationSplitViewStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.ProminentDetailNavigationSplitViewStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -11329,6 +11461,8 @@ nonisolated public struct DefaultSettingsLinkLabel : SwiftUI.View, ~Swift.Sendab
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.DefaultSettingsLinkLabel.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DefaultSettingsLinkLabel.init()") }
 }
 #else
 @available(macOS 14.0, *)
@@ -11359,8 +11493,7 @@ extension SwiftUI.PrimitiveButtonStyle where Self == SwiftUI.AccessoryBarButtonS
 @available(watchOS, unavailable)
 nonisolated public struct AccessoryBarButtonStyle : SwiftUI.PrimitiveButtonStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.AccessoryBarButtonStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.AccessoryBarButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AccessoryBarButtonStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.AccessoryBarButtonStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.AccessoryBarButtonStyle.makeBody(configuration:)") }
 }
 #else
 @available(macOS 14.0, *)
@@ -11385,8 +11518,7 @@ extension SwiftUI.PrimitiveButtonStyle where Self == SwiftUI.AccessoryBarActionB
 @available(watchOS, unavailable)
 nonisolated public struct AccessoryBarActionButtonStyle : SwiftUI.PrimitiveButtonStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.AccessoryBarActionButtonStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.AccessoryBarActionButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AccessoryBarActionButtonStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.AccessoryBarActionButtonStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.AccessoryBarActionButtonStyle.makeBody(configuration:)") }
 }
 #else
 @available(macOS 14.0, *)
@@ -11436,6 +11568,8 @@ extension Swift.Never : SwiftUI.ToolbarContent, SwiftUI.CustomizableToolbarConte
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct _ToolbarInputs : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._ToolbarInputs.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -11445,6 +11579,8 @@ public struct _ToolbarInputs {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct _ToolbarOutputs : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._ToolbarOutputs.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -11454,6 +11590,8 @@ public struct _ToolbarOutputs {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct _ToolbarItemList : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._ToolbarItemList.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -11484,6 +11622,8 @@ public struct _ToolbarItemList {
     }
   #endif
   public static func buildBlock<Content>(_ content: Content) -> some SwiftUI.CustomizableToolbarContent where Content : SwiftUI.CustomizableToolbarContent { _suiUnimplemented("SwiftUI.ToolbarContentBuilder.buildBlock(_:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ToolbarContentBuilder.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -11559,12 +11699,11 @@ extension SwiftUI.ToolbarContentBuilder {
     }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(macOS 27.2, macCatalyst 27.2, *)
+  @available(macOS 27.2, macCatalyst 27.2, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  @_Concurrency.MainActor @preconcurrency public func directTouchSystemGesturesDisabled(_ prefersDisabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.View.directTouchSystemGesturesDisabled(_:)") }
+  @_Concurrency.MainActor @preconcurrency public func directTouchSystemGesturesDisabled(_ prefersDisabled: Swift.Bool = true) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.directTouchSystemGesturesDisabled(_:)") }
 }
 @available(macOS 11.0, *)
 @available(tvOS, unavailable)
@@ -11604,8 +11743,7 @@ extension SwiftUI.LabelStyle where Self == SwiftUI.IconOnlyLabelStyle {
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 nonisolated public struct IconOnlyLabelStyle : SwiftUI.LabelStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.IconOnlyLabelStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.IconOnlyLabelStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.IconOnlyLabelStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.IconOnlyLabelStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.IconOnlyLabelStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -11636,7 +11774,9 @@ public struct _NavigationViewStyleConfiguration : ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public struct Content : SwiftUI.View, ~Swift.Sendable {
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI._NavigationViewStyleConfiguration.Content.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._NavigationViewStyleConfiguration.Content.body") } }
 }
   public let content: SwiftUI._NavigationViewStyleConfiguration.Content
@@ -11653,13 +11793,12 @@ public struct _NavigationViewStyleConfiguration {
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
   @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
   @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
   @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
-  nonisolated public func navigationViewStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.NavigationViewStyle { _suiUnimplemented("SwiftUI.View.navigationViewStyle(_:)") }
+  nonisolated public func navigationViewStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.NavigationViewStyle { _suiUnimplemented("SwiftUI.View.navigationViewStyle(_:)") }
 }
 @available(iOS 14.0, macOS 11.0, *)
 @available(tvOS, unavailable)
@@ -11668,9 +11807,8 @@ extension SwiftUI.Scene {
   nonisolated public func handlesExternalEvents(matching conditions: Swift.Set<Swift.String>) -> some SwiftUI.Scene { _suiUnimplemented("SwiftUI.Scene.handlesExternalEvents(matching:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func persistentSystemOverlays(_ visibility: SwiftUI.Visibility) -> Swift.Never { _suiUnimplemented("SwiftUI.View.persistentSystemOverlays(_:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func persistentSystemOverlays(_ visibility: SwiftUI.Visibility) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.persistentSystemOverlays(_:)") }
 }
 @available(macOS 26.0, visionOS 26.0, *)
 @available(tvOS, unavailable)
@@ -11775,14 +11913,12 @@ extension SwiftUI.MagnifyGesture {
 @available(iOS 13.0, macOS 10.15, tvOS 14.0, *)
 @available(watchOS, introduced: 6.0, deprecated: 7.0)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func contextMenu<MenuItems>(@SwiftUI.ContentBuilder menuItems: () -> MenuItems) -> Swift.Never where MenuItems : SwiftUI.View { _suiUnimplemented("SwiftUI.View.contextMenu(menuItems:)") }
+  nonisolated public func contextMenu<MenuItems>(@SwiftUI.ContentBuilder menuItems: () -> MenuItems) -> some SwiftUI.View where MenuItems : SwiftUI.View { _suiUnimplemented("SwiftUI.View.contextMenu(menuItems:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, *)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func contextMenu<M, P>(@SwiftUI.ContentBuilder menuItems: () -> M, @SwiftUI.ContentBuilder preview: () -> P) -> Swift.Never where M : SwiftUI.View, P : SwiftUI.View { _suiUnimplemented("SwiftUI.View.contextMenu(menuItems:preview:)") }
+  nonisolated public func contextMenu<M, P>(@SwiftUI.ContentBuilder menuItems: () -> M, @SwiftUI.ContentBuilder preview: () -> P) -> some SwiftUI.View where M : SwiftUI.View, P : SwiftUI.View { _suiUnimplemented("SwiftUI.View.contextMenu(menuItems:preview:)") }
 }
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use `contextMenu(menuItems:)` instead.")
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `contextMenu(menuItems:)` instead.")
@@ -11790,8 +11926,7 @@ nonisolated public func contextMenu<M, P>(@SwiftUI.ContentBuilder menuItems: () 
 @available(watchOS, introduced: 6.0, deprecated: 7.0)
 @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use `contextMenu(menuItems:)` instead.")
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func contextMenu<MenuItems>(_ contextMenu: SwiftUI.ContextMenu<MenuItems>?) -> Swift.Never where MenuItems : SwiftUI.View { _suiUnimplemented("SwiftUI.View.contextMenu(_:)") }
+  nonisolated public func contextMenu<MenuItems>(_ contextMenu: SwiftUI.ContextMenu<MenuItems>?) -> some SwiftUI.View where MenuItems : SwiftUI.View { _suiUnimplemented("SwiftUI.View.contextMenu(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use `contextMenu(menuItems:)` instead.")
@@ -11801,6 +11936,8 @@ nonisolated public func contextMenu<MenuItems>(_ contextMenu: SwiftUI.ContextMen
 @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use `contextMenu(menuItems:)` instead.")
 public struct ContextMenu<MenuItems> : ~Swift.Sendable where MenuItems : SwiftUI.View {
   public init(@SwiftUI.ContentBuilder menuItems: () -> MenuItems) { _suiUnimplemented("SwiftUI.ContextMenu.init(menuItems:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ContextMenu.init()") }
 }
 #else
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use `contextMenu(menuItems:)` instead.")
@@ -11814,8 +11951,7 @@ public struct ContextMenu<MenuItems> where MenuItems : SwiftUI.View {
 #endif
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func windowToolbarFullScreenVisibility(_ visibility: SwiftUI.WindowToolbarFullScreenVisibility) -> Swift.Never { _suiUnimplemented("SwiftUI.View.windowToolbarFullScreenVisibility(_:)") }
+  nonisolated public func windowToolbarFullScreenVisibility(_ visibility: SwiftUI.WindowToolbarFullScreenVisibility) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.windowToolbarFullScreenVisibility(_:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public struct WindowToolbarFullScreenVisibility : Swift.Sendable {
@@ -11837,9 +11973,8 @@ extension SwiftUI.DynamicViewContent {
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   nonisolated public func dropDestination<T>(for payloadType: T.Type = T.self, action: @escaping ([T], Swift.Int) -> Swift.Void) -> Swift.Never where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.DynamicViewContent.dropDestination(for:action:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(*, unavailable, message: "Unavailable for DynamicViewContent, use `dropDestination(for:action:)` instead.")
-  public func dropDestination<T>(for payloadType: T.Type = T.self, action: @escaping (_ items: [T], _ location: CoreGraphics.CGPoint) -> Swift.Bool, isTargeted: (Swift.Bool) -> Swift.Void = { _ in }) -> Swift.Never where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.DynamicViewContent.dropDestination(for:action:isTargeted:)") }
+  @available(*, unavailable, message: "Unavailable for DynamicViewContent, use `dropDestination(for:action:)` instead.")
+  public func dropDestination<T>(for payloadType: T.Type = T.self, action: @escaping (_ items: [T], _ location: CoreGraphics.CGPoint) -> Swift.Bool, isTargeted: (Swift.Bool) -> Swift.Void = { _ in }) -> some SwiftUI.View where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.DynamicViewContent.dropDestination(for:action:isTargeted:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.DynamicViewContent {
@@ -11863,6 +11998,8 @@ nonisolated public struct NewDocumentButton<Label> : SwiftUI.View, ~Swift.Sendab
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.NewDocumentButton.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.NewDocumentButton.init()") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
@@ -11884,6 +12021,8 @@ extension SwiftUI.NewDocumentButton : Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.DefaultNewDocumentButtonLabel.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DefaultNewDocumentButtonLabel.init()") }
 }
 @available(*, unavailable)
 extension SwiftUI.DefaultNewDocumentButtonLabel : Swift.Sendable {
@@ -11967,40 +12106,33 @@ public static var search: SwiftUI.SubmitTriggers { get { _suiUnimplemented("Swif
   public typealias Element = SwiftUI.SubmitTriggers
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func toolbarBackground<S>(_ style: S, for bars: SwiftUI.ToolbarPlacement...) -> Swift.Never where S : SwiftUI.ShapeStyle { _suiUnimplemented("SwiftUI.View.toolbarBackground(_:for:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func toolbarBackground<S>(_ style: S, for bars: SwiftUI.ToolbarPlacement...) -> some SwiftUI.View where S : SwiftUI.ShapeStyle { _suiUnimplemented("SwiftUI.View.toolbarBackground(_:for:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 16.0, deprecated: 100000.0, renamed: "toolbarBackgroundVisibility(_:for:)")
+  @available(iOS, introduced: 16.0, deprecated: 100000.0, renamed: "toolbarBackgroundVisibility(_:for:)")
   @available(macOS, introduced: 13.0, deprecated: 100000.0, renamed: "toolbarBackgroundVisibility(_:for:)")
   @available(tvOS, introduced: 16.0, deprecated: 100000.0, renamed: "toolbarBackgroundVisibility(_:for:)")
   @available(watchOS, introduced: 9.0, deprecated: 100000.0, renamed: "toolbarBackgroundVisibility(_:for:)")
-  nonisolated public func toolbarBackground(_ visibility: SwiftUI.Visibility, for bars: SwiftUI.ToolbarPlacement...) -> Swift.Never { _suiUnimplemented("SwiftUI.View.toolbarBackground(_:for:)") }
+  nonisolated public func toolbarBackground(_ visibility: SwiftUI.Visibility, for bars: SwiftUI.ToolbarPlacement...) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarBackground(_:for:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  nonisolated public func toolbarBackgroundVisibility(_ visibility: SwiftUI.Visibility, for bars: SwiftUI.ToolbarPlacement...) -> Swift.Never { _suiUnimplemented("SwiftUI.View.toolbarBackgroundVisibility(_:for:)") }
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+  nonisolated public func toolbarBackgroundVisibility(_ visibility: SwiftUI.Visibility, for bars: SwiftUI.ToolbarPlacement...) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarBackgroundVisibility(_:for:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func toolbarColorScheme(_ colorScheme: SwiftUI.ColorScheme?, for bars: SwiftUI.ToolbarPlacement...) -> Swift.Never { _suiUnimplemented("SwiftUI.View.toolbarColorScheme(_:for:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func toolbarColorScheme(_ colorScheme: SwiftUI.ColorScheme?, for bars: SwiftUI.ToolbarPlacement...) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarColorScheme(_:for:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 16.0, deprecated: 100000.0, renamed: "toolbarVisibility(_:for:)")
+  @available(iOS, introduced: 16.0, deprecated: 100000.0, renamed: "toolbarVisibility(_:for:)")
   @available(macOS, introduced: 13.0, deprecated: 100000.0, renamed: "toolbarVisibility(_:for:)")
   @available(tvOS, introduced: 16.0, deprecated: 100000.0, renamed: "toolbarVisibility(_:for:)")
   @available(watchOS, introduced: 9.0, deprecated: 100000.0, renamed: "toolbarVisibility(_:for:)")
-  nonisolated public func toolbar(_ visibility: SwiftUI.Visibility, for bars: SwiftUI.ToolbarPlacement...) -> Swift.Never { _suiUnimplemented("SwiftUI.View.toolbar(_:for:)") }
+  nonisolated public func toolbar(_ visibility: SwiftUI.Visibility, for bars: SwiftUI.ToolbarPlacement...) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbar(_:for:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  nonisolated public func toolbarVisibility(_ visibility: SwiftUI.Visibility, for bars: SwiftUI.ToolbarPlacement...) -> Swift.Never { _suiUnimplemented("SwiftUI.View.toolbarVisibility(_:for:)") }
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+  nonisolated public func toolbarVisibility(_ visibility: SwiftUI.Visibility, for bars: SwiftUI.ToolbarPlacement...) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarVisibility(_:for:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(watchOS 9.0, *)
+  @available(watchOS 9.0, *)
       @available(tvOS, unavailable)
-  nonisolated public func toolbarForegroundStyle<S>(_ style: S, for bars: SwiftUI.ToolbarPlacement...) -> Swift.Never where S : SwiftUI.ShapeStyle { _suiUnimplemented("SwiftUI.View.toolbarForegroundStyle(_:for:)") }
+  nonisolated public func toolbarForegroundStyle<S>(_ style: S, for bars: SwiftUI.ToolbarPlacement...) -> some SwiftUI.View where S : SwiftUI.ShapeStyle { _suiUnimplemented("SwiftUI.View.toolbarForegroundStyle(_:for:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -12011,6 +12143,8 @@ internal struct ItemProviderTraitKey : SwiftUI._ViewTraitKey, ~Swift.Sendable {
   @inlinable internal static var defaultValue: SwiftUI.ItemProviderTraitKey.Value {
     get { nil }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ItemProviderTraitKey.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -12060,33 +12194,29 @@ extension SwiftUI.DynamicViewContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 27.0, macOS 27.0, watchOS 27.0, visionOS 27.0, *)
   @available(tvOS, unavailable)
-  nonisolated public func reorderable() -> Swift.Never { _suiUnimplemented("SwiftUI.DynamicViewContent.reorderable()") }
+  nonisolated public func reorderable() -> Self { _suiUnimplemented("SwiftUI.DynamicViewContent.reorderable()") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 27.0, macOS 27.0, watchOS 27.0, visionOS 27.0, *)
   @available(tvOS, unavailable)
-  nonisolated public func reorderable(collectionID: some Hashable & Sendable) -> Swift.Never { _suiUnimplemented("SwiftUI.DynamicViewContent.reorderable(collectionID:)") }
+  nonisolated public func reorderable(collectionID: some Hashable & Sendable) -> Self { _suiUnimplemented("SwiftUI.DynamicViewContent.reorderable(collectionID:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 27.0, macOS 27.0, watchOS 27.0, visionOS 27.0, *)
+  @available(iOS 27.0, macOS 27.0, watchOS 27.0, visionOS 27.0, *)
   @available(tvOS, unavailable)
-  nonisolated public func reorderContainer<Item>(for item: Item.Type, isEnabled: Swift.Bool = true, move: @escaping (_ difference: SwiftUI.ReorderDifference<Item.ID, SwiftUI.ReorderableSingleCollectionIdentifier>) -> ()) -> Swift.Never where Item : Swift.Identifiable, Item.ID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.reorderContainer(for:isEnabled:move:)") }
+  nonisolated public func reorderContainer<Item>(for item: Item.Type, isEnabled: Swift.Bool = true, move: @escaping (_ difference: SwiftUI.ReorderDifference<Item.ID, SwiftUI.ReorderableSingleCollectionIdentifier>) -> ()) -> some SwiftUI.View where Item : Swift.Identifiable, Item.ID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.reorderContainer(for:isEnabled:move:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 27.0, macOS 27.0, watchOS 27.0, visionOS 27.0, *)
+  @available(iOS 27.0, macOS 27.0, watchOS 27.0, visionOS 27.0, *)
   @available(tvOS, unavailable)
-  nonisolated public func reorderContainer<Item, CollectionID>(for item: Item.Type, in collectionID: CollectionID.Type, isEnabled: Swift.Bool = true, move: @escaping (_ difference: SwiftUI.ReorderDifference<Item.ID, CollectionID>) -> ()) -> Swift.Never where Item : Swift.Identifiable, CollectionID : Swift.Hashable, CollectionID : Swift.Sendable, Item.ID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.reorderContainer(for:in:isEnabled:move:)") }
+  nonisolated public func reorderContainer<Item, CollectionID>(for item: Item.Type, in collectionID: CollectionID.Type, isEnabled: Swift.Bool = true, move: @escaping (_ difference: SwiftUI.ReorderDifference<Item.ID, CollectionID>) -> ()) -> some SwiftUI.View where Item : Swift.Identifiable, CollectionID : Swift.Hashable, CollectionID : Swift.Sendable, Item.ID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.reorderContainer(for:in:isEnabled:move:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 27.0, macOS 27.0, watchOS 27.0, visionOS 27.0, *)
+  @available(iOS 27.0, macOS 27.0, watchOS 27.0, visionOS 27.0, *)
   @available(tvOS, unavailable)
-  nonisolated public func reorderContainer<Item, ItemID>(for item: Item.Type, itemID: Swift.KeyPath<Item, ItemID>, isEnabled: Swift.Bool = true, move: @escaping (_ difference: SwiftUI.ReorderDifference<ItemID, SwiftUI.ReorderableSingleCollectionIdentifier>) -> ()) -> Swift.Never where ItemID : Swift.Hashable, ItemID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.reorderContainer(for:itemID:isEnabled:move:)") }
+  nonisolated public func reorderContainer<Item, ItemID>(for item: Item.Type, itemID: Swift.KeyPath<Item, ItemID>, isEnabled: Swift.Bool = true, move: @escaping (_ difference: SwiftUI.ReorderDifference<ItemID, SwiftUI.ReorderableSingleCollectionIdentifier>) -> ()) -> some SwiftUI.View where ItemID : Swift.Hashable, ItemID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.reorderContainer(for:itemID:isEnabled:move:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 27.0, macOS 27.0, watchOS 27.0, visionOS 27.0, *)
+  @available(iOS 27.0, macOS 27.0, watchOS 27.0, visionOS 27.0, *)
   @available(tvOS, unavailable)
-  nonisolated public func reorderContainer<Item, ItemID, CollectionID>(for item: Item.Type, itemID: Swift.KeyPath<Item, ItemID>, in collectionID: CollectionID.Type, isEnabled: Swift.Bool = true, move: @escaping (_ difference: SwiftUI.ReorderDifference<ItemID, CollectionID>) -> ()) -> Swift.Never where ItemID : Swift.Hashable, ItemID : Swift.Sendable, CollectionID : Swift.Hashable, CollectionID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.reorderContainer(for:itemID:in:isEnabled:move:)") }
+  nonisolated public func reorderContainer<Item, ItemID, CollectionID>(for item: Item.Type, itemID: Swift.KeyPath<Item, ItemID>, in collectionID: CollectionID.Type, isEnabled: Swift.Bool = true, move: @escaping (_ difference: SwiftUI.ReorderDifference<ItemID, CollectionID>) -> ()) -> some SwiftUI.View where ItemID : Swift.Hashable, ItemID : Swift.Sendable, CollectionID : Swift.Hashable, CollectionID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.reorderContainer(for:itemID:in:isEnabled:move:)") }
 }
 @available(anyAppleOS 27.0, *)
 public struct ReorderableSingleCollectionIdentifier : Swift.Hashable, Swift.Sendable {
@@ -12095,6 +12225,8 @@ public struct ReorderableSingleCollectionIdentifier : Swift.Hashable, Swift.Send
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.ReorderableSingleCollectionIdentifier.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ReorderableSingleCollectionIdentifier.init()") }
 }
 @available(anyAppleOS 27.0, *)
 public struct ReorderDifference<ItemID, CollectionID> {
@@ -12102,7 +12234,9 @@ public struct ReorderDifference<ItemID, CollectionID> {
     @frozen public enum Position {
       case before(ItemID)
       case end
-    }
+          // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+      public init() { _suiUnimplemented("SwiftUI.ReorderDifference.Destination.Position.init()") }
+}
     public var collectionID: CollectionID
     public var position: SwiftUI.ReorderDifference<ItemID, CollectionID>.Destination.Position
     public init(position: SwiftUI.ReorderDifference<ItemID, CollectionID>.Destination.Position, collectionID: CollectionID) { _suiUnimplemented("SwiftUI.ReorderDifference.Destination.init(position:collectionID:)") }
@@ -12195,21 +12329,21 @@ public struct _PlatformViewRepresentableLayoutOptions : Swift.OptionSet {
 @available(tvOS, unavailable)
 public struct OrnamentAttachmentAnchor : Swift.Sendable {
   public static func scene(_ anchor: SwiftUI.UnitPoint) -> SwiftUI.OrnamentAttachmentAnchor { _suiUnimplemented("SwiftUI.OrnamentAttachmentAnchor.scene(_:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.OrnamentAttachmentAnchor.init()") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(visionOS 1.0, *)
+  @available(visionOS 1.0, *)
       @available(watchOS, unavailable)
   @available(tvOS, unavailable)
   @usableFromInline
-  @_disfavoredOverload nonisolated internal func ornament<Content>(visibility: SwiftUI.Visibility = .automatic, attachmentAnchor: SwiftUI.OrnamentAttachmentAnchor, contentAlignment: SwiftUI.Alignment = .center, @SwiftUI.ViewBuilder ornament: () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.ornament(visibility:attachmentAnchor:contentAlignment:ornament:)") }
+  @_disfavoredOverload nonisolated internal func ornament<Content>(visibility: SwiftUI.Visibility = .automatic, attachmentAnchor: SwiftUI.OrnamentAttachmentAnchor, contentAlignment: SwiftUI.Alignment = .center, @SwiftUI.ViewBuilder ornament: () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.ornament(visibility:attachmentAnchor:contentAlignment:ornament:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(visionOS 26.4, *)
+  @available(visionOS 26.4, *)
       @available(watchOS, unavailable)
   @available(tvOS, unavailable)
   @usableFromInline
-  nonisolated internal func ornamentV264<Content>(visibility: SwiftUI.Visibility = .automatic, attachmentAnchor: SwiftUI.OrnamentAttachmentAnchor, contentAlignment: SwiftUI.Alignment3D = .back, @SwiftUI.ViewBuilder ornament: () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.ornamentV264(visibility:attachmentAnchor:contentAlignment:ornament:)") }
+  nonisolated internal func ornamentV264<Content>(visibility: SwiftUI.Visibility = .automatic, attachmentAnchor: SwiftUI.OrnamentAttachmentAnchor, contentAlignment: SwiftUI.Alignment3D = .back, @SwiftUI.ViewBuilder ornament: () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.ornamentV264(visibility:attachmentAnchor:contentAlignment:ornament:)") }
 }
 extension SwiftUI.View {
   @available(visionOS 1.0, *)
@@ -12237,7 +12371,7 @@ extension SwiftUI.View {
   associatedtype _IdentifiedView : SwiftUI.View = SwiftUI._TabContentBodyAdaptor<Self>
   @_Concurrency.MainActor @preconcurrency var _identifiedView: Self._IdentifiedView { get }
   associatedtype Body : SwiftUI.TabContent
-  @SwiftUI.TabContentBuilder<Self.TabValue> @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
+   @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.TabContent where Self._IdentifiedView == SwiftUI._TabContentBodyAdaptor<Self> {
@@ -12253,6 +12387,8 @@ nonisolated public struct _TabContentBodyAdaptor<C> : SwiftUI.View, ~Swift.Senda
   }
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias Body = C.Body._IdentifiedView
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._TabContentBodyAdaptor.init()") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -12271,7 +12407,9 @@ nonisolated public struct _TabContentBodyAdaptor<C> : SwiftUI.View where C : Swi
     nonisolated public var body: some SwiftUI.View {
       get { _suiUnimplemented("SwiftUI.TabContentBuilder.Content.body") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.TabContentBuilder.Content.init()") }
+}
   #if compiler(>=5.3) && $InlineAlways
   @export(implementation) @inline(always) public static func buildExpression(_ content: some TabContent<TabValue>) -> some SwiftUI.TabContent<TabValue> {
         content
@@ -12320,6 +12458,8 @@ nonisolated public struct _TabContentBodyAdaptor<C> : SwiftUI.View where C : Swi
   @export(implementation) public static func buildLimitedAvailability<T>(_ content: T) -> SwiftUI.AnyTabContent<T.TabValue> where T : SwiftUI.TabContent {
         AnyTabContent(content)
     }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TabContentBuilder.init()") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -12387,10 +12527,10 @@ extension SwiftUI._ConditionalContent : SwiftUI.TabContent where TrueContent : S
   @_Concurrency.MainActor @preconcurrency public var _identifiedView: SwiftUI._ConditionalContent<TrueContent._IdentifiedView, FalseContent._IdentifiedView> {
     get { _suiUnimplemented("SwiftUI._ConditionalContent._identifiedView") }
   }
-  public typealias Body = SwiftUI._ConditionalContent<TrueContent, FalseContent>
-  @_Concurrency.MainActor @preconcurrency public var body: SwiftUI._ConditionalContent<TrueContent, FalseContent> {
-    get { _suiUnimplemented("SwiftUI._ConditionalContent.body") }
-  }
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias _IdentifiedView = SwiftUI._ConditionalContent<TrueContent._IdentifiedView, FalseContent._IdentifiedView>
 }
@@ -12402,10 +12542,10 @@ extension Swift.Optional : SwiftUI.TabContent where Wrapped : SwiftUI.TabContent
         self.map { $0._identifiedView }
     }
   }
-  public typealias Body = Swift.Optional<Wrapped>
-  @_Concurrency.MainActor @preconcurrency public var body: Swift.Optional<Wrapped> {
-    get { _suiUnimplemented("SwiftUI.Optional.body") }
-  }
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias _IdentifiedView = Wrapped._IdentifiedView?
 }
@@ -12419,10 +12559,10 @@ extension SwiftUI.ForEach : SwiftUI.TabContent where Content : SwiftUI.TabConten
   @_Concurrency.MainActor @preconcurrency public var _identifiedView: SwiftUI.ForEach<Data, ID, Content._IdentifiedView> {
     get { _suiUnimplemented("SwiftUI.ForEach._identifiedView") }
   }
-  public typealias Body = SwiftUI.ForEach<Data, ID, Content>
-  @_Concurrency.MainActor @preconcurrency public var body: SwiftUI.ForEach<Data, ID, Content> {
-    get { _suiUnimplemented("SwiftUI.ForEach.body") }
-  }
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias _IdentifiedView = SwiftUI.ForEach<Data, ID, Content._IdentifiedView>
 }
@@ -12450,10 +12590,10 @@ extension SwiftUI.Group : SwiftUI.TabContent where Content : SwiftUI.TabContent 
         content._identifiedView
     }
   }
-  public typealias Body = SwiftUI.Group<Content>
-  @_Concurrency.MainActor @preconcurrency public var body: SwiftUI.Group<Content> {
-    get { _suiUnimplemented("SwiftUI.Group.body") }
-  }
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias _IdentifiedView = Content._IdentifiedView
 }
@@ -12567,6 +12707,8 @@ public static var automatic: SwiftUI.PageTabViewStyle.IndexDisplayMode { get { _
   nonisolated public init(indexDisplayMode: SwiftUI.PageTabViewStyle.IndexDisplayMode = .automatic) { _suiUnimplemented("SwiftUI.PageTabViewStyle.init(indexDisplayMode:)") }
   public static func _makeView<SelectionValue>(value: SwiftUI._GraphValue<SwiftUI._TabViewValue<SwiftUI.PageTabViewStyle, SelectionValue>>, inputs: SwiftUI._ViewInputs) -> SwiftUI._ViewOutputs where SelectionValue : Swift.Hashable { _suiUnimplemented("SwiftUI.PageTabViewStyle._makeView(value:inputs:)") }
   public static func _makeViewList<SelectionValue>(value: SwiftUI._GraphValue<SwiftUI._TabViewValue<SwiftUI.PageTabViewStyle, SelectionValue>>, inputs: SwiftUI._ViewListInputs) -> SwiftUI._ViewListOutputs where SelectionValue : Swift.Hashable { _suiUnimplemented("SwiftUI.PageTabViewStyle._makeViewList(value:inputs:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PageTabViewStyle.init()") }
 }
 #else
 @available(iOS 14.0, tvOS 14.0, watchOS 7.0, *)
@@ -12598,8 +12740,7 @@ public static var custom: SwiftUI.PaletteSelectionEffect { get { _suiUnimplement
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func paletteSelectionEffect(_ effect: SwiftUI.PaletteSelectionEffect) -> Swift.Never { _suiUnimplemented("SwiftUI.View.paletteSelectionEffect(_:)") }
+  nonisolated public func paletteSelectionEffect(_ effect: SwiftUI.PaletteSelectionEffect) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.paletteSelectionEffect(_:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public enum SidebarRowSize : Swift.Sendable {
@@ -12607,6 +12748,8 @@ public enum SidebarRowSize : Swift.Sendable {
   case medium
   case large
   public static func == (a: SwiftUI.SidebarRowSize, b: SwiftUI.SidebarRowSize) -> Swift.Bool { _suiUnimplemented("SwiftUI.SidebarRowSize.==(a:b:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SidebarRowSize.init()") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension SwiftUI.SidebarRowSize : Swift.Hashable {
@@ -12634,6 +12777,8 @@ public struct ContentMarginPlacement : ~Swift.Sendable {
   public static var scrollIndicators: SwiftUI.ContentMarginPlacement {
     get { _suiUnimplemented("SwiftUI.ContentMarginPlacement.scrollIndicators") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ContentMarginPlacement.init()") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -12654,8 +12799,7 @@ public struct ContentMarginPlacement {
 @available(tvOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct AccessoryCircularCapacityGaugeStyle : SwiftUI.GaugeStyle, ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public init() { _suiUnimplemented("SwiftUI.AccessoryCircularCapacityGaugeStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AccessoryCircularCapacityGaugeStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AccessoryCircularCapacityGaugeStyle.makeBody(configuration:)") }
+  @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AccessoryCircularCapacityGaugeStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.AccessoryCircularCapacityGaugeStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -12684,7 +12828,9 @@ public struct ButtonStyleConfiguration : ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public struct Label : SwiftUI.View, ~Swift.Sendable {
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.ButtonStyleConfiguration.Label.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ButtonStyleConfiguration.Label.body") } }
 }
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -12707,8 +12853,7 @@ public struct ButtonStyleConfiguration {
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func buttonStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.ButtonStyle { _suiUnimplemented("SwiftUI.View.buttonStyle(_:)") }
+  nonisolated public func buttonStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.ButtonStyle { _suiUnimplemented("SwiftUI.View.buttonStyle(_:)") }
 }
 @available(watchOS 7.0, *)
 @available(tvOS, unavailable)
@@ -12726,8 +12871,7 @@ nonisolated public struct CircularGaugeStyle : SwiftUI.GaugeStyle, ~Swift.Sendab
   nonisolated public init() { _suiUnimplemented("SwiftUI.CircularGaugeStyle.init()") }
   nonisolated public init(tint: SwiftUI.Color) { _suiUnimplemented("SwiftUI.CircularGaugeStyle.init(tint:)") }
   nonisolated public init(tint: SwiftUI.Gradient) { _suiUnimplemented("SwiftUI.CircularGaugeStyle.init(tint:)") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.CircularGaugeStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.CircularGaugeStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.CircularGaugeStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.CircularGaugeStyle.makeBody(configuration:)") }
 }
 #else
 @available(watchOS 7.0, *)
@@ -12751,6 +12895,8 @@ public protocol TextFieldStyle {
 nonisolated public struct _TextFieldStyleLabel : SwiftUI.View, ~Swift.Sendable {
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._TextFieldStyleLabel.init()") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._TextFieldStyleLabel.body") } }
 }
@@ -12763,8 +12909,7 @@ nonisolated public struct _TextFieldStyleLabel : SwiftUI.View {
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func textFieldStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.TextFieldStyle { _suiUnimplemented("SwiftUI.View.textFieldStyle(_:)") }
+  nonisolated public func textFieldStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.TextFieldStyle { _suiUnimplemented("SwiftUI.View.textFieldStyle(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, tvOS 16.0, *)
@@ -12779,6 +12924,8 @@ public struct UIHostingConfiguration<Content, Background> : UIKit.UIContentConfi
   @export(implementation) public func minSize() -> SwiftUI.UIHostingConfiguration<Content, Background> { self }
   @_Concurrency.MainActor public func makeContentView() -> any UIKit.UIView & UIKit.UIContentView { _suiUnimplemented("SwiftUI.UIHostingConfiguration.makeContentView()") }
   public func updated(for state: any UIKit.UIConfigurationState) -> SwiftUI.UIHostingConfiguration<Content, Background> { _suiUnimplemented("SwiftUI.UIHostingConfiguration.updated(for:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.UIHostingConfiguration.init()") }
 }
 #else
 @available(iOS 16.0, tvOS 16.0, *)
@@ -12807,6 +12954,8 @@ nonisolated public struct _UIHostingConfigurationBackgroundView<Style> : SwiftUI
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI._UIHostingConfigurationBackgroundView.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._UIHostingConfigurationBackgroundView.init()") }
 }
 #else
 @available(iOS 16.0, tvOS 16.0, *)
@@ -12831,6 +12980,8 @@ public struct SharePreview<Image, Icon> : ~Swift.Sendable where Image : CoreTran
     }
   @_disfavoredOverload public init<S>(_ title: S, image: Image, icon: Icon) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.SharePreview.init(_:image:icon:)") }
   public init(_ title: SwiftUI.Text, image: Image, icon: Icon) { _suiUnimplemented("SwiftUI.SharePreview.init(_:image:icon:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SharePreview.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -12905,24 +13056,20 @@ extension SwiftUI.NavigationLink where Destination == Swift.Never {
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func alert<A>(_ titleKey: SwiftUI.LocalizedStringKey, isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder actions: () -> A) -> Swift.Never where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:actions:)") }
+  nonisolated public func alert<A>(_ titleKey: SwiftUI.LocalizedStringKey, isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder actions: () -> A) -> some SwiftUI.View where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:actions:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func alert<A>(_ titleResource: FoundationShims.LocalizedStringResource, isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder actions: () -> A) -> some SwiftUI.View where A : SwiftUI.View {
         alert(Text(titleResource), isPresented: isPresented, actions: actions)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func alert<S, A>(_ title: S, isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder actions: () -> A) -> Swift.Never where S : Swift.StringProtocol, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:actions:)") }
+  @_disfavoredOverload nonisolated public func alert<S, A>(_ title: S, isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder actions: () -> A) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:actions:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func alert<A>(_ title: SwiftUI.Text, isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder actions: () -> A) -> Swift.Never where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:actions:)") }
+  nonisolated public func alert<A>(_ title: SwiftUI.Text, isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder actions: () -> A) -> some SwiftUI.View where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:actions:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func alert<A, M>(_ titleKey: SwiftUI.LocalizedStringKey, isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> Swift.Never where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:actions:message:)") }
+  nonisolated public func alert<A, M>(_ titleKey: SwiftUI.LocalizedStringKey, isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:actions:message:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func alert<A, M>(_ titleResource: FoundationShims.LocalizedStringResource, isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View {
@@ -12931,16 +13078,13 @@ nonisolated public func alert<A, M>(_ titleKey: SwiftUI.LocalizedStringKey, isPr
             message: message)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func alert<S, A, M>(_ title: S, isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> Swift.Never where S : Swift.StringProtocol, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:actions:message:)") }
+  @_disfavoredOverload nonisolated public func alert<S, A, M>(_ title: S, isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:actions:message:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func alert<A, M>(_ title: SwiftUI.Text, isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> Swift.Never where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:actions:message:)") }
+  nonisolated public func alert<A, M>(_ title: SwiftUI.Text, isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:actions:message:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func alert<A, T>(_ titleKey: SwiftUI.LocalizedStringKey, isPresented: SwiftUI.Binding<Swift.Bool>, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A) -> Swift.Never where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:presenting:actions:)") }
+  nonisolated public func alert<A, T>(_ titleKey: SwiftUI.LocalizedStringKey, isPresented: SwiftUI.Binding<Swift.Bool>, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:presenting:actions:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func alert<A, T>(_ titleResource: FoundationShims.LocalizedStringResource, isPresented: SwiftUI.Binding<Swift.Bool>, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View {
@@ -12949,11 +13093,9 @@ nonisolated public func alert<A, T>(_ titleKey: SwiftUI.LocalizedStringKey, isPr
             actions: actions)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func alert<S, A, T>(_ title: S, isPresented: SwiftUI.Binding<Swift.Bool>, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A) -> Swift.Never where S : Swift.StringProtocol, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:presenting:actions:)") }
+  @_disfavoredOverload nonisolated public func alert<S, A, T>(_ title: S, isPresented: SwiftUI.Binding<Swift.Bool>, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:presenting:actions:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func alert<A, T>(_ title: SwiftUI.Text, isPresented: SwiftUI.Binding<Swift.Bool>, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A) -> Swift.Never where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:presenting:actions:)") }
+  nonisolated public func alert<A, T>(_ title: SwiftUI.Text, isPresented: SwiftUI.Binding<Swift.Bool>, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:presenting:actions:)") }
   
   @export(implementation) nonisolated public func alert<A, T>(_ titleKey: SwiftUI.LocalizedStringKey, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View {
         alert(
@@ -12963,9 +13105,8 @@ nonisolated public func alert<A, T>(_ title: SwiftUI.Text, isPresented: SwiftUI.
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
-  nonisolated internal func _alert<A, T>(_ titleKey: SwiftUI.LocalizedStringKey, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A) -> Swift.Never where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View._alert(_:item:actions:)") }
+  @usableFromInline
+  nonisolated internal func _alert<A, T>(_ titleKey: SwiftUI.LocalizedStringKey, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View._alert(_:item:actions:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @export(implementation) @_disfavoredOverload nonisolated public func alert<A, T>(_ titleResource: FoundationShims.LocalizedStringResource, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View {
@@ -12976,10 +13117,9 @@ nonisolated public func alert<A, T>(_ title: SwiftUI.Text, isPresented: SwiftUI.
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @usableFromInline
-  nonisolated internal func _alert<A, T>(_ titleResource: FoundationShims.LocalizedStringResource, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A) -> Swift.Never where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View._alert(_:item:actions:)") }
+  nonisolated internal func _alert<A, T>(_ titleResource: FoundationShims.LocalizedStringResource, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View._alert(_:item:actions:)") }
   
   @export(implementation) @_disfavoredOverload nonisolated public func alert<S, A, T>(_ title: S, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View {
         alert(
@@ -12989,9 +13129,8 @@ nonisolated public func alert<A, T>(_ title: SwiftUI.Text, isPresented: SwiftUI.
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
-  nonisolated internal func _alert<S, A, T>(_ title: S, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A) -> Swift.Never where S : Swift.StringProtocol, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View._alert(_:item:actions:)") }
+  @usableFromInline
+  nonisolated internal func _alert<S, A, T>(_ title: S, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View._alert(_:item:actions:)") }
   
   @export(implementation) nonisolated public func alert<A, T>(_ title: SwiftUI.Text, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View {
         alert(
@@ -13001,14 +13140,12 @@ nonisolated public func alert<A, T>(_ title: SwiftUI.Text, isPresented: SwiftUI.
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
-  nonisolated internal func _alert<A, T>(_ title: SwiftUI.Text, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A) -> Swift.Never where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View._alert(_:item:actions:)") }
+  @usableFromInline
+  nonisolated internal func _alert<A, T>(_ title: SwiftUI.Text, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View._alert(_:item:actions:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func alert<A, M, T>(_ titleKey: SwiftUI.LocalizedStringKey, isPresented: SwiftUI.Binding<Swift.Bool>, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> Swift.Never where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:presenting:actions:message:)") }
+  nonisolated public func alert<A, M, T>(_ titleKey: SwiftUI.LocalizedStringKey, isPresented: SwiftUI.Binding<Swift.Bool>, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:presenting:actions:message:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func alert<A, M, T>(_ titleResource: FoundationShims.LocalizedStringResource, isPresented: SwiftUI.Binding<Swift.Bool>, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View {
@@ -13017,11 +13154,9 @@ nonisolated public func alert<A, M, T>(_ titleKey: SwiftUI.LocalizedStringKey, i
             actions: actions, message: message)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func alert<S, A, M, T>(_ title: S, isPresented: SwiftUI.Binding<Swift.Bool>, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> Swift.Never where S : Swift.StringProtocol, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:presenting:actions:message:)") }
+  @_disfavoredOverload nonisolated public func alert<S, A, M, T>(_ title: S, isPresented: SwiftUI.Binding<Swift.Bool>, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:presenting:actions:message:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func alert<A, M, T>(_ title: SwiftUI.Text, isPresented: SwiftUI.Binding<Swift.Bool>, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> Swift.Never where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:presenting:actions:message:)") }
+  nonisolated public func alert<A, M, T>(_ title: SwiftUI.Text, isPresented: SwiftUI.Binding<Swift.Bool>, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(_:isPresented:presenting:actions:message:)") }
   
   @export(implementation) nonisolated public func alert<A, M, T>(_ titleKey: SwiftUI.LocalizedStringKey, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View {
         alert(
@@ -13031,9 +13166,8 @@ nonisolated public func alert<A, M, T>(_ title: SwiftUI.Text, isPresented: Swift
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
-  nonisolated internal func _alert<A, M, T>(_ titleKey: SwiftUI.LocalizedStringKey, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> Swift.Never where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View._alert(_:item:actions:message:)") }
+  @usableFromInline
+  nonisolated internal func _alert<A, M, T>(_ titleKey: SwiftUI.LocalizedStringKey, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View._alert(_:item:actions:message:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @export(implementation) @_disfavoredOverload nonisolated public func alert<A, M, T>(_ titleResource: FoundationShims.LocalizedStringResource, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View {
@@ -13044,10 +13178,9 @@ nonisolated public func alert<A, M, T>(_ title: SwiftUI.Text, isPresented: Swift
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @usableFromInline
-  nonisolated internal func _alert<A, M, T>(_ titleResource: FoundationShims.LocalizedStringResource, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> Swift.Never where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View._alert(_:item:actions:message:)") }
+  nonisolated internal func _alert<A, M, T>(_ titleResource: FoundationShims.LocalizedStringResource, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View._alert(_:item:actions:message:)") }
   
   @export(implementation) @_disfavoredOverload nonisolated public func alert<S, A, M, T>(_ title: S, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View, M : SwiftUI.View {
         alert(
@@ -13057,25 +13190,20 @@ nonisolated public func alert<A, M, T>(_ title: SwiftUI.Text, isPresented: Swift
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
-  nonisolated internal func _alert<S, A, M, T>(_ title: S, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> Swift.Never where S : Swift.StringProtocol, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View._alert(_:item:actions:message:)") }
+  @usableFromInline
+  nonisolated internal func _alert<S, A, M, T>(_ title: S, item data: SwiftUI.Binding<T?>, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View._alert(_:item:actions:message:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func alert<E, A>(isPresented: SwiftUI.Binding<Swift.Bool>, error: E?, @SwiftUI.ContentBuilder actions: () -> A) -> Swift.Never where E : Foundation.LocalizedError, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(isPresented:error:actions:)") }
+  nonisolated public func alert<E, A>(isPresented: SwiftUI.Binding<Swift.Bool>, error: E?, @SwiftUI.ContentBuilder actions: () -> A) -> some SwiftUI.View where E : Foundation.LocalizedError, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(isPresented:error:actions:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func alert<E, A, M>(isPresented: SwiftUI.Binding<Swift.Bool>, error: E?, @SwiftUI.ContentBuilder actions: (E) -> A, @SwiftUI.ContentBuilder message: (E) -> M) -> Swift.Never where E : Foundation.LocalizedError, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(isPresented:error:actions:message:)") }
+  nonisolated public func alert<E, A, M>(isPresented: SwiftUI.Binding<Swift.Bool>, error: E?, @SwiftUI.ContentBuilder actions: (E) -> A, @SwiftUI.ContentBuilder message: (E) -> M) -> some SwiftUI.View where E : Foundation.LocalizedError, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(isPresented:error:actions:message:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(anyAppleOS 27.0, *)
-  nonisolated public func alert<E, A>(error: SwiftUI.Binding<E?>, @SwiftUI.ContentBuilder actions: () -> A) -> Swift.Never where E : Swift.Error, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(error:actions:)") }
+  @available(anyAppleOS 27.0, *)
+  nonisolated public func alert<E, A>(error: SwiftUI.Binding<E?>, @SwiftUI.ContentBuilder actions: () -> A) -> some SwiftUI.View where E : Swift.Error, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(error:actions:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(anyAppleOS 27.0, *)
-  nonisolated public func alert<E, A, M>(error: SwiftUI.Binding<E?>, @SwiftUI.ContentBuilder actions: (E) -> A, @SwiftUI.ContentBuilder message: (E) -> M) -> Swift.Never where E : Swift.Error, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(error:actions:message:)") }
+  @available(anyAppleOS 27.0, *)
+  nonisolated public func alert<E, A, M>(error: SwiftUI.Binding<E?>, @SwiftUI.ContentBuilder actions: (E) -> A, @SwiftUI.ContentBuilder message: (E) -> M) -> some SwiftUI.View where E : Swift.Error, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.alert(error:actions:message:)") }
   
   @_disfavoredOverload @export(implementation) nonisolated public func alert<E, A>(error: SwiftUI.Binding<E?>, @SwiftUI.ContentBuilder actions: () -> A) -> some SwiftUI.View where E : Foundation.LocalizedError, A : SwiftUI.View {
         alert(
@@ -13093,112 +13221,97 @@ nonisolated public func alert<E, A, M>(isPresented: SwiftUI.Binding<Swift.Bool>,
     }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 27.0, macOS 13.0, *)
+  @available(iOS 27.0, macOS 13.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func pasteDestination<T>(for payloadType: T.Type = T.self, action: @escaping ([T]) -> Swift.Void, validator: @escaping ([T]) -> [T] = { $0 }) -> Swift.Never where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.pasteDestination(for:action:validator:)") }
+  nonisolated public func pasteDestination<T>(for payloadType: T.Type = T.self, action: @escaping ([T]) -> Swift.Void, validator: @escaping ([T]) -> [T] = { $0 }) -> some SwiftUI.View where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.pasteDestination(for:action:validator:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 27.0, macOS 13.0, *)
+  @available(iOS 27.0, macOS 13.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func cuttable<T>(for payloadType: T.Type = T.self, action: @escaping () -> [T]) -> Swift.Never where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.cuttable(for:action:)") }
+  nonisolated public func cuttable<T>(for payloadType: T.Type = T.self, action: @escaping () -> [T]) -> some SwiftUI.View where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.cuttable(for:action:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 27.0, macOS 13.0, *)
+  @available(iOS 27.0, macOS 13.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func copyable<T>(_ payload: @autoclosure @escaping () -> [T]) -> Swift.Never where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.copyable(_:)") }
+  nonisolated public func copyable<T>(_ payload: @autoclosure @escaping () -> [T]) -> some SwiftUI.View where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.copyable(_:)") }
 }
 @available(macOS 10.15, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  nonisolated public func onCommand(_ selector: ObjectiveC.Selector, perform action: (() -> Swift.Void)?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onCommand(_:perform:)") }
-  
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(macOS 11.0, iOS 27.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func onPasteCommand(of supportedContentTypes: [UniformTypeIdentifiers.UTType], perform payloadAction: @escaping ([FoundationShims.NSItemProvider]) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onPasteCommand(of:perform:)") }
+  nonisolated public func onCommand(_ selector: ObjectiveC.Selector, perform action: (() -> Swift.Void)?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onCommand(_:perform:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(macOS 11.0, iOS 27.0, *)
+  @available(macOS 11.0, iOS 27.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func onPasteCommand<Payload>(of supportedContentTypes: [UniformTypeIdentifiers.UTType], validator: @escaping ([FoundationShims.NSItemProvider]) -> Payload?, perform payloadAction: @escaping (Payload) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onPasteCommand(of:validator:perform:)") }
+  nonisolated public func onPasteCommand(of supportedContentTypes: [UniformTypeIdentifiers.UTType], perform payloadAction: @escaping ([FoundationShims.NSItemProvider]) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onPasteCommand(of:perform:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 27.0, *)
+  @available(macOS 11.0, iOS 27.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func onCopyCommand(perform payloadAction: (() -> [FoundationShims.NSItemProvider])?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onCopyCommand(perform:)") }
+  nonisolated public func onPasteCommand<Payload>(of supportedContentTypes: [UniformTypeIdentifiers.UTType], validator: @escaping ([FoundationShims.NSItemProvider]) -> Payload?, perform payloadAction: @escaping (Payload) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onPasteCommand(of:validator:perform:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 27.0, *)
+  @available(iOS 27.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func onCutCommand(perform payloadAction: (() -> [FoundationShims.NSItemProvider])?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onCutCommand(perform:)") }
+  nonisolated public func onCopyCommand(perform payloadAction: (() -> [FoundationShims.NSItemProvider])?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onCopyCommand(perform:)") }
+  
+  @available(iOS 27.0, *)
+  @available(tvOS, unavailable)
+  @available(watchOS, unavailable)
+  @available(visionOS, unavailable)
+  nonisolated public func onCutCommand(perform payloadAction: (() -> [FoundationShims.NSItemProvider])?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onCutCommand(perform:)") }
 }
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Provide `UTType`s as the `supportedContentTypes` instead.")
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onPasteCommand(of supportedTypes: [Swift.String], perform payloadAction: @escaping ([FoundationShims.NSItemProvider]) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onPasteCommand(of:perform:)") }
+  nonisolated public func onPasteCommand(of supportedTypes: [Swift.String], perform payloadAction: @escaping ([FoundationShims.NSItemProvider]) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onPasteCommand(of:perform:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onPasteCommand<Payload>(of supportedTypes: [Swift.String], validator: @escaping ([FoundationShims.NSItemProvider]) -> Payload?, perform payloadAction: @escaping (Payload) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onPasteCommand(of:validator:perform:)") }
+  nonisolated public func onPasteCommand<Payload>(of supportedTypes: [Swift.String], validator: @escaping ([FoundationShims.NSItemProvider]) -> Payload?, perform payloadAction: @escaping (Payload) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onPasteCommand(of:validator:perform:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func searchSuggestions<S>(@SwiftUI.ContentBuilder _ suggestions: () -> S) -> Swift.Never where S : SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchSuggestions(_:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func searchSuggestions<S>(@SwiftUI.ContentBuilder _ suggestions: () -> S) -> some SwiftUI.View where S : SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchSuggestions(_:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 15.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
+  @available(iOS, introduced: 15.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
   @available(macOS, introduced: 12.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
   @available(tvOS, introduced: 15.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
   @available(watchOS, introduced: 8.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
-  nonisolated public func searchable<S>(text: SwiftUI.Binding<Swift.String>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder suggestions: () -> S) -> Swift.Never where S : SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchable(text:placement:prompt:suggestions:)") }
+  nonisolated public func searchable<S>(text: SwiftUI.Binding<Swift.String>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder suggestions: () -> S) -> some SwiftUI.View where S : SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchable(text:placement:prompt:suggestions:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 15.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
+  @available(iOS, introduced: 15.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
   @available(macOS, introduced: 12.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
   @available(tvOS, introduced: 15.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
   @available(watchOS, introduced: 8.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
-  nonisolated public func searchable<S>(text: SwiftUI.Binding<Swift.String>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder suggestions: () -> S) -> Swift.Never where S : SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchable(text:placement:prompt:suggestions:)") }
+  nonisolated public func searchable<S>(text: SwiftUI.Binding<Swift.String>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder suggestions: () -> S) -> some SwiftUI.View where S : SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchable(text:placement:prompt:suggestions:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 15.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
+  @available(iOS, introduced: 15.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
   @available(macOS, introduced: 12.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
   @available(tvOS, introduced: 15.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
   @available(watchOS, introduced: 8.0, deprecated: 100000.0, message: "Use the searchable modifier with the searchSuggestions modifier")
-  @_disfavoredOverload nonisolated public func searchable<V, S>(text: SwiftUI.Binding<Swift.String>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S, @SwiftUI.ContentBuilder suggestions: () -> V) -> Swift.Never where V : SwiftUI.View, S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.searchable(text:placement:prompt:suggestions:)") }
+  @_disfavoredOverload nonisolated public func searchable<V, S>(text: SwiftUI.Binding<Swift.String>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S, @SwiftUI.ContentBuilder suggestions: () -> V) -> some SwiftUI.View where V : SwiftUI.View, S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.searchable(text:placement:prompt:suggestions:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, deprecated: 100000.0, message: "Use `Tab(title:image:value:content:)` and related initializers instead")
+  @available(iOS, deprecated: 100000.0, message: "Use `Tab(title:image:value:content:)` and related initializers instead")
   @available(macOS, deprecated: 100000.0, message: "Use `Tab(title:image:value:content:)` and related initializers instead")
   @available(tvOS, deprecated: 100000.0, message: "Use `Tab(title:image:value:content:)` and related initializers instead")
   @available(watchOS, deprecated: 100000.0, message: "Use `Tab(title:image:value:content:)` and related initializers instead")
-  nonisolated public func tabItem<V>(@SwiftUI.ContentBuilder _ label: () -> V) -> Swift.Never where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.tabItem(_:)") }
+  nonisolated public func tabItem<V>(@SwiftUI.ContentBuilder _ label: () -> V) -> some SwiftUI.View where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.tabItem(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, *)
@@ -13214,6 +13327,8 @@ internal struct KeyboardShortcutPickerOptionTraitKey : SwiftUI._ViewTraitKey, ~S
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   internal typealias Value = SwiftUI.KeyboardShortcut?
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.KeyboardShortcutPickerOptionTraitKey.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -13241,6 +13356,8 @@ internal struct OnMoveTraitKey : SwiftUI._ViewTraitKey, ~Swift.Sendable {
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   @usableFromInline
   internal typealias Value = Swift.Optional<(Foundation.IndexSet, Swift.Int) -> Swift.Void>
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.OnMoveTraitKey.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -13268,6 +13385,8 @@ internal struct OnMoveClipBackgroundTraitKey : SwiftUI._ViewTraitKey, ~Swift.Sen
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   internal typealias Value = Swift.Bool
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.OnMoveClipBackgroundTraitKey.init()") }
 }
 #else
 @available(iOS 15.0, *)
@@ -13301,6 +13420,8 @@ internal struct IsMoveDisabledTraitKey : SwiftUI._ViewTraitKey, ~Swift.Sendable 
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   @usableFromInline
   internal typealias Value = Swift.Bool
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.IsMoveDisabledTraitKey.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -13323,15 +13444,14 @@ extension SwiftUI.View {
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
 @available(tvOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func scrollContentBackground(_ visibility: SwiftUI.Visibility) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollContentBackground(_:)") }
+  nonisolated public func scrollContentBackground(_ visibility: SwiftUI.Visibility) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollContentBackground(_:)") }
 }
 @available(iOS 14.0, macOS 11.0, watchOS 9.0, visionOS 1.0, *)
 @available(tvOS, unavailable)
 @preconcurrency @_Concurrency.MainActor public protocol WidgetBundle {
   associatedtype Body : SwiftUI.Widget
   @_Concurrency.MainActor @preconcurrency init()
-  @SwiftUI.WidgetBundleBuilder @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
+   @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.PickerStyle where Self == SwiftUI.DefaultPickerStyle {
@@ -13356,14 +13476,11 @@ public struct DefaultPickerStyle : SwiftUI.PickerStyle {
 #endif
 @available(anyAppleOS 27.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func toolbarMinimizationBehavior(_ behavior: SwiftUI.ToolbarMinimizationBehavior, for bars: SwiftUI.ToolbarPlacement...) -> Swift.Never { _suiUnimplemented("SwiftUI.View.toolbarMinimizationBehavior(_:for:)") }
+  nonisolated public func toolbarMinimizationBehavior(_ behavior: SwiftUI.ToolbarMinimizationBehavior, for bars: SwiftUI.ToolbarPlacement...) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarMinimizationBehavior(_:for:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func toolbarMinimizationSafeAreaAdjustment(_ adjustment: SwiftUI.ToolbarMinimizationSafeAreaAdjustment, for bars: SwiftUI.ToolbarPlacement...) -> Swift.Never { _suiUnimplemented("SwiftUI.View.toolbarMinimizationSafeAreaAdjustment(_:for:)") }
+  nonisolated public func toolbarMinimizationSafeAreaAdjustment(_ adjustment: SwiftUI.ToolbarMinimizationSafeAreaAdjustment, for bars: SwiftUI.ToolbarPlacement...) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarMinimizationSafeAreaAdjustment(_:for:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func toolbarMinimizationRestoration(_ restoration: SwiftUI.ToolbarMinimizationRestoration, for bars: SwiftUI.ToolbarPlacement...) -> Swift.Never { _suiUnimplemented("SwiftUI.View.toolbarMinimizationRestoration(_:for:)") }
+  nonisolated public func toolbarMinimizationRestoration(_ restoration: SwiftUI.ToolbarMinimizationRestoration, for bars: SwiftUI.ToolbarPlacement...) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarMinimizationRestoration(_:for:)") }
 }
 @available(anyAppleOS 27.0, *)
 public struct ToolbarMinimizationBehavior : Swift.Hashable, Swift.Sendable {
@@ -13431,6 +13548,8 @@ public static var automatic: SwiftUI.ToolbarMinimizationRestoration { get { _sui
 @available(watchOS, unavailable)
 @_Concurrency.MainActor public struct DismissImmersiveSpaceAction {
   @_Concurrency.MainActor public func callAsFunction() async { _suiUnimplemented("SwiftUI.DismissImmersiveSpaceAction.callAsFunction()") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DismissImmersiveSpaceAction.init()") }
 }
 @available(macOS 26.0, visionOS 1.0, *)
 @available(tvOS, unavailable)
@@ -13448,6 +13567,8 @@ public protocol PresentationSizing {
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, visionOS 2.0, watchOS 11.0, *)
 public struct PresentationSizingRoot : ~Swift.Sendable {
   public func sizeThatFits(_ proposal: SwiftUI.ProposedViewSize) -> CoreGraphics.CGSize { _suiUnimplemented("SwiftUI.PresentationSizingRoot.sizeThatFits(_:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PresentationSizingRoot.init()") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, visionOS 2.0, watchOS 11.0, *)
@@ -13458,6 +13579,8 @@ public struct PresentationSizingRoot {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, visionOS 2.0, watchOS 11.0, *)
 public struct PresentationSizingContext : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PresentationSizingContext.init()") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, visionOS 2.0, watchOS 11.0, *)
@@ -13477,6 +13600,8 @@ extension SwiftUI.PresentationSizing {
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, visionOS 2.0, watchOS 11.0, *)
 public struct FormPresentationSizing : SwiftUI.PresentationSizing, Swift.Sendable {
   public func proposedSize(for root: SwiftUI.PresentationSizingRoot, context: SwiftUI.PresentationSizingContext) -> SwiftUI.ProposedViewSize { _suiUnimplemented("SwiftUI.FormPresentationSizing.proposedSize(for:context:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.FormPresentationSizing.init()") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, visionOS 2.0, watchOS 11.0, *)
 extension SwiftUI.PresentationSizing where Self == SwiftUI.FormPresentationSizing {
@@ -13487,6 +13612,8 @@ extension SwiftUI.PresentationSizing where Self == SwiftUI.FormPresentationSizin
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, visionOS 2.0, watchOS 11.0, *)
 public struct PagePresentationSizing : SwiftUI.PresentationSizing, Swift.Sendable {
   public func proposedSize(for root: SwiftUI.PresentationSizingRoot, context: SwiftUI.PresentationSizingContext) -> SwiftUI.ProposedViewSize { _suiUnimplemented("SwiftUI.PagePresentationSizing.proposedSize(for:context:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PagePresentationSizing.init()") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, visionOS 2.0, watchOS 11.0, *)
 extension SwiftUI.PresentationSizing where Self == SwiftUI.PagePresentationSizing {
@@ -13497,6 +13624,8 @@ extension SwiftUI.PresentationSizing where Self == SwiftUI.PagePresentationSizin
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, visionOS 2.0, watchOS 11.0, *)
 public struct FittedPresentationSizing : SwiftUI.PresentationSizing, Swift.Sendable {
   public func proposedSize(for root: SwiftUI.PresentationSizingRoot, context: SwiftUI.PresentationSizingContext) -> SwiftUI.ProposedViewSize { _suiUnimplemented("SwiftUI.FittedPresentationSizing.proposedSize(for:context:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.FittedPresentationSizing.init()") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, visionOS 2.0, watchOS 11.0, *)
 extension SwiftUI.PresentationSizing where Self == SwiftUI.FittedPresentationSizing {
@@ -13506,8 +13635,7 @@ extension SwiftUI.PresentationSizing where Self == SwiftUI.FittedPresentationSiz
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, visionOS 2.0, watchOS 11.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func presentationSizing(_ sizing: some PresentationSizing) -> Swift.Never { _suiUnimplemented("SwiftUI.View.presentationSizing(_:)") }
+  nonisolated public func presentationSizing(_ sizing: some PresentationSizing) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.presentationSizing(_:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, visionOS 2.0, watchOS 11.0, *)
 extension SwiftUI.PresentationSizing where Self == SwiftUI.AutomaticPresentationSizing {
@@ -13518,6 +13646,8 @@ extension SwiftUI.PresentationSizing where Self == SwiftUI.AutomaticPresentation
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, visionOS 2.0, watchOS 11.0, *)
 public struct AutomaticPresentationSizing : SwiftUI.PresentationSizing, Swift.Sendable {
   public func proposedSize(for root: SwiftUI.PresentationSizingRoot, context: SwiftUI.PresentationSizingContext) -> SwiftUI.ProposedViewSize { _suiUnimplemented("SwiftUI.AutomaticPresentationSizing.proposedSize(for:context:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.AutomaticPresentationSizing.init()") }
 }
 @available(iOS 16.0, macOS 12.0, *)
 @available(tvOS, unavailable)
@@ -13623,6 +13753,8 @@ extension SwiftUI.UIViewControllerRepresentable {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 public struct Section<Parent, Content, Footer> : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.Section.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -13779,6 +13911,8 @@ internal struct IsCollapsibleTraitKey : SwiftUI._ViewTraitKey, ~Swift.Sendable {
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   @usableFromInline
   internal typealias Value = Swift.Bool
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.IsCollapsibleTraitKey.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -13828,6 +13962,8 @@ nonisolated public struct NavigationLink<Label, Destination> : SwiftUI.View, ~Sw
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.NavigationLink.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.NavigationLink.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -13857,10 +13993,9 @@ extension SwiftUI.NavigationLink where Label == SwiftUI.Text {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.NavigationLink {
-        // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
+    @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func isDetailLink(_ isDetailLink: Swift.Bool) -> Swift.Never { _suiUnimplemented("SwiftUI.NavigationLink.isDetailLink(_:)") }
+  nonisolated public func isDetailLink(_ isDetailLink: Swift.Bool) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.NavigationLink.isDetailLink(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -13899,12 +14034,11 @@ extension SwiftUI.NavigationLink {
   public typealias Body = Swift.Never
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.0, macOS 26.0, *)
+  @available(iOS 26.0, macOS 26.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func tabViewSearchActivation(_ activation: SwiftUI.TabSearchActivation) -> Swift.Never { _suiUnimplemented("SwiftUI.View.tabViewSearchActivation(_:)") }
+  nonisolated public func tabViewSearchActivation(_ activation: SwiftUI.TabSearchActivation) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.tabViewSearchActivation(_:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 public struct TabSearchActivation : Swift.Hashable, Swift.Sendable {
@@ -13923,6 +14057,8 @@ public struct TabSearchActivation : Swift.Hashable, Swift.Sendable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.TabSearchActivation.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TabSearchActivation.init()") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 public protocol _ScrollableContentProvider {
@@ -13958,7 +14094,9 @@ public static var decelerationRateFast: Swift.Double { get { _suiUnimplemented("
   public enum ContentOffset : ~Swift.Sendable {
     case initially(CoreGraphics.CGPoint)
     case binding(SwiftUI.Binding<CoreGraphics.CGPoint>)
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI._ScrollViewConfig.ContentOffset.init()") }
+}
   public var contentOffset: SwiftUI._ScrollViewConfig.ContentOffset
   public var contentInsets: SwiftUI.EdgeInsets
   public var decelerationRate: Swift.Double
@@ -14007,7 +14145,9 @@ nonisolated public struct _ScrollView<Provider> : SwiftUI.View, ~Swift.Sendable 
   nonisolated public struct Main : SwiftUI.View, ~Swift.Sendable {
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI._ScrollView.Main.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._ScrollView.Main.body") } }
 }
 }
@@ -14045,7 +14185,9 @@ public struct _AligningContentProvider<Content> : SwiftUI._ScrollableContentProv
     public typealias AnimatableData = SwiftUI.EmptyAnimatableData
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias Body = Swift.Never
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI._AligningContentProvider.AligningContentProviderLayout.init()") }
+}
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Root = SwiftUI._ScrollViewRoot<SwiftUI._AligningContentProvider<Content>>
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -14078,14 +14220,11 @@ public struct _AligningContentProvider<Content> : SwiftUI._ScrollableContentProv
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func inspector<V>(isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder content: () -> V) -> Swift.Never where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.inspector(isPresented:content:)") }
+  nonisolated public func inspector<V>(isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder content: () -> V) -> some SwiftUI.View where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.inspector(isPresented:content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func inspectorColumnWidth(min: CoreGraphics.CGFloat? = nil, ideal: CoreGraphics.CGFloat, max: CoreGraphics.CGFloat? = nil) -> Swift.Never { _suiUnimplemented("SwiftUI.View.inspectorColumnWidth(min:ideal:max:)") }
+  nonisolated public func inspectorColumnWidth(min: CoreGraphics.CGFloat? = nil, ideal: CoreGraphics.CGFloat, max: CoreGraphics.CGFloat? = nil) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.inspectorColumnWidth(min:ideal:max:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func inspectorColumnWidth(_ width: CoreGraphics.CGFloat) -> Swift.Never { _suiUnimplemented("SwiftUI.View.inspectorColumnWidth(_:)") }
+  nonisolated public func inspectorColumnWidth(_ width: CoreGraphics.CGFloat) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.inspectorColumnWidth(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14098,7 +14237,9 @@ public struct _PagingViewConfig : Swift.Equatable, ~Swift.Sendable {
     public var hashValue: Swift.Int {
       get { _suiUnimplemented("SwiftUI._PagingViewConfig.Direction.hashValue") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI._PagingViewConfig.Direction.init()") }
+}
   public var direction: SwiftUI._PagingViewConfig.Direction
   public var size: CoreGraphics.CGFloat?
   public var margin: CoreGraphics.CGFloat
@@ -14198,6 +14339,8 @@ public struct DropConfiguration : ~Swift.Sendable {
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public init<ItemID, CollectionID>(operation: SwiftUI.DropOperation, destination: SwiftUI.ReorderDifference<ItemID, CollectionID>.Destination) where ItemID : Swift.Hashable, ItemID : Swift.Sendable, CollectionID : Swift.Hashable, CollectionID : Swift.Sendable { _suiUnimplemented("SwiftUI.DropConfiguration.init(operation:destination:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DropConfiguration.init()") }
 }
 #else
 @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
@@ -14235,13 +14378,17 @@ public struct ProgressViewStyleConfiguration : ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public struct Label : SwiftUI.View, ~Swift.Sendable {
     @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.Label.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.Label.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct CurrentValueLabel : SwiftUI.View, ~Swift.Sendable {
     @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.CurrentValueLabel.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ProgressViewStyleConfiguration.CurrentValueLabel.body") } }
 }
   public let fractionCompleted: Swift.Double?
@@ -14266,27 +14413,23 @@ public struct ProgressViewStyleConfiguration {
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func progressViewStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.ProgressViewStyle { _suiUnimplemented("SwiftUI.View.progressViewStyle(_:)") }
+  nonisolated public func progressViewStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.ProgressViewStyle { _suiUnimplemented("SwiftUI.View.progressViewStyle(_:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, *)
+  @available(iOS 16.0, macOS 13.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchable<C, T>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:placement:prompt:token:)") }
+  nonisolated public func searchable<C, T>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:placement:prompt:token:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, *)
+  @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchable<C>(text: SwiftUI.Binding<Swift.String>, editableTokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (SwiftUI.Binding<C.Element>) -> some View) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:editableTokens:placement:prompt:token:)") }
+  nonisolated public func searchable<C>(text: SwiftUI.Binding<Swift.String>, editableTokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (SwiftUI.Binding<C.Element>) -> some View) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:editableTokens:placement:prompt:token:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, *)
+  @available(iOS 16.0, macOS 13.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchable<C, T>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:placement:prompt:token:)") }
+  nonisolated public func searchable<C, T>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:placement:prompt:token:)") }
   
   @available(iOS 16.0, macOS 13.0, *)
   @available(tvOS, unavailable)
@@ -14301,11 +14444,10 @@ extension SwiftUI.View {
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, *)
+  @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchable<C>(text: SwiftUI.Binding<Swift.String>, editableTokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (SwiftUI.Binding<C.Element>) -> some View) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:editableTokens:placement:prompt:token:)") }
+  nonisolated public func searchable<C>(text: SwiftUI.Binding<Swift.String>, editableTokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (SwiftUI.Binding<C.Element>) -> some View) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:editableTokens:placement:prompt:token:)") }
   
   @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
@@ -14320,36 +14462,31 @@ extension SwiftUI.View {
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, *)
+  @available(iOS 16.0, macOS 13.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_disfavoredOverload nonisolated public func searchable<C, T, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, S : Swift.StringProtocol, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:placement:prompt:token:)") }
+  @_disfavoredOverload nonisolated public func searchable<C, T, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, S : Swift.StringProtocol, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:placement:prompt:token:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, *)
+  @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_disfavoredOverload nonisolated public func searchable<C>(text: SwiftUI.Binding<Swift.String>, editableTokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: some StringProtocol, @SwiftUI.ContentBuilder token: @escaping (SwiftUI.Binding<C.Element>) -> some View) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:editableTokens:placement:prompt:token:)") }
+  @_disfavoredOverload nonisolated public func searchable<C>(text: SwiftUI.Binding<Swift.String>, editableTokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: some StringProtocol, @SwiftUI.ContentBuilder token: @escaping (SwiftUI.Binding<C.Element>) -> some View) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:editableTokens:placement:prompt:token:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, *)
+  @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchable<C, T>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:isPresented:placement:prompt:token:)") }
+  nonisolated public func searchable<C, T>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:isPresented:placement:prompt:token:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, *)
+  @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchable<C>(text: SwiftUI.Binding<Swift.String>, editableTokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (SwiftUI.Binding<C.Element>) -> some View) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:editableTokens:isPresented:placement:prompt:token:)") }
+  nonisolated public func searchable<C>(text: SwiftUI.Binding<Swift.String>, editableTokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (SwiftUI.Binding<C.Element>) -> some View) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:editableTokens:isPresented:placement:prompt:token:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, *)
+  @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchable<C, T>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:isPresented:placement:prompt:token:)") }
+  nonisolated public func searchable<C, T>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:isPresented:placement:prompt:token:)") }
   
   @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
@@ -14365,11 +14502,10 @@ extension SwiftUI.View {
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, *)
+  @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchable<C>(text: SwiftUI.Binding<Swift.String>, editableTokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (SwiftUI.Binding<C.Element>) -> some View) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:editableTokens:isPresented:placement:prompt:token:)") }
+  nonisolated public func searchable<C>(text: SwiftUI.Binding<Swift.String>, editableTokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (SwiftUI.Binding<C.Element>) -> some View) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:editableTokens:isPresented:placement:prompt:token:)") }
   
   @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
@@ -14385,30 +14521,26 @@ extension SwiftUI.View {
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, *)
+  @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_disfavoredOverload nonisolated public func searchable<C, T, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, S : Swift.StringProtocol, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:isPresented:placement:prompt:token:)") }
+  @_disfavoredOverload nonisolated public func searchable<C, T, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, S : Swift.StringProtocol, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:isPresented:placement:prompt:token:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, *)
+  @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_disfavoredOverload nonisolated public func searchable<C>(text: SwiftUI.Binding<Swift.String>, editableTokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: some StringProtocol, @SwiftUI.ContentBuilder token: @escaping (SwiftUI.Binding<C.Element>) -> some View) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:editableTokens:isPresented:placement:prompt:token:)") }
+  @_disfavoredOverload nonisolated public func searchable<C>(text: SwiftUI.Binding<Swift.String>, editableTokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: some StringProtocol, @SwiftUI.ContentBuilder token: @escaping (SwiftUI.Binding<C.Element>) -> some View) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:editableTokens:isPresented:placement:prompt:token:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, *)
+  @available(iOS 16.0, macOS 13.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchable<C, T>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, suggestedTokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> Swift.Never where C : Swift.MutableCollection, C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:suggestedTokens:placement:prompt:token:)") }
+  nonisolated public func searchable<C, T>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, suggestedTokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> some SwiftUI.View where C : Swift.MutableCollection, C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:suggestedTokens:placement:prompt:token:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, *)
+  @available(iOS 16.0, macOS 13.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchable<C, T>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, suggestedTokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> Swift.Never where C : Swift.MutableCollection, C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:suggestedTokens:placement:prompt:token:)") }
+  nonisolated public func searchable<C, T>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, suggestedTokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> some SwiftUI.View where C : Swift.MutableCollection, C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:suggestedTokens:placement:prompt:token:)") }
   
   @available(iOS 16.0, macOS 13.0, *)
   @available(tvOS, unavailable)
@@ -14424,23 +14556,20 @@ extension SwiftUI.View {
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, *)
+  @available(iOS 16.0, macOS 13.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_disfavoredOverload nonisolated public func searchable<C, T, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, suggestedTokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> Swift.Never where C : Swift.MutableCollection, C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, S : Swift.StringProtocol, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:suggestedTokens:placement:prompt:token:)") }
+  @_disfavoredOverload nonisolated public func searchable<C, T, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, suggestedTokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> some SwiftUI.View where C : Swift.MutableCollection, C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, S : Swift.StringProtocol, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:suggestedTokens:placement:prompt:token:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, *)
+  @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchable<C, T>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, suggestedTokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:suggestedTokens:isPresented:placement:prompt:token:)") }
+  nonisolated public func searchable<C, T>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, suggestedTokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:suggestedTokens:isPresented:placement:prompt:token:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, *)
+  @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchable<C, T>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, suggestedTokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:suggestedTokens:isPresented:placement:prompt:token:)") }
+  nonisolated public func searchable<C, T>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, suggestedTokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:suggestedTokens:isPresented:placement:prompt:token:)") }
   
   @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
@@ -14457,86 +14586,76 @@ extension SwiftUI.View {
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, *)
+  @available(iOS 17.0, macOS 14.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_disfavoredOverload nonisolated public func searchable<C, T, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, suggestedTokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> Swift.Never where C : Swift.MutableCollection, C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, S : Swift.StringProtocol, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:suggestedTokens:isPresented:placement:prompt:token:)") }
+  @_disfavoredOverload nonisolated public func searchable<C, T, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, suggestedTokens: SwiftUI.Binding<C>, isPresented: SwiftUI.Binding<Swift.Bool>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T) -> some SwiftUI.View where C : Swift.MutableCollection, C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, S : Swift.StringProtocol, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:suggestedTokens:isPresented:placement:prompt:token:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
+  @usableFromInline
   @available(iOS, unavailable, introduced: 16.0, message: "ABI Only")
   @available(macOS, unavailable, introduced: 13.0, message: "ABI Only")
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder suggestions: () -> S) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, S : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:placement:prompt:token:suggestions:)") }
+  @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder suggestions: () -> S) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, S : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:placement:prompt:token:suggestions:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
+  @usableFromInline
   @available(iOS, unavailable, introduced: 16.0, message: "ABI Only")
   @available(macOS, unavailable, introduced: 13.0, message: "ABI Only")
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder suggestions: () -> S) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, S : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:placement:prompt:token:suggestions:)") }
+  @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder suggestions: () -> S) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, S : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:placement:prompt:token:suggestions:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
+  @usableFromInline
   @available(iOS, unavailable, introduced: 16.0, message: "ABI Only")
   @available(macOS, unavailable, introduced: 13.0, message: "ABI Only")
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_disfavoredOverload @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, V, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder suggestions: () -> V) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, V : SwiftUI.View, S : Swift.StringProtocol, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:placement:prompt:token:suggestions:)") }
+  @_disfavoredOverload @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, V, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder suggestions: () -> V) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, V : SwiftUI.View, S : Swift.StringProtocol, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:placement:prompt:token:suggestions:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
+  @usableFromInline
   @available(iOS, unavailable, introduced: 16.0, message: "ABI Only")
   @available(macOS, unavailable, introduced: 13.0, message: "ABI Only")
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, D, V>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, scope: SwiftUI.Binding<D>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder scopes: () -> V) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, D : Swift.Hashable, V : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:scope:placement:prompt:token:scopes:)") }
+  @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, D, V>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, scope: SwiftUI.Binding<D>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder scopes: () -> V) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, D : Swift.Hashable, V : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:scope:placement:prompt:token:scopes:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
+  @usableFromInline
   @available(iOS, unavailable, introduced: 16.0, message: "ABI Only")
   @available(macOS, unavailable, introduced: 13.0, message: "ABI Only")
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, D, V>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, scope: SwiftUI.Binding<D>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder scopes: () -> V) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, D : Swift.Hashable, V : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:scope:placement:prompt:token:scopes:)") }
+  @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, D, V>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, scope: SwiftUI.Binding<D>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder scopes: () -> V) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, D : Swift.Hashable, V : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:scope:placement:prompt:token:scopes:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
+  @usableFromInline
   @available(iOS, unavailable, introduced: 16.0, message: "ABI Only")
   @available(macOS, unavailable, introduced: 13.0, message: "ABI Only")
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_disfavoredOverload @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, D, V, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, scope: SwiftUI.Binding<D>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder scopes: () -> V) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, D : Swift.Hashable, V : SwiftUI.View, S : Swift.StringProtocol, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:scope:placement:prompt:token:scopes:)") }
+  @_disfavoredOverload @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, D, V, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, scope: SwiftUI.Binding<D>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder scopes: () -> V) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, D : Swift.Hashable, V : SwiftUI.View, S : Swift.StringProtocol, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:scope:placement:prompt:token:scopes:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
+  @usableFromInline
   @available(iOS, unavailable, introduced: 16.0, message: "ABI Only")
   @available(macOS, unavailable, introduced: 13.0, message: "ABI Only")
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, D, V1, V2>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, scope: SwiftUI.Binding<D>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder scopes: () -> V1, @SwiftUI.ContentBuilder suggestions: () -> V2) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, D : Swift.Hashable, V1 : SwiftUI.View, V2 : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:scope:placement:prompt:token:scopes:suggestions:)") }
+  @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, D, V1, V2>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, scope: SwiftUI.Binding<D>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.Text? = nil, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder scopes: () -> V1, @SwiftUI.ContentBuilder suggestions: () -> V2) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, D : Swift.Hashable, V1 : SwiftUI.View, V2 : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:scope:placement:prompt:token:scopes:suggestions:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
+  @usableFromInline
   @available(iOS, unavailable, introduced: 16.0, message: "ABI Only")
   @available(macOS, unavailable, introduced: 13.0, message: "ABI Only")
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, D, V1, V2>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, scope: SwiftUI.Binding<D>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder scopes: () -> V1, @SwiftUI.ContentBuilder suggestions: () -> V2) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, D : Swift.Hashable, V1 : SwiftUI.View, V2 : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:scope:placement:prompt:token:scopes:suggestions:)") }
+  @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, D, V1, V2>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, scope: SwiftUI.Binding<D>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder scopes: () -> V1, @SwiftUI.ContentBuilder suggestions: () -> V2) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, D : Swift.Hashable, V1 : SwiftUI.View, V2 : SwiftUI.View, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:scope:placement:prompt:token:scopes:suggestions:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
+  @usableFromInline
   @available(iOS, unavailable, introduced: 16.0, message: "ABI Only")
   @available(macOS, unavailable, introduced: 13.0, message: "ABI Only")
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_disfavoredOverload @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, D, V1, V2, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, scope: SwiftUI.Binding<D>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder scopes: () -> V1, @SwiftUI.ContentBuilder suggestions: () -> V2) -> Swift.Never where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, D : Swift.Hashable, V1 : SwiftUI.View, V2 : SwiftUI.View, S : Swift.StringProtocol, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:scope:placement:prompt:token:scopes:suggestions:)") }
+  @_disfavoredOverload @_Concurrency.MainActor @preconcurrency internal func searchable<C, T, D, V1, V2, S>(text: SwiftUI.Binding<Swift.String>, tokens: SwiftUI.Binding<C>, scope: SwiftUI.Binding<D>, placement: SwiftUI.SearchFieldPlacement = .automatic, prompt: S, @SwiftUI.ContentBuilder token: @escaping (C.Element) -> T, @SwiftUI.ContentBuilder scopes: () -> V1, @SwiftUI.ContentBuilder suggestions: () -> V2) -> some SwiftUI.View where C : Swift.RandomAccessCollection, C : Swift.RangeReplaceableCollection, T : SwiftUI.View, D : Swift.Hashable, V1 : SwiftUI.View, V2 : SwiftUI.View, S : Swift.StringProtocol, C.Element : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchable(text:tokens:scope:placement:prompt:token:scopes:suggestions:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 public protocol _PreviewProviderLocator {
@@ -14579,6 +14698,8 @@ public enum PreviewPlatform : Swift.Sendable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.PreviewPlatform.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PreviewPlatform.init()") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @available(anyAppleOS, deprecated: 27.0, message: "Use the device picker in Xcode's canvas.")
@@ -14655,10 +14776,9 @@ extension SwiftUI.View {
         return _trait(PreviewContextTraitKey.self, value)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+  @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
   @available(anyAppleOS, deprecated: 27.0, message: "Use #Preview(traits: .landscapeLeft) or other orientation traits instead.")
-  nonisolated public func previewInterfaceOrientation(_ value: SwiftUI.InterfaceOrientation) -> Swift.Never { _suiUnimplemented("SwiftUI.View.previewInterfaceOrientation(_:)") }
+  nonisolated public func previewInterfaceOrientation(_ value: SwiftUI.InterfaceOrientation) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.previewInterfaceOrientation(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14670,6 +14790,8 @@ internal struct PreviewDeviceTraitKey : SwiftUI._ViewTraitKey, ~Swift.Sendable {
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   @usableFromInline
   internal typealias Value = SwiftUI.PreviewDevice?
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PreviewDeviceTraitKey.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14693,6 +14815,8 @@ internal struct PreviewLayoutTraitKey : SwiftUI._ViewTraitKey, ~Swift.Sendable {
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   @usableFromInline
   internal typealias Value = DeveloperToolsSupport.PreviewLayout
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PreviewLayoutTraitKey.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14716,6 +14840,8 @@ internal struct PreviewDisplayNameTraitKey : SwiftUI._ViewTraitKey, ~Swift.Senda
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   @usableFromInline
   internal typealias Value = Swift.String?
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PreviewDisplayNameTraitKey.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14739,6 +14865,8 @@ internal struct PreviewInterfaceOrientationTraitKey : SwiftUI._ViewTraitKey, ~Sw
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   @usableFromInline
   internal typealias Value = SwiftUI.InterfaceOrientation
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PreviewInterfaceOrientationTraitKey.init()") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -14762,6 +14890,8 @@ internal struct PreviewContextTraitKey : SwiftUI._ViewTraitKey, ~Swift.Sendable 
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   @usableFromInline
   internal typealias Value = (any SwiftUI.PreviewContext)?
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PreviewContextTraitKey.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -14858,16 +14988,16 @@ public struct ScrollAnchorRole : Swift.Hashable, Swift.Sendable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.ScrollAnchorRole.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ScrollAnchorRole.init()") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func defaultScrollAnchor(_ anchor: SwiftUI.UnitPoint?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.defaultScrollAnchor(_:)") }
+  @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+  nonisolated public func defaultScrollAnchor(_ anchor: SwiftUI.UnitPoint?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.defaultScrollAnchor(_:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  nonisolated public func defaultScrollAnchor(_ anchor: SwiftUI.UnitPoint?, for role: SwiftUI.ScrollAnchorRole) -> Swift.Never { _suiUnimplemented("SwiftUI.View.defaultScrollAnchor(_:for:)") }
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+  nonisolated public func defaultScrollAnchor(_ anchor: SwiftUI.UnitPoint?, for role: SwiftUI.ScrollAnchorRole) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.defaultScrollAnchor(_:for:)") }
 }
 @available(iOS 13.0, macOS 10.15, *)
 @available(tvOS, unavailable)
@@ -14901,18 +15031,16 @@ extension SwiftUI.View {
         }
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @usableFromInline
-  nonisolated internal func popover<Item, Content>(item: SwiftUI.Binding<Item?>, attachmentAnchor: SwiftUI.PopoverAttachmentAnchor = .rect(.bounds), arrowEdge: SwiftUI.Edge, @SwiftUI.ContentBuilder content: @escaping (Item) -> Content) -> Swift.Never where Item : Swift.Identifiable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.popover(item:attachmentAnchor:arrowEdge:content:)") }
-  
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @usableFromInline
-  nonisolated internal func popover<Item, Content>(item: SwiftUI.Binding<Item?>, attachmentAnchor: SwiftUI.PopoverAttachmentAnchor = .rect(.bounds), @SwiftUI.ContentBuilder content: @escaping (Item) -> Content) -> Swift.Never where Item : Swift.Identifiable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.popover(item:attachmentAnchor:content:)") }
+  nonisolated internal func popover<Item, Content>(item: SwiftUI.Binding<Item?>, attachmentAnchor: SwiftUI.PopoverAttachmentAnchor = .rect(.bounds), arrowEdge: SwiftUI.Edge, @SwiftUI.ContentBuilder content: @escaping (Item) -> Content) -> some SwiftUI.View where Item : Swift.Identifiable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.popover(item:attachmentAnchor:arrowEdge:content:)") }
+  
+  @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
+  @available(tvOS, unavailable)
+  @available(watchOS, unavailable)
+  @usableFromInline
+  nonisolated internal func popover<Item, Content>(item: SwiftUI.Binding<Item?>, attachmentAnchor: SwiftUI.PopoverAttachmentAnchor = .rect(.bounds), @SwiftUI.ContentBuilder content: @escaping (Item) -> Content) -> some SwiftUI.View where Item : Swift.Identifiable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.popover(item:attachmentAnchor:content:)") }
   
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
@@ -14945,24 +15073,24 @@ extension SwiftUI.View {
         }
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @usableFromInline
-  nonisolated internal func popover<Content>(isPresented: SwiftUI.Binding<Swift.Bool>, attachmentAnchor: SwiftUI.PopoverAttachmentAnchor = .rect(.bounds), arrowEdge: SwiftUI.Edge, @SwiftUI.ContentBuilder content: @escaping () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.popover(isPresented:attachmentAnchor:arrowEdge:content:)") }
-  
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @usableFromInline
-  nonisolated internal func popover<Content>(isPresented: SwiftUI.Binding<Swift.Bool>, attachmentAnchor: SwiftUI.PopoverAttachmentAnchor = .rect(.bounds), @SwiftUI.ContentBuilder content: @escaping () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.popover(isPresented:attachmentAnchor:content:)") }
+  nonisolated internal func popover<Content>(isPresented: SwiftUI.Binding<Swift.Bool>, attachmentAnchor: SwiftUI.PopoverAttachmentAnchor = .rect(.bounds), arrowEdge: SwiftUI.Edge, @SwiftUI.ContentBuilder content: @escaping () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.popover(isPresented:attachmentAnchor:arrowEdge:content:)") }
+  
+  @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
+  @available(tvOS, unavailable)
+  @available(watchOS, unavailable)
+  @usableFromInline
+  nonisolated internal func popover<Content>(isPresented: SwiftUI.Binding<Swift.Bool>, attachmentAnchor: SwiftUI.PopoverAttachmentAnchor = .rect(.bounds), @SwiftUI.ContentBuilder content: @escaping () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.popover(isPresented:attachmentAnchor:content:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 public enum PopoverAttachmentAnchor : ~Swift.Sendable {
   case rect(SwiftUI.Anchor<CoreGraphics.CGRect>.Source)
   case point(SwiftUI.UnitPoint)
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PopoverAttachmentAnchor.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -14972,28 +15100,24 @@ public enum PopoverAttachmentAnchor {
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.1, macOS 15.1, visionOS 2.1, *)
+  @available(iOS 18.1, macOS 15.1, visionOS 2.1, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @usableFromInline
-  nonisolated internal func popoverCore<Content>(isPresented: SwiftUI.Binding<Swift.Bool>, attachmentAnchor: SwiftUI.PopoverAttachmentAnchor, arrowEdges: SwiftUI.Edge.Set?, isDetachable: Swift.Bool, @SwiftUI.ContentBuilder content: @escaping () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.popoverCore(isPresented:attachmentAnchor:arrowEdges:isDetachable:content:)") }
+  nonisolated internal func popoverCore<Content>(isPresented: SwiftUI.Binding<Swift.Bool>, attachmentAnchor: SwiftUI.PopoverAttachmentAnchor, arrowEdges: SwiftUI.Edge.Set?, isDetachable: Swift.Bool, @SwiftUI.ContentBuilder content: @escaping () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.popoverCore(isPresented:attachmentAnchor:arrowEdges:isDetachable:content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.1, macOS 15.1, visionOS 2.1, *)
+  @available(iOS 18.1, macOS 15.1, visionOS 2.1, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @usableFromInline
-  nonisolated internal func popoverCore<Item, Content>(item: SwiftUI.Binding<Item?>, attachmentAnchor: SwiftUI.PopoverAttachmentAnchor, arrowEdges: SwiftUI.Edge.Set?, @SwiftUI.ContentBuilder content: @escaping (Item) -> Content) -> Swift.Never where Item : Swift.Identifiable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.popoverCore(item:attachmentAnchor:arrowEdges:content:)") }
+  nonisolated internal func popoverCore<Item, Content>(item: SwiftUI.Binding<Item?>, attachmentAnchor: SwiftUI.PopoverAttachmentAnchor, arrowEdges: SwiftUI.Edge.Set?, @SwiftUI.ContentBuilder content: @escaping (Item) -> Content) -> some SwiftUI.View where Item : Swift.Identifiable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.popoverCore(item:attachmentAnchor:arrowEdges:content:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  @_Concurrency.MainActor @preconcurrency public func backgroundExtensionEffect() -> Swift.Never { _suiUnimplemented("SwiftUI.View.backgroundExtensionEffect()") }
+  @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
+  @_Concurrency.MainActor @preconcurrency public func backgroundExtensionEffect() -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.backgroundExtensionEffect()") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  @_Concurrency.MainActor @preconcurrency public func backgroundExtensionEffect(isEnabled: Swift.Bool) -> Swift.Never { _suiUnimplemented("SwiftUI.View.backgroundExtensionEffect(isEnabled:)") }
+  @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
+  @_Concurrency.MainActor @preconcurrency public func backgroundExtensionEffect(isEnabled: Swift.Bool) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.backgroundExtensionEffect(isEnabled:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI._ValueActionModifier : SwiftUI._SceneModifier {
@@ -15034,6 +15158,8 @@ public struct ScrollIndicatorVisibility : ~Swift.Sendable {
   public static var never: SwiftUI.ScrollIndicatorVisibility {
     get { _suiUnimplemented("SwiftUI.ScrollIndicatorVisibility.never") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ScrollIndicatorVisibility.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -15057,9 +15183,8 @@ extension SwiftUI.ScrollIndicatorVisibility : Swift.Equatable {
   public static func == (a: SwiftUI.ScrollIndicatorVisibility, b: SwiftUI.ScrollIndicatorVisibility) -> Swift.Bool { _suiUnimplemented("SwiftUI.ScrollIndicatorVisibility.==(a:b:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func scrollIndicators(_ visibility: SwiftUI.ScrollIndicatorVisibility, axes: SwiftUI.Axis.Set = [.vertical, .horizontal]) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollIndicators(_:axes:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func scrollIndicators(_ visibility: SwiftUI.ScrollIndicatorVisibility, axes: SwiftUI.Axis.Set = [.vertical, .horizontal]) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollIndicators(_:axes:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 public struct ScrollEdgeEffectStyle : Swift.Hashable, Swift.Sendable {
@@ -15077,17 +15202,17 @@ public struct ScrollEdgeEffectStyle : Swift.Hashable, Swift.Sendable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.ScrollEdgeEffectStyle.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ScrollEdgeEffectStyle.init()") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
+  @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
   @available(visionOS, unavailable)
-  nonisolated public func scrollEdgeEffectStyle(_ style: SwiftUI.ScrollEdgeEffectStyle?, for edges: SwiftUI.Edge.Set) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollEdgeEffectStyle(_:for:)") }
+  nonisolated public func scrollEdgeEffectStyle(_ style: SwiftUI.ScrollEdgeEffectStyle?, for edges: SwiftUI.Edge.Set) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollEdgeEffectStyle(_:for:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
+  @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, *)
   @available(visionOS, unavailable)
-  nonisolated public func scrollEdgeEffectHidden(_ hidden: Swift.Bool = true, for edges: SwiftUI.Edge.Set = .all) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollEdgeEffectHidden(_:for:)") }
+  nonisolated public func scrollEdgeEffectHidden(_ hidden: Swift.Bool = true, for edges: SwiftUI.Edge.Set = .all) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollEdgeEffectHidden(_:for:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public struct ScrollInputBehavior : Swift.Sendable, Swift.Equatable {
@@ -15118,9 +15243,8 @@ public struct ScrollInputKind : Swift.Sendable, Swift.Equatable {
   public static func == (a: SwiftUI.ScrollInputKind, b: SwiftUI.ScrollInputKind) -> Swift.Bool { _suiUnimplemented("SwiftUI.ScrollInputKind.==(a:b:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  @_Concurrency.MainActor @preconcurrency public func scrollInputBehavior(_ behavior: SwiftUI.ScrollInputBehavior, for input: SwiftUI.ScrollInputKind) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollInputBehavior(_:for:)") }
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+  @_Concurrency.MainActor @preconcurrency public func scrollInputBehavior(_ behavior: SwiftUI.ScrollInputBehavior, for input: SwiftUI.ScrollInputKind) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollInputBehavior(_:for:)") }
 }
 extension SwiftUI.EnvironmentValues {
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -15135,18 +15259,15 @@ extension SwiftUI.EnvironmentValues {
   }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func scrollIndicatorsFlash(trigger value: some Equatable) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollIndicatorsFlash(trigger:)") }
+  @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+  nonisolated public func scrollIndicatorsFlash(trigger value: some Equatable) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollIndicatorsFlash(trigger:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func scrollIndicatorsFlash(onAppear: Swift.Bool) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollIndicatorsFlash(onAppear:)") }
+  @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+  nonisolated public func scrollIndicatorsFlash(onAppear: Swift.Bool) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollIndicatorsFlash(onAppear:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func scrollDisabled(_ disabled: Swift.Bool) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollDisabled(_:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func scrollDisabled(_ disabled: Swift.Bool) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollDisabled(_:)") }
 }
 extension SwiftUI.ScrollView {
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -15161,15 +15282,13 @@ extension SwiftUI.EnvironmentValues {
   }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func scrollClipDisabled(_ disabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollClipDisabled(_:)") }
+  @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+  nonisolated public func scrollClipDisabled(_ disabled: Swift.Bool = true) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollClipDisabled(_:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @available(visionOS, unavailable)
-  nonisolated public func scrollDismissesKeyboard(_ mode: SwiftUI.ScrollDismissesKeyboardMode) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollDismissesKeyboard(_:)") }
+  nonisolated public func scrollDismissesKeyboard(_ mode: SwiftUI.ScrollDismissesKeyboardMode) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollDismissesKeyboard(_:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @available(visionOS, unavailable)
@@ -15186,6 +15305,8 @@ public struct ScrollDismissesKeyboardMode : Swift.Sendable {
   public static var never: SwiftUI.ScrollDismissesKeyboardMode {
     get { _suiUnimplemented("SwiftUI.ScrollDismissesKeyboardMode.never") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ScrollDismissesKeyboardMode.init()") }
 }
 @available(iOS 18.2, macOS 15.2, tvOS 18.2, watchOS 11.2, *)
 @available(visionOS, unavailable)
@@ -15215,11 +15336,12 @@ public struct ScrollBounceBehavior : Swift.Sendable {
   public static var basedOnSize: SwiftUI.ScrollBounceBehavior {
     get { _suiUnimplemented("SwiftUI.ScrollBounceBehavior.basedOnSize") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ScrollBounceBehavior.init()") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
-  nonisolated public func scrollBounceBehavior(_ behavior: SwiftUI.ScrollBounceBehavior, axes: SwiftUI.Axis.Set = [.vertical]) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollBounceBehavior(_:axes:)") }
+  @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
+  nonisolated public func scrollBounceBehavior(_ behavior: SwiftUI.ScrollBounceBehavior, axes: SwiftUI.Axis.Set = [.vertical]) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollBounceBehavior(_:axes:)") }
 }
 extension SwiftUI.EnvironmentValues {
   @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
@@ -15270,8 +15392,7 @@ nonisolated public struct TableColumnForEach<Data, ID, RowValue, Sort, Content> 
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func focusSection() -> Swift.Never { _suiUnimplemented("SwiftUI.View.focusSection()") }
+  nonisolated public func focusSection() -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.focusSection()") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct ListItemTint : Swift.Sendable {
@@ -15300,6 +15421,8 @@ internal struct ListItemTintTraitKey : SwiftUI._ViewTraitKey, ~Swift.Sendable {
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   @usableFromInline
   internal typealias Value = SwiftUI.ListItemTint?
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ListItemTintTraitKey.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -15325,6 +15448,8 @@ nonisolated public struct AnyTabContent<SelectionValue> : SwiftUI.TabContent, ~S
   public typealias Body = SwiftUI.AnyTabContent<SelectionValue>
   @available(macOS 15.0, iOS 18.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public typealias _IdentifiedView = SwiftUI.AnyView
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.AnyTabContent.init()") }
   // port: synthesized witness for TabContent (R7); Apple implements it with an internal member
   public var body: SwiftUI.AnyTabContent<SelectionValue> { get { _suiUnimplemented("SwiftUI.AnyTabContent.body") } }
 }
@@ -15347,10 +15472,10 @@ nonisolated public struct AnyTabContent<SelectionValue> : SwiftUI.TabContent whe
 @available(watchOS, unavailable)
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func popover<Content>(isPresented: SwiftUI.Binding<Swift.Bool>, attachmentAnchor: SwiftUI.PopoverAttachmentAnchor = .rect(.bounds), arrowEdge: SwiftUI.Edge? = nil, @SwiftUI.ContentBuilder content: @escaping () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.TabContent.popover(isPresented:attachmentAnchor:arrowEdge:content:)") }
+nonisolated public func popover<Content>(isPresented: SwiftUI.Binding<Swift.Bool>, attachmentAnchor: SwiftUI.PopoverAttachmentAnchor = .rect(.bounds), arrowEdge: SwiftUI.Edge? = nil, @SwiftUI.ContentBuilder content: @escaping () -> Content) -> Self where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.TabContent.popover(isPresented:attachmentAnchor:arrowEdge:content:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func popover<Item, Content>(item: SwiftUI.Binding<Item?>, attachmentAnchor: SwiftUI.PopoverAttachmentAnchor = .rect(.bounds), arrowEdge: SwiftUI.Edge? = nil, @SwiftUI.ContentBuilder content: @escaping (Item) -> Content) -> Swift.Never where Item : Swift.Identifiable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.TabContent.popover(item:attachmentAnchor:arrowEdge:content:)") }
+nonisolated public func popover<Item, Content>(item: SwiftUI.Binding<Item?>, attachmentAnchor: SwiftUI.PopoverAttachmentAnchor = .rect(.bounds), arrowEdge: SwiftUI.Edge? = nil, @SwiftUI.ContentBuilder content: @escaping (Item) -> Content) -> Self where Item : Swift.Identifiable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.TabContent.popover(item:attachmentAnchor:arrowEdge:content:)") }
 }
 @available(macOS 10.15, *)
 @available(tvOS, unavailable)
@@ -15368,8 +15493,7 @@ extension SwiftUI.ToggleStyle where Self == SwiftUI.CheckboxToggleStyle {
 @available(visionOS, unavailable)
 nonisolated public struct CheckboxToggleStyle : SwiftUI.ToggleStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.CheckboxToggleStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.CheckboxToggleStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.CheckboxToggleStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.CheckboxToggleStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.CheckboxToggleStyle.makeBody(configuration:)") }
 }
 #else
 @available(macOS 10.15, *)
@@ -15383,23 +15507,20 @@ nonisolated public struct CheckboxToggleStyle : SwiftUI.ToggleStyle {
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func labelsHidden() -> Swift.Never { _suiUnimplemented("SwiftUI.View.labelsHidden()") }
+  nonisolated public func labelsHidden() -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.labelsHidden()") }
 }
 @available(visionOS 2.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func immersiveEnvironmentPicker<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.immersiveEnvironmentPicker(content:)") }
+  nonisolated public func immersiveEnvironmentPicker<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.immersiveEnvironmentPicker(content:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(visionOS 1.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 nonisolated public struct RoundedBorderTextEditorStyle : SwiftUI.TextEditorStyle, ~Swift.Sendable {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.RoundedBorderTextEditorStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.RoundedBorderTextEditorStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.RoundedBorderTextEditorStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.RoundedBorderTextEditorStyle.makeBody(configuration:)") }
   
   nonisolated public init() { _suiUnimplemented("SwiftUI.RoundedBorderTextEditorStyle.init()") }
 }
@@ -15447,6 +15568,8 @@ nonisolated public struct GroupBox<Label, Content> : SwiftUI.View, ~Swift.Sendab
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.GroupBox.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.GroupBox.init()") }
 }
 #else
 @available(iOS 14.0, macOS 10.15, *)
@@ -15501,29 +15624,21 @@ extension SwiftUI.GroupBox {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func documentLaunchTitle(_ title: SwiftUI.Text) -> Swift.Never { _suiUnimplemented("SwiftUI.View.documentLaunchTitle(_:)") }
+  nonisolated public func documentLaunchTitle(_ title: SwiftUI.Text) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.documentLaunchTitle(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func documentLaunchTitle(_ titleKey: SwiftUI.LocalizedStringKey) -> Swift.Never { _suiUnimplemented("SwiftUI.View.documentLaunchTitle(_:)") }
+  nonisolated public func documentLaunchTitle(_ titleKey: SwiftUI.LocalizedStringKey) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.documentLaunchTitle(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func documentLaunchTitle(_ titleResource: FoundationShims.LocalizedStringResource) -> Swift.Never { _suiUnimplemented("SwiftUI.View.documentLaunchTitle(_:)") }
+  @_disfavoredOverload nonisolated public func documentLaunchTitle(_ titleResource: FoundationShims.LocalizedStringResource) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.documentLaunchTitle(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func documentLaunchTitle<S>(_ title: S) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.documentLaunchTitle(_:)") }
+  @_disfavoredOverload nonisolated public func documentLaunchTitle<S>(_ title: S) -> some SwiftUI.View where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.documentLaunchTitle(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func documentLaunchSubtitle(_ subtitle: SwiftUI.Text) -> Swift.Never { _suiUnimplemented("SwiftUI.View.documentLaunchSubtitle(_:)") }
+  nonisolated public func documentLaunchSubtitle(_ subtitle: SwiftUI.Text) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.documentLaunchSubtitle(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func documentLaunchSubtitle(_ subtitleKey: SwiftUI.LocalizedStringKey) -> Swift.Never { _suiUnimplemented("SwiftUI.View.documentLaunchSubtitle(_:)") }
+  nonisolated public func documentLaunchSubtitle(_ subtitleKey: SwiftUI.LocalizedStringKey) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.documentLaunchSubtitle(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func documentLaunchSubtitle(_ subtitleResource: FoundationShims.LocalizedStringResource) -> Swift.Never { _suiUnimplemented("SwiftUI.View.documentLaunchSubtitle(_:)") }
+  @_disfavoredOverload nonisolated public func documentLaunchSubtitle(_ subtitleResource: FoundationShims.LocalizedStringResource) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.documentLaunchSubtitle(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func documentLaunchSubtitle<S>(_ subtitle: S) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.documentLaunchSubtitle(_:)") }
+  @_disfavoredOverload nonisolated public func documentLaunchSubtitle<S>(_ subtitle: S) -> some SwiftUI.View where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.documentLaunchSubtitle(_:)") }
 }
 @available(iOS 27.0, *)
 @available(tvOS, unavailable)
@@ -15568,8 +15683,7 @@ nonisolated public struct InsetTableStyle : SwiftUI.TableStyle, ~Swift.Sendable 
     @available(macOS, introduced: 12.0, deprecated: 100000.0, message: "Use the `.inset` style with the `.alternatingRowBackgrounds()` view modifier")
   @available(visionOS, unavailable)
   nonisolated public init(alternatesRowBackgrounds: Swift.Bool) { _suiUnimplemented("SwiftUI.InsetTableStyle.init(alternatesRowBackgrounds:)") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.InsetTableStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.InsetTableStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.InsetTableStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.InsetTableStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -15597,6 +15711,8 @@ nonisolated public struct ImmersiveSpaceViewContent<Content> : SwiftUI.Immersive
       @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ImmersiveSpaceViewContent.init()") }
 }
 #else
 @available(visionOS 1.0, *)
@@ -15624,9 +15740,8 @@ extension SwiftUI.ImmersiveSpaceViewContent {
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 public func __designTimeSelection<T>(_ instance: T, _ identifier: Swift.String) -> T { _suiUnimplemented("SwiftUI.__designTimeSelection(_:_:)") }
-// port: opaque result type is not expressible in source; declared as Never (R3)
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-public func __designTimeSelection<T>(_ instance: T, _ identifier: Swift.String) -> Swift.Never where T : SwiftUI.View { _suiUnimplemented("SwiftUI.__designTimeSelection(_:_:)") }
+public func __designTimeSelection<T>(_ instance: T, _ identifier: Swift.String) -> some SwiftUI.View where T : SwiftUI.View { _suiUnimplemented("SwiftUI.__designTimeSelection(_:_:)") }
 
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 public protocol PickerStyle {
@@ -15636,6 +15751,8 @@ public protocol PickerStyle {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 public struct _PickerValue<Style, SelectionValue> : ~Swift.Sendable where Style : SwiftUI.PickerStyle, SelectionValue : Swift.Hashable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._PickerValue.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -15644,8 +15761,7 @@ public struct _PickerValue<Style, SelectionValue> where Style : SwiftUI.PickerSt
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func pickerStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.PickerStyle { _suiUnimplemented("SwiftUI.View.pickerStyle(_:)") }
+  nonisolated public func pickerStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.PickerStyle { _suiUnimplemented("SwiftUI.View.pickerStyle(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, *)
 @available(watchOS, unavailable)
@@ -15693,8 +15809,7 @@ extension SwiftUI.TabsPickerStyle : Swift.Sendable {
 @available(tvOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct LinearCapacityGaugeStyle : SwiftUI.GaugeStyle, ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public init() { _suiUnimplemented("SwiftUI.LinearCapacityGaugeStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.LinearCapacityGaugeStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.LinearCapacityGaugeStyle.makeBody(configuration:)") }
+  @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.LinearCapacityGaugeStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.LinearCapacityGaugeStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -15831,6 +15946,8 @@ nonisolated public struct AlertScene<Actions, Message> : SwiftUI.Scene, ~Swift.S
   nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.AlertScene.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.AlertScene.init()") }
 }
 #else
 @available(macOS 15.0, *)
@@ -15997,37 +16114,34 @@ public enum MoveCommandDirection : Swift.Sendable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.MoveCommandDirection.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.MoveCommandDirection.init()") }
 }
 @available(macOS 10.15, tvOS 13.0, *)
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-        // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(watchOS, unavailable)
+    @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func onMoveCommand(perform action: ((SwiftUI.MoveCommandDirection) -> Swift.Void)?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onMoveCommand(perform:)") }
+  nonisolated public func onMoveCommand(perform action: ((SwiftUI.MoveCommandDirection) -> Swift.Void)?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onMoveCommand(perform:)") }
   
-        // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(watchOS, unavailable)
+    @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func onExitCommand(perform action: (() -> Swift.Void)?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onExitCommand(perform:)") }
+  nonisolated public func onExitCommand(perform action: (() -> Swift.Void)?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onExitCommand(perform:)") }
   
-            // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  nonisolated public func onPlayPauseCommand(perform action: (() -> Swift.Void)?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onPlayPauseCommand(perform:)") }
-  
-        // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(visionOS, unavailable)
-  nonisolated public func onDeleteCommand(perform action: (() -> Swift.Void)?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onDeleteCommand(perform:)") }
-  
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS 14.3, *)
       @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func pageCommand<V>(value: SwiftUI.Binding<V>, in bounds: Swift.ClosedRange<V>, step: V = 1) -> Swift.Never where V : Swift.BinaryInteger { _suiUnimplemented("SwiftUI.View.pageCommand(value:in:step:)") }
+  nonisolated public func onPlayPauseCommand(perform action: (() -> Swift.Void)?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onPlayPauseCommand(perform:)") }
+  
+    @available(tvOS, unavailable)
+  @available(watchOS, unavailable)
+  @available(visionOS, unavailable)
+  nonisolated public func onDeleteCommand(perform action: (() -> Swift.Void)?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onDeleteCommand(perform:)") }
+  
+  @available(tvOS 14.3, *)
+      @available(watchOS, unavailable)
+  @available(visionOS, unavailable)
+  nonisolated public func pageCommand<V>(value: SwiftUI.Binding<V>, in bounds: Swift.ClosedRange<V>, step: V = 1) -> some SwiftUI.View where V : Swift.BinaryInteger { _suiUnimplemented("SwiftUI.View.pageCommand(value:in:step:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(macOS 26.0, visionOS 26.0, *)
@@ -16049,6 +16163,8 @@ nonisolated public struct AnyCompositorContent : SwiftUI.CompositorContent, ~Swi
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias _ViewRepresentation = SwiftUI.AnyView
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.AnyCompositorContent.init()") }
   // port: synthesized witness for CompositorContent (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.AnyCompositorContent.body") } }
 }
@@ -16142,6 +16258,8 @@ internal struct ListSectionSpacingTraitKey : SwiftUI._ViewTraitKey, ~Swift.Senda
   @usableFromInline
     @available(tvOS, unavailable)
   internal typealias Value = SwiftUI.ListSectionSpacing?
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ListSectionSpacingTraitKey.init()") }
 }
 #else
 @available(iOS 17.0, watchOS 10.0, *)
@@ -16167,6 +16285,8 @@ internal struct UseCompactSectionSpacingTraitKey : SwiftUI._ViewTraitKey, ~Swift
   @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
   @usableFromInline
   internal typealias Value = Swift.Bool
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.UseCompactSectionSpacingTraitKey.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -16210,7 +16330,7 @@ extension SwiftUI.ModifiedContent where Modifier == SwiftUI.AccessibilityAttachm
 @available(visionOS, unavailable)
 @preconcurrency @_Concurrency.MainActor public protocol ControlWidgetConfiguration {
   associatedtype Body : SwiftUI.ControlWidgetConfiguration
-  @SwiftUI.ControlWidgetConfigurationBuilder @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
+   @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
   @_Concurrency.MainActor @preconcurrency static func _makeWidgetControlConfiguration(control: SwiftUI._GraphValue<Self>, inputs: SwiftUI._WidgetInputs) -> SwiftUI._WidgetOutputs
 }
 @available(iOS 18.0, macOS 26.0, watchOS 26.0, *)
@@ -16247,6 +16367,8 @@ extension Swift.Never : SwiftUI.ControlWidgetConfiguration {
         return content
     }
   #endif
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ControlWidgetConfigurationBuilder.init()") }
 }
 #else
 @available(iOS 18.0, macOS 26.0, watchOS 26.0, *)
@@ -16289,7 +16411,9 @@ public struct WindowPlacement : Swift.Equatable, ~Swift.Sendable {
     @available(visionOS, introduced: 2.0, deprecated: 2.0, message: "Use PushWindowAction instead.")
     public static func replacing(_ relativeWindow: SwiftUI.WindowProxy) -> SwiftUI.WindowPlacement.Position { _suiUnimplemented("SwiftUI.WindowPlacement.Position.replacing(_:)") }
     public static func == (a: SwiftUI.WindowPlacement.Position, b: SwiftUI.WindowPlacement.Position) -> Swift.Bool { _suiUnimplemented("SwiftUI.WindowPlacement.Position.==(a:b:)") }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.WindowPlacement.Position.init()") }
+}
   @available(visionOS, unavailable)
   public init(_ position: CoreGraphics.CGPoint? = nil, size: CoreGraphics.CGSize? = nil) { _suiUnimplemented("SwiftUI.WindowPlacement.init(_:size:)") }
   @available(visionOS, unavailable)
@@ -16302,6 +16426,8 @@ public struct WindowPlacement : Swift.Equatable, ~Swift.Sendable {
     public init(_ position: SwiftUI.WindowPlacement.Position? = nil, size: CoreGraphics.CGSize? = nil) { _suiUnimplemented("SwiftUI.WindowPlacement.init(_:size:)") }
     public init(_ position: SwiftUI.WindowPlacement.Position? = nil, width: CoreGraphics.CGFloat? = nil, height: CoreGraphics.CGFloat? = nil, depth: CoreGraphics.CGFloat? = nil) { _suiUnimplemented("SwiftUI.WindowPlacement.init(_:width:height:depth:)") }
   public static func == (a: SwiftUI.WindowPlacement, b: SwiftUI.WindowPlacement) -> Swift.Bool { _suiUnimplemented("SwiftUI.WindowPlacement.==(a:b:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.WindowPlacement.init()") }
 }
 #else
 @available(macOS 15.0, visionOS 2.0, *)
@@ -16346,6 +16472,8 @@ public struct WindowPlacementContext : ~Swift.Sendable {
     public var windows: [SwiftUI.WindowProxy] {
     get { _suiUnimplemented("SwiftUI.WindowPlacementContext.windows") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.WindowPlacementContext.init()") }
 }
 #else
 @available(macOS 15.0, visionOS 2.0, *)
@@ -16395,6 +16523,8 @@ public struct WindowProxy : ~Swift.Sendable {
   public var phase: SwiftUI.ScenePhase {
     get { _suiUnimplemented("SwiftUI.WindowProxy.phase") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.WindowProxy.init()") }
 }
 #else
 @available(visionOS 2.0, *)
@@ -16414,7 +16544,7 @@ public struct WindowProxy {
 @available(tvOS, unavailable)
 @_functionBuilder public struct SliderTickBuilder<V> : ~Swift.Sendable where V : Swift.BinaryFloatingPoint {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-public static func buildBlock() -> Swift.Never { _suiUnimplemented("SwiftUI.SliderTickBuilder.buildBlock()") }
+public static func buildBlock() -> Self { _suiUnimplemented("SwiftUI.SliderTickBuilder.buildBlock()") }
   
   #if compiler(>=5.3) && $InlineAlways
   @export(implementation) @inline(always) public static func buildBlock(_ content: some SliderTickContent<V>) -> some SwiftUI.SliderTickContent<V> {
@@ -16461,6 +16591,8 @@ public static func buildBlock() -> Swift.Never { _suiUnimplemented("SwiftUI.Slid
         .init(storage: .falseContent(second))
     }
   #endif
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SliderTickBuilder.init()") }
 }
 #else
 @available(iOS 26.0, macOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -16555,6 +16687,8 @@ nonisolated public struct Form<Content> : SwiftUI.View, ~Swift.Sendable where Co
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.Form.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.Form.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -16623,6 +16757,8 @@ nonisolated public struct EmptyCommands : SwiftUI.Commands {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 public struct _ResolvedCommands : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._ResolvedCommands.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -16669,6 +16805,8 @@ extension SwiftUI.Scene {
         content
     }
   #endif
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.CommandsBuilder.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -16712,6 +16850,8 @@ nonisolated public struct MultiDatePicker<Label> : SwiftUI.View, ~Swift.Sendable
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.MultiDatePicker.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.MultiDatePicker.init()") }
 }
 #else
 @available(iOS 16.0, *)
@@ -16774,11 +16914,10 @@ extension SwiftUI.MultiDatePicker where Label == SwiftUI.Text {
   @_disfavoredOverload nonisolated public init<S>(_ title: S, selection: SwiftUI.Binding<Swift.Set<Foundation.DateComponents>>, in bounds: Swift.PartialRangeUpTo<Foundation.Date>) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.MultiDatePicker.init(_:selection:in:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.1, *)
+  @available(iOS 18.1, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_Concurrency.MainActor @preconcurrency public func documentBrowserContextMenu(@SwiftUI.ContentBuilder _ menu: @escaping ([Foundation.URL]?) -> some View) -> Swift.Never { _suiUnimplemented("SwiftUI.View.documentBrowserContextMenu(_:)") }
+  @_Concurrency.MainActor @preconcurrency public func documentBrowserContextMenu(@SwiftUI.ContentBuilder _ menu: @escaping ([Foundation.URL]?) -> some View) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.documentBrowserContextMenu(_:)") }
 }
 @available(iOS 18.1, *)
 @available(tvOS, unavailable)
@@ -16818,8 +16957,7 @@ public static var automatic: SwiftUI.ToolbarItemAxisBehavior { get { _suiUnimple
 @available(watchOS, unavailable)
 @available(tvOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onPencilDoubleTap(perform action: @escaping (_ value: SwiftUI.PencilDoubleTapGestureValue) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onPencilDoubleTap(perform:)") }
+  nonisolated public func onPencilDoubleTap(perform action: @escaping (_ value: SwiftUI.PencilDoubleTapGestureValue) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onPencilDoubleTap(perform:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.5, macOS 14.5, visionOS 26.2, *)
@@ -16850,8 +16988,7 @@ public struct PencilDoubleTapGestureValue : Swift.Hashable {
 @available(watchOS, unavailable)
 @available(tvOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onPencilSqueeze(perform action: @escaping (_ phase: SwiftUI.PencilSqueezeGesturePhase) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onPencilSqueeze(perform:)") }
+  nonisolated public func onPencilSqueeze(perform action: @escaping (_ phase: SwiftUI.PencilSqueezeGesturePhase) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onPencilSqueeze(perform:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.5, macOS 14.5, visionOS 26.2, *)
@@ -16862,6 +16999,8 @@ nonisolated public func onPencilSqueeze(perform action: @escaping (_ phase: Swif
   case ended(SwiftUI.PencilSqueezeGestureValue)
   case failed
   public static func == (a: SwiftUI.PencilSqueezeGesturePhase, b: SwiftUI.PencilSqueezeGesturePhase) -> Swift.Bool { _suiUnimplemented("SwiftUI.PencilSqueezeGesturePhase.==(a:b:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PencilSqueezeGesturePhase.init()") }
 }
 #else
 @available(iOS 17.5, macOS 14.5, visionOS 26.2, *)
@@ -16908,6 +17047,8 @@ public struct ScrollPhaseChangeContext : ~Swift.Sendable {
   public var velocity: CoreGraphics.CGVector? {
     get { _suiUnimplemented("SwiftUI.ScrollPhaseChangeContext.velocity") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ScrollPhaseChangeContext.init()") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -16921,17 +17062,14 @@ public struct ScrollPhaseChangeContext {
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  nonisolated public func onScrollPhaseChange(_ action: @escaping (_ oldPhase: SwiftUI.ScrollPhase, _ newPhase: SwiftUI.ScrollPhase) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onScrollPhaseChange(_:)") }
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+  nonisolated public func onScrollPhaseChange(_ action: @escaping (_ oldPhase: SwiftUI.ScrollPhase, _ newPhase: SwiftUI.ScrollPhase) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onScrollPhaseChange(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  nonisolated public func onScrollPhaseChange(_ action: @escaping (_ oldPhase: SwiftUI.ScrollPhase, _ newPhase: SwiftUI.ScrollPhase, _ context: SwiftUI.ScrollPhaseChangeContext) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onScrollPhaseChange(_:)") }
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+  nonisolated public func onScrollPhaseChange(_ action: @escaping (_ oldPhase: SwiftUI.ScrollPhase, _ newPhase: SwiftUI.ScrollPhase, _ context: SwiftUI.ScrollPhaseChangeContext) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onScrollPhaseChange(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  nonisolated public func onScrollGeometryChange<T>(for type: T.Type, of transform: @escaping (SwiftUI.ScrollGeometry) -> T, action: @escaping (_ oldValue: T, _ newValue: T) -> Swift.Void) -> Swift.Never where T : Swift.Equatable { _suiUnimplemented("SwiftUI.View.onScrollGeometryChange(for:of:action:)") }
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+  nonisolated public func onScrollGeometryChange<T>(for type: T.Type, of transform: @escaping (SwiftUI.ScrollGeometry) -> T, action: @escaping (_ oldValue: T, _ newValue: T) -> Swift.Void) -> some SwiftUI.View where T : Swift.Equatable { _suiUnimplemented("SwiftUI.View.onScrollGeometryChange(for:of:action:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public struct TabRole : Swift.Hashable, Swift.Sendable {
@@ -16947,6 +17085,8 @@ public struct TabRole : Swift.Hashable, Swift.Sendable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.TabRole.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TabRole.init()") }
 }
 @available(iOS 27.0, *)
 @available(macCatalyst, unavailable)
@@ -16957,19 +17097,17 @@ extension SwiftUI.SceneAccessoryContent {
   nonisolated public func onAvailabilityChange(perform action: @escaping (_ isAvailable: Swift.Bool) -> Swift.Void) -> some SwiftUI.SceneAccessoryContent { _suiUnimplemented("SwiftUI.SceneAccessoryContent.onAvailabilityChange(perform:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.0, *)
+  @available(iOS 26.0, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func tabViewBottomAccessory<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.tabViewBottomAccessory(content:)") }
+  nonisolated public func tabViewBottomAccessory<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.tabViewBottomAccessory(content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.1, *)
+  @available(iOS 26.1, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func tabViewBottomAccessory<Content>(isEnabled: Swift.Bool, @SwiftUI.ContentBuilder content: () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.tabViewBottomAccessory(isEnabled:content:)") }
+  nonisolated public func tabViewBottomAccessory<Content>(isEnabled: Swift.Bool, @SwiftUI.ContentBuilder content: () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.tabViewBottomAccessory(isEnabled:content:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct ToolbarCustomizationOptions : Swift.OptionSet, Swift.Sendable {
@@ -16995,9 +17133,8 @@ extension SwiftUI.CustomizableToolbarContent {
   public func defaultCustomization() -> some SwiftUI.CustomizableToolbarContent { _suiUnimplemented("SwiftUI.CustomizableToolbarContent.defaultCustomization()") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
-  nonisolated public func menuActionDismissBehavior(_ behavior: SwiftUI.MenuActionDismissBehavior) -> Swift.Never { _suiUnimplemented("SwiftUI.View.menuActionDismissBehavior(_:)") }
+  @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
+  nonisolated public func menuActionDismissBehavior(_ behavior: SwiftUI.MenuActionDismissBehavior) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.menuActionDismissBehavior(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
@@ -17033,6 +17170,8 @@ nonisolated public struct _DraggingModifier : SwiftUI.ViewModifier, ~Swift.Senda
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._DraggingModifier.init()") }
   // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
   public func body(content: SwiftUI::_ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._DraggingModifier.body(content:)") }
 }
@@ -17060,6 +17199,8 @@ nonisolated public struct HSplitView<Content> : SwiftUI.View, ~Swift.Sendable wh
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.HSplitView.init()") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.HSplitView.body") } }
 }
@@ -17089,6 +17230,8 @@ nonisolated public struct VSplitView<Content> : SwiftUI.View, ~Swift.Sendable wh
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.VSplitView.init()") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.VSplitView.body") } }
 }
@@ -17112,12 +17255,13 @@ nonisolated public struct VSplitView<Content> : SwiftUI.View where Content : Swi
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct _SplitViewContainer : SwiftUI._VariadicView.UnaryViewRoot, ~Swift.Sendable {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public func body(children: SwiftUI._VariadicView.Children) -> Swift.Never { _suiUnimplemented("SwiftUI._SplitViewContainer.body(children:)") }
+  @_Concurrency.MainActor @preconcurrency public func body(children: SwiftUI._VariadicView.Children) -> some SwiftUI.View { _suiUnimplemented("SwiftUI._SplitViewContainer.body(children:)") }
   
   @_Concurrency.MainActor @preconcurrency public static var _viewListOptions: Swift.Int {
     get { _suiUnimplemented("SwiftUI._SplitViewContainer._viewListOptions") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._SplitViewContainer.init()") }
 }
 #else
 @available(macOS 10.15, *)
@@ -17139,8 +17283,7 @@ nonisolated public struct VSplitView<Content> : SwiftUI.View where Content : Swi
 @available(visionOS, unavailable)
 public struct PullDownMenuButtonStyle : SwiftUI.MenuButtonStyle, ~Swift.Sendable {
   public init() { _suiUnimplemented("SwiftUI.PullDownMenuButtonStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func _body(configuration: SwiftUI.PullDownMenuButtonStyle._Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.PullDownMenuButtonStyle._body(configuration:)") }
+  public func _body(configuration: SwiftUI.PullDownMenuButtonStyle._Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.PullDownMenuButtonStyle._body(configuration:)") }
 }
 #else
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `BorderedButtonMenuStyle` instead.")
@@ -17159,8 +17302,7 @@ public struct PullDownMenuButtonStyle : SwiftUI.MenuButtonStyle {
 @available(visionOS, unavailable)
 public struct BorderlessPullDownMenuButtonStyle : SwiftUI.MenuButtonStyle, ~Swift.Sendable {
   public init() { _suiUnimplemented("SwiftUI.BorderlessPullDownMenuButtonStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func _body(configuration: SwiftUI.BorderlessPullDownMenuButtonStyle._Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderlessPullDownMenuButtonStyle._body(configuration:)") }
+  public func _body(configuration: SwiftUI.BorderlessPullDownMenuButtonStyle._Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.BorderlessPullDownMenuButtonStyle._body(configuration:)") }
 }
 #else
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `BorderlessButtonMenuStyle` instead.")
@@ -17179,8 +17321,7 @@ public struct BorderlessPullDownMenuButtonStyle : SwiftUI.MenuButtonStyle {
 @available(visionOS, unavailable)
 public struct BorderlessButtonMenuButtonStyle : SwiftUI.MenuButtonStyle, ~Swift.Sendable {
   public init() { _suiUnimplemented("SwiftUI.BorderlessButtonMenuButtonStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func _body(configuration: SwiftUI.BorderlessButtonMenuButtonStyle._Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderlessButtonMenuButtonStyle._body(configuration:)") }
+  public func _body(configuration: SwiftUI.BorderlessButtonMenuButtonStyle._Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.BorderlessButtonMenuButtonStyle._body(configuration:)") }
 }
 #else
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `BorderlessButtonMenuStyle` instead.")
@@ -17199,8 +17340,7 @@ public struct BorderlessButtonMenuButtonStyle : SwiftUI.MenuButtonStyle {
 @available(visionOS, unavailable)
 public struct _TexturedPullDownMenuButtonStyle : SwiftUI.MenuButtonStyle, ~Swift.Sendable {
   public init() { _suiUnimplemented("SwiftUI._TexturedPullDownMenuButtonStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func _body(configuration: SwiftUI._TexturedPullDownMenuButtonStyle._Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI._TexturedPullDownMenuButtonStyle._body(configuration:)") }
+  public func _body(configuration: SwiftUI._TexturedPullDownMenuButtonStyle._Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI._TexturedPullDownMenuButtonStyle._body(configuration:)") }
 }
 #else
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `TexturedButtonMenuStyle` instead.")
@@ -17279,12 +17419,15 @@ public struct TableColumnAlignment : Swift.Hashable, Swift.Sendable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.TableColumnAlignment.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TableColumnAlignment.init()") }
 }
 @available(iOS 17.0, macOS 14.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.TableColumnContent {
-  @_Concurrency.MainActor @preconcurrency public func alignment(_ alignment: SwiftUI.TableColumnAlignment) -> some SwiftUI.TableColumnContent<Self.TableRowValue, Self.TableColumnSortComparator> { _suiUnimplemented("SwiftUI.TableColumnContent.alignment(_:)") }
+    // port: opaque result type is not expressible in source; declared as Never (R3)
+@_Concurrency.MainActor @preconcurrency public func alignment(_ alignment: SwiftUI.TableColumnAlignment) -> Self { _suiUnimplemented("SwiftUI.TableColumnContent.alignment(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(visionOS 26.0, *)
@@ -17302,6 +17445,8 @@ public struct HoverEffectPhaseOverride : Swift.Equatable, ~Swift.Sendable {
   public static func inactiveTemporarily(trigger: some Equatable) -> SwiftUI.HoverEffectPhaseOverride { _suiUnimplemented("SwiftUI.HoverEffectPhaseOverride.inactiveTemporarily(trigger:)") }
   public static func toggledTemporarily(trigger: some Equatable) -> SwiftUI.HoverEffectPhaseOverride { _suiUnimplemented("SwiftUI.HoverEffectPhaseOverride.toggledTemporarily(trigger:)") }
   public static func == (a: SwiftUI.HoverEffectPhaseOverride, b: SwiftUI.HoverEffectPhaseOverride) -> Swift.Bool { _suiUnimplemented("SwiftUI.HoverEffectPhaseOverride.==(a:b:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.HoverEffectPhaseOverride.init()") }
 }
 #else
 @available(visionOS 26.0, *)
@@ -17325,8 +17470,7 @@ public struct HoverEffectPhaseOverride : Swift.Equatable {
 @available(watchOS, unavailable)
 @available(tvOS, unavailable)
 extension SwiftUI.CustomHoverEffect {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func hoverEffectPhaseOverride(_ override: SwiftUI.HoverEffectPhaseOverride?) -> Swift.Never { _suiUnimplemented("SwiftUI.CustomHoverEffect.hoverEffectPhaseOverride(_:)") }
+  public func hoverEffectPhaseOverride(_ override: SwiftUI.HoverEffectPhaseOverride?) -> some SwiftUI.CustomHoverEffect { _suiUnimplemented("SwiftUI.CustomHoverEffect.hoverEffectPhaseOverride(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, *)
@@ -17338,6 +17482,8 @@ nonisolated public struct DisclosureGroup<Label, Content> : SwiftUI.View, ~Swift
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.DisclosureGroup.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DisclosureGroup.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -17377,8 +17523,7 @@ extension SwiftUI.DisclosureGroup where Label == SwiftUI.Text {
 @available(visionOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func textInputCompletion(_ completion: Swift.String) -> Swift.Never { _suiUnimplemented("SwiftUI.View.textInputCompletion(_:)") }
+  nonisolated public func textInputCompletion(_ completion: Swift.String) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.textInputCompletion(_:)") }
 }
 @available(macOS 15.0, visionOS 1.0, *)
 @available(tvOS, unavailable)
@@ -17411,6 +17556,8 @@ nonisolated public struct Picker<Label, SelectionValue, Content> : SwiftUI.View,
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.Picker.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.Picker.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -17683,6 +17830,8 @@ public struct PalettePickerStyle : SwiftUI.PickerStyle {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public struct Tab<Value, Content, Label> : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.Tab.init()") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -17770,18 +17919,15 @@ extension SwiftUI.Tab where Value == Swift.Never, Content : SwiftUI.View, Label 
 @available(iOS 18.0, macOS 15.0, tvOS 27.0, visionOS 2.0, *)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func tabViewSidebarHeader<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.tabViewSidebarHeader(content:)") }
+  nonisolated public func tabViewSidebarHeader<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.tabViewSidebarHeader(content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func tabViewSidebarFooter<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.tabViewSidebarFooter(content:)") }
+  nonisolated public func tabViewSidebarFooter<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.tabViewSidebarFooter(content:)") }
 }
 @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func tabViewSidebarBottomBar<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.tabViewSidebarBottomBar(content:)") }
+  nonisolated public func tabViewSidebarBottomBar<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.tabViewSidebarBottomBar(content:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -17790,6 +17936,8 @@ nonisolated public struct AssistiveAccess<Content> : SwiftUI.Scene, ~Swift.Senda
   nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.AssistiveAccess.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.AssistiveAccess.init()") }
 }
 #else
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -17927,13 +18075,13 @@ extension SwiftUI.ModifiedContent where Modifier == SwiftUI.AccessibilityAttachm
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityInputLabels(_ inputLabels: [SwiftUI.Text], isEnabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.accessibilityInputLabels(_:isEnabled:)") }
+nonisolated public func accessibilityInputLabels(_ inputLabels: [SwiftUI.Text], isEnabled: Swift.Bool = true) -> Self { _suiUnimplemented("SwiftUI.TabContent.accessibilityInputLabels(_:isEnabled:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityInputLabels(_ inputLabelKeys: [SwiftUI.LocalizedStringKey], isEnabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.accessibilityInputLabels(_:isEnabled:)") }
+nonisolated public func accessibilityInputLabels(_ inputLabelKeys: [SwiftUI.LocalizedStringKey], isEnabled: Swift.Bool = true) -> Self { _suiUnimplemented("SwiftUI.TabContent.accessibilityInputLabels(_:isEnabled:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func accessibilityInputLabels<S>(_ inputLabels: [S], isEnabled: Swift.Bool = true) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.TabContent.accessibilityInputLabels(_:isEnabled:)") }
+@_disfavoredOverload nonisolated public func accessibilityInputLabels<S>(_ inputLabels: [S], isEnabled: Swift.Bool = true) -> Self where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.TabContent.accessibilityInputLabels(_:isEnabled:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.View {
@@ -17970,6 +18118,8 @@ nonisolated public struct AsyncImage<Content> : SwiftUI.View, ~Swift.Sendable wh
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.AsyncImage.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.AsyncImage.init()") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -18007,11 +18157,12 @@ public enum AsyncImagePhase : Swift.Sendable {
   public var error: (any Swift.Error)? {
     get { _suiUnimplemented("SwiftUI.AsyncImagePhase.error") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.AsyncImagePhase.init()") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(anyAppleOS 27.0, *)
-  nonisolated public func asyncImageURLSession(_ urlSession: FoundationNetworking.URLSession) -> Swift.Never { _suiUnimplemented("SwiftUI.View.asyncImageURLSession(_:)") }
+  @available(anyAppleOS 27.0, *)
+  nonisolated public func asyncImageURLSession(_ urlSession: FoundationNetworking.URLSession) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.asyncImageURLSession(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(anyAppleOS 27.0, *)
@@ -18019,6 +18170,8 @@ nonisolated public struct _AsyncImageConditionalContent<Content, Placeholder> : 
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI._AsyncImageConditionalContent.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._AsyncImageConditionalContent.init()") }
 }
 #else
 @available(anyAppleOS 27.0, *)
@@ -18030,19 +18183,16 @@ nonisolated public struct _AsyncImageConditionalContent<Content, Placeholder> : 
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func searchCompletion(_ completion: Swift.String) -> Swift.Never { _suiUnimplemented("SwiftUI.View.searchCompletion(_:)") }
+  nonisolated public func searchCompletion(_ completion: Swift.String) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchCompletion(_:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, *)
+  @available(iOS 16.0, macOS 13.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func searchCompletion<T>(_ token: T) -> Swift.Never where T : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchCompletion(_:)") }
+  nonisolated public func searchCompletion<T>(_ token: T) -> some SwiftUI.View where T : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.searchCompletion(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func searchSuggestions(_ visibility: SwiftUI.Visibility, for placements: SwiftUI.SearchSuggestionsPlacement.Set) -> Swift.Never { _suiUnimplemented("SwiftUI.View.searchSuggestions(_:for:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func searchSuggestions(_ visibility: SwiftUI.Visibility, for placements: SwiftUI.SearchSuggestionsPlacement.Set) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchSuggestions(_:for:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.EnvironmentValues {
@@ -18060,6 +18210,8 @@ extension SwiftUI.EnvironmentValues {
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @preconcurrency @_Concurrency.MainActor public struct DismissSearchAction {
   @_Concurrency.MainActor @preconcurrency public func callAsFunction() { _suiUnimplemented("SwiftUI.DismissSearchAction.callAsFunction()") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DismissSearchAction.init()") }
 }
 @available(macOS, deprecated, introduced: 10.15, message: "Use MenuButton instead.")
 @available(tvOS, unavailable)
@@ -18078,6 +18230,8 @@ public typealias PullDownButton = SwiftUI._PullDownButton
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._PullDownButton.init()") }
 }
 #else
 @available(macOS 10.15, *)
@@ -18143,8 +18297,7 @@ public struct SelectionShapeStyle : SwiftUI.ShapeStyle {
 @available(visionOS, unavailable)
 public struct DefaultMenuButtonStyle : SwiftUI.MenuButtonStyle, ~Swift.Sendable {
   public init() { _suiUnimplemented("SwiftUI.DefaultMenuButtonStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func _body(configuration: SwiftUI.DefaultMenuButtonStyle._Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultMenuButtonStyle._body(configuration:)") }
+  public func _body(configuration: SwiftUI.DefaultMenuButtonStyle._Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.DefaultMenuButtonStyle._body(configuration:)") }
 }
 #else
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `menuStyle(.automatic)` instead.")
@@ -18168,8 +18321,7 @@ extension SwiftUI.LabelStyle where Self == SwiftUI.TitleAndIconLabelStyle {
 @available(iOS 14.5, macOS 11.3, tvOS 14.5, watchOS 7.4, *)
 nonisolated public struct TitleAndIconLabelStyle : SwiftUI.LabelStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.TitleAndIconLabelStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.TitleAndIconLabelStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.TitleAndIconLabelStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.TitleAndIconLabelStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.TitleAndIconLabelStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 14.5, macOS 11.3, tvOS 14.5, watchOS 7.4, *)
@@ -18194,6 +18346,8 @@ nonisolated public struct UtilityWindow<Content> : SwiftUI.Scene, ~Swift.Sendabl
   nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.UtilityWindow.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.UtilityWindow.init()") }
 }
 #else
 @available(macOS 15.0, *)
@@ -18215,7 +18369,8 @@ nonisolated public struct UtilityWindow<Content> : SwiftUI.Scene where Content :
 #endif
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.Image : CoreTransferable.Transferable {
-  public static var transferRepresentation: some CoreTransferable.TransferRepresentation {
+    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
+public static var transferRepresentation: Swift.Never {
     get { _suiUnimplemented("SwiftUI.Image.transferRepresentation") }
   }
 }
@@ -18286,8 +18441,7 @@ extension SwiftUI.NavigationSplitViewStyle where Self == SwiftUI.AutomaticNaviga
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 @_Concurrency.MainActor @preconcurrency public struct AutomaticNavigationSplitViewStyle : SwiftUI.NavigationSplitViewStyle, ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public init() { _suiUnimplemented("SwiftUI.AutomaticNavigationSplitViewStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AutomaticNavigationSplitViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AutomaticNavigationSplitViewStyle.makeBody(configuration:)") }
+  @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AutomaticNavigationSplitViewStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.AutomaticNavigationSplitViewStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -18297,16 +18451,16 @@ extension SwiftUI.NavigationSplitViewStyle where Self == SwiftUI.AutomaticNaviga
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  nonisolated public func matchedTransitionSource(id: some Hashable, in namespace: SwiftUI.Namespace.ID) -> Swift.Never { _suiUnimplemented("SwiftUI.View.matchedTransitionSource(id:in:)") }
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+  nonisolated public func matchedTransitionSource(id: some Hashable, in namespace: SwiftUI.Namespace.ID) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.matchedTransitionSource(id:in:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  nonisolated public func matchedTransitionSource(id: some Hashable, in namespace: SwiftUI.Namespace.ID, configuration: (SwiftUI.EmptyMatchedTransitionSourceConfiguration) -> some MatchedTransitionSourceConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUI.View.matchedTransitionSource(id:in:configuration:)") }
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+  nonisolated public func matchedTransitionSource(id: some Hashable, in namespace: SwiftUI.Namespace.ID, configuration: (SwiftUI.EmptyMatchedTransitionSourceConfiguration) -> some MatchedTransitionSourceConfiguration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.matchedTransitionSource(id:in:configuration:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public struct _ResolvedMatchedTransitionSourceConfiguration : Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._ResolvedMatchedTransitionSourceConfiguration.init()") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public protocol MatchedTransitionSourceConfiguration : Swift.Sendable {
@@ -18315,6 +18469,8 @@ public protocol MatchedTransitionSourceConfiguration : Swift.Sendable {
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public struct EmptyMatchedTransitionSourceConfiguration : SwiftUI.MatchedTransitionSourceConfiguration {
   public func _update(configuration: inout SwiftUI._ResolvedMatchedTransitionSourceConfiguration) { _suiUnimplemented("SwiftUI.EmptyMatchedTransitionSourceConfiguration._update(configuration:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.EmptyMatchedTransitionSourceConfiguration.init()") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.MatchedTransitionSourceConfiguration {
@@ -18365,6 +18521,8 @@ public struct AccessibilityRotorEntry<ID> : ~Swift.Sendable where ID : Swift.Has
         self.init(Text(label), textRange: textRange, prepare: prepare)
     }
   @_disfavoredOverload public init<L>(_ label: L, textRange: Swift.Range<Swift.String.Index>, prepare: @escaping () -> Swift.Void = {}) where ID == Swift.Never, L : Swift.StringProtocol { _suiUnimplemented("SwiftUI.AccessibilityRotorEntry.init(_:textRange:prepare:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.AccessibilityRotorEntry.init()") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -18400,8 +18558,7 @@ public struct AccessibilityRotorEntry<ID> where ID : Swift.Hashable {
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityRotorEntry<ID>(id: ID, in namespace: SwiftUI.Namespace.ID) -> Swift.Never where ID : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityRotorEntry(id:in:)") }
+  nonisolated public func accessibilityRotorEntry<ID>(id: ID, in namespace: SwiftUI.Namespace.ID) -> some SwiftUI.View where ID : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityRotorEntry(id:in:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -18412,6 +18569,8 @@ nonisolated public struct NavigationStack<Data, Root> : SwiftUI.View, ~Swift.Sen
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.NavigationStack.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.NavigationStack.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -18434,8 +18593,7 @@ extension SwiftUI.FormStyle where Self == SwiftUI.GroupedFormStyle {
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 nonisolated public struct GroupedFormStyle : SwiftUI.FormStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.GroupedFormStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.GroupedFormStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.GroupedFormStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.GroupedFormStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.GroupedFormStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -18535,6 +18693,8 @@ extension SwiftUI.ButtonBorderShape : SwiftUI.InsettableShape {
 nonisolated public struct AccessibilityAttachmentModifier : SwiftUI.ViewModifier, ~Swift.Sendable {
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.AccessibilityAttachmentModifier.init()") }
   // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
   public func body(content: SwiftUI::_ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI.AccessibilityAttachmentModifier.body(content:)") }
 }
@@ -18563,12 +18723,10 @@ extension SwiftUI.NavigationViewStyle where Self == SwiftUI.DefaultNavigationVie
 @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
 public struct DefaultNavigationViewStyle : SwiftUI.NavigationViewStyle, ~Swift.Sendable {
   public init() { _suiUnimplemented("SwiftUI.DefaultNavigationViewStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func _body(configuration: SwiftUI._NavigationViewStyleConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultNavigationViewStyle._body(configuration:)") }
+  public func _body(configuration: SwiftUI._NavigationViewStyleConfiguration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.DefaultNavigationViewStyle._body(configuration:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  public func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultNavigationViewStyle._columnBasedBody(configuration:)") }
+  @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+  public func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.DefaultNavigationViewStyle._columnBasedBody(configuration:)") }
 }
 #else
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
@@ -18647,6 +18805,8 @@ public static var all: SwiftUI.SquareAzimuth.Set { get { _suiUnimplemented("Swif
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.SquareAzimuth.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SquareAzimuth.init()") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
@@ -18662,7 +18822,9 @@ public struct DragConfiguration : ~Swift.Sendable {
         @available(visionOS, unavailable)
     public init(allowCopy: Swift.Bool = true, allowMove: Swift.Bool = false, allowDelete: Swift.Bool = false) { _suiUnimplemented("SwiftUI.DragConfiguration.OperationsWithinApp.init(allowCopy:allowMove:allowDelete:)") }
         public init(allowMove: Swift.Bool = false) { _suiUnimplemented("SwiftUI.DragConfiguration.OperationsWithinApp.init(allowMove:)") }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.DragConfiguration.OperationsWithinApp.init()") }
+}
   public struct OperationsOutsideApp : Swift.Sendable {
         @available(visionOS, unavailable)
     public var allowAlias: Swift.Bool {
@@ -18672,7 +18834,9 @@ public struct DragConfiguration : ~Swift.Sendable {
         @available(visionOS, unavailable)
     public init(allowCopy: Swift.Bool = true, allowMove: Swift.Bool = false, allowDelete: Swift.Bool = false) { _suiUnimplemented("SwiftUI.DragConfiguration.OperationsOutsideApp.init(allowCopy:allowMove:allowDelete:)") }
         public init(allowCopy: Swift.Bool = true) { _suiUnimplemented("SwiftUI.DragConfiguration.OperationsOutsideApp.init(allowCopy:)") }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.DragConfiguration.OperationsOutsideApp.init()") }
+}
   public var operationsWithinApp: SwiftUI.DragConfiguration.OperationsWithinApp {
     get { _suiUnimplemented("SwiftUI.DragConfiguration.operationsWithinApp") }
     set { _suiUnimplemented("SwiftUI.DragConfiguration.operationsWithinApp") }
@@ -18685,6 +18849,8 @@ public struct DragConfiguration : ~Swift.Sendable {
   public init(allowMove: Swift.Bool) { _suiUnimplemented("SwiftUI.DragConfiguration.init(allowMove:)") }
     @available(visionOS, unavailable)
   public init(allowMove: Swift.Bool, allowDelete: Swift.Bool) { _suiUnimplemented("SwiftUI.DragConfiguration.init(allowMove:allowDelete:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DragConfiguration.init()") }
 }
 #else
 @available(iOS 26.0, macOS 26.0, visionOS 26.0, *)
@@ -18741,6 +18907,8 @@ nonisolated public struct ControlGroup<Content> : SwiftUI.View, ~Swift.Sendable 
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.ControlGroup.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ControlGroup.init()") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 17.0, *)
@@ -18759,6 +18927,8 @@ nonisolated public struct LabeledControlGroupContent<Content, Label> : SwiftUI.V
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.LabeledControlGroupContent.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.LabeledControlGroupContent.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 17.0, *)
@@ -18834,12 +19004,15 @@ public struct AttributedTextSelection : Swift.Equatable, Swift.Sendable {
     case insertionPoint(Foundation.AttributedString.Index)
     case ranges(Swift.RangeSet<Foundation.AttributedString.Index>)
     public static func == (a: SwiftUI.AttributedTextSelection.Indices, b: SwiftUI.AttributedTextSelection.Indices) -> Swift.Bool { _suiUnimplemented("SwiftUI.AttributedTextSelection.Indices.==(a:b:)") }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.AttributedTextSelection.Indices.init()") }
+}
   public static func == (a: SwiftUI.AttributedTextSelection, b: SwiftUI.AttributedTextSelection) -> Swift.Bool { _suiUnimplemented("SwiftUI.AttributedTextSelection.==(a:b:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension SwiftUI.AttributedTextSelection {
-  public init() { _suiUnimplemented("SwiftUI.AttributedTextSelection.init()") }
+    // port: duplicate parameterless initializer; the port declares one public `init()` in the type (R11)
+
   public init(insertionPoint: Foundation.AttributedString.Index, typingAttributes: Foundation.AttributeContainer? = nil) { _suiUnimplemented("SwiftUI.AttributedTextSelection.init(insertionPoint:typingAttributes:)") }
   public init(ranges: Swift.RangeSet<Foundation.AttributedString.Index>) { _suiUnimplemented("SwiftUI.AttributedTextSelection.init(ranges:)") }
   public init(range: Swift.Range<Foundation.AttributedString.Index>) { _suiUnimplemented("SwiftUI.AttributedTextSelection.init(range:)") }
@@ -18863,19 +19036,21 @@ extension SwiftUI.AttributedTextSelection {
   #if compiler(>=5.3) && $TildeSendable
   public struct Attributes<Text> : Swift.Sequence, ~Swift.Sendable {
         // port: opaque result type is not expressible in source; declared as Never (R3)
-public func makeIterator() -> Swift.Never { _suiUnimplemented("SwiftUI.AttributedTextSelection.Attributes.makeIterator()") }
+public func makeIterator() -> Self { _suiUnimplemented("SwiftUI.AttributedTextSelection.Attributes.makeIterator()") }
     
         // port: opaque result type is not expressible in source; declared as Never (R3)
-public subscript<K>(type: Swift.KeyPath<Foundation.AttributeDynamicLookup, K>) -> Swift.Never where K : Foundation.AttributedStringKey, K.Value : Swift.Sendable {
+public subscript<K>(type: Swift.KeyPath<Foundation.AttributeDynamicLookup, K>) -> Self where K : Foundation.AttributedStringKey, K.Value : Swift.Sendable {
       get { _suiUnimplemented("SwiftUI.AttributedTextSelection.Attributes.subscript(type:)") }
     }
         // port: opaque result type is not expressible in source; declared as Never (R3)
-public subscript<K>(type: K.Type) -> Swift.Never where K : Foundation.AttributedStringKey, K.Value : Swift.Sendable {
+public subscript<K>(type: K.Type) -> Self where K : Foundation.AttributedStringKey, K.Value : Swift.Sendable {
       get { _suiUnimplemented("SwiftUI.AttributedTextSelection.Attributes.subscript(type:)") }
     }
     @available(macOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
     public typealias Element = Foundation.AttributeContainer
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.AttributedTextSelection.Attributes.init()") }
+}
   #else
   public struct Attributes<Text> : Swift.Sequence {
     public func makeIterator() -> some Swift.IteratorProtocol<Foundation.AttributeContainer>
@@ -18916,6 +19091,8 @@ public struct DocumentConfiguration {
   public var fileURL: Foundation.URL? {
     get { _suiUnimplemented("SwiftUI.DocumentConfiguration.fileURL") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DocumentConfiguration.init()") }
 }
 @available(iOS 17.0, macOS 14.0, visionOS 1.0, *)
 @available(tvOS, unavailable)
@@ -18936,8 +19113,7 @@ extension SwiftUI.EnvironmentValues {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func sceneAccessory<C>(@SwiftUI.ContentBuilder content: () -> C) -> Swift.Never where C : SwiftUI.SceneAccessoryContent { _suiUnimplemented("SwiftUI.View.sceneAccessory(content:)") }
+  nonisolated public func sceneAccessory<C>(@SwiftUI.ContentBuilder content: () -> C) -> some SwiftUI.View where C : SwiftUI.SceneAccessoryContent { _suiUnimplemented("SwiftUI.View.sceneAccessory(content:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.NavigationLink {
@@ -19086,8 +19262,7 @@ extension SwiftUI.GaugeStyle where Self == SwiftUI.AccessoryLinearGaugeStyle {
 @available(tvOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct AccessoryLinearGaugeStyle : SwiftUI.GaugeStyle, ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public init() { _suiUnimplemented("SwiftUI.AccessoryLinearGaugeStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AccessoryLinearGaugeStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AccessoryLinearGaugeStyle.makeBody(configuration:)") }
+  @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AccessoryLinearGaugeStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.AccessoryLinearGaugeStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -19151,6 +19326,8 @@ nonisolated public struct PresentedWindowContent<Data, Content> : SwiftUI.View, 
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PresentedWindowContent.init()") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.PresentedWindowContent.body") } }
 }
@@ -19178,8 +19355,7 @@ extension SwiftUI.MenuStyle where Self == SwiftUI.DefaultMenuStyle {
 @available(watchOS, unavailable)
 nonisolated public struct DefaultMenuStyle : SwiftUI.MenuStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.DefaultMenuStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.DefaultMenuStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultMenuStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.DefaultMenuStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.DefaultMenuStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 17.0, *)
@@ -19227,34 +19403,25 @@ extension SwiftUI.AnimatableModifier {
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityRotor<Content>(_ label: SwiftUI.Text, @SwiftUI.ContentBuilder entries: @escaping () -> Content) -> Swift.Never where Content : SwiftUI.AccessibilityRotorContent { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:)") }
+  nonisolated public func accessibilityRotor<Content>(_ label: SwiftUI.Text, @SwiftUI.ContentBuilder entries: @escaping () -> Content) -> some SwiftUI.View where Content : SwiftUI.AccessibilityRotorContent { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityRotor<Content>(_ systemRotor: SwiftUI.AccessibilitySystemRotor, @SwiftUI.ContentBuilder entries: @escaping () -> Content) -> Swift.Never where Content : SwiftUI.AccessibilityRotorContent { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:)") }
+  nonisolated public func accessibilityRotor<Content>(_ systemRotor: SwiftUI.AccessibilitySystemRotor, @SwiftUI.ContentBuilder entries: @escaping () -> Content) -> some SwiftUI.View where Content : SwiftUI.AccessibilityRotorContent { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityRotor<EntryModel>(_ rotorLabel: SwiftUI.Text, entries: [EntryModel], entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> Swift.Never where EntryModel : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:entryLabel:)") }
+  nonisolated public func accessibilityRotor<EntryModel>(_ rotorLabel: SwiftUI.Text, entries: [EntryModel], entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> some SwiftUI.View where EntryModel : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:entryLabel:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityRotor<EntryModel, ID>(_ rotorLabel: SwiftUI.Text, entries: [EntryModel], entryID: Swift.KeyPath<EntryModel, ID>, entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> Swift.Never where ID : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:entryID:entryLabel:)") }
+  nonisolated public func accessibilityRotor<EntryModel, ID>(_ rotorLabel: SwiftUI.Text, entries: [EntryModel], entryID: Swift.KeyPath<EntryModel, ID>, entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> some SwiftUI.View where ID : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:entryID:entryLabel:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityRotor<EntryModel>(_ systemRotor: SwiftUI.AccessibilitySystemRotor, entries: [EntryModel], entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> Swift.Never where EntryModel : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:entryLabel:)") }
+  nonisolated public func accessibilityRotor<EntryModel>(_ systemRotor: SwiftUI.AccessibilitySystemRotor, entries: [EntryModel], entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> some SwiftUI.View where EntryModel : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:entryLabel:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityRotor<EntryModel, ID>(_ systemRotor: SwiftUI.AccessibilitySystemRotor, entries: [EntryModel], entryID: Swift.KeyPath<EntryModel, ID>, entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> Swift.Never where ID : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:entryID:entryLabel:)") }
+  nonisolated public func accessibilityRotor<EntryModel, ID>(_ systemRotor: SwiftUI.AccessibilitySystemRotor, entries: [EntryModel], entryID: Swift.KeyPath<EntryModel, ID>, entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> some SwiftUI.View where ID : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:entryID:entryLabel:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityRotor(_ label: SwiftUI.Text, textRanges: [Swift.Range<Swift.String.Index>]) -> Swift.Never { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:textRanges:)") }
+  nonisolated public func accessibilityRotor(_ label: SwiftUI.Text, textRanges: [Swift.Range<Swift.String.Index>]) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:textRanges:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityRotor(_ systemRotor: SwiftUI.AccessibilitySystemRotor, textRanges: [Swift.Range<Swift.String.Index>]) -> Swift.Never { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:textRanges:)") }
+  nonisolated public func accessibilityRotor(_ systemRotor: SwiftUI.AccessibilitySystemRotor, textRanges: [Swift.Range<Swift.String.Index>]) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:textRanges:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityRotor<Content>(_ labelKey: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder entries: @escaping () -> Content) -> Swift.Never where Content : SwiftUI.AccessibilityRotorContent { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:)") }
+  nonisolated public func accessibilityRotor<Content>(_ labelKey: SwiftUI.LocalizedStringKey, @SwiftUI.ContentBuilder entries: @escaping () -> Content) -> some SwiftUI.View where Content : SwiftUI.AccessibilityRotorContent { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func accessibilityRotor<Content>(_ label: FoundationShims.LocalizedStringResource, @SwiftUI.ContentBuilder entries: @escaping () -> Content) -> some SwiftUI.View where Content : SwiftUI.AccessibilityRotorContent {
@@ -19263,11 +19430,9 @@ nonisolated public func accessibilityRotor<Content>(_ labelKey: SwiftUI.Localize
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func accessibilityRotor<L, Content>(_ label: L, @SwiftUI.ContentBuilder entries: @escaping () -> Content) -> Swift.Never where L : Swift.StringProtocol, Content : SwiftUI.AccessibilityRotorContent { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:)") }
+  @_disfavoredOverload nonisolated public func accessibilityRotor<L, Content>(_ label: L, @SwiftUI.ContentBuilder entries: @escaping () -> Content) -> some SwiftUI.View where L : Swift.StringProtocol, Content : SwiftUI.AccessibilityRotorContent { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityRotor<EntryModel>(_ rotorLabelKey: SwiftUI.LocalizedStringKey, entries: [EntryModel], entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> Swift.Never where EntryModel : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:entryLabel:)") }
+  nonisolated public func accessibilityRotor<EntryModel>(_ rotorLabelKey: SwiftUI.LocalizedStringKey, entries: [EntryModel], entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> some SwiftUI.View where EntryModel : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:entryLabel:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func accessibilityRotor<EntryModel>(_ rotorLabelResource: FoundationShims.LocalizedStringResource, entries: [EntryModel], entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> some SwiftUI.View where EntryModel : Swift.Identifiable {
@@ -19275,11 +19440,9 @@ nonisolated public func accessibilityRotor<EntryModel>(_ rotorLabelKey: SwiftUI.
             Text(rotorLabelResource), entries: entries, entryLabel: entryLabel)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func accessibilityRotor<L, EntryModel>(_ rotorLabel: L, entries: [EntryModel], entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> Swift.Never where L : Swift.StringProtocol, EntryModel : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:entryLabel:)") }
+  @_disfavoredOverload nonisolated public func accessibilityRotor<L, EntryModel>(_ rotorLabel: L, entries: [EntryModel], entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> some SwiftUI.View where L : Swift.StringProtocol, EntryModel : Swift.Identifiable { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:entryLabel:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityRotor<EntryModel, ID>(_ rotorLabelKey: SwiftUI.LocalizedStringKey, entries: [EntryModel], entryID: Swift.KeyPath<EntryModel, ID>, entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> Swift.Never where ID : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:entryID:entryLabel:)") }
+  nonisolated public func accessibilityRotor<EntryModel, ID>(_ rotorLabelKey: SwiftUI.LocalizedStringKey, entries: [EntryModel], entryID: Swift.KeyPath<EntryModel, ID>, entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> some SwiftUI.View where ID : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:entryID:entryLabel:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func accessibilityRotor<EntryModel, ID>(_ rotorLabelResource: FoundationShims.LocalizedStringResource, entries: [EntryModel], entryID: Swift.KeyPath<EntryModel, ID>, entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> some SwiftUI.View where ID : Swift.Hashable {
@@ -19289,19 +19452,16 @@ nonisolated public func accessibilityRotor<EntryModel, ID>(_ rotorLabelKey: Swif
         )
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func accessibilityRotor<L, EntryModel, ID>(_ rotorLabel: L, entries: [EntryModel], entryID: Swift.KeyPath<EntryModel, ID>, entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> Swift.Never where L : Swift.StringProtocol, ID : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:entryID:entryLabel:)") }
+  @_disfavoredOverload nonisolated public func accessibilityRotor<L, EntryModel, ID>(_ rotorLabel: L, entries: [EntryModel], entryID: Swift.KeyPath<EntryModel, ID>, entryLabel: Swift.KeyPath<EntryModel, Swift.String>) -> some SwiftUI.View where L : Swift.StringProtocol, ID : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:entries:entryID:entryLabel:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityRotor(_ labelKey: SwiftUI.LocalizedStringKey, textRanges: [Swift.Range<Swift.String.Index>]) -> Swift.Never { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:textRanges:)") }
+  nonisolated public func accessibilityRotor(_ labelKey: SwiftUI.LocalizedStringKey, textRanges: [Swift.Range<Swift.String.Index>]) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:textRanges:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func accessibilityRotor(_ label: FoundationShims.LocalizedStringResource, textRanges: [Swift.Range<Swift.String.Index>]) -> some SwiftUI.View {
         accessibilityRotor(Text(label), textRanges: textRanges)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func accessibilityRotor<L>(_ label: L, textRanges: [Swift.Range<Swift.String.Index>]) -> Swift.Never where L : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:textRanges:)") }
+  @_disfavoredOverload nonisolated public func accessibilityRotor<L>(_ label: L, textRanges: [Swift.Range<Swift.String.Index>]) -> some SwiftUI.View where L : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.accessibilityRotor(_:textRanges:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 public struct AccessibilitySystemRotor : Swift.Sendable {
@@ -19340,6 +19500,8 @@ public struct AccessibilitySystemRotor : Swift.Sendable {
   public static var landmarks: SwiftUI.AccessibilitySystemRotor {
     get { _suiUnimplemented("SwiftUI.AccessibilitySystemRotor.landmarks") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.AccessibilitySystemRotor.init()") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 public func __designTimeBoolean<T>(_ key: Swift.String, fallback: T) -> T where T : Swift.ExpressibleByBooleanLiteral { _suiUnimplemented("SwiftUI.__designTimeBoolean(_:fallback:)") }
@@ -19371,7 +19533,9 @@ public struct FormStyleConfiguration : ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public struct Content : SwiftUI.View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.FormStyleConfiguration.Content.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.FormStyleConfiguration.Content.body") } }
 }
   public let content: SwiftUI.FormStyleConfiguration.Content
@@ -19388,22 +19552,21 @@ public struct FormStyleConfiguration {
 #endif
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func formStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.FormStyle { _suiUnimplemented("SwiftUI.View.formStyle(_:)") }
+  nonisolated public func formStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.FormStyle { _suiUnimplemented("SwiftUI.View.formStyle(_:)") }
 }
 @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func swipeActions<T>(edge: SwiftUI.HorizontalEdge = .trailing, allowsFullSwipe: Swift.Bool = true, @SwiftUI.ContentBuilder content: () -> T) -> Swift.Never where T : SwiftUI.View { _suiUnimplemented("SwiftUI.TabContent.swipeActions(edge:allowsFullSwipe:content:)") }
+nonisolated public func swipeActions<T>(edge: SwiftUI.HorizontalEdge = .trailing, allowsFullSwipe: Swift.Bool = true, @SwiftUI.ContentBuilder content: () -> T) -> Self where T : SwiftUI.View { _suiUnimplemented("SwiftUI.TabContent.swipeActions(edge:allowsFullSwipe:content:)") }
 }
 @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func contextMenu<M>(@SwiftUI.ContentBuilder menuItems: () -> M) -> Swift.Never where M : SwiftUI.View { _suiUnimplemented("SwiftUI.TabContent.contextMenu(menuItems:)") }
+nonisolated public func contextMenu<M>(@SwiftUI.ContentBuilder menuItems: () -> M) -> Self where M : SwiftUI.View { _suiUnimplemented("SwiftUI.TabContent.contextMenu(menuItems:)") }
 }
 @available(iOS 16.0, macOS 12.0, *)
 @available(tvOS, unavailable)
@@ -19422,6 +19585,8 @@ nonisolated public func contextMenu<M>(@SwiftUI.ContentBuilder menuItems: () -> 
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 public struct _TableColumnInputs : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._TableColumnInputs.init()") }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -19435,6 +19600,8 @@ public struct _TableColumnInputs {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 public struct _TableColumnOutputs : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._TableColumnOutputs.init()") }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -19528,6 +19695,8 @@ extension Swift.Never : SwiftUI.TableColumnContent {
         column
     }
   #endif
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TableColumnBuilder.init()") }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -19593,6 +19762,8 @@ extension Swift.Never : SwiftUI.TableColumnContent {
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public struct TabSection<Header, Content, Footer, SelectionValue> : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TabSection.init()") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -19647,6 +19818,8 @@ nonisolated public struct DefaultTabLabel : SwiftUI.View, ~Swift.Sendable {
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.DefaultTabLabel.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DefaultTabLabel.init()") }
 }
 #else
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -19697,8 +19870,7 @@ extension SwiftUI.ControlGroupStyle where Self == SwiftUI.NavigationControlGroup
 @available(watchOS, unavailable)
 nonisolated public struct NavigationControlGroupStyle : SwiftUI.ControlGroupStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.NavigationControlGroupStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.NavigationControlGroupStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.NavigationControlGroupStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.NavigationControlGroupStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.NavigationControlGroupStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, *)
@@ -19851,6 +20023,8 @@ nonisolated public struct ExternalNonInteractiveAccessory<Content> : SwiftUI.Sce
   nonisolated public var body: some SwiftUI.SceneAccessoryContent {
     get { _suiUnimplemented("SwiftUI.ExternalNonInteractiveAccessory.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ExternalNonInteractiveAccessory.init()") }
 }
 @available(*, unavailable)
 extension SwiftUI.ExternalNonInteractiveAccessory : Swift.Sendable {
@@ -19866,6 +20040,8 @@ nonisolated public struct CameraCaptureAccessory<Content> : SwiftUI.SceneAccesso
   nonisolated public var body: some SwiftUI.SceneAccessoryContent {
     get { _suiUnimplemented("SwiftUI.CameraCaptureAccessory.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.CameraCaptureAccessory.init()") }
 }
 @available(*, unavailable)
 extension SwiftUI.CameraCaptureAccessory : Swift.Sendable {
@@ -19904,7 +20080,7 @@ extension SwiftUI.View where Self : Swift.Equatable {
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 @preconcurrency @_Concurrency.MainActor public protocol Scene {
   associatedtype Body : SwiftUI.Scene
-  @SwiftUI.SceneBuilder @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
+   @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
   nonisolated static func _makeScene(scene: SwiftUI._GraphValue<Self>, inputs: SwiftUI._SceneInputs) -> SwiftUI._SceneOutputs
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -19925,11 +20101,10 @@ public static var supported: SwiftUI.VolumeViewpointUpdateStrategy { get { _suiU
   public static func == (a: SwiftUI.VolumeViewpointUpdateStrategy, b: SwiftUI.VolumeViewpointUpdateStrategy) -> Swift.Bool { _suiUnimplemented("SwiftUI.VolumeViewpointUpdateStrategy.==(a:b:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(visionOS 2.0, *)
+  @available(visionOS 2.0, *)
       @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  @_Concurrency.MainActor @preconcurrency public func onVolumeViewpointChange(updateStrategy: SwiftUI.VolumeViewpointUpdateStrategy = .supported, initial: Swift.Bool = true, _ action: @escaping (_ oldValue: SwiftUI.Viewpoint3D, _ newValue: SwiftUI.Viewpoint3D) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onVolumeViewpointChange(updateStrategy:initial:_:)") }
+  @_Concurrency.MainActor @preconcurrency public func onVolumeViewpointChange(updateStrategy: SwiftUI.VolumeViewpointUpdateStrategy = .supported, initial: Swift.Bool = true, _ action: @escaping (_ oldValue: SwiftUI.Viewpoint3D, _ newValue: SwiftUI.Viewpoint3D) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onVolumeViewpointChange(updateStrategy:initial:_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(macOS 13.0, *)
@@ -19971,8 +20146,7 @@ extension SwiftUI.ProgressViewStyle where Self == SwiftUI.DefaultProgressViewSty
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 nonisolated public struct DefaultProgressViewStyle : SwiftUI.ProgressViewStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.DefaultProgressViewStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.DefaultProgressViewStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultProgressViewStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.DefaultProgressViewStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.DefaultProgressViewStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -19984,20 +20158,17 @@ nonisolated public struct DefaultProgressViewStyle : SwiftUI.ProgressViewStyle {
 @available(iOS 15.0, macOS 12.0, watchOS 8.0, *)
 @available(tvOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func swipeActions<T>(edge: SwiftUI.HorizontalEdge = .trailing, allowsFullSwipe: Swift.Bool = true, @SwiftUI.ContentBuilder content: () -> T) -> Swift.Never where T : SwiftUI.View { _suiUnimplemented("SwiftUI.View.swipeActions(edge:allowsFullSwipe:content:)") }
+  nonisolated public func swipeActions<T>(edge: SwiftUI.HorizontalEdge = .trailing, allowsFullSwipe: Swift.Bool = true, @SwiftUI.ContentBuilder content: () -> T) -> some SwiftUI.View where T : SwiftUI.View { _suiUnimplemented("SwiftUI.View.swipeActions(edge:allowsFullSwipe:content:)") }
 }
 @available(iOS 27.0, macOS 27.0, watchOS 27.0, visionOS 27.0, *)
 @available(tvOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func swipeActions(edge: SwiftUI.HorizontalEdge = .trailing, allowsFullSwipe: Swift.Bool = true, @SwiftUI.ContentBuilder content: () -> some View, onPresentationChanged: @escaping (Swift.Bool) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.swipeActions(edge:allowsFullSwipe:content:onPresentationChanged:)") }
+  nonisolated public func swipeActions(edge: SwiftUI.HorizontalEdge = .trailing, allowsFullSwipe: Swift.Bool = true, @SwiftUI.ContentBuilder content: () -> some View, onPresentationChanged: @escaping (Swift.Bool) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.swipeActions(edge:allowsFullSwipe:content:onPresentationChanged:)") }
 }
 @available(iOS 27.0, macOS 27.0, watchOS 27.0, visionOS 27.0, *)
 @available(tvOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func swipeActionsContainer() -> Swift.Never { _suiUnimplemented("SwiftUI.View.swipeActionsContainer()") }
+  nonisolated public func swipeActionsContainer() -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.swipeActionsContainer()") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(macOS 26.0, visionOS 26.0, *)
@@ -20005,7 +20176,9 @@ nonisolated public func swipeActionsContainer() -> Swift.Never { _suiUnimplement
 @available(watchOS, unavailable)
 @_functionBuilder public struct CompositorContentBuilder : ~Swift.Sendable {
   public struct Content<C> : ~Swift.Sendable where C : SwiftUI.CompositorContent {
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.CompositorContentBuilder.Content.init()") }
+}
   #if compiler(>=5.3) && $InlineAlways
   @export(implementation) @inline(always) public static func buildBlock<C>(_ content: C) -> C where C : SwiftUI.CompositorContent {
         return content
@@ -20024,6 +20197,8 @@ nonisolated public func swipeActionsContainer() -> Swift.Never { _suiUnimplement
         return content
     }
   #endif
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.CompositorContentBuilder.init()") }
 }
 #else
 @available(macOS 26.0, visionOS 26.0, *)
@@ -20174,11 +20349,8 @@ extension SwiftUI._ConditionalContent : SwiftUI.CompositorContent where TrueCont
   nonisolated public var _viewRepresentation: SwiftUI._ConditionalContent<TrueContent._ViewRepresentation, FalseContent._ViewRepresentation> {
     get { _suiUnimplemented("SwiftUI._ConditionalContent._viewRepresentation") }
   }
-  @available(macOS 26.0, visionOS 26.0, *)
-  @available(iOS, unavailable, introduced: 13.0)
-  @available(tvOS, unavailable, introduced: 13.0)
-  @available(watchOS, unavailable, introduced: 6.0)
-  public typealias Body = Swift.Never
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
   @available(macOS 26.0, visionOS 26.0, *)
   @available(iOS, unavailable, introduced: 13.0)
   @available(tvOS, unavailable, introduced: 13.0)
@@ -20195,7 +20367,7 @@ extension SwiftUI.CompositorContentBuilder.Content : SwiftUI.ImmersiveSpaceConte
 @available(watchOS, unavailable)
 @_typeEraser(AnyCompositorContent) @_Concurrency.MainActor public protocol CompositorContent {
   associatedtype Body : SwiftUI.CompositorContent
-  @SwiftUI.CompositorContentBuilder @_Concurrency.MainActor var body: Self.Body { get }
+   @_Concurrency.MainActor var body: Self.Body { get }
   associatedtype _ViewRepresentation : SwiftUI.View = SwiftUI._CompositorContentBodyAdaptor<Self>
   nonisolated var _viewRepresentation: Self._ViewRepresentation { get }
 }
@@ -20226,6 +20398,8 @@ extension Swift.Never : SwiftUI.CompositorContent {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI._CompositorContentBodyAdaptor.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._CompositorContentBodyAdaptor.init()") }
 }
 #else
 @available(macOS 26.0, visionOS 26.0, *)
@@ -20242,22 +20416,18 @@ extension Swift.Never : SwiftUI.CompositorContent {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dismissalConfirmationDialog<A>(_ titleKey: SwiftUI.LocalizedStringKey, shouldPresent: Swift.Bool, @SwiftUI.ContentBuilder actions: () -> A) -> Swift.Never where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.dismissalConfirmationDialog(_:shouldPresent:actions:)") }
+  nonisolated public func dismissalConfirmationDialog<A>(_ titleKey: SwiftUI.LocalizedStringKey, shouldPresent: Swift.Bool, @SwiftUI.ContentBuilder actions: () -> A) -> some SwiftUI.View where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.dismissalConfirmationDialog(_:shouldPresent:actions:)") }
   
   @_disfavoredOverload @export(implementation) nonisolated public func dismissalConfirmationDialog<A>(_ titleResource: FoundationShims.LocalizedStringResource, shouldPresent: Swift.Bool, @SwiftUI.ContentBuilder actions: () -> A) -> some SwiftUI.View where A : SwiftUI.View {
         dismissalConfirmationDialog(
             Text(titleResource), shouldPresent: shouldPresent, actions: actions)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func dismissalConfirmationDialog<S, A>(_ title: S, shouldPresent: Swift.Bool, @SwiftUI.ContentBuilder actions: () -> A) -> Swift.Never where S : Swift.StringProtocol, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.dismissalConfirmationDialog(_:shouldPresent:actions:)") }
+  @_disfavoredOverload nonisolated public func dismissalConfirmationDialog<S, A>(_ title: S, shouldPresent: Swift.Bool, @SwiftUI.ContentBuilder actions: () -> A) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.dismissalConfirmationDialog(_:shouldPresent:actions:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dismissalConfirmationDialog<A>(_ title: SwiftUI.Text, shouldPresent: Swift.Bool, @SwiftUI.ContentBuilder actions: () -> A) -> Swift.Never where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.dismissalConfirmationDialog(_:shouldPresent:actions:)") }
+  nonisolated public func dismissalConfirmationDialog<A>(_ title: SwiftUI.Text, shouldPresent: Swift.Bool, @SwiftUI.ContentBuilder actions: () -> A) -> some SwiftUI.View where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.dismissalConfirmationDialog(_:shouldPresent:actions:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dismissalConfirmationDialog<A, M>(_ titleKey: SwiftUI.LocalizedStringKey, shouldPresent: Swift.Bool, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> Swift.Never where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.dismissalConfirmationDialog(_:shouldPresent:actions:message:)") }
+  nonisolated public func dismissalConfirmationDialog<A, M>(_ titleKey: SwiftUI.LocalizedStringKey, shouldPresent: Swift.Bool, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.dismissalConfirmationDialog(_:shouldPresent:actions:message:)") }
   
   @_disfavoredOverload @export(implementation) nonisolated public func dismissalConfirmationDialog<A, M>(_ titleResource: FoundationShims.LocalizedStringResource, shouldPresent: Swift.Bool, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View {
         dismissalConfirmationDialog(
@@ -20265,11 +20435,9 @@ nonisolated public func dismissalConfirmationDialog<A, M>(_ titleKey: SwiftUI.Lo
             actions: actions, message: message)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func dismissalConfirmationDialog<S, A, M>(_ title: S, shouldPresent: Swift.Bool, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> Swift.Never where S : Swift.StringProtocol, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.dismissalConfirmationDialog(_:shouldPresent:actions:message:)") }
+  @_disfavoredOverload nonisolated public func dismissalConfirmationDialog<S, A, M>(_ title: S, shouldPresent: Swift.Bool, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.dismissalConfirmationDialog(_:shouldPresent:actions:message:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dismissalConfirmationDialog<A, M>(_ title: SwiftUI.Text, shouldPresent: Swift.Bool, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> Swift.Never where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.dismissalConfirmationDialog(_:shouldPresent:actions:message:)") }
+  nonisolated public func dismissalConfirmationDialog<A, M>(_ title: SwiftUI.Text, shouldPresent: Swift.Bool, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.dismissalConfirmationDialog(_:shouldPresent:actions:message:)") }
 }
 @available(macOS 13.0, *)
 @available(tvOS, unavailable)
@@ -20285,6 +20453,8 @@ public protocol MenuBarExtraStyle {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 public struct _MenuBarExtraValue<Style> : ~Swift.Sendable where Style : SwiftUI.MenuBarExtraStyle {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._MenuBarExtraValue.init()") }
 }
 #else
 @available(macOS 13.0, *)
@@ -20311,6 +20481,8 @@ internal struct OnDeleteTraitKey : SwiftUI._ViewTraitKey, ~Swift.Sendable {
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   @usableFromInline
   internal typealias Value = Swift.Optional<(Foundation.IndexSet) -> Swift.Void>
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.OnDeleteTraitKey.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -20340,6 +20512,8 @@ internal struct IsDeleteDisabledTraitKey : SwiftUI._ViewTraitKey, ~Swift.Sendabl
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   @usableFromInline
   internal typealias Value = Swift.Bool
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.IsDeleteDisabledTraitKey.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -20377,6 +20551,8 @@ nonisolated public struct CommandMenu<Content> : SwiftUI.Commands, ~Swift.Sendab
     get { _suiUnimplemented("SwiftUI.CommandMenu.body") }
   }
   nonisolated public func _resolve(into resolved: inout SwiftUI._ResolvedCommands) { _suiUnimplemented("SwiftUI.CommandMenu._resolve(into:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.CommandMenu.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -20455,6 +20631,8 @@ nonisolated public struct SecureField<Label> : SwiftUI.View, ~Swift.Sendable whe
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.SecureField.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SecureField.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -20537,8 +20715,7 @@ nonisolated public struct BorderlessButtonMenuStyle : SwiftUI.MenuStyle, ~Swift.
     @available(macOS, introduced: 11.0, deprecated: 12.0, message: "Use ``View/menuIndicator(_)`` instead.")
   @available(visionOS, unavailable)
   nonisolated public init(showsMenuIndicator: Swift.Bool) { _suiUnimplemented("SwiftUI.BorderlessButtonMenuStyle.init(showsMenuIndicator:)") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.BorderlessButtonMenuStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderlessButtonMenuStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.BorderlessButtonMenuStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.BorderlessButtonMenuStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS, introduced: 14.0, deprecated: 100000.0, message: "Use .menuStyle(.button) and .buttonStyle(.borderless).")
@@ -20559,7 +20736,7 @@ nonisolated public struct BorderlessButtonMenuStyle : SwiftUI.MenuStyle {
 @available(visionOS, unavailable)
 @preconcurrency @_Concurrency.MainActor public protocol ControlWidgetTemplate {
   associatedtype Body : SwiftUI.ControlWidgetTemplate
-  @SwiftUI.ControlWidgetTemplateBuilder @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
+   @_Concurrency.MainActor @preconcurrency var body: Self.Body { get }
   @_Concurrency.MainActor @preconcurrency static var _controlType: any Any.Type { get }
   @_Concurrency.MainActor @preconcurrency static func _makeControlWidgetTemplate(control: SwiftUI._GraphValue<Self>, inputs: SwiftUI._WidgetInputs) -> SwiftUI._WidgetOutputs
 }
@@ -20603,6 +20780,8 @@ extension Swift.Never : SwiftUI.ControlWidgetTemplate {
         return content
     }
   #endif
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ControlWidgetTemplateBuilder.init()") }
 }
 #else
 @available(iOS 18.0, macOS 26.0, watchOS 26.0, *)
@@ -20643,8 +20822,7 @@ public static var critical: SwiftUI.DialogSeverity { get { _suiUnimplemented("Sw
 @available(iOS 17.0, macOS 13.0, tvOS 17.0, watchOS 10.0, *)
 @available(tvOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dialogSeverity(_ severity: SwiftUI.DialogSeverity) -> Swift.Never { _suiUnimplemented("SwiftUI.View.dialogSeverity(_:)") }
+  nonisolated public func dialogSeverity(_ severity: SwiftUI.DialogSeverity) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.dialogSeverity(_:)") }
 }
 @available(macOS 15.0, *)
 @available(tvOS, unavailable)
@@ -20672,8 +20850,7 @@ public static var center: SwiftUI.ToolbarTitleAlignment { get { _suiUnimplemente
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func toolbarTitleAlignment(_ alignment: SwiftUI.ToolbarTitleAlignment) -> Swift.Never { _suiUnimplemented("SwiftUI.View.toolbarTitleAlignment(_:)") }
+  nonisolated public func toolbarTitleAlignment(_ alignment: SwiftUI.ToolbarTitleAlignment) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarTitleAlignment(_:)") }
 }
 extension SwiftUI.EnvironmentValues {
   @available(anyAppleOS 27.2, *)
@@ -20745,8 +20922,7 @@ extension SwiftUI.ControlGroupStyle where Self == SwiftUI.MenuControlGroupStyle 
 @available(watchOS, unavailable)
 nonisolated public struct MenuControlGroupStyle : SwiftUI.ControlGroupStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.MenuControlGroupStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.MenuControlGroupStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.MenuControlGroupStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.MenuControlGroupStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.MenuControlGroupStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.4, macOS 13.3, tvOS 17.0, *)
@@ -20772,8 +20948,7 @@ extension SwiftUI.ControlGroupStyle where Self == SwiftUI.CompactMenuControlGrou
 @available(watchOS, unavailable)
 nonisolated public struct CompactMenuControlGroupStyle : SwiftUI.ControlGroupStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.CompactMenuControlGroupStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.CompactMenuControlGroupStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.CompactMenuControlGroupStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.CompactMenuControlGroupStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.CompactMenuControlGroupStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.4, macOS 13.3, *)
@@ -20815,6 +20990,8 @@ nonisolated internal struct TupleToolbarContent<T> : SwiftUI.ToolbarContent, Swi
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   @usableFromInline
   internal typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TupleToolbarContent.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -20847,7 +21024,9 @@ extension FoundationShims.NSUserActivity {
     public var hashValue: Swift.Int {
       get { _suiUnimplemented("SwiftUI.NSUserActivity.TypedPayloadError.hashValue") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.NSUserActivity.TypedPayloadError.init()") }
+}
   public func typedPayload<T>(_ type: T.Type) throws -> T where T : Swift.Decodable, T : Swift.Encodable { _suiUnimplemented("SwiftUI.NSUserActivity.typedPayload(_:)") }
   public func setTypedPayload<T>(_ payload: T) throws where T : Swift.Decodable, T : Swift.Encodable { _suiUnimplemented("SwiftUI.NSUserActivity.setTypedPayload(_:)") }
 }
@@ -20923,6 +21102,8 @@ public enum EditMode : Swift.Sendable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.EditMode.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.EditMode.init()") }
 }
 @available(iOS 13.0, tvOS 13.0, *)
 @available(watchOS, unavailable)
@@ -20943,8 +21124,7 @@ extension SwiftUI.TextFieldStyle where Self == SwiftUI.PlainTextFieldStyle {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 public struct PlainTextFieldStyle : SwiftUI.TextFieldStyle, ~Swift.Sendable {
   public init() { _suiUnimplemented("SwiftUI.PlainTextFieldStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func _body(configuration: SwiftUI.TextField<SwiftUI.PlainTextFieldStyle._Label>) -> Swift.Never { _suiUnimplemented("SwiftUI.PlainTextFieldStyle._body(configuration:)") }
+  public func _body(configuration: SwiftUI.TextField<SwiftUI.PlainTextFieldStyle._Label>) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.PlainTextFieldStyle._body(configuration:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -20997,8 +21177,7 @@ nonisolated public struct BorderedButtonStyle : SwiftUI.PrimitiveButtonStyle, ~S
   @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "Use ``View/tint(_)`` instead.")
   @available(visionOS, unavailable)
   nonisolated public init(tint: SwiftUI.Color) { _suiUnimplemented("SwiftUI.BorderedButtonStyle.init(tint:)") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.BorderedButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderedButtonStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.BorderedButtonStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.BorderedButtonStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 15.0, macOS 10.15, tvOS 13.0, watchOS 7.0, *)
@@ -21036,6 +21215,8 @@ nonisolated public struct BorderedButtonStyle : SwiftUI.PrimitiveButtonStyle {
         _TupleScene((repeat each content))
     }
   #endif
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SceneBuilder.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, visionOS 1.0, *)
@@ -21128,34 +21309,28 @@ extension SwiftUI.SceneBuilder {
 @_marker public protocol _LimitedAvailabilitySceneMarker {
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, watchOS 9.0, tvOS 16.0, *)
-  nonisolated public func navigationDocument<D>(_ document: D) -> Swift.Never where D : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.navigationDocument(_:)") }
+  @available(iOS 16.0, macOS 13.0, watchOS 9.0, tvOS 16.0, *)
+  nonisolated public func navigationDocument<D>(_ document: D) -> some SwiftUI.View where D : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.navigationDocument(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
+  @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
   @available(tvOS, unavailable)
-  nonisolated public func navigationDocument<D>(_ document: D, preview: SwiftUI.SharePreview<Swift.Never, Swift.Never>) -> Swift.Never where D : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.navigationDocument(_:preview:)") }
+  nonisolated public func navigationDocument<D>(_ document: D, preview: SwiftUI.SharePreview<Swift.Never, Swift.Never>) -> some SwiftUI.View where D : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.navigationDocument(_:preview:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
+  @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
   @available(tvOS, unavailable)
-  nonisolated public func navigationDocument<D, I>(_ document: D, preview: SwiftUI.SharePreview<Swift.Never, I>) -> Swift.Never where D : CoreTransferable.Transferable, I : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.navigationDocument(_:preview:)") }
+  nonisolated public func navigationDocument<D, I>(_ document: D, preview: SwiftUI.SharePreview<Swift.Never, I>) -> some SwiftUI.View where D : CoreTransferable.Transferable, I : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.navigationDocument(_:preview:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
+  @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
   @available(tvOS, unavailable)
-  nonisolated public func navigationDocument<D, I>(_ document: D, preview: SwiftUI.SharePreview<I, Swift.Never>) -> Swift.Never where D : CoreTransferable.Transferable, I : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.navigationDocument(_:preview:)") }
+  nonisolated public func navigationDocument<D, I>(_ document: D, preview: SwiftUI.SharePreview<I, Swift.Never>) -> some SwiftUI.View where D : CoreTransferable.Transferable, I : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.navigationDocument(_:preview:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
+  @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
   @available(tvOS, unavailable)
-  nonisolated public func navigationDocument<D, I1, I2>(_ document: D, preview: SwiftUI.SharePreview<I1, I2>) -> Swift.Never where D : CoreTransferable.Transferable, I1 : CoreTransferable.Transferable, I2 : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.navigationDocument(_:preview:)") }
+  nonisolated public func navigationDocument<D, I1, I2>(_ document: D, preview: SwiftUI.SharePreview<I1, I2>) -> some SwiftUI.View where D : CoreTransferable.Transferable, I1 : CoreTransferable.Transferable, I2 : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.navigationDocument(_:preview:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, watchOS 9.0, tvOS 16.0, *)
-  nonisolated public func navigationDocument(_ url: Foundation.URL) -> Swift.Never { _suiUnimplemented("SwiftUI.View.navigationDocument(_:)") }
+  @available(iOS 16.0, macOS 13.0, watchOS 9.0, tvOS 16.0, *)
+  nonisolated public func navigationDocument(_ url: Foundation.URL) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationDocument(_:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.TabViewStyle where Self == SwiftUI.DefaultTabViewStyle {
@@ -21183,8 +21358,7 @@ nonisolated public struct DefaultTabViewStyle : SwiftUI.TabViewStyle {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 nonisolated public struct PlainTextEditorStyle : SwiftUI.TextEditorStyle, ~Swift.Sendable {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.PlainTextEditorStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.PlainTextEditorStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.PlainTextEditorStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.PlainTextEditorStyle.makeBody(configuration:)") }
   
   nonisolated public init() { _suiUnimplemented("SwiftUI.PlainTextEditorStyle.init()") }
 }
@@ -21218,9 +21392,8 @@ extension SwiftUI.DatePickerStyle where Self == SwiftUI.WheelDatePickerStyle {
 @available(tvOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct WheelDatePickerStyle : SwiftUI.DatePickerStyle, ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public init() { _suiUnimplemented("SwiftUI.WheelDatePickerStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, *)
-  @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.WheelDatePickerStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.WheelDatePickerStyle.makeBody(configuration:)") }
+  @available(iOS 16.0, *)
+  @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.WheelDatePickerStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.WheelDatePickerStyle.makeBody(configuration:)") }
   
   @available(iOS 13.0, watchOS 10.0, *)
     @available(tvOS, unavailable)
@@ -21256,7 +21429,7 @@ extension SwiftUI.ModifiedContent where Modifier == SwiftUI.AccessibilityAttachm
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityIdentifier(_ identifier: Swift.String, isEnabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.accessibilityIdentifier(_:isEnabled:)") }
+nonisolated public func accessibilityIdentifier(_ identifier: Swift.String, isEnabled: Swift.Bool = true) -> Self { _suiUnimplemented("SwiftUI.TabContent.accessibilityIdentifier(_:isEnabled:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.View {
@@ -21283,18 +21456,15 @@ extension SwiftUI.EnvironmentValues {
   }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func toolbar(removing defaultItemKind: SwiftUI.ToolbarDefaultItemKind?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.toolbar(removing:)") }
+  @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+  nonisolated public func toolbar(removing defaultItemKind: SwiftUI.ToolbarDefaultItemKind?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbar(removing:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  nonisolated public func safeAreaBar(edge: SwiftUI.VerticalEdge, alignment: SwiftUI.HorizontalAlignment = .center, spacing: CoreGraphics.CGFloat? = nil, @SwiftUI.ContentBuilder content: () -> some View) -> Swift.Never { _suiUnimplemented("SwiftUI.View.safeAreaBar(edge:alignment:spacing:content:)") }
+  @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
+  nonisolated public func safeAreaBar(edge: SwiftUI.VerticalEdge, alignment: SwiftUI.HorizontalAlignment = .center, spacing: CoreGraphics.CGFloat? = nil, @SwiftUI.ContentBuilder content: () -> some View) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.safeAreaBar(edge:alignment:spacing:content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  nonisolated public func safeAreaBar(edge: SwiftUI.HorizontalEdge, alignment: SwiftUI.VerticalAlignment = .center, spacing: CoreGraphics.CGFloat? = nil, @SwiftUI.ContentBuilder content: () -> some View) -> Swift.Never { _suiUnimplemented("SwiftUI.View.safeAreaBar(edge:alignment:spacing:content:)") }
+  @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
+  nonisolated public func safeAreaBar(edge: SwiftUI.HorizontalEdge, alignment: SwiftUI.VerticalAlignment = .center, spacing: CoreGraphics.CGFloat? = nil, @SwiftUI.ContentBuilder content: () -> some View) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.safeAreaBar(edge:alignment:spacing:content:)") }
 }
 @available(iOS 27.0, macOS 27.0, visionOS 27.0, *)
 @available(tvOS, unavailable)
@@ -21306,6 +21476,8 @@ public struct DocumentCreationSource : Swift.Sendable, Swift.Hashable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.DocumentCreationSource.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DocumentCreationSource.init()") }
 }
 @available(iOS 27.0, visionOS 27.0, *)
 @available(tvOS, unavailable)
@@ -21389,24 +21561,21 @@ extension SwiftUI.View {
 @available(anyAppleOS 27.0, *)
 @available(tvOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onLongPressGesture(minimumDuration: Swift.Double = 0.5, maximumDistance: CoreGraphics.CGFloat = 10, inputKinds: SwiftUI.GestureInputKinds = .all, perform action: @escaping () -> Swift.Void, onPressingChanged: ((Swift.Bool) -> Swift.Void)? = nil) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onLongPressGesture(minimumDuration:maximumDistance:inputKinds:perform:onPressingChanged:)") }
+  nonisolated public func onLongPressGesture(minimumDuration: Swift.Double = 0.5, maximumDistance: CoreGraphics.CGFloat = 10, inputKinds: SwiftUI.GestureInputKinds = .all, perform action: @escaping () -> Swift.Void, onPressingChanged: ((Swift.Bool) -> Swift.Void)? = nil) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onLongPressGesture(minimumDuration:maximumDistance:inputKinds:perform:onPressingChanged:)") }
 }
 @available(iOS 13.0, macOS 10.15, watchOS 6.0, tvOS 14.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, deprecated: 100000.0, renamed: "onLongPressGesture(minimumDuration:maximumDuration:perform:onPressingChanged:)")
+  @available(iOS, deprecated: 100000.0, renamed: "onLongPressGesture(minimumDuration:maximumDuration:perform:onPressingChanged:)")
   @available(macOS, deprecated: 100000.0, renamed: "onLongPressGesture(minimumDuration:maximumDuration:perform:onPressingChanged:)")
   @available(tvOS, unavailable)
   @available(watchOS, deprecated: 100000.0, renamed: "onLongPressGesture(minimumDuration:maximumDuration:perform:onPressingChanged:)")
   @available(visionOS, deprecated: 100000.0, renamed: "onLongPressGesture(minimumDuration:maximumDuration:perform:onPressingChanged:)")
-  @_disfavoredOverload nonisolated public func onLongPressGesture(minimumDuration: Swift.Double = 0.5, maximumDistance: CoreGraphics.CGFloat = 10, pressing: ((Swift.Bool) -> Swift.Void)? = nil, perform action: @escaping () -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onLongPressGesture(minimumDuration:maximumDistance:pressing:perform:)") }
+  @_disfavoredOverload nonisolated public func onLongPressGesture(minimumDuration: Swift.Double = 0.5, maximumDistance: CoreGraphics.CGFloat = 10, pressing: ((Swift.Bool) -> Swift.Void)? = nil, perform action: @escaping () -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onLongPressGesture(minimumDuration:maximumDistance:pressing:perform:)") }
   
-        // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, deprecated: 100000.0, renamed: "onLongPressGesture(minimumDuration:perform:onPressingChanged:)")
+    @available(tvOS, deprecated: 100000.0, renamed: "onLongPressGesture(minimumDuration:perform:onPressingChanged:)")
     @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  @_disfavoredOverload nonisolated public func onLongPressGesture(minimumDuration: Swift.Double = 0.5, pressing: ((Swift.Bool) -> Swift.Void)? = nil, perform action: @escaping () -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onLongPressGesture(minimumDuration:pressing:perform:)") }
+  @_disfavoredOverload nonisolated public func onLongPressGesture(minimumDuration: Swift.Double = 0.5, pressing: ((Swift.Bool) -> Swift.Void)? = nil, perform action: @escaping () -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onLongPressGesture(minimumDuration:pressing:perform:)") }
 }
 @available(iOS 26.0, macOS 26.0, watchOS 26.0, visionOS 26.0, *)
 @available(tvOS, unavailable)
@@ -21427,6 +21596,8 @@ public struct SliderTickContentForEach<Data, ID, Content> : SwiftUI.SliderTickCo
   public var body: [SwiftUI.SliderTick<SwiftUI.SliderTickContentForEach<Data, ID, Content>.Value>] {
     get { _suiUnimplemented("SwiftUI.SliderTickContentForEach.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SliderTickContentForEach.init()") }
 }
 #else
 @available(iOS 26.0, macOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -21448,29 +21619,24 @@ extension SwiftUI._ConditionalContent : SwiftUI.SliderTickContent where TrueCont
   public typealias Value = TrueContent.Value
   @usableFromInline
   internal init(storage: SwiftUI._ConditionalContent<TrueContent, FalseContent>.Storage) { _suiUnimplemented("SwiftUI._ConditionalContent.init(storage:)") }
-  public var body: TrueContent.Body {
-    get { _suiUnimplemented("SwiftUI._ConditionalContent.body") }
-  }
-  @available(macOS 26.0, iOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = TrueContent.Body
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
 }
 @available(iOS 26.0, macOS 26.0, watchOS 26.0, visionOS 26.0, *)
 @available(tvOS, unavailable)
 extension Swift.Optional : SwiftUI.SliderTickContent where Wrapped : SwiftUI.SliderTickContent {
   public typealias Value = Wrapped.Value
   public typealias TicksCollection = [SwiftUI.SliderTick<Wrapped.Value>]
-  public var body: Swift.Optional<Wrapped>.TicksCollection {
-    get { _suiUnimplemented("SwiftUI.Optional.body") }
-  }
-  @available(macOS 26.0, iOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  @available(tvOS, unavailable)
-  public typealias Body = Swift.Optional<Wrapped>.TicksCollection
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func confirmationDialog<A>(_ titleKey: SwiftUI.LocalizedStringKey, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: () -> A) -> Swift.Never where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:actions:)") }
+  nonisolated public func confirmationDialog<A>(_ titleKey: SwiftUI.LocalizedStringKey, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: () -> A) -> some SwiftUI.View where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:actions:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func confirmationDialog<A>(_ titleResource: FoundationShims.LocalizedStringResource, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: () -> A) -> some SwiftUI.View where A : SwiftUI.View {
@@ -21479,16 +21645,13 @@ nonisolated public func confirmationDialog<A>(_ titleKey: SwiftUI.LocalizedStrin
             titleVisibility: titleVisibility, actions: actions)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func confirmationDialog<S, A>(_ title: S, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: () -> A) -> Swift.Never where S : Swift.StringProtocol, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:actions:)") }
+  @_disfavoredOverload nonisolated public func confirmationDialog<S, A>(_ title: S, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: () -> A) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:actions:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func confirmationDialog<A>(_ title: SwiftUI.Text, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: () -> A) -> Swift.Never where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:actions:)") }
+  nonisolated public func confirmationDialog<A>(_ title: SwiftUI.Text, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: () -> A) -> some SwiftUI.View where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:actions:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func confirmationDialog<A, M>(_ titleKey: SwiftUI.LocalizedStringKey, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> Swift.Never where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:actions:message:)") }
+  nonisolated public func confirmationDialog<A, M>(_ titleKey: SwiftUI.LocalizedStringKey, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:actions:message:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func confirmationDialog<A, M>(_ titleResource: FoundationShims.LocalizedStringResource, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View {
@@ -21498,16 +21661,13 @@ nonisolated public func confirmationDialog<A, M>(_ titleKey: SwiftUI.LocalizedSt
             message: message)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func confirmationDialog<S, A, M>(_ title: S, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> Swift.Never where S : Swift.StringProtocol, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:actions:message:)") }
+  @_disfavoredOverload nonisolated public func confirmationDialog<S, A, M>(_ title: S, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:actions:message:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func confirmationDialog<A, M>(_ title: SwiftUI.Text, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> Swift.Never where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:actions:message:)") }
+  nonisolated public func confirmationDialog<A, M>(_ title: SwiftUI.Text, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: () -> A, @SwiftUI.ContentBuilder message: () -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:actions:message:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func confirmationDialog<A, T>(_ titleKey: SwiftUI.LocalizedStringKey, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A) -> Swift.Never where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:presenting:actions:)") }
+  nonisolated public func confirmationDialog<A, T>(_ titleKey: SwiftUI.LocalizedStringKey, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:presenting:actions:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func confirmationDialog<A, T>(_ titleResource: FoundationShims.LocalizedStringResource, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View {
@@ -21517,11 +21677,9 @@ nonisolated public func confirmationDialog<A, T>(_ titleKey: SwiftUI.LocalizedSt
             actions: actions)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func confirmationDialog<S, A, T>(_ title: S, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A) -> Swift.Never where S : Swift.StringProtocol, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:presenting:actions:)") }
+  @_disfavoredOverload nonisolated public func confirmationDialog<S, A, T>(_ title: S, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:presenting:actions:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func confirmationDialog<A, T>(_ title: SwiftUI.Text, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A) -> Swift.Never where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:presenting:actions:)") }
+  nonisolated public func confirmationDialog<A, T>(_ title: SwiftUI.Text, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:presenting:actions:)") }
   
   @export(implementation) nonisolated public func confirmationDialog<A, T>(_ titleKey: SwiftUI.LocalizedStringKey, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View {
         confirmationDialog(
@@ -21532,9 +21690,8 @@ nonisolated public func confirmationDialog<A, T>(_ title: SwiftUI.Text, isPresen
             actions: actions)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
-  nonisolated internal func _confirmationDialog<A, T>(_ titleKey: SwiftUI.LocalizedStringKey, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A) -> Swift.Never where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View._confirmationDialog(_:item:titleVisibility:actions:)") }
+  @usableFromInline
+  nonisolated internal func _confirmationDialog<A, T>(_ titleKey: SwiftUI.LocalizedStringKey, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View._confirmationDialog(_:item:titleVisibility:actions:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @export(implementation) @_disfavoredOverload nonisolated public func confirmationDialog<A, T>(_ titleResource: FoundationShims.LocalizedStringResource, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View {
@@ -21546,10 +21703,9 @@ nonisolated public func confirmationDialog<A, T>(_ title: SwiftUI.Text, isPresen
             actions: actions)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @usableFromInline
-  nonisolated internal func _confirmationDialog<A, T>(_ titleResource: FoundationShims.LocalizedStringResource, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A) -> Swift.Never where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View._confirmationDialog(_:item:titleVisibility:actions:)") }
+  nonisolated internal func _confirmationDialog<A, T>(_ titleResource: FoundationShims.LocalizedStringResource, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View._confirmationDialog(_:item:titleVisibility:actions:)") }
   
   @export(implementation) @_disfavoredOverload nonisolated public func confirmationDialog<S, A, T>(_ title: S, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View {
         confirmationDialog(
@@ -21560,9 +21716,8 @@ nonisolated public func confirmationDialog<A, T>(_ title: SwiftUI.Text, isPresen
             actions: actions)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
-  nonisolated internal func _confirmationDialog<S, A, T>(_ title: S, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A) -> Swift.Never where S : Swift.StringProtocol, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View._confirmationDialog(_:item:titleVisibility:actions:)") }
+  @usableFromInline
+  nonisolated internal func _confirmationDialog<S, A, T>(_ title: S, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View { _suiUnimplemented("SwiftUI.View._confirmationDialog(_:item:titleVisibility:actions:)") }
   
   @export(implementation) nonisolated public func confirmationDialog<A, T>(_ title: SwiftUI.Text, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View {
         confirmationDialog(
@@ -21573,14 +21728,12 @@ nonisolated public func confirmationDialog<A, T>(_ title: SwiftUI.Text, isPresen
             actions: actions)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
-  nonisolated internal func _confirmationDialog<A, T>(_ title: SwiftUI.Text, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A) -> Swift.Never where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View._confirmationDialog(_:item:titleVisibility:actions:)") }
+  @usableFromInline
+  nonisolated internal func _confirmationDialog<A, T>(_ title: SwiftUI.Text, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A) -> some SwiftUI.View where A : SwiftUI.View { _suiUnimplemented("SwiftUI.View._confirmationDialog(_:item:titleVisibility:actions:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func confirmationDialog<A, M, T>(_ titleKey: SwiftUI.LocalizedStringKey, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> Swift.Never where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:presenting:actions:message:)") }
+  nonisolated public func confirmationDialog<A, M, T>(_ titleKey: SwiftUI.LocalizedStringKey, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:presenting:actions:message:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func confirmationDialog<A, M, T>(_ titleResource: FoundationShims.LocalizedStringResource, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View {
@@ -21590,11 +21743,9 @@ nonisolated public func confirmationDialog<A, M, T>(_ titleKey: SwiftUI.Localize
             actions: actions, message: message)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func confirmationDialog<S, A, M, T>(_ title: S, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> Swift.Never where S : Swift.StringProtocol, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:presenting:actions:message:)") }
+  @_disfavoredOverload nonisolated public func confirmationDialog<S, A, M, T>(_ title: S, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:presenting:actions:message:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func confirmationDialog<A, M, T>(_ title: SwiftUI.Text, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> Swift.Never where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:presenting:actions:message:)") }
+  nonisolated public func confirmationDialog<A, M, T>(_ title: SwiftUI.Text, isPresented: SwiftUI.Binding<Swift.Bool>, titleVisibility: SwiftUI.Visibility = .automatic, presenting data: T?, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.confirmationDialog(_:isPresented:titleVisibility:presenting:actions:message:)") }
   
   @export(implementation) nonisolated public func confirmationDialog<A, M, T>(_ titleKey: SwiftUI.LocalizedStringKey, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View {
         confirmationDialog(
@@ -21606,9 +21757,8 @@ nonisolated public func confirmationDialog<A, M, T>(_ title: SwiftUI.Text, isPre
             message: message)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
-  nonisolated internal func _confirmationDialog<A, M, T>(_ titleKey: SwiftUI.LocalizedStringKey, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> Swift.Never where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View._confirmationDialog(_:item:titleVisibility:actions:message:)") }
+  @usableFromInline
+  nonisolated internal func _confirmationDialog<A, M, T>(_ titleKey: SwiftUI.LocalizedStringKey, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View._confirmationDialog(_:item:titleVisibility:actions:message:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @export(implementation) @_disfavoredOverload nonisolated public func confirmationDialog<A, M, T>(_ titleResource: FoundationShims.LocalizedStringResource, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View {
@@ -21621,10 +21771,9 @@ nonisolated public func confirmationDialog<A, M, T>(_ title: SwiftUI.Text, isPre
             message: message)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @usableFromInline
-  nonisolated internal func _confirmationDialog<A, M, T>(_ titleResource: FoundationShims.LocalizedStringResource, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> Swift.Never where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View._confirmationDialog(_:item:titleVisibility:actions:message:)") }
+  nonisolated internal func _confirmationDialog<A, M, T>(_ titleResource: FoundationShims.LocalizedStringResource, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View._confirmationDialog(_:item:titleVisibility:actions:message:)") }
   
   @export(implementation) @_disfavoredOverload nonisolated public func confirmationDialog<S, A, M, T>(_ title: S, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View, M : SwiftUI.View {
         confirmationDialog(
@@ -21636,9 +21785,8 @@ nonisolated public func confirmationDialog<A, M, T>(_ title: SwiftUI.Text, isPre
             message: message)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
-  nonisolated internal func _confirmationDialog<S, A, M, T>(_ title: S, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> Swift.Never where S : Swift.StringProtocol, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View._confirmationDialog(_:item:titleVisibility:actions:message:)") }
+  @usableFromInline
+  nonisolated internal func _confirmationDialog<S, A, M, T>(_ title: S, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where S : Swift.StringProtocol, A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View._confirmationDialog(_:item:titleVisibility:actions:message:)") }
   
   @export(implementation) nonisolated public func confirmationDialog<A, M, T>(_ title: SwiftUI.Text, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View {
         confirmationDialog(
@@ -21650,9 +21798,8 @@ nonisolated public func confirmationDialog<A, M, T>(_ title: SwiftUI.Text, isPre
             message: message)
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@usableFromInline
-  nonisolated internal func _confirmationDialog<A, M, T>(_ title: SwiftUI.Text, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> Swift.Never where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View._confirmationDialog(_:item:titleVisibility:actions:message:)") }
+  @usableFromInline
+  nonisolated internal func _confirmationDialog<A, M, T>(_ title: SwiftUI.Text, item data: SwiftUI.Binding<T?>, titleVisibility: SwiftUI.Visibility = .automatic, @SwiftUI.ContentBuilder actions: (T) -> A, @SwiftUI.ContentBuilder message: (T) -> M) -> some SwiftUI.View where A : SwiftUI.View, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View._confirmationDialog(_:item:titleVisibility:actions:message:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -21661,6 +21808,8 @@ nonisolated public struct ContentUnavailableView<Label, Description, Actions> : 
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.ContentUnavailableView.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ContentUnavailableView.init()") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -21710,17 +21859,25 @@ public struct SearchUnavailableContent : ~Swift.Sendable {
     nonisolated public var body: some SwiftUI.View {
       get { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Label.body") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Label.init()") }
+}
   nonisolated public struct Description : SwiftUI.View, ~Swift.Sendable {
     nonisolated public var body: some SwiftUI.View {
       get { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Description.body") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Description.init()") }
+}
   nonisolated public struct Actions : SwiftUI.View, ~Swift.Sendable {
     nonisolated public var body: some SwiftUI.View {
       get { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Actions.body") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.SearchUnavailableContent.Actions.init()") }
+}
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SearchUnavailableContent.init()") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -21773,6 +21930,8 @@ extension Swift.Never : SwiftUI.SceneAccessoryContent {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 public struct _SceneAccessoryInputs {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._SceneAccessoryInputs.init()") }
 }
 @available(*, unavailable)
 extension SwiftUI._SceneAccessoryInputs : Swift.Sendable {
@@ -21783,6 +21942,8 @@ extension SwiftUI._SceneAccessoryInputs : Swift.Sendable {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 public struct _SceneAccessoryOutputs {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._SceneAccessoryOutputs.init()") }
 }
 @available(*, unavailable)
 extension SwiftUI._SceneAccessoryOutputs : Swift.Sendable {
@@ -21793,6 +21954,8 @@ extension SwiftUI._SceneAccessoryOutputs : Swift.Sendable {
 @available(visionOS, unavailable)
 @preconcurrency @_Concurrency.MainActor public struct OpenSettingsAction {
   @_Concurrency.MainActor @preconcurrency public func callAsFunction() { _suiUnimplemented("SwiftUI.OpenSettingsAction.callAsFunction()") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.OpenSettingsAction.init()") }
 }
 @available(macOS 14.0, *)
 @available(tvOS, unavailable)
@@ -21806,19 +21969,16 @@ extension SwiftUI.EnvironmentValues {
 @available(macOS 12.0, tvOS 14.0, watchOS 7.0, *)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func prefersDefaultFocus(_ prefersDefaultFocus: Swift.Bool = true, in namespace: SwiftUI.Namespace.ID) -> Swift.Never { _suiUnimplemented("SwiftUI.View.prefersDefaultFocus(_:in:)") }
+  nonisolated public func prefersDefaultFocus(_ prefersDefaultFocus: Swift.Bool = true, in namespace: SwiftUI.Namespace.ID) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.prefersDefaultFocus(_:in:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func focusScope(_ namespace: SwiftUI.Namespace.ID) -> Swift.Never { _suiUnimplemented("SwiftUI.View.focusScope(_:)") }
+  nonisolated public func focusScope(_ namespace: SwiftUI.Namespace.ID) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.focusScope(_:)") }
 }
 @available(macOS, introduced: 11.0, deprecated: 11.0, message: "Prototype SPI, do not use.")
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public func _prefersDefaultFocus(_ prefersDefaultFocus: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.View._prefersDefaultFocus(_:)") }
+  @_Concurrency.MainActor @preconcurrency public func _prefersDefaultFocus(_ prefersDefaultFocus: Swift.Bool = true) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View._prefersDefaultFocus(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -21826,6 +21986,8 @@ nonisolated public struct _DefaultFocusModifier : SwiftUI.ViewModifier, ~Swift.S
   public static func _makeView(modifier: SwiftUI._GraphValue<SwiftUI._DefaultFocusModifier>, inputs: SwiftUI._ViewInputs, body: @escaping (SwiftUI._Graph, SwiftUI._ViewInputs) -> SwiftUI._ViewOutputs) -> SwiftUI._ViewOutputs { _suiUnimplemented("SwiftUI._DefaultFocusModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 11.0, iOS 16.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._DefaultFocusModifier.init()") }
   // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
   public func body(content: SwiftUI::_ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._DefaultFocusModifier.body(content:)") }
 }
@@ -21844,6 +22006,8 @@ nonisolated public struct _DefaultFocusModifier : SwiftUI.ViewModifier {
 public struct _FocusSystem : ~Swift.Sendable {
   @available(macOS, introduced: 11.0, deprecated: 11.0, message: "Prototype SPI, do not use.")
   public func resetToDefault() { _suiUnimplemented("SwiftUI._FocusSystem.resetToDefault()") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._FocusSystem.init()") }
 }
 #else
 @available(macOS 11.0, watchOS 7.0, *)
@@ -21859,6 +22023,8 @@ public struct _FocusSystem {
 @available(visionOS, unavailable)
 public struct ResetFocusAction : ~Swift.Sendable {
   public func callAsFunction(in namespace: SwiftUI.Namespace.ID) { _suiUnimplemented("SwiftUI.ResetFocusAction.callAsFunction(in:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ResetFocusAction.init()") }
 }
 #else
 @available(macOS 12.0, tvOS 14.0, watchOS 7.0, *)
@@ -21917,6 +22083,8 @@ internal struct ListItemReuseIdentifierTrait : SwiftUI._ViewTraitKey, ~Swift.Sen
   @available(macOS 13.0, iOS 15.0, tvOS 15.0, watchOS 7.0, *)
   @usableFromInline
   internal typealias Value = Swift.String
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ListItemReuseIdentifierTrait.init()") }
 }
 #else
 @available(iOS 15.0, macOS 13.0, tvOS 15.0, watchOS 7.0, *)
@@ -21957,6 +22125,8 @@ nonisolated public struct _ModifiersGesture<Content> : SwiftUI.Gesture, ~Swift.S
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Value = Content.Value
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._ModifiersGesture.init()") }
   // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._ModifiersGesture.body") } }
 }
@@ -21993,8 +22163,7 @@ extension SwiftUI.PrimitiveButtonStyle where Self == SwiftUI.CardButtonStyle {
 @available(visionOS, unavailable)
 nonisolated public struct CardButtonStyle : SwiftUI.PrimitiveButtonStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.CardButtonStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.CardButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.CardButtonStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.CardButtonStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.CardButtonStyle.makeBody(configuration:)") }
 }
 #else
 @available(tvOS 14.0, *)
@@ -22023,6 +22192,8 @@ nonisolated public struct _DigitalCrownModifier : SwiftUI.ViewModifier, ~Swift.S
       @available(tvOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._DigitalCrownModifier.init()") }
   // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
   public func body(content: SwiftUI::_ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._DigitalCrownModifier.body(content:)") }
 }
@@ -22315,7 +22486,9 @@ extension SwiftUI.GridLayout {
   #if compiler(>=5.3) && $TildeSendable
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   public struct Cache : ~Swift.Sendable {
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.GridLayout.Cache.init()") }
+}
   #else
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   public struct Cache {
@@ -22406,6 +22579,8 @@ extension SwiftUI.Scene {
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct BackgroundTask<Request, Response> : Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.BackgroundTask.init()") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.BackgroundTask {
@@ -22461,11 +22636,9 @@ public static var all: SwiftUI.NSHostingSceneBridgingOptions { get { _suiUnimple
 }
 @available(iOS 18.4, macOS 15.4, tvOS 18.4, watchOS 11.4, visionOS 2.4, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func contentToolbar<Content>(for placement: SwiftUI.ContentToolbarPlacement, @SwiftUI.ContentBuilder content: () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.contentToolbar(for:content:)") }
+  nonisolated public func contentToolbar<Content>(for placement: SwiftUI.ContentToolbarPlacement, @SwiftUI.ContentBuilder content: () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.contentToolbar(for:content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func contentToolbar<Content>(for placement: SwiftUI.ContentToolbarPlacement, @SwiftUI.ToolbarContentBuilder content: () -> Content) -> Swift.Never where Content : SwiftUI.ToolbarContent { _suiUnimplemented("SwiftUI.View.contentToolbar(for:content:)") }
+  nonisolated public func contentToolbar<Content>(for placement: SwiftUI.ContentToolbarPlacement, @SwiftUI.ToolbarContentBuilder content: () -> Content) -> some SwiftUI.View where Content : SwiftUI.ToolbarContent { _suiUnimplemented("SwiftUI.View.contentToolbar(for:content:)") }
 }
 @available(iOS 18.4, macOS 15.4, tvOS 18.4, watchOS 11.4, visionOS 2.4, *)
 public struct ContentToolbarPlacement : Swift.Hashable, Swift.Sendable {
@@ -22559,6 +22732,8 @@ public class _PreviewHost : Combine.ObservableObject, ~Swift.Sendable {
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias ObjectWillChangePublisher = Combine.PassthroughSubject<Swift.Void, Swift.Never>
   deinit {}
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._PreviewHost.init()") }
 }
 #else
 @_hasMissingDesignatedInitializers @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -22589,12 +22764,10 @@ public class _PreviewHost : Combine.ObservableObject {
 @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
 public struct DoubleColumnNavigationViewStyle : SwiftUI.NavigationViewStyle, ~Swift.Sendable {
   public init() { _suiUnimplemented("SwiftUI.DoubleColumnNavigationViewStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func _body(configuration: SwiftUI._NavigationViewStyleConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUI.DoubleColumnNavigationViewStyle._body(configuration:)") }
+  public func _body(configuration: SwiftUI._NavigationViewStyleConfiguration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.DoubleColumnNavigationViewStyle._body(configuration:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  public func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUI.DoubleColumnNavigationViewStyle._columnBasedBody(configuration:)") }
+  @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+  public func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.DoubleColumnNavigationViewStyle._columnBasedBody(configuration:)") }
 }
 #else
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace styled NavigationView with NavigationStack or NavigationSplitView instead")
@@ -22620,6 +22793,8 @@ public struct DoubleColumnNavigationViewStyle : SwiftUI.NavigationViewStyle {
   @_Concurrency.MainActor @preconcurrency public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.HelpLink.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.HelpLink.init()") }
 }
 #else
 @available(macOS 14.0, *)
@@ -22635,14 +22810,11 @@ public struct DoubleColumnNavigationViewStyle : SwiftUI.NavigationViewStyle {
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func toolbar<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbar(content:)") }
+  @_disfavoredOverload nonisolated public func toolbar<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbar(content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func toolbar<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> Swift.Never where Content : SwiftUI.ToolbarContent { _suiUnimplemented("SwiftUI.View.toolbar(content:)") }
+  nonisolated public func toolbar<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> some SwiftUI.View where Content : SwiftUI.ToolbarContent { _suiUnimplemented("SwiftUI.View.toolbar(content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func toolbar<Content>(id: Swift.String, @SwiftUI.ContentBuilder content: () -> Content) -> Swift.Never where Content : SwiftUI.CustomizableToolbarContent { _suiUnimplemented("SwiftUI.View.toolbar(id:content:)") }
+  nonisolated public func toolbar<Content>(id: Swift.String, @SwiftUI.ContentBuilder content: () -> Content) -> some SwiftUI.View where Content : SwiftUI.CustomizableToolbarContent { _suiUnimplemented("SwiftUI.View.toolbar(id:content:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -22652,6 +22824,8 @@ nonisolated public struct ShareLink<Data, PreviewImage, PreviewIcon, Label> : Sw
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.ShareLink.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ShareLink.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -22691,6 +22865,8 @@ nonisolated public struct DefaultShareLinkLabel : SwiftUI.View, ~Swift.Sendable 
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.DefaultShareLinkLabel.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DefaultShareLinkLabel.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -22814,8 +22990,7 @@ extension SwiftUI.Scene {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func presentedWindowToolbarStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.WindowToolbarStyle { _suiUnimplemented("SwiftUI.View.presentedWindowToolbarStyle(_:)") }
+  nonisolated public func presentedWindowToolbarStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.WindowToolbarStyle { _suiUnimplemented("SwiftUI.View.presentedWindowToolbarStyle(_:)") }
 }
 @available(iOS 16.0, macOS 13.0, *)
 @available(tvOS, unavailable)
@@ -22852,20 +23027,16 @@ extension SwiftUI._ConditionalContent : SwiftUI.Commands where TrueContent : Swi
   nonisolated public static func _makeCommands(content: SwiftUI._GraphValue<SwiftUI._ConditionalContent<TrueContent, FalseContent>>, inputs: SwiftUI._CommandsInputs) -> SwiftUI._CommandsOutputs { _suiUnimplemented("SwiftUI._ConditionalContent._makeCommands(content:inputs:)") }
   @usableFromInline
   internal init(storage: SwiftUI._ConditionalContent<TrueContent, FalseContent>.Storage) { _suiUnimplemented("SwiftUI._ConditionalContent.init(storage:)") }
-  @available(macOS 13.0, iOS 16.0, *)
-  @available(tvOS, unavailable, introduced: 13.0)
-  @available(watchOS, unavailable, introduced: 6.0)
-  public typealias Body = Swift.Never
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
 }
 @available(iOS 16.0, macOS 13.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension Swift.Optional : SwiftUI.Commands where Wrapped : SwiftUI.Commands {
   nonisolated public static func _makeCommands(content: SwiftUI._GraphValue<Swift.Optional<Wrapped>>, inputs: SwiftUI._CommandsInputs) -> SwiftUI._CommandsOutputs { _suiUnimplemented("SwiftUI.Optional._makeCommands(content:inputs:)") }
-  @available(macOS 13.0, iOS 16.0, *)
-  @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  public typealias Body = Swift.Never
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
 }
 extension SwiftUI.EdgeInsets {
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, *)
@@ -22885,62 +23056,51 @@ extension SwiftUI.EnvironmentValues {
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func navigationTitle(_ title: SwiftUI.Text) -> Swift.Never { _suiUnimplemented("SwiftUI.View.navigationTitle(_:)") }
+  nonisolated public func navigationTitle(_ title: SwiftUI.Text) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationTitle(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func navigationTitle(_ titleKey: SwiftUI.LocalizedStringKey) -> Swift.Never { _suiUnimplemented("SwiftUI.View.navigationTitle(_:)") }
+  nonisolated public func navigationTitle(_ titleKey: SwiftUI.LocalizedStringKey) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationTitle(_:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func navigationTitle(_ titleResource: FoundationShims.LocalizedStringResource) -> some SwiftUI.View {
         navigationTitle(Text(titleResource))
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func navigationTitle<S>(_ title: S) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.navigationTitle(_:)") }
+  @_disfavoredOverload nonisolated public func navigationTitle<S>(_ title: S) -> some SwiftUI.View where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.navigationTitle(_:)") }
   
-            // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
+      @available(tvOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func navigationTitle<V>(@SwiftUI.ContentBuilder _ title: () -> V) -> Swift.Never where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationTitle(_:)") }
+  nonisolated public func navigationTitle<V>(@SwiftUI.ContentBuilder _ title: () -> V) -> some SwiftUI.View where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationTitle(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  nonisolated public func assistiveAccessNavigationIcon(_ icon: SwiftUI.Image) -> Swift.Never { _suiUnimplemented("SwiftUI.View.assistiveAccessNavigationIcon(_:)") }
+  @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
+  nonisolated public func assistiveAccessNavigationIcon(_ icon: SwiftUI.Image) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.assistiveAccessNavigationIcon(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  nonisolated public func assistiveAccessNavigationIcon(systemImage: Swift.String) -> Swift.Never { _suiUnimplemented("SwiftUI.View.assistiveAccessNavigationIcon(systemImage:)") }
+  @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
+  nonisolated public func assistiveAccessNavigationIcon(systemImage: Swift.String) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.assistiveAccessNavigationIcon(systemImage:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, watchOS 9.0, tvOS 16.0, *)
-  nonisolated public func navigationTitle(_ title: SwiftUI.Binding<Swift.String>) -> Swift.Never { _suiUnimplemented("SwiftUI.View.navigationTitle(_:)") }
+  @available(iOS 16.0, macOS 13.0, watchOS 9.0, tvOS 16.0, *)
+  nonisolated public func navigationTitle(_ title: SwiftUI.Binding<Swift.String>) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationTitle(_:)") }
 }
 @available(iOS 14.0, watchOS 8.0, *)
 @available(tvOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func navigationBarTitleDisplayMode(_ displayMode: SwiftUI.NavigationBarItem.TitleDisplayMode) -> Swift.Never { _suiUnimplemented("SwiftUI.View.navigationBarTitleDisplayMode(_:)") }
+  nonisolated public func navigationBarTitleDisplayMode(_ displayMode: SwiftUI.NavigationBarItem.TitleDisplayMode) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationBarTitleDisplayMode(_:)") }
 }
 @available(iOS 26.0, macCatalyst 14.0, macOS 11.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func navigationSubtitle(_ subtitle: SwiftUI.Text) -> Swift.Never { _suiUnimplemented("SwiftUI.View.navigationSubtitle(_:)") }
+  nonisolated public func navigationSubtitle(_ subtitle: SwiftUI.Text) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationSubtitle(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func navigationSubtitle(_ subtitleKey: SwiftUI.LocalizedStringKey) -> Swift.Never { _suiUnimplemented("SwiftUI.View.navigationSubtitle(_:)") }
+  nonisolated public func navigationSubtitle(_ subtitleKey: SwiftUI.LocalizedStringKey) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.navigationSubtitle(_:)") }
   
   @available(macOS 13.0, macCatalyst 16.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func navigationSubtitle(_ subtitleKey: FoundationShims.LocalizedStringResource) -> some SwiftUI.View {
         navigationSubtitle(Text(subtitleKey))
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func navigationSubtitle<S>(_ subtitle: S) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.navigationSubtitle(_:)") }
+  @_disfavoredOverload nonisolated public func navigationSubtitle<S>(_ subtitle: S) -> some SwiftUI.View where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.navigationSubtitle(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(visionOS 1.0, *)
@@ -22960,6 +23120,8 @@ nonisolated public struct ImmersiveSpace<Content, Data> : SwiftUI.Scene, ~Swift.
   nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.ImmersiveSpace.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ImmersiveSpace.init()") }
 }
 #else
 @available(visionOS 1.0, *)
@@ -23012,12 +23174,11 @@ extension SwiftUI.ImmersiveSpace {
   nonisolated internal init(id: Swift.String, @SwiftUI.ImmersiveSpaceContentBuilder lazyContent: @escaping () -> Content) where Data == Swift.Never { _suiUnimplemented("SwiftUI.ImmersiveSpace.init(id:lazyContent:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, *)
+  @available(iOS 16.0, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func defersSystemGestures(on edges: SwiftUI.Edge.Set) -> Swift.Never { _suiUnimplemented("SwiftUI.View.defersSystemGestures(on:)") }
+  nonisolated public func defersSystemGestures(on edges: SwiftUI.Edge.Set) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.defersSystemGestures(on:)") }
 }
 @available(iOS 13.0, macOS 10.15, watchOS 10.0, *)
 @available(tvOS, unavailable)
@@ -23031,9 +23192,8 @@ extension SwiftUI.DatePickerStyle where Self == SwiftUI.DefaultDatePickerStyle {
 @available(tvOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct DefaultDatePickerStyle : SwiftUI.DatePickerStyle, ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public init() { _suiUnimplemented("SwiftUI.DefaultDatePickerStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, *)
-  @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.DefaultDatePickerStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultDatePickerStyle.makeBody(configuration:)") }
+  @available(iOS 16.0, macOS 13.0, *)
+  @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.DefaultDatePickerStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.DefaultDatePickerStyle.makeBody(configuration:)") }
   
   @available(macOS 10.15, iOS 13.0, watchOS 10.0, *)
   @available(tvOS, unavailable)
@@ -23091,9 +23251,8 @@ extension SwiftUI.DatePickerStyle where Self == SwiftUI.GraphicalDatePickerStyle
 @available(visionOS, unavailable)
 nonisolated public struct StepperFieldDatePickerStyle : SwiftUI.DatePickerStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.StepperFieldDatePickerStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(macOS 13.0, *)
-  nonisolated public func makeBody(configuration: SwiftUI.StepperFieldDatePickerStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.StepperFieldDatePickerStyle.makeBody(configuration:)") }
+  @available(macOS 13.0, *)
+  nonisolated public func makeBody(configuration: SwiftUI.StepperFieldDatePickerStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.StepperFieldDatePickerStyle.makeBody(configuration:)") }
   
   @available(macOS 10.15, *)
     @available(tvOS, unavailable)
@@ -23135,9 +23294,8 @@ nonisolated public struct StepperFieldDatePickerStyle : SwiftUI.DatePickerStyle 
 @available(visionOS, unavailable)
 nonisolated public struct FieldDatePickerStyle : SwiftUI.DatePickerStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.FieldDatePickerStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(macOS 13.0, *)
-  nonisolated public func makeBody(configuration: SwiftUI.FieldDatePickerStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.FieldDatePickerStyle.makeBody(configuration:)") }
+  @available(macOS 13.0, *)
+  nonisolated public func makeBody(configuration: SwiftUI.FieldDatePickerStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.FieldDatePickerStyle.makeBody(configuration:)") }
   
   @available(macOS 10.15, *)
     @available(tvOS, unavailable)
@@ -23178,9 +23336,8 @@ nonisolated public struct FieldDatePickerStyle : SwiftUI.DatePickerStyle {
 @available(watchOS, unavailable)
 nonisolated public struct GraphicalDatePickerStyle : SwiftUI.DatePickerStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.GraphicalDatePickerStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, *)
-  nonisolated public func makeBody(configuration: SwiftUI.GraphicalDatePickerStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.GraphicalDatePickerStyle.makeBody(configuration:)") }
+  @available(iOS 16.0, macOS 13.0, *)
+  nonisolated public func makeBody(configuration: SwiftUI.GraphicalDatePickerStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.GraphicalDatePickerStyle.makeBody(configuration:)") }
   
   @available(macOS 10.15, iOS 14.0, *)
   @available(tvOS, unavailable)
@@ -23225,8 +23382,7 @@ extension SwiftUI.TableStyle where Self == SwiftUI.AutomaticTableStyle {
 nonisolated public struct AutomaticTableStyle : SwiftUI.TableStyle, ~Swift.Sendable {
   @usableFromInline
   nonisolated internal init() { _suiUnimplemented("SwiftUI.AutomaticTableStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.AutomaticTableStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AutomaticTableStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.AutomaticTableStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.AutomaticTableStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -23243,8 +23399,7 @@ nonisolated public struct AutomaticTableStyle : SwiftUI.TableStyle {
 @available(tvOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct AccessoryLinearCapacityGaugeStyle : SwiftUI.GaugeStyle, ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public init() { _suiUnimplemented("SwiftUI.AccessoryLinearCapacityGaugeStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AccessoryLinearCapacityGaugeStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AccessoryLinearCapacityGaugeStyle.makeBody(configuration:)") }
+  @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AccessoryLinearCapacityGaugeStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.AccessoryLinearCapacityGaugeStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -23273,8 +23428,7 @@ extension SwiftUI.ToggleStyle where Self == SwiftUI.DefaultToggleStyle {
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 nonisolated public struct DefaultToggleStyle : SwiftUI.ToggleStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.DefaultToggleStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.DefaultToggleStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultToggleStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.DefaultToggleStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.DefaultToggleStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -23287,11 +23441,9 @@ nonisolated public struct DefaultToggleStyle : SwiftUI.ToggleStyle {
 @available(tvOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func digitalCrownAccessory<Content>(@SwiftUI.ContentBuilder content: @escaping () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.digitalCrownAccessory(content:)") }
+  nonisolated public func digitalCrownAccessory<Content>(@SwiftUI.ContentBuilder content: @escaping () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.digitalCrownAccessory(content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func digitalCrownAccessory(_ visibility: SwiftUI.Visibility) -> Swift.Never { _suiUnimplemented("SwiftUI.View.digitalCrownAccessory(_:)") }
+  nonisolated public func digitalCrownAccessory(_ visibility: SwiftUI.Visibility) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.digitalCrownAccessory(_:)") }
 }
 @available(iOS 16.0, watchOS 8.0, *)
 @available(tvOS, unavailable)
@@ -23452,8 +23604,8 @@ extension SwiftUI.TupleContent : SwiftUI.AccessibilityRotorContent where repeat 
 @available(iOS 27.0, macOS 27.0, tvOS 27.0, watchOS 27.0, visionOS 27.0, *)
 extension Swift.Optional : SwiftUI.AccessibilityRotorContent where Wrapped : SwiftUI.AccessibilityRotorContent {
   nonisolated public static func _makeEntries(content: SwiftUI._GraphValue<Swift.Optional<Wrapped>>, inputs: SwiftUI._AccessibilityRotorEntryInputs) -> SwiftUI._AccessibilityRotorEntryOutputs { _suiUnimplemented("SwiftUI.Optional._makeEntries(content:inputs:)") }
-  @available(macOS 27.0, iOS 27.0, tvOS 27.0, watchOS 27.0, visionOS 27.0, *)
-  public typealias Body = Swift.Never
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
 }
 extension SwiftUI.ViewBuilder {
   @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -23523,6 +23675,8 @@ public struct BorderedListStyle : SwiftUI.ListStyle {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 public struct _TableRowInputs : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._TableRowInputs.init()") }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -23536,6 +23690,8 @@ public struct _TableRowInputs {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 public struct _TableRowOutputs : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._TableRowOutputs.init()") }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -23598,6 +23754,8 @@ extension Swift.Never : SwiftUI.TableRowContent {
         content
     }
   #endif
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TableRowBuilder.init()") }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -23661,9 +23819,8 @@ nonisolated public struct ToolbarTitleMenu<Content> : SwiftUI.ToolbarContent, Sw
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func toolbarTitleMenu<C>(@SwiftUI.ContentBuilder content: () -> C) -> Swift.Never where C : SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarTitleMenu(content:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func toolbarTitleMenu<C>(@SwiftUI.ContentBuilder content: () -> C) -> some SwiftUI.View where C : SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarTitleMenu(content:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -23692,6 +23849,8 @@ extension SwiftUI.View {
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public struct ScrollViewProxy : ~Swift.Sendable {
   public func scrollTo<ID>(_ id: ID, anchor: SwiftUI.UnitPoint? = nil) where ID : Swift.Hashable { _suiUnimplemented("SwiftUI.ScrollViewProxy.scrollTo(_:anchor:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ScrollViewProxy.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -23701,11 +23860,9 @@ public struct ScrollViewProxy {
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityRepresentation<V>(@SwiftUI.ContentBuilder representation: () -> V) -> Swift.Never where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityRepresentation(representation:)") }
+  nonisolated public func accessibilityRepresentation<V>(@SwiftUI.ContentBuilder representation: () -> V) -> some SwiftUI.View where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityRepresentation(representation:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityChildren<V>(@SwiftUI.ContentBuilder children: () -> V) -> Swift.Never where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityChildren(children:)") }
+  nonisolated public func accessibilityChildren<V>(@SwiftUI.ContentBuilder children: () -> V) -> some SwiftUI.View where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityChildren(children:)") }
 }
 @available(iOS 16.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.PickerStyle where Self == SwiftUI.NavigationLinkPickerStyle {
@@ -23729,19 +23886,17 @@ public struct NavigationLinkPickerStyle : SwiftUI.PickerStyle {
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(macOS 26.0, *)
+  @available(macOS 26.0, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func dragPreviewsFormation(_ formation: SwiftUI.DragDropPreviewsFormation) -> Swift.Never { _suiUnimplemented("SwiftUI.View.dragPreviewsFormation(_:)") }
+  nonisolated public func dragPreviewsFormation(_ formation: SwiftUI.DragDropPreviewsFormation) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.dragPreviewsFormation(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(macOS 26.0, *)
+  @available(macOS 26.0, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func dropPreviewsFormation(_ formation: SwiftUI.DragDropPreviewsFormation) -> Swift.Never { _suiUnimplemented("SwiftUI.View.dropPreviewsFormation(_:)") }
+  nonisolated public func dropPreviewsFormation(_ formation: SwiftUI.DragDropPreviewsFormation) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.dropPreviewsFormation(_:)") }
 }
 @available(macOS 26.0, *)
 @available(tvOS, unavailable)
@@ -23777,29 +23932,27 @@ extension SwiftUI.DragDropPreviewsFormation : Swift.CustomStringConvertible {
 @available(watchOS, introduced: 6.0, deprecated: 11.0, message: "Please switch to a NavigationStack .navigationDestination")
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-            // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
+      @available(tvOS, unavailable)
   @available(visionOS, unavailable)
-  @_Concurrency.MainActor @preconcurrency public func _navigationDestination<Content>(isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder content: () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View._navigationDestination(isPresented:content:)") }
+  @_Concurrency.MainActor @preconcurrency public func _navigationDestination<Content>(isPresented: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder content: () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View._navigationDestination(isPresented:content:)") }
   
-            // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
+      @available(tvOS, unavailable)
   @available(visionOS, unavailable)
-  @_Concurrency.MainActor @preconcurrency public func _navigationDestination<Item, Content>(item: SwiftUI.Binding<Item?>, @SwiftUI.ContentBuilder content: @escaping (Item) -> Content) -> Swift.Never where Item : Swift.Identifiable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View._navigationDestination(item:content:)") }
+  @_Concurrency.MainActor @preconcurrency public func _navigationDestination<Item, Content>(item: SwiftUI.Binding<Item?>, @SwiftUI.ContentBuilder content: @escaping (Item) -> Content) -> some SwiftUI.View where Item : Swift.Identifiable, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View._navigationDestination(item:content:)") }
   
-            // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
+      @available(tvOS, unavailable)
   @available(visionOS, unavailable)
-  @_Concurrency.MainActor @preconcurrency public func _navigationDestination(isPresented: SwiftUI.Binding<Swift.Bool>, storyboardName: Swift.String) -> Swift.Never { _suiUnimplemented("SwiftUI.View._navigationDestination(isPresented:storyboardName:)") }
+  @_Concurrency.MainActor @preconcurrency public func _navigationDestination(isPresented: SwiftUI.Binding<Swift.Bool>, storyboardName: Swift.String) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View._navigationDestination(isPresented:storyboardName:)") }
   
-            // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
+      @available(tvOS, unavailable)
   @available(visionOS, unavailable)
-  @_Concurrency.MainActor @preconcurrency public func _navigationDestination<Item>(item: SwiftUI.Binding<Item?>, storyboardName: Swift.String) -> Swift.Never where Item : Swift.Identifiable { _suiUnimplemented("SwiftUI.View._navigationDestination(item:storyboardName:)") }
+  @_Concurrency.MainActor @preconcurrency public func _navigationDestination<Item>(item: SwiftUI.Binding<Item?>, storyboardName: Swift.String) -> some SwiftUI.View where Item : Swift.Identifiable { _suiUnimplemented("SwiftUI.View._navigationDestination(item:storyboardName:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct _AccessibilityQuickActionStyle : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._AccessibilityQuickActionStyle.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -23878,11 +24031,9 @@ extension SwiftUI.AccessibilityQuickActionStyle where Self == SwiftUI.Accessibil
 @available(tvOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityQuickAction<Style, Content>(style: Style, @SwiftUI.ContentBuilder content: () -> Content) -> Swift.Never where Style : SwiftUI.AccessibilityQuickActionStyle, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityQuickAction(style:content:)") }
+  nonisolated public func accessibilityQuickAction<Style, Content>(style: Style, @SwiftUI.ContentBuilder content: () -> Content) -> some SwiftUI.View where Style : SwiftUI.AccessibilityQuickActionStyle, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityQuickAction(style:content:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityQuickAction<Style, Content>(style: Style, isActive: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder content: () -> Content) -> Swift.Never where Style : SwiftUI.AccessibilityQuickActionStyle, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityQuickAction(style:isActive:content:)") }
+  nonisolated public func accessibilityQuickAction<Style, Content>(style: Style, isActive: SwiftUI.Binding<Swift.Bool>, @SwiftUI.ContentBuilder content: () -> Content) -> some SwiftUI.View where Style : SwiftUI.AccessibilityQuickActionStyle, Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityQuickAction(style:isActive:content:)") }
 }
 extension SwiftUI.EnvironmentValues {
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -23922,20 +24073,15 @@ extension SwiftUI.Section where Parent == SwiftUI.Text, Content : SwiftUI.View, 
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onKeyPress(_ key: SwiftUI.KeyEquivalent, action: @escaping () -> SwiftUI.KeyPress.Result) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onKeyPress(_:action:)") }
+  nonisolated public func onKeyPress(_ key: SwiftUI.KeyEquivalent, action: @escaping () -> SwiftUI.KeyPress.Result) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onKeyPress(_:action:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onKeyPress(_ key: SwiftUI.KeyEquivalent, phases: SwiftUI.KeyPress.Phases, action: @escaping (SwiftUI.KeyPress) -> SwiftUI.KeyPress.Result) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onKeyPress(_:phases:action:)") }
+  nonisolated public func onKeyPress(_ key: SwiftUI.KeyEquivalent, phases: SwiftUI.KeyPress.Phases, action: @escaping (SwiftUI.KeyPress) -> SwiftUI.KeyPress.Result) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onKeyPress(_:phases:action:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onKeyPress(keys: Swift.Set<SwiftUI.KeyEquivalent>, phases: SwiftUI.KeyPress.Phases = [.down, .repeat], action: @escaping (SwiftUI.KeyPress) -> SwiftUI.KeyPress.Result) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onKeyPress(keys:phases:action:)") }
+  nonisolated public func onKeyPress(keys: Swift.Set<SwiftUI.KeyEquivalent>, phases: SwiftUI.KeyPress.Phases = [.down, .repeat], action: @escaping (SwiftUI.KeyPress) -> SwiftUI.KeyPress.Result) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onKeyPress(keys:phases:action:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onKeyPress(characters: Foundation.CharacterSet, phases: SwiftUI.KeyPress.Phases = [.down, .repeat], action: @escaping (SwiftUI.KeyPress) -> SwiftUI.KeyPress.Result) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onKeyPress(characters:phases:action:)") }
+  nonisolated public func onKeyPress(characters: Foundation.CharacterSet, phases: SwiftUI.KeyPress.Phases = [.down, .repeat], action: @escaping (SwiftUI.KeyPress) -> SwiftUI.KeyPress.Result) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onKeyPress(characters:phases:action:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onKeyPress(phases: SwiftUI.KeyPress.Phases = [.down, .repeat], action: @escaping (SwiftUI.KeyPress) -> SwiftUI.KeyPress.Result) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onKeyPress(phases:action:)") }
+  nonisolated public func onKeyPress(phases: SwiftUI.KeyPress.Phases = [.down, .repeat], action: @escaping (SwiftUI.KeyPress) -> SwiftUI.KeyPress.Result) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onKeyPress(phases:action:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, *)
 @available(watchOS, unavailable)
@@ -23980,7 +24126,9 @@ public static var all: SwiftUI.KeyPress.Phases { get { _suiUnimplemented("SwiftU
     public var hashValue: Swift.Int {
       get { _suiUnimplemented("SwiftUI.KeyPress.Result.hashValue") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.KeyPress.Result.init()") }
+}
   public var debugDescription: Swift.String {
     get { _suiUnimplemented("SwiftUI.KeyPress.debugDescription") }
   }
@@ -23997,6 +24145,8 @@ nonisolated public struct Gauge<Label, CurrentValueLabel, BoundsLabel, MarkedVal
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.Gauge.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.Gauge.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 7.0, *)
@@ -24064,8 +24214,7 @@ extension SwiftUI.BackgroundTask {
 }
 @available(anyAppleOS 27.1, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func toolbarVerticalCompressionBehavior(_ behavior: SwiftUI.ToolbarVerticalCompressionBehavior) -> Swift.Never { _suiUnimplemented("SwiftUI.View.toolbarVerticalCompressionBehavior(_:)") }
+  nonisolated public func toolbarVerticalCompressionBehavior(_ behavior: SwiftUI.ToolbarVerticalCompressionBehavior) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarVerticalCompressionBehavior(_:)") }
 }
 @available(anyAppleOS 27.1, *)
 public struct ToolbarVerticalCompressionBehavior : Swift.Hashable, Swift.Sendable {
@@ -24097,6 +24246,8 @@ nonisolated public struct DatePicker<Label> : SwiftUI.View, ~Swift.Sendable wher
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.DatePicker.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DatePicker.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, watchOS 10.0, *)
@@ -24206,6 +24357,8 @@ internal struct TouchBarItemPresenceTraitKey : SwiftUI._ViewTraitKey, ~Swift.Sen
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   internal typealias Value = SwiftUI.TouchBarItemPresence?
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TouchBarItemPresenceTraitKey.init()") }
 }
 #else
 @available(macOS 10.15, *)
@@ -24253,6 +24406,8 @@ internal struct TouchBarItemPrincipalTraitKey : SwiftUI._ViewTraitKey, ~Swift.Se
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   internal typealias Value = Swift.Bool
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TouchBarItemPrincipalTraitKey.init()") }
 }
 #else
 @available(macOS 10.15, *)
@@ -24300,6 +24455,8 @@ internal struct TouchBarCustomizationLabelTraitKey : SwiftUI._ViewTraitKey, ~Swi
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   internal typealias Value = SwiftUI.Text
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TouchBarCustomizationLabelTraitKey.init()") }
 }
 #else
 @available(macOS 10.15, *)
@@ -24324,11 +24481,10 @@ internal struct TouchBarCustomizationLabelTraitKey : SwiftUI._ViewTraitKey {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-        // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
+    @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
-  nonisolated public func touchBarCustomizationLabel(_ label: SwiftUI.Text) -> Swift.Never { _suiUnimplemented("SwiftUI.View.touchBarCustomizationLabel(_:)") }
+  nonisolated public func touchBarCustomizationLabel(_ label: SwiftUI.Text) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.touchBarCustomizationLabel(_:)") }
 }
 @available(macOS 26.0, visionOS 26.0, iOS 26.0, tvOS 26.0, watchOS 26.0, *)
 extension SwiftUI.EnvironmentValues {
@@ -24338,8 +24494,7 @@ extension SwiftUI.EnvironmentValues {
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityChartDescriptor<R>(_ representable: R) -> Swift.Never where R : SwiftUI.AXChartDescriptorRepresentable { _suiUnimplemented("SwiftUI.View.accessibilityChartDescriptor(_:)") }
+  nonisolated public func accessibilityChartDescriptor<R>(_ representable: R) -> some SwiftUI.View where R : SwiftUI.AXChartDescriptorRepresentable { _suiUnimplemented("SwiftUI.View.accessibilityChartDescriptor(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.1, macOS 14.1, tvOS 17.1, watchOS 10.1, *)
@@ -24350,6 +24505,8 @@ public struct SearchPresentationToolbarBehavior : ~Swift.Sendable {
   public static var avoidHidingContent: SwiftUI.SearchPresentationToolbarBehavior {
     get { _suiUnimplemented("SwiftUI.SearchPresentationToolbarBehavior.avoidHidingContent") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SearchPresentationToolbarBehavior.init()") }
 }
 #else
 @available(iOS 17.1, macOS 14.1, tvOS 17.1, watchOS 10.1, *)
@@ -24363,9 +24520,8 @@ public struct SearchPresentationToolbarBehavior {
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.1, macOS 14.1, tvOS 17.1, watchOS 10.1, *)
-  nonisolated public func searchPresentationToolbarBehavior(_ behavior: SwiftUI.SearchPresentationToolbarBehavior) -> Swift.Never { _suiUnimplemented("SwiftUI.View.searchPresentationToolbarBehavior(_:)") }
+  @available(iOS 17.1, macOS 14.1, tvOS 17.1, watchOS 10.1, *)
+  nonisolated public func searchPresentationToolbarBehavior(_ behavior: SwiftUI.SearchPresentationToolbarBehavior) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchPresentationToolbarBehavior(_:)") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 public struct SearchToolbarBehavior : Swift.Hashable, Swift.Sendable {
@@ -24383,18 +24539,18 @@ public struct SearchToolbarBehavior : Swift.Hashable, Swift.Sendable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.SearchToolbarBehavior.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SearchToolbarBehavior.init()") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
-  nonisolated public func searchToolbarBehavior(_ behavior: SwiftUI.SearchToolbarBehavior) -> Swift.Never { _suiUnimplemented("SwiftUI.View.searchToolbarBehavior(_:)") }
+  @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
+  nonisolated public func searchToolbarBehavior(_ behavior: SwiftUI.SearchToolbarBehavior) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchToolbarBehavior(_:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, visionOS 1.0, *)
+  @available(iOS 17.0, visionOS 1.0, *)
     @available(watchOS, unavailable)
   @available(tvOS, unavailable)
-  nonisolated public func searchDictationBehavior(_ dictationBehavior: SwiftUI.TextInputDictationBehavior) -> Swift.Never { _suiUnimplemented("SwiftUI.View.searchDictationBehavior(_:)") }
+  nonisolated public func searchDictationBehavior(_ dictationBehavior: SwiftUI.TextInputDictationBehavior) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.searchDictationBehavior(_:)") }
 }
 @available(iOS 14.0, macCatalyst 13.4, macOS 10.15.4, *)
 @available(tvOS, unavailable)
@@ -24410,9 +24566,8 @@ extension SwiftUI.DatePickerStyle where Self == SwiftUI.CompactDatePickerStyle {
 @available(watchOS, unavailable)
 nonisolated public struct CompactDatePickerStyle : SwiftUI.DatePickerStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.CompactDatePickerStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, *)
-  nonisolated public func makeBody(configuration: SwiftUI.CompactDatePickerStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.CompactDatePickerStyle.makeBody(configuration:)") }
+  @available(iOS 16.0, macOS 13.0, *)
+  nonisolated public func makeBody(configuration: SwiftUI.CompactDatePickerStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.CompactDatePickerStyle.makeBody(configuration:)") }
   
   @available(macOS 10.15.4, iOS 14.0, macCatalyst 13.4, *)
   @available(tvOS, unavailable)
@@ -24450,6 +24605,8 @@ nonisolated public struct _OverlayLayout : SwiftUI._VariadicView.UnaryViewRoot, 
   public typealias AnimatableData = SwiftUI.EmptyAnimatableData
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._OverlayLayout.init()") }
   // port: synthesized witness for Animatable (R7); Apple implements it with an internal member
   public var animatableData: SwiftUI.EmptyAnimatableData { get { _suiUnimplemented("SwiftUI._OverlayLayout.animatableData") } set { _suiUnimplemented("SwiftUI._OverlayLayout.animatableData") } }
 }
@@ -24549,7 +24706,9 @@ public struct TextSelection : Swift.Equatable, Swift.Hashable, ~Swift.Sendable {
     public var hashValue: Swift.Int {
       get { _suiUnimplemented("SwiftUI.TextSelection.Indices.hashValue") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.TextSelection.Indices.init()") }
+}
   public var indices: SwiftUI.TextSelection.Indices
   public var affinity: SwiftUI.TextSelectionAffinity {
     get { _suiUnimplemented("SwiftUI.TextSelection.affinity") }
@@ -24597,8 +24756,7 @@ public struct TextSelection : Swift.Equatable, Swift.Hashable {
 #endif
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func textSelectionAffinity(_ affinity: SwiftUI.TextSelectionAffinity) -> Swift.Never { _suiUnimplemented("SwiftUI.View.textSelectionAffinity(_:)") }
+  nonisolated public func textSelectionAffinity(_ affinity: SwiftUI.TextSelectionAffinity) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.textSelectionAffinity(_:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public enum TextSelectionAffinity : Swift.Equatable, Swift.Hashable {
@@ -24610,6 +24768,8 @@ public enum TextSelectionAffinity : Swift.Equatable, Swift.Hashable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.TextSelectionAffinity.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TextSelectionAffinity.init()") }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension SwiftUI.TextSelectionAffinity : Swift.Sendable {
@@ -24693,12 +24853,14 @@ extension SwiftUI.Group : SwiftUI.TableColumnContent where Content : SwiftUI.Tab
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@propertyWrapper public struct FocusedValue<Value> : SwiftUI.DynamicProperty, ~Swift.Sendable {
+ public struct FocusedValue<Value> : SwiftUI.DynamicProperty, ~Swift.Sendable {
   @usableFromInline
   @frozen internal enum Content : ~Swift.Sendable {
     case keyPath(Swift.KeyPath<SwiftUI.FocusedValues, Value?>)
     case value(Value?)
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.FocusedValue.Content.init()") }
+}
   @usableFromInline
   internal var content: SwiftUI.FocusedValue<Value>.Content
   public init(_ keyPath: Swift.KeyPath<SwiftUI.FocusedValues, Value?>) { _suiUnimplemented("SwiftUI.FocusedValue.init(_:)") }
@@ -24719,7 +24881,7 @@ extension SwiftUI.Group : SwiftUI.TableColumnContent where Content : SwiftUI.Tab
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@propertyWrapper public struct FocusedValue<Value> : SwiftUI.DynamicProperty {
+ public struct FocusedValue<Value> : SwiftUI.DynamicProperty {
   @usableFromInline
   @frozen internal enum Content {
     case keyPath(Swift.KeyPath<SwiftUI.FocusedValues, Value?>)
@@ -24746,12 +24908,14 @@ extension SwiftUI.Group : SwiftUI.TableColumnContent where Content : SwiftUI.Tab
 #endif
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@propertyWrapper public struct FocusedBinding<Value> : SwiftUI.DynamicProperty, ~Swift.Sendable {
+ public struct FocusedBinding<Value> : SwiftUI.DynamicProperty, ~Swift.Sendable {
   @usableFromInline
   @frozen internal enum Content : ~Swift.Sendable {
     case keyPath(Swift.KeyPath<SwiftUI.FocusedValues, SwiftUI.Binding<Value>?>)
     case value(SwiftUI.Binding<Value>?)
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.FocusedBinding.Content.init()") }
+}
   @usableFromInline
   internal var content: SwiftUI.FocusedBinding<Value>.Content
   public init(_ keyPath: Swift.KeyPath<SwiftUI.FocusedValues, SwiftUI.Binding<Value>?>) { _suiUnimplemented("SwiftUI.FocusedBinding.init(_:)") }
@@ -24780,7 +24944,7 @@ extension SwiftUI.Group : SwiftUI.TableColumnContent where Content : SwiftUI.Tab
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-@propertyWrapper public struct FocusedBinding<Value> : SwiftUI.DynamicProperty {
+ public struct FocusedBinding<Value> : SwiftUI.DynamicProperty {
   @usableFromInline
   @frozen internal enum Content {
     case keyPath(Swift.KeyPath<SwiftUI.FocusedValues, SwiftUI.Binding<Value>?>)
@@ -24814,21 +24978,17 @@ extension SwiftUI.Group : SwiftUI.TableColumnContent where Content : SwiftUI.Tab
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  nonisolated public func focusedValue<Value>(_ keyPath: Swift.WritableKeyPath<SwiftUI.FocusedValues, Value?>, _ value: Value) -> Swift.Never { _suiUnimplemented("SwiftUI.View.focusedValue(_:_:)") }
+  @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
+  nonisolated public func focusedValue<Value>(_ keyPath: Swift.WritableKeyPath<SwiftUI.FocusedValues, Value?>, _ value: Value) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.focusedValue(_:_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func focusedValue<Value>(_ keyPath: Swift.WritableKeyPath<SwiftUI.FocusedValues, Value?>, _ value: Value?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.focusedValue(_:_:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func focusedValue<Value>(_ keyPath: Swift.WritableKeyPath<SwiftUI.FocusedValues, Value?>, _ value: Value?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.focusedValue(_:_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  nonisolated public func focusedSceneValue<T>(_ keyPath: Swift.WritableKeyPath<SwiftUI.FocusedValues, T?>, _ value: T) -> Swift.Never { _suiUnimplemented("SwiftUI.View.focusedSceneValue(_:_:)") }
+  @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+  nonisolated public func focusedSceneValue<T>(_ keyPath: Swift.WritableKeyPath<SwiftUI.FocusedValues, T?>, _ value: T) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.focusedSceneValue(_:_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func focusedSceneValue<T>(_ keyPath: Swift.WritableKeyPath<SwiftUI.FocusedValues, T?>, _ value: T?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.focusedSceneValue(_:_:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func focusedSceneValue<T>(_ keyPath: Swift.WritableKeyPath<SwiftUI.FocusedValues, T?>, _ value: T?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.focusedSceneValue(_:_:)") }
 }
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 public protocol FocusedValueKey {
@@ -24910,6 +25070,8 @@ nonisolated public struct GroupedTabViewStyle : SwiftUI.TabViewStyle {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 public struct TableStyleConfiguration : ~Swift.Sendable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TableStyleConfiguration.init()") }
 }
 #else
 @available(iOS 16.0, macOS 12.0, *)
@@ -24922,15 +25084,13 @@ public struct TableStyleConfiguration {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func tableStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.TableStyle { _suiUnimplemented("SwiftUI.View.tableStyle(_:)") }
+  nonisolated public func tableStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.TableStyle { _suiUnimplemented("SwiftUI.View.tableStyle(_:)") }
 }
 @available(macOS 15.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func modifierKeyAlternate<V>(_ modifiers: SwiftUI.EventModifiers, @SwiftUI.ContentBuilder _ alternate: () -> V) -> Swift.Never where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.modifierKeyAlternate(_:_:)") }
+  nonisolated public func modifierKeyAlternate<V>(_ modifiers: SwiftUI.EventModifiers, @SwiftUI.ContentBuilder _ alternate: () -> V) -> some SwiftUI.View where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.modifierKeyAlternate(_:_:)") }
 }
 @available(iOS 16.0, macOS 13.0, watchOS 7.0, *)
 @available(tvOS, unavailable)
@@ -24947,35 +25107,45 @@ public struct GaugeStyleConfiguration : ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, watchOS 7.0, *)
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.Label.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.Label.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct CurrentValueLabel : SwiftUI.View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, watchOS 7.0, *)
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.CurrentValueLabel.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.CurrentValueLabel.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct MinimumValueLabel : SwiftUI.View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, watchOS 7.0, *)
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MinimumValueLabel.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MinimumValueLabel.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct MaximumValueLabel : SwiftUI.View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, watchOS 7.0, *)
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MaximumValueLabel.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MaximumValueLabel.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct MarkedValueLabel : SwiftUI.View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, watchOS 7.0, *)
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MarkedValueLabel.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GaugeStyleConfiguration.MarkedValueLabel.body") } }
 }
   public var value: Swift.Double
@@ -25023,8 +25193,7 @@ public struct GaugeStyleConfiguration {
 @available(iOS 16.0, macOS 13.0, watchOS 7.0, *)
 @available(tvOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func gaugeStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.GaugeStyle { _suiUnimplemented("SwiftUI.View.gaugeStyle(_:)") }
+  nonisolated public func gaugeStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.GaugeStyle { _suiUnimplemented("SwiftUI.View.gaugeStyle(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, watchOS 9.0, *)
@@ -25040,6 +25209,8 @@ nonisolated public struct Stepper<Label> : SwiftUI.View, ~Swift.Sendable where L
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.Stepper.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.Stepper.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, watchOS 9.0, *)
@@ -25217,8 +25388,7 @@ extension SwiftUI.Stepper {
 @available(watchOS, unavailable)
 @available(tvOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func tableColumnHeaders(_ visibility: SwiftUI.Visibility) -> Swift.Never { _suiUnimplemented("SwiftUI.View.tableColumnHeaders(_:)") }
+  nonisolated public func tableColumnHeaders(_ visibility: SwiftUI.Visibility) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.tableColumnHeaders(_:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @preconcurrency @_Concurrency.MainActor public struct FetchedResults<Result> : @preconcurrency Swift.RandomAccessCollection where Result : CoreData.NSFetchRequestResult {
@@ -25251,9 +25421,11 @@ nonisolated public func tableColumnHeaders(_ visibility: SwiftUI.Visibility) -> 
   public typealias Iterator = Swift.IndexingIterator<SwiftUI.FetchedResults<Result>>
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias SubSequence = Swift.Slice<SwiftUI.FetchedResults<Result>>
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.FetchedResults.init()") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
-@propertyWrapper @preconcurrency @_Concurrency.MainActor public struct FetchRequest<Result> where Result : CoreData.NSFetchRequestResult {
+ @preconcurrency @_Concurrency.MainActor public struct FetchRequest<Result> where Result : CoreData.NSFetchRequestResult {
   @_Concurrency.MainActor @preconcurrency public var wrappedValue: SwiftUI.FetchedResults<Result> {
     get { _suiUnimplemented("SwiftUI.FetchRequest.wrappedValue") }
   }
@@ -25266,6 +25438,8 @@ nonisolated public func tableColumnHeaders(_ visibility: SwiftUI.Visibility) -> 
   @_Concurrency.MainActor @preconcurrency public var projectedValue: SwiftUI.Binding<SwiftUI.FetchRequest<Result>.Configuration> {
     get { _suiUnimplemented("SwiftUI.FetchRequest.projectedValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.FetchRequest.init()") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.FetchRequest : SwiftUI.DynamicProperty {
@@ -25357,7 +25531,9 @@ extension SwiftUI.TabViewCustomization {
     public var tabBarVisibility: SwiftUI.Visibility {
       get { _suiUnimplemented("SwiftUI.TabViewCustomization.TabCustomization.tabBarVisibility") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.TabViewCustomization.TabCustomization.init()") }
+}
   #else
   public struct TabCustomization {
     public var sidebarVisibility: SwiftUI.Visibility {
@@ -25381,7 +25557,9 @@ extension SwiftUI.TabViewCustomization {
       get { _suiUnimplemented("SwiftUI.TabViewCustomization.SectionCustomization.tabOrder") }
     }
     public mutating func resetTabOrder() { _suiUnimplemented("SwiftUI.TabViewCustomization.SectionCustomization.resetTabOrder()") }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.TabViewCustomization.SectionCustomization.init()") }
+}
   #else
   public struct SectionCustomization {
     public var tabOrder: [Swift.String]? {
@@ -25421,6 +25599,8 @@ public struct ToolbarTitleDisplayMode : ~Swift.Sendable {
   public static var inline: SwiftUI.ToolbarTitleDisplayMode {
     get { _suiUnimplemented("SwiftUI.ToolbarTitleDisplayMode.inline") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ToolbarTitleDisplayMode.init()") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -25443,30 +25623,25 @@ public struct ToolbarTitleDisplayMode {
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func toolbarTitleDisplayMode(_ mode: SwiftUI.ToolbarTitleDisplayMode) -> Swift.Never { _suiUnimplemented("SwiftUI.View.toolbarTitleDisplayMode(_:)") }
+  @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+  nonisolated public func toolbarTitleDisplayMode(_ mode: SwiftUI.ToolbarTitleDisplayMode) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarTitleDisplayMode(_:)") }
 }
 @available(iOS 15.0, macOS 12.0, *)
 @available(watchOS, unavailable)
 @available(tvOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func badge(_ count: Swift.Int) -> Swift.Never { _suiUnimplemented("SwiftUI.View.badge(_:)") }
+  nonisolated public func badge(_ count: Swift.Int) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.badge(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func badge(_ label: SwiftUI.Text?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.badge(_:)") }
+  nonisolated public func badge(_ label: SwiftUI.Text?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.badge(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func badge(_ key: SwiftUI.LocalizedStringKey?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.badge(_:)") }
+  nonisolated public func badge(_ key: SwiftUI.LocalizedStringKey?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.badge(_:)") }
   
   @available(iOS 16.0, macOS 13.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func badge(_ resource: FoundationShims.LocalizedStringResource?) -> some SwiftUI.View {
         badge(resource.map { Text($0) })
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func badge<S>(_ label: S?) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.badge(_:)") }
+  @_disfavoredOverload nonisolated public func badge<S>(_ label: S?) -> some SwiftUI.View where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.badge(_:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 17.0, *)
 @available(watchOS, unavailable)
@@ -25483,7 +25658,9 @@ public struct ControlGroupStyleConfiguration : ~Swift.Sendable {
     @available(macOS 12.0, iOS 15.0, tvOS 17.0, *)
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Content.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Content.body") } }
 }
   public let content: SwiftUI.ControlGroupStyleConfiguration.Content
@@ -25492,7 +25669,9 @@ public struct ControlGroupStyleConfiguration : ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, tvOS 17.0, *)
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Label.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ControlGroupStyleConfiguration.Label.body") } }
 }
   @available(iOS 16.0, macOS 13.0, *)
@@ -25521,8 +25700,7 @@ public struct ControlGroupStyleConfiguration {
 @available(iOS 15.0, macOS 12.0, tvOS 17.0, *)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func controlGroupStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.ControlGroupStyle { _suiUnimplemented("SwiftUI.View.controlGroupStyle(_:)") }
+  nonisolated public func controlGroupStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.ControlGroupStyle { _suiUnimplemented("SwiftUI.View.controlGroupStyle(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 26.0, watchOS 26.0, *)
@@ -25553,24 +25731,20 @@ nonisolated public func controlGroupStyle<S>(_ style: S) -> Swift.Never where S 
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func keyboardShortcut(_ key: SwiftUI.KeyEquivalent, modifiers: SwiftUI.EventModifiers = .command) -> Swift.Never { _suiUnimplemented("SwiftUI.View.keyboardShortcut(_:modifiers:)") }
+  nonisolated public func keyboardShortcut(_ key: SwiftUI.KeyEquivalent, modifiers: SwiftUI.EventModifiers = .command) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.keyboardShortcut(_:modifiers:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func keyboardShortcut(_ shortcut: SwiftUI.KeyboardShortcut) -> Swift.Never { _suiUnimplemented("SwiftUI.View.keyboardShortcut(_:)") }
+  nonisolated public func keyboardShortcut(_ shortcut: SwiftUI.KeyboardShortcut) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.keyboardShortcut(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 15.4, macOS 12.3, *)
+  @available(iOS 15.4, macOS 12.3, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func keyboardShortcut(_ shortcut: SwiftUI.KeyboardShortcut?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.keyboardShortcut(_:)") }
+  nonisolated public func keyboardShortcut(_ shortcut: SwiftUI.KeyboardShortcut?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.keyboardShortcut(_:)") }
 }
 @available(iOS 15.0, macOS 12.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func keyboardShortcut(_ key: SwiftUI.KeyEquivalent, modifiers: SwiftUI.EventModifiers = .command, localization: SwiftUI.KeyboardShortcut.Localization) -> Swift.Never { _suiUnimplemented("SwiftUI.View.keyboardShortcut(_:modifiers:localization:)") }
+  nonisolated public func keyboardShortcut(_ key: SwiftUI.KeyEquivalent, modifiers: SwiftUI.EventModifiers = .command, localization: SwiftUI.KeyboardShortcut.Localization) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.keyboardShortcut(_:modifiers:localization:)") }
 }
 @available(macOS 13.0, *)
 @available(tvOS, unavailable)
@@ -25700,13 +25874,12 @@ extension SwiftUI.EnvironmentValues {
   }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 13.0, deprecated: 100000.0, renamed: "autocorrectionDisabled(_:)")
+  @available(iOS, introduced: 13.0, deprecated: 100000.0, renamed: "autocorrectionDisabled(_:)")
   @available(macOS, introduced: 10.15, deprecated: 100000.0, renamed: "autocorrectionDisabled(_:)")
   @available(tvOS, introduced: 13.0, deprecated: 100000.0, renamed: "autocorrectionDisabled(_:)")
   @available(watchOS, introduced: 8.0, deprecated: 100000.0, renamed: "autocorrectionDisabled(_:)")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, renamed: "autocorrectionDisabled(_:)")
-  nonisolated public func disableAutocorrection(_ disable: Swift.Bool?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.disableAutocorrection(_:)") }
+  nonisolated public func disableAutocorrection(_ disable: Swift.Bool?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.disableAutocorrection(_:)") }
 }
 extension SwiftUI.EnvironmentValues {
   @available(iOS, introduced: 13.0, deprecated: 100000.0, renamed: "autocorrectionDisabled")
@@ -25729,6 +25902,8 @@ nonisolated public struct NavigationSplitView<Sidebar, Content, Detail> : SwiftU
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.NavigationSplitView.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.NavigationSplitView.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -25766,6 +25941,8 @@ public struct NavigationSplitViewVisibility : Swift.Equatable, Swift.Codable, Sw
   public static func == (lhs: SwiftUI.NavigationSplitViewVisibility, rhs: SwiftUI.NavigationSplitViewVisibility) -> Swift.Bool { _suiUnimplemented("SwiftUI.NavigationSplitViewVisibility.==(lhs:rhs:)") }
   public func encode(to encoder: any Swift.Encoder) throws { _suiUnimplemented("SwiftUI.NavigationSplitViewVisibility.encode(to:)") }
   public init(from decoder: any Swift.Decoder) throws { _suiUnimplemented("SwiftUI.NavigationSplitViewVisibility.init(from:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.NavigationSplitViewVisibility.init()") }
 }
 @available(iOS 27.0, macOS 27.0, visionOS 27.0, *)
 @available(tvOS, unavailable)
@@ -25844,8 +26021,7 @@ nonisolated public struct LinearGaugeStyle : SwiftUI.GaugeStyle, ~Swift.Sendable
   nonisolated public init(tint: SwiftUI.Color) { _suiUnimplemented("SwiftUI.LinearGaugeStyle.init(tint:)") }
   @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "Use ``View/tint(_)`` instead.")
   nonisolated public init(tint: SwiftUI.Gradient) { _suiUnimplemented("SwiftUI.LinearGaugeStyle.init(tint:)") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.LinearGaugeStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.LinearGaugeStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.LinearGaugeStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.LinearGaugeStyle.makeBody(configuration:)") }
 }
 #else
 @available(watchOS 7.0, *)
@@ -25884,6 +26060,8 @@ public enum _ScrollViewAnimationMode : ~Swift.Sendable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI._ScrollViewAnimationMode.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._ScrollViewAnimationMode.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -25919,6 +26097,8 @@ nonisolated public struct CommandGroup<Content> : SwiftUI.Commands, ~Swift.Senda
     get { _suiUnimplemented("SwiftUI.CommandGroup.body") }
   }
   nonisolated public func _resolve(into resolved: inout SwiftUI._ResolvedCommands) { _suiUnimplemented("SwiftUI.CommandGroup._resolve(into:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.CommandGroup.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -26003,8 +26183,7 @@ extension SwiftUI.TextFieldStyle where Self == SwiftUI.SquareBorderTextFieldStyl
 @available(visionOS, unavailable)
 public struct SquareBorderTextFieldStyle : SwiftUI.TextFieldStyle, ~Swift.Sendable {
   public init() { _suiUnimplemented("SwiftUI.SquareBorderTextFieldStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func _body(configuration: SwiftUI.TextField<SwiftUI.SquareBorderTextFieldStyle._Label>) -> Swift.Never { _suiUnimplemented("SwiftUI.SquareBorderTextFieldStyle._body(configuration:)") }
+  public func _body(configuration: SwiftUI.TextField<SwiftUI.SquareBorderTextFieldStyle._Label>) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.SquareBorderTextFieldStyle._body(configuration:)") }
 }
 #else
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use BorderedTextField instead. As of macOS 26, text fields no longer have a rectangular border.")
@@ -26030,6 +26209,8 @@ nonisolated public struct NavigationView<Content> : SwiftUI.View, ~Swift.Sendabl
   @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "use NavigationStack or NavigationSplitView instead")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "use NavigationStack or NavigationSplitView instead")
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.NavigationView.init()") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.NavigationView.body") } }
 }
@@ -26074,8 +26255,9 @@ public static var automatic: SwiftUI.PageIndexViewStyle.BackgroundDisplayMode { 
 public static var never: SwiftUI.PageIndexViewStyle.BackgroundDisplayMode { get { _suiUnimplemented("SwiftUI.PageIndexViewStyle.BackgroundDisplayMode.never") } }
   }
   public init(backgroundDisplayMode: SwiftUI.PageIndexViewStyle.BackgroundDisplayMode = .automatic) { _suiUnimplemented("SwiftUI.PageIndexViewStyle.init(backgroundDisplayMode:)") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func _makeBody(configuration: SwiftUI.PageIndexViewStyle._Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.PageIndexViewStyle._makeBody(configuration:)") }
+  public func _makeBody(configuration: SwiftUI.PageIndexViewStyle._Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.PageIndexViewStyle._makeBody(configuration:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PageIndexViewStyle.init()") }
 }
 #else
 @available(iOS 14.0, tvOS 14.0, watchOS 8.0, *)
@@ -26093,9 +26275,9 @@ public struct PageIndexViewStyle : SwiftUI.IndexViewStyle {
 }
 #endif
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@propertyWrapper @frozen public struct AccessibilityFocusState<Value> : SwiftUI.DynamicProperty where Value : Swift.Hashable {
+ @frozen public struct AccessibilityFocusState<Value> : SwiftUI.DynamicProperty where Value : Swift.Hashable {
   #if compiler(>=5.3) && $TildeSendable
-  @propertyWrapper @frozen public struct Binding : ~Swift.Sendable {
+   @frozen public struct Binding : ~Swift.Sendable {
     private var _binding: SwiftUI.Binding<Value>
     public var wrappedValue: Value {
       get { _suiUnimplemented("SwiftUI.AccessibilityFocusState.Binding.wrappedValue") }
@@ -26106,7 +26288,7 @@ public struct PageIndexViewStyle : SwiftUI.IndexViewStyle {
     }
   }
   #else
-  @propertyWrapper @frozen public struct Binding {
+   @frozen public struct Binding {
     private var _binding: SwiftUI.Binding<Value>
     public var wrappedValue: Value {
       get
@@ -26143,22 +26325,19 @@ extension SwiftUI.AccessibilityFocusState : Swift.Sendable where Value : Swift.S
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityDefaultFocus<Value>(_ binding: SwiftUI.AccessibilityFocusState<Value>.Binding, _ value: Value) -> Swift.Never where Value : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityDefaultFocus(_:_:)") }
+  nonisolated public func accessibilityDefaultFocus<Value>(_ binding: SwiftUI.AccessibilityFocusState<Value>.Binding, _ value: Value) -> some SwiftUI.View where Value : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityDefaultFocus(_:_:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityFocused<Value>(_ binding: SwiftUI.AccessibilityFocusState<Value>.Binding, equals value: Value) -> Swift.Never where Value : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityFocused(_:equals:)") }
+  nonisolated public func accessibilityFocused<Value>(_ binding: SwiftUI.AccessibilityFocusState<Value>.Binding, equals value: Value) -> some SwiftUI.View where Value : Swift.Hashable { _suiUnimplemented("SwiftUI.View.accessibilityFocused(_:equals:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityFocused(_ condition: SwiftUI.AccessibilityFocusState<Swift.Bool>.Binding) -> Swift.Never { _suiUnimplemented("SwiftUI.View.accessibilityFocused(_:)") }
+  nonisolated public func accessibilityFocused(_ condition: SwiftUI.AccessibilityFocusState<Swift.Bool>.Binding) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityFocused(_:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI._ConditionalContent : SwiftUI.ToolbarContent where TrueContent : SwiftUI.ToolbarContent, FalseContent : SwiftUI.ToolbarContent {
   nonisolated public static func _makeToolbar(content: SwiftUI._GraphValue<SwiftUI._ConditionalContent<TrueContent, FalseContent>>, inputs: SwiftUI._ToolbarInputs) -> SwiftUI._ToolbarOutputs { _suiUnimplemented("SwiftUI._ConditionalContent._makeToolbar(content:inputs:)") }
-  @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI._ConditionalContent : SwiftUI.CustomizableToolbarContent where TrueContent : SwiftUI.CustomizableToolbarContent, FalseContent : SwiftUI.CustomizableToolbarContent {
@@ -26166,8 +26345,8 @@ extension SwiftUI._ConditionalContent : SwiftUI.CustomizableToolbarContent where
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension Swift.Optional : SwiftUI.ToolbarContent where Wrapped : SwiftUI.ToolbarContent {
   nonisolated public static func _makeToolbar(content: SwiftUI._GraphValue<Swift.Optional<Wrapped>>, inputs: SwiftUI._ToolbarInputs) -> SwiftUI._ToolbarOutputs { _suiUnimplemented("SwiftUI.Optional._makeToolbar(content:inputs:)") }
-  @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
-  public typealias Body = Swift.Never
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension Swift.Optional : SwiftUI.CustomizableToolbarContent where Wrapped : SwiftUI.CustomizableToolbarContent {
@@ -26184,6 +26363,8 @@ extension Swift.Optional : SwiftUI.CustomizableToolbarContent where Wrapped : Sw
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 public struct NSGestureRecognizerRepresentableContext<Representable> : ~Swift.Sendable where Representable : SwiftUI.NSGestureRecognizerRepresentable {
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.NSGestureRecognizerRepresentableContext.init()") }
 }
 #else
 @available(macOS 26.0, *)
@@ -26218,6 +26399,8 @@ public struct NSGestureRecognizerRepresentableCoordinateSpaceConverter : ~Swift.
     }
   }
   public func translation(in coordinateSpace: some CoordinateSpaceProtocol) -> CoreGraphics.CGPoint? { _suiUnimplemented("SwiftUI.NSGestureRecognizerRepresentableCoordinateSpaceConverter.translation(in:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.NSGestureRecognizerRepresentableCoordinateSpaceConverter.init()") }
 }
 #else
 @available(macOS 26.0, *)
@@ -26251,8 +26434,7 @@ public struct NSGestureRecognizerRepresentableCoordinateSpaceConverter {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func gesture(_ representable: some NSGestureRecognizerRepresentable) -> Swift.Never { _suiUnimplemented("SwiftUI.View.gesture(_:)") }
+  nonisolated public func gesture(_ representable: some NSGestureRecognizerRepresentable) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.gesture(_:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 public struct ToolbarLabelStyle : Swift.Sendable, Swift.Equatable {
@@ -26277,6 +26459,8 @@ public struct ToolbarLabelStyle : Swift.Sendable, Swift.Equatable {
     get { _suiUnimplemented("SwiftUI.ToolbarLabelStyle.titleOnly") }
   }
   public static func == (a: SwiftUI.ToolbarLabelStyle, b: SwiftUI.ToolbarLabelStyle) -> Swift.Bool { _suiUnimplemented("SwiftUI.ToolbarLabelStyle.==(a:b:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ToolbarLabelStyle.init()") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.Scene {
@@ -26302,8 +26486,7 @@ extension SwiftUI.PrimitiveButtonStyle where Self == SwiftUI.BorderedProminentBu
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 nonisolated public struct BorderedProminentButtonStyle : SwiftUI.PrimitiveButtonStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.BorderedProminentButtonStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.BorderedProminentButtonStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderedProminentButtonStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.BorderedProminentButtonStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.BorderedProminentButtonStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -26379,7 +26562,9 @@ public struct GroupBoxStyleConfiguration : ~Swift.Sendable {
     @available(tvOS, unavailable)
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Label.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Label.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct Content : SwiftUI.View, ~Swift.Sendable {
@@ -26387,7 +26572,9 @@ public struct GroupBoxStyleConfiguration : ~Swift.Sendable {
     @available(tvOS, unavailable)
     @available(watchOS, unavailable)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Content.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.GroupBoxStyleConfiguration.Content.body") } }
 }
   public let label: SwiftUI.GroupBoxStyleConfiguration.Label
@@ -26418,28 +26605,27 @@ public struct GroupBoxStyleConfiguration {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func groupBoxStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.GroupBoxStyle { _suiUnimplemented("SwiftUI.View.groupBoxStyle(_:)") }
+  nonisolated public func groupBoxStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.GroupBoxStyle { _suiUnimplemented("SwiftUI.View.groupBoxStyle(_:)") }
 }
 @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func defaultVisibility(_ visibility: SwiftUI.Visibility, for placements: SwiftUI.AdaptableTabBarPlacement...) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.defaultVisibility(_:for:)") }
+nonisolated public func defaultVisibility(_ visibility: SwiftUI.Visibility, for placements: SwiftUI.AdaptableTabBarPlacement...) -> Self { _suiUnimplemented("SwiftUI.TabContent.defaultVisibility(_:for:)") }
 }
 @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func hidden(_ hidden: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.hidden(_:)") }
+nonisolated public func hidden(_ hidden: Swift.Bool = true) -> Self { _suiUnimplemented("SwiftUI.TabContent.hidden(_:)") }
 }
 @available(iOS 18.4, macOS 15.4, tvOS 18.4, visionOS 2.4, *)
 @available(watchOS, unavailable)
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func disabled(_ disabled: Swift.Bool) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.disabled(_:)") }
+nonisolated public func disabled(_ disabled: Swift.Bool) -> Self { _suiUnimplemented("SwiftUI.TabContent.disabled(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -26473,15 +26659,13 @@ public struct TabPlacement : Swift.Hashable {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func sectionActions<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> Swift.Never where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.sectionActions(content:)") }
+  nonisolated public func sectionActions<Content>(@SwiftUI.ContentBuilder content: () -> Content) -> some SwiftUI.View where Content : SwiftUI.View { _suiUnimplemented("SwiftUI.View.sectionActions(content:)") }
 }
 @available(iOS 26.0, visionOS 26.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func listSectionMargins(_ edges: SwiftUI.Edge.Set = .all, _ length: CoreGraphics.CGFloat?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.listSectionMargins(_:_:)") }
+  nonisolated public func listSectionMargins(_ edges: SwiftUI.Edge.Set = .all, _ length: CoreGraphics.CGFloat?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.listSectionMargins(_:_:)") }
 }
 @available(iOS 13.0, tvOS 13.0, *)
 @_Concurrency.MainActor @preconcurrency open class _UIHostingView<Content> : UIKit.UIView where Content : SwiftUI.View {
@@ -26600,6 +26784,8 @@ public static func buildBlock<Content>(_ content: Content) -> Swift.Never where 
         TupleWidget((repeat each c))
     }
   #endif
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.WidgetBundleBuilder.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, watchOS 9.0, visionOS 1.0, *)
@@ -26863,36 +27049,27 @@ extension SwiftUI.EnvironmentValues {
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func presentationDetents(_ detents: Swift.Set<SwiftUI.PresentationDetent>) -> Swift.Never { _suiUnimplemented("SwiftUI.View.presentationDetents(_:)") }
+  nonisolated public func presentationDetents(_ detents: Swift.Set<SwiftUI.PresentationDetent>) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.presentationDetents(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func presentationDetents(_ detents: Swift.Set<SwiftUI.PresentationDetent>, selection: SwiftUI.Binding<SwiftUI.PresentationDetent>) -> Swift.Never { _suiUnimplemented("SwiftUI.View.presentationDetents(_:selection:)") }
+  nonisolated public func presentationDetents(_ detents: Swift.Set<SwiftUI.PresentationDetent>, selection: SwiftUI.Binding<SwiftUI.PresentationDetent>) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.presentationDetents(_:selection:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func presentationDragIndicator(_ visibility: SwiftUI.Visibility) -> Swift.Never { _suiUnimplemented("SwiftUI.View.presentationDragIndicator(_:)") }
+  nonisolated public func presentationDragIndicator(_ visibility: SwiftUI.Visibility) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.presentationDragIndicator(_:)") }
 }
 @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func presentationBackgroundInteraction(_ interaction: SwiftUI.PresentationBackgroundInteraction) -> Swift.Never { _suiUnimplemented("SwiftUI.View.presentationBackgroundInteraction(_:)") }
+  nonisolated public func presentationBackgroundInteraction(_ interaction: SwiftUI.PresentationBackgroundInteraction) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.presentationBackgroundInteraction(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func presentationCompactAdaptation(_ adaptation: SwiftUI.PresentationAdaptation) -> Swift.Never { _suiUnimplemented("SwiftUI.View.presentationCompactAdaptation(_:)") }
+  nonisolated public func presentationCompactAdaptation(_ adaptation: SwiftUI.PresentationAdaptation) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.presentationCompactAdaptation(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func presentationCompactAdaptation(horizontal horizontalAdaptation: SwiftUI.PresentationAdaptation, vertical verticalAdaptation: SwiftUI.PresentationAdaptation) -> Swift.Never { _suiUnimplemented("SwiftUI.View.presentationCompactAdaptation(horizontal:vertical:)") }
+  nonisolated public func presentationCompactAdaptation(horizontal horizontalAdaptation: SwiftUI.PresentationAdaptation, vertical verticalAdaptation: SwiftUI.PresentationAdaptation) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.presentationCompactAdaptation(horizontal:vertical:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func presentationCornerRadius(_ cornerRadius: CoreGraphics.CGFloat?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.presentationCornerRadius(_:)") }
+  nonisolated public func presentationCornerRadius(_ cornerRadius: CoreGraphics.CGFloat?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.presentationCornerRadius(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func presentationContentInteraction(_ behavior: SwiftUI.PresentationContentInteraction) -> Swift.Never { _suiUnimplemented("SwiftUI.View.presentationContentInteraction(_:)") }
+  nonisolated public func presentationContentInteraction(_ behavior: SwiftUI.PresentationContentInteraction) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.presentationContentInteraction(_:)") }
 }
 @available(anyAppleOS 27.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func presentationPlacement(_ placement: SwiftUI.PresentationPlacement) -> Swift.Never { _suiUnimplemented("SwiftUI.View.presentationPlacement(_:)") }
+  nonisolated public func presentationPlacement(_ placement: SwiftUI.PresentationPlacement) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.presentationPlacement(_:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct PresentationDetent : Swift.Hashable, Swift.Sendable {
@@ -26911,7 +27088,9 @@ public static var large: SwiftUI.PresentationDetent { get { _suiUnimplemented("S
     public subscript<T>(dynamicMember keyPath: Swift.KeyPath<SwiftUI.EnvironmentValues, T>) -> T {
       get { _suiUnimplemented("SwiftUI.PresentationDetent.Context.subscript(dynamicMember:)") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.PresentationDetent.Context.init()") }
+}
   #else
   @dynamicMemberLookup public struct Context {
     public var maxDetentValue: CoreGraphics.CGFloat {
@@ -26945,6 +27124,8 @@ public struct PresentationAdaptation : Swift.Sendable {
   public static var fullScreenCover: SwiftUI.PresentationAdaptation {
     get { _suiUnimplemented("SwiftUI.PresentationAdaptation.fullScreenCover") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PresentationAdaptation.init()") }
 }
 @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
 public struct PresentationContentInteraction : Swift.Equatable, Swift.Sendable {
@@ -26958,6 +27139,8 @@ public struct PresentationContentInteraction : Swift.Equatable, Swift.Sendable {
     get { _suiUnimplemented("SwiftUI.PresentationContentInteraction.scrolls") }
   }
   public static func == (a: SwiftUI.PresentationContentInteraction, b: SwiftUI.PresentationContentInteraction) -> Swift.Bool { _suiUnimplemented("SwiftUI.PresentationContentInteraction.==(a:b:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PresentationContentInteraction.init()") }
 }
 @available(anyAppleOS 27.0, *)
 public struct PresentationPlacement : Swift.Hashable, Swift.Sendable {
@@ -26996,6 +27179,8 @@ public struct PresentationBackgroundInteraction : Swift.Sendable {
   public static var disabled: SwiftUI.PresentationBackgroundInteraction {
     get { _suiUnimplemented("SwiftUI.PresentationBackgroundInteraction.disabled") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PresentationBackgroundInteraction.init()") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public protocol CustomPresentationDetent {
@@ -27008,12 +27193,12 @@ extension SwiftUI.CustomPresentationDetent {
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func tabPlacement(_ placement: SwiftUI.TabPlacement) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.tabPlacement(_:)") }
+nonisolated public func tabPlacement(_ placement: SwiftUI.TabPlacement) -> Self { _suiUnimplemented("SwiftUI.TabContent.tabPlacement(_:)") }
 }
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
 @available(anyAppleOS 27.0, *)
-  nonisolated public func defaultSectionExpansion(_ expansion: SwiftUI.TabSectionExpansion) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.defaultSectionExpansion(_:)") }
+  nonisolated public func defaultSectionExpansion(_ expansion: SwiftUI.TabSectionExpansion) -> Self { _suiUnimplemented("SwiftUI.TabContent.defaultSectionExpansion(_:)") }
 }
 @available(anyAppleOS 27.0, *)
 public struct TabSectionExpansion : Swift.Sendable, Swift.Hashable {
@@ -27055,8 +27240,7 @@ nonisolated public struct BorderedTableStyle : SwiftUI.TableStyle, ~Swift.Sendab
   nonisolated public init() { _suiUnimplemented("SwiftUI.BorderedTableStyle.init()") }
   @available(macOS, introduced: 12.0, deprecated: 100000.0, message: "Use the `.bordered` style with the `.alternatingRowBackgrounds()` view modifier")
   nonisolated public init(alternatesRowBackgrounds: Swift.Bool) { _suiUnimplemented("SwiftUI.BorderedTableStyle.init(alternatesRowBackgrounds:)") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.BorderedTableStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.BorderedTableStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.BorderedTableStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.BorderedTableStyle.makeBody(configuration:)") }
 }
 #else
 @available(macOS 12.0, *)
@@ -27086,8 +27270,7 @@ public static var disabled: SwiftUI.ButtonRepeatBehavior { get { _suiUnimplement
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func buttonRepeatBehavior(_ behavior: SwiftUI.ButtonRepeatBehavior) -> Swift.Never { _suiUnimplemented("SwiftUI.View.buttonRepeatBehavior(_:)") }
+  nonisolated public func buttonRepeatBehavior(_ behavior: SwiftUI.ButtonRepeatBehavior) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.buttonRepeatBehavior(_:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 extension SwiftUI.EnvironmentValues {
@@ -27124,15 +27307,13 @@ nonisolated public struct _ButtonGesture : SwiftUI.Gesture {
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public func _onButtonGesture(pressing: ((Swift.Bool) -> Swift.Void)? = nil, perform action: @escaping () -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View._onButtonGesture(pressing:perform:)") }
+  @_Concurrency.MainActor @preconcurrency public func _onButtonGesture(pressing: ((Swift.Bool) -> Swift.Void)? = nil, perform action: @escaping () -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View._onButtonGesture(pressing:perform:)") }
 }
 @available(iOS 16.0, macOS 13.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func contextMenu<I, M>(forSelectionType itemType: I.Type = I.self, @SwiftUI.ContentBuilder menu: @escaping (Swift.Set<I>) -> M, primaryAction: ((Swift.Set<I>) -> Swift.Void)? = nil) -> Swift.Never where I : Swift.Hashable, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.contextMenu(forSelectionType:menu:primaryAction:)") }
+  nonisolated public func contextMenu<I, M>(forSelectionType itemType: I.Type = I.self, @SwiftUI.ContentBuilder menu: @escaping (Swift.Set<I>) -> M, primaryAction: ((Swift.Set<I>) -> Swift.Void)? = nil) -> some SwiftUI.View where I : Swift.Hashable, M : SwiftUI.View { _suiUnimplemented("SwiftUI.View.contextMenu(forSelectionType:menu:primaryAction:)") }
 }
 @available(iOS 18.0, *)
 @available(tvOS, unavailable)
@@ -27201,6 +27382,8 @@ public struct UIGestureRecognizerRepresentableCoordinateSpaceConverter : ~Swift.
     get { translation(in: .local) }
   }
   public func translation(in coordinateSpace: some CoordinateSpaceProtocol) -> CoreGraphics.CGPoint? { _suiUnimplemented("SwiftUI.UIGestureRecognizerRepresentableCoordinateSpaceConverter.translation(in:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.UIGestureRecognizerRepresentableCoordinateSpaceConverter.init()") }
 }
 #else
 @available(iOS 18.0, *)
@@ -27228,8 +27411,7 @@ public struct UIGestureRecognizerRepresentableCoordinateSpaceConverter {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func gesture(_ representable: some UIGestureRecognizerRepresentable) -> Swift.Never { _suiUnimplemented("SwiftUI.View.gesture(_:)") }
+  nonisolated public func gesture(_ representable: some UIGestureRecognizerRepresentable) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.gesture(_:)") }
 }
 @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `MenuStyle` instead.")
 @available(tvOS, unavailable)
@@ -27252,7 +27434,9 @@ public struct _MenuButtonStyleConfiguration : ~Swift.Sendable {
     @available(watchOS, unavailable)
     @available(visionOS, unavailable)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Label.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Label.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct Content : SwiftUI.View, ~Swift.Sendable {
@@ -27261,7 +27445,9 @@ public struct _MenuButtonStyleConfiguration : ~Swift.Sendable {
     @available(watchOS, unavailable)
     @available(visionOS, unavailable)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Content.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._MenuButtonStyleConfiguration.Content.body") } }
 }
   public var label: SwiftUI._MenuButtonStyleConfiguration.Label
@@ -27298,8 +27484,7 @@ public struct _MenuButtonStyleConfiguration {
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func menuButtonStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.MenuButtonStyle { _suiUnimplemented("SwiftUI.View.menuButtonStyle(_:)") }
+  nonisolated public func menuButtonStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.MenuButtonStyle { _suiUnimplemented("SwiftUI.View.menuButtonStyle(_:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 public struct NavigationSplitViewColumn : Swift.Hashable, Swift.Sendable {
@@ -27317,6 +27502,8 @@ public struct NavigationSplitViewColumn : Swift.Hashable, Swift.Sendable {
   public var hashValue: Swift.Int {
     get { _suiUnimplemented("SwiftUI.NavigationSplitViewColumn.hashValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.NavigationSplitViewColumn.init()") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, *)
@@ -27340,6 +27527,8 @@ public struct NavigationSplitViewColumn : Swift.Hashable, Swift.Sendable {
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   internal typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TupleCommandContent.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -27391,6 +27580,8 @@ nonisolated public struct PasteButton : SwiftUI.View, ~Swift.Sendable {
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.PasteButton.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.PasteButton.init()") }
 }
 #else
 @available(iOS 16.0, macOS 10.15, *)
@@ -27421,21 +27612,17 @@ extension SwiftUI.PasteButton {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileMover(isPresented: SwiftUI.Binding<Swift.Bool>, file: Foundation.URL?, onCompletion: @escaping (_ result: Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.fileMover(isPresented:file:onCompletion:)") }
+  nonisolated public func fileMover(isPresented: SwiftUI.Binding<Swift.Bool>, file: Foundation.URL?, onCompletion: @escaping (_ result: Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.fileMover(isPresented:file:onCompletion:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileMover<C>(isPresented: SwiftUI.Binding<Swift.Bool>, files: C, onCompletion: @escaping (_ result: Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void) -> Swift.Never where C : Swift.Collection, C.Element == Foundation.URL { _suiUnimplemented("SwiftUI.View.fileMover(isPresented:files:onCompletion:)") }
+  nonisolated public func fileMover<C>(isPresented: SwiftUI.Binding<Swift.Bool>, files: C, onCompletion: @escaping (_ result: Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void) -> some SwiftUI.View where C : Swift.Collection, C.Element == Foundation.URL { _suiUnimplemented("SwiftUI.View.fileMover(isPresented:files:onCompletion:)") }
 }
 @available(iOS 17.0, macOS 14.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileMover(isPresented: SwiftUI.Binding<Swift.Bool>, file: Foundation.URL?, onCompletion: @escaping (Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.fileMover(isPresented:file:onCompletion:onCancellation:)") }
+  nonisolated public func fileMover(isPresented: SwiftUI.Binding<Swift.Bool>, file: Foundation.URL?, onCompletion: @escaping (Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.fileMover(isPresented:file:onCompletion:onCancellation:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileMover<C>(isPresented: SwiftUI.Binding<Swift.Bool>, files: C, onCompletion: @escaping (Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void) -> Swift.Never where C : Swift.Collection, C.Element == Foundation.URL { _suiUnimplemented("SwiftUI.View.fileMover(isPresented:files:onCompletion:onCancellation:)") }
+  nonisolated public func fileMover<C>(isPresented: SwiftUI.Binding<Swift.Bool>, files: C, onCompletion: @escaping (Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void) -> some SwiftUI.View where C : Swift.Collection, C.Element == Foundation.URL { _suiUnimplemented("SwiftUI.View.fileMover(isPresented:files:onCompletion:onCancellation:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 14.0, macOS 11.0, *)
@@ -27445,6 +27632,8 @@ nonisolated public struct DocumentGroup<Document, Content> : SwiftUI.Scene, ~Swi
   nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.DocumentGroup.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DocumentGroup.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -27585,8 +27774,7 @@ extension SwiftUI.LabelStyle where Self == SwiftUI.TitleOnlyLabelStyle {
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 nonisolated public struct TitleOnlyLabelStyle : SwiftUI.LabelStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.TitleOnlyLabelStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.TitleOnlyLabelStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.TitleOnlyLabelStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.TitleOnlyLabelStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.TitleOnlyLabelStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -27596,34 +27784,28 @@ nonisolated public struct TitleOnlyLabelStyle : SwiftUI.LabelStyle {
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  nonisolated public func scrollPosition(_ position: SwiftUI.Binding<SwiftUI.ScrollPosition>, anchor: SwiftUI.UnitPoint? = nil) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollPosition(_:anchor:)") }
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+  nonisolated public func scrollPosition(_ position: SwiftUI.Binding<SwiftUI.ScrollPosition>, anchor: SwiftUI.UnitPoint? = nil) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollPosition(_:anchor:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func scrollPosition(id: SwiftUI.Binding<(some Hashable)?>, anchor: SwiftUI.UnitPoint? = nil) -> Swift.Never { _suiUnimplemented("SwiftUI.View.scrollPosition(id:anchor:)") }
+  @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+  nonisolated public func scrollPosition(id: SwiftUI.Binding<(some Hashable)?>, anchor: SwiftUI.UnitPoint? = nil) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.scrollPosition(id:anchor:)") }
 }
 @available(iOS 18.0, macOS 15.0, visionOS 2.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func tabViewCustomization(_ customization: SwiftUI.Binding<SwiftUI.TabViewCustomization>?) -> Swift.Never { _suiUnimplemented("SwiftUI.View.tabViewCustomization(_:)") }
+  nonisolated public func tabViewCustomization(_ customization: SwiftUI.Binding<SwiftUI.TabViewCustomization>?) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.tabViewCustomization(_:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  nonisolated public func focusable(_ isFocusable: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.View.focusable(_:)") }
+  @available(iOS 17.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
+  nonisolated public func focusable(_ isFocusable: Swift.Bool = true) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.focusable(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func focusable(_ isFocusable: Swift.Bool = true, interactions: SwiftUI.FocusInteractions) -> Swift.Never { _suiUnimplemented("SwiftUI.View.focusable(_:interactions:)") }
+  @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+  nonisolated public func focusable(_ isFocusable: Swift.Bool = true, interactions: SwiftUI.FocusInteractions) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.focusable(_:interactions:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func focusEffectDisabled(_ disabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.View.focusEffectDisabled(_:)") }
+  @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
+  nonisolated public func focusEffectDisabled(_ disabled: Swift.Bool = true) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.focusEffectDisabled(_:)") }
 }
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
 public struct FocusInteractions : Swift.OptionSet, Swift.Sendable {
@@ -27657,6 +27839,8 @@ nonisolated public struct _FocusableModifier : SwiftUI.ViewModifier, ~Swift.Send
   public static func _makeView(modifier: SwiftUI._GraphValue<SwiftUI._FocusableModifier>, inputs: SwiftUI._ViewInputs, body: @escaping (SwiftUI._Graph, SwiftUI._ViewInputs) -> SwiftUI._ViewOutputs) -> SwiftUI._ViewOutputs { _suiUnimplemented("SwiftUI._FocusableModifier._makeView(modifier:inputs:body:)") }
   @available(macOS 10.15, iOS 13.4, tvOS 13.0, watchOS 6.0, *)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._FocusableModifier.init()") }
   // port: synthesized witness for ViewModifier (R7); Apple implements it with an internal member
   public func body(content: SwiftUI::_ViewModifier_Content<Self>) -> Swift.Never { _suiUnimplemented("SwiftUI._FocusableModifier.body(content:)") }
 }
@@ -27675,17 +27859,15 @@ extension SwiftUI.EnvironmentValues {
   }
 }
 extension SwiftUI.View {
-        // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(macOS, introduced: 10.15, deprecated: 12.0, message: "Use FocusState<T> and View.focused(_:equals) for functionality previously provided by the onChange parameter.")
+    @available(macOS, introduced: 10.15, deprecated: 12.0, message: "Use FocusState<T> and View.focused(_:equals) for functionality previously provided by the onChange parameter.")
   @available(tvOS, introduced: 13.0, deprecated: 15.0, message: "Use FocusState<T> and View.focused(_:equals) for functionality previously provided by the onChange parameter.")
   @available(watchOS, introduced: 6.0, deprecated: 8.0, message: "Use FocusState<T> and View.focused(_:equals) for functionality previously provided by the onChange parameter.")
   @available(visionOS, unavailable)
-  nonisolated public func focusable(_ isFocusable: Swift.Bool = true, onFocusChange: @escaping (_ isFocused: Swift.Bool) -> Swift.Void = { _ in }) -> Swift.Never { _suiUnimplemented("SwiftUI.View.focusable(_:onFocusChange:)") }
+  nonisolated public func focusable(_ isFocusable: Swift.Bool = true, onFocusChange: @escaping (_ isFocused: Swift.Bool) -> Swift.Void = { _ in }) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.focusable(_:onFocusChange:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
-  nonisolated public func labelsVisibility(_ visibility: SwiftUI.Visibility) -> Swift.Never { _suiUnimplemented("SwiftUI.View.labelsVisibility(_:)") }
+  @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
+  nonisolated public func labelsVisibility(_ visibility: SwiftUI.Visibility) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.labelsVisibility(_:)") }
 }
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
 extension SwiftUI.EnvironmentValues {
@@ -27711,10 +27893,14 @@ public struct TimelineView<Schedule, Content> : ~Swift.Sendable where Schedule :
       public var hashValue: Swift.Int {
         get { _suiUnimplemented("SwiftUI.TimelineView.Context.Cadence.hashValue") }
       }
-    }
+          // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+      public init() { _suiUnimplemented("SwiftUI.TimelineView.Context.Cadence.init()") }
+}
     public let date: Foundation.Date
     public let cadence: SwiftUI.TimelineView<Schedule, Content>.Context.Cadence
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.TimelineView.init()") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
@@ -27774,6 +27960,8 @@ nonisolated public struct ToolbarSpacer : SwiftUI.ToolbarContent, SwiftUI.Custom
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ToolbarSpacer.init()") }
   // port: synthesized witness for ToolbarContent (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ToolbarSpacer.body") } }
 }
@@ -27804,8 +27992,7 @@ extension SwiftUI.GaugeStyle where Self == SwiftUI.DefaultGaugeStyle {
 @available(tvOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct DefaultGaugeStyle : SwiftUI.GaugeStyle, ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public init() { _suiUnimplemented("SwiftUI.DefaultGaugeStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.DefaultGaugeStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.DefaultGaugeStyle.makeBody(configuration:)") }
+  @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.DefaultGaugeStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.DefaultGaugeStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 7.0, *)
@@ -27816,11 +28003,10 @@ extension SwiftUI.GaugeStyle where Self == SwiftUI.DefaultGaugeStyle {
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(visionOS 2.0, *)
+  @available(visionOS 2.0, *)
       @available(watchOS, unavailable)
   @available(tvOS, unavailable)
-  nonisolated public func supportedVolumeViewpoints(_ viewpoints: SwiftUI.SquareAzimuth.Set) -> Swift.Never { _suiUnimplemented("SwiftUI.View.supportedVolumeViewpoints(_:)") }
+  nonisolated public func supportedVolumeViewpoints(_ viewpoints: SwiftUI.SquareAzimuth.Set) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.supportedVolumeViewpoints(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -27829,6 +28015,8 @@ nonisolated public struct Button<Label> : SwiftUI.View, ~Swift.Sendable where La
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.Button.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.Button.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -27934,6 +28122,8 @@ nonisolated public struct DefaultButtonLabel : SwiftUI.View, ~Swift.Sendable {
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.DefaultButtonLabel.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DefaultButtonLabel.init()") }
 }
 #else
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -28031,11 +28221,12 @@ public struct ToolbarRole : Swift.Sendable {
   public static var editor: SwiftUI.ToolbarRole {
     get { _suiUnimplemented("SwiftUI.ToolbarRole.editor") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ToolbarRole.init()") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func toolbarRole(_ role: SwiftUI.ToolbarRole) -> Swift.Never { _suiUnimplemented("SwiftUI.View.toolbarRole(_:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func toolbarRole(_ role: SwiftUI.ToolbarRole) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarRole(_:)") }
 }
 @available(iOS 27.0, *)
 @available(macCatalyst, unavailable)
@@ -28067,12 +28258,8 @@ extension SwiftUI.TupleContent : SwiftUI.SceneAccessoryContent where repeat each
 @available(visionOS, unavailable)
 extension Swift.Optional : SwiftUI.SceneAccessoryContent where Wrapped : SwiftUI.SceneAccessoryContent {
   nonisolated public static func _makeSceneAccessory(content: SwiftUI._GraphValue<Swift.Optional<Wrapped>>, inputs: SwiftUI._SceneAccessoryInputs) -> SwiftUI._SceneAccessoryOutputs { _suiUnimplemented("SwiftUI.Optional._makeSceneAccessory(content:inputs:)") }
-  @available(iOS 27.0, *)
-    @available(tvOS, unavailable)
-  @available(watchOS, unavailable)
-  @available(macCatalyst, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
 }
 @available(iOS 27.0, *)
 @available(macCatalyst, unavailable)
@@ -28083,13 +28270,8 @@ extension SwiftUI._ConditionalContent : SwiftUI.SceneAccessoryContent where True
   nonisolated public static func _makeSceneAccessory(content: SwiftUI._GraphValue<SwiftUI._ConditionalContent<TrueContent, FalseContent>>, inputs: SwiftUI._SceneAccessoryInputs) -> SwiftUI._SceneAccessoryOutputs { _suiUnimplemented("SwiftUI._ConditionalContent._makeSceneAccessory(content:inputs:)") }
   @usableFromInline
   internal init(storage: SwiftUI._ConditionalContent<TrueContent, FalseContent>.Storage) { _suiUnimplemented("SwiftUI._ConditionalContent.init(storage:)") }
-  @available(iOS 27.0, *)
-  @available(macOS, unavailable, introduced: 10.15)
-  @available(tvOS, unavailable, introduced: 13.0)
-  @available(watchOS, unavailable, introduced: 6.0)
-  @available(macCatalyst, unavailable)
-  @available(visionOS, unavailable)
-  public typealias Body = Swift.Never
+    // port: omitted: a single-module port can only keep one witness per associated type (R10)
+
 }
 @available(iOS 27.0, *)
 @available(macCatalyst, unavailable)
@@ -28121,61 +28303,49 @@ extension SwiftUI.ViewBuilder {
 @available(watchOS, unavailable)
 @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Conform your document type to WritableDocument or Transferable instead.")
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileExporter<D>(isPresented: SwiftUI.Binding<Swift.Bool>, document: D?, contentType: UniformTypeIdentifiers.UTType, defaultFilename: Swift.String? = nil, onCompletion: @escaping (_ result: Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void) -> Swift.Never where D : SwiftUI.FileDocument { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:document:contentType:defaultFilename:onCompletion:)") }
+  nonisolated public func fileExporter<D>(isPresented: SwiftUI.Binding<Swift.Bool>, document: D?, contentType: UniformTypeIdentifiers.UTType, defaultFilename: Swift.String? = nil, onCompletion: @escaping (_ result: Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void) -> some SwiftUI.View where D : SwiftUI.FileDocument { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:document:contentType:defaultFilename:onCompletion:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileExporter<C>(isPresented: SwiftUI.Binding<Swift.Bool>, documents: C, contentType: UniformTypeIdentifiers.UTType, onCompletion: @escaping (_ result: Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void) -> Swift.Never where C : Swift.Collection, C.Element : SwiftUI.FileDocument { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:documents:contentType:onCompletion:)") }
+  nonisolated public func fileExporter<C>(isPresented: SwiftUI.Binding<Swift.Bool>, documents: C, contentType: UniformTypeIdentifiers.UTType, onCompletion: @escaping (_ result: Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void) -> some SwiftUI.View where C : Swift.Collection, C.Element : SwiftUI.FileDocument { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:documents:contentType:onCompletion:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileExporter<D>(isPresented: SwiftUI.Binding<Swift.Bool>, document: D?, contentType: UniformTypeIdentifiers.UTType, defaultFilename: Swift.String? = nil, onCompletion: @escaping (_ result: Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void) -> Swift.Never where D : SwiftUI.ReferenceFileDocument { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:document:contentType:defaultFilename:onCompletion:)") }
+  nonisolated public func fileExporter<D>(isPresented: SwiftUI.Binding<Swift.Bool>, document: D?, contentType: UniformTypeIdentifiers.UTType, defaultFilename: Swift.String? = nil, onCompletion: @escaping (_ result: Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void) -> some SwiftUI.View where D : SwiftUI.ReferenceFileDocument { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:document:contentType:defaultFilename:onCompletion:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileExporter<C>(isPresented: SwiftUI.Binding<Swift.Bool>, documents: C, contentType: UniformTypeIdentifiers.UTType, onCompletion: @escaping (_ result: Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void) -> Swift.Never where C : Swift.Collection, C.Element : SwiftUI.ReferenceFileDocument { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:documents:contentType:onCompletion:)") }
+  nonisolated public func fileExporter<C>(isPresented: SwiftUI.Binding<Swift.Bool>, documents: C, contentType: UniformTypeIdentifiers.UTType, onCompletion: @escaping (_ result: Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void) -> some SwiftUI.View where C : Swift.Collection, C.Element : SwiftUI.ReferenceFileDocument { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:documents:contentType:onCompletion:)") }
 }
 @available(iOS 17.0, macOS 14.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileExporter<T>(isPresented: SwiftUI.Binding<Swift.Bool>, item: T?, contentTypes: [UniformTypeIdentifiers.UTType] = [], defaultFilename: Swift.String? = nil, onCompletion: @escaping (Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void = { }) -> Swift.Never where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:item:contentTypes:defaultFilename:onCompletion:onCancellation:)") }
+  nonisolated public func fileExporter<T>(isPresented: SwiftUI.Binding<Swift.Bool>, item: T?, contentTypes: [UniformTypeIdentifiers.UTType] = [], defaultFilename: Swift.String? = nil, onCompletion: @escaping (Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void = { }) -> some SwiftUI.View where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:item:contentTypes:defaultFilename:onCompletion:onCancellation:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileExporter<C, T>(isPresented: SwiftUI.Binding<Swift.Bool>, items: C, contentTypes: [UniformTypeIdentifiers.UTType] = [], onCompletion: @escaping (Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void = { }) -> Swift.Never where C : Swift.Collection, T : CoreTransferable.Transferable, T == C.Element { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:items:contentTypes:onCompletion:onCancellation:)") }
+  nonisolated public func fileExporter<C, T>(isPresented: SwiftUI.Binding<Swift.Bool>, items: C, contentTypes: [UniformTypeIdentifiers.UTType] = [], onCompletion: @escaping (Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void = { }) -> some SwiftUI.View where C : Swift.Collection, T : CoreTransferable.Transferable, T == C.Element { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:items:contentTypes:onCompletion:onCancellation:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 17.0, deprecated: 100000.0, message: "Conform your type to WritableDocument or Transferable instead.")
+  @available(iOS, introduced: 17.0, deprecated: 100000.0, message: "Conform your type to WritableDocument or Transferable instead.")
   @available(macOS, introduced: 14.0, deprecated: 100000.0, message: "Conform your type to WritableDocument or Transferable instead.")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Conform your type to WritableDocument or Transferable instead.")
-  nonisolated public func fileExporter<D>(isPresented: SwiftUI.Binding<Swift.Bool>, document: D?, contentTypes: [UniformTypeIdentifiers.UTType] = [], defaultFilename: Swift.String? = nil, onCompletion: @escaping (Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void = {}) -> Swift.Never where D : SwiftUI.FileDocument { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:document:contentTypes:defaultFilename:onCompletion:onCancellation:)") }
+  nonisolated public func fileExporter<D>(isPresented: SwiftUI.Binding<Swift.Bool>, document: D?, contentTypes: [UniformTypeIdentifiers.UTType] = [], defaultFilename: Swift.String? = nil, onCompletion: @escaping (Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void = {}) -> some SwiftUI.View where D : SwiftUI.FileDocument { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:document:contentTypes:defaultFilename:onCompletion:onCancellation:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 17.0, deprecated: 100000.0, message: "Conform your document type to WritableDocument or Transferable protocol instead.")
+  @available(iOS, introduced: 17.0, deprecated: 100000.0, message: "Conform your document type to WritableDocument or Transferable protocol instead.")
   @available(macOS, introduced: 14.0, deprecated: 100000.0, message: "Conform your document type to WritableDocument or Transferable protocol instead.")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Conform your type to WritableDocument or Transferable instead.")
-  nonisolated public func fileExporter<D>(isPresented: SwiftUI.Binding<Swift.Bool>, document: D?, contentTypes: [UniformTypeIdentifiers.UTType] = [], defaultFilename: Swift.String? = nil, onCompletion: @escaping (Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void = {}) -> Swift.Never where D : SwiftUI.ReferenceFileDocument { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:document:contentTypes:defaultFilename:onCompletion:onCancellation:)") }
+  nonisolated public func fileExporter<D>(isPresented: SwiftUI.Binding<Swift.Bool>, document: D?, contentTypes: [UniformTypeIdentifiers.UTType] = [], defaultFilename: Swift.String? = nil, onCompletion: @escaping (Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void = {}) -> some SwiftUI.View where D : SwiftUI.ReferenceFileDocument { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:document:contentTypes:defaultFilename:onCompletion:onCancellation:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 17.0, deprecated: 100000.0, message: "Conform your type to WritableDocument or Transferable instead.")
+  @available(iOS, introduced: 17.0, deprecated: 100000.0, message: "Conform your type to WritableDocument or Transferable instead.")
   @available(macOS, introduced: 14.0, deprecated: 100000.0, message: "Conform your type to WritableDocument or Transferable instead.")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Conform your type to WritableDocument or Transferable instead.")
-  nonisolated public func fileExporter<C>(isPresented: SwiftUI.Binding<Swift.Bool>, documents: C, contentTypes: [UniformTypeIdentifiers.UTType] = [], onCompletion: @escaping (Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void = {}) -> Swift.Never where C : Swift.Collection, C.Element : SwiftUI.FileDocument { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:documents:contentTypes:onCompletion:onCancellation:)") }
+  nonisolated public func fileExporter<C>(isPresented: SwiftUI.Binding<Swift.Bool>, documents: C, contentTypes: [UniformTypeIdentifiers.UTType] = [], onCompletion: @escaping (Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void = {}) -> some SwiftUI.View where C : Swift.Collection, C.Element : SwiftUI.FileDocument { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:documents:contentTypes:onCompletion:onCancellation:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 17.0, deprecated: 100000.0, message: "Conform your document type to WritableDocument or Transferable protocol instead.")
+  @available(iOS, introduced: 17.0, deprecated: 100000.0, message: "Conform your document type to WritableDocument or Transferable protocol instead.")
   @available(macOS, introduced: 14.0, deprecated: 100000.0, message: "Conform your document type to WritableDocument or Transferable protocol instead.")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Conform your document type to WritableDocument or Transferable protocol instead.")
-  nonisolated public func fileExporter<C>(isPresented: SwiftUI.Binding<Swift.Bool>, documents: C, contentTypes: [UniformTypeIdentifiers.UTType] = [], onCompletion: @escaping (Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void = {}) -> Swift.Never where C : Swift.Collection, C.Element : SwiftUI.ReferenceFileDocument { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:documents:contentTypes:onCompletion:onCancellation:)") }
+  nonisolated public func fileExporter<C>(isPresented: SwiftUI.Binding<Swift.Bool>, documents: C, contentTypes: [UniformTypeIdentifiers.UTType] = [], onCompletion: @escaping (Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void, onCancellation: @escaping () -> Swift.Void = {}) -> some SwiftUI.View where C : Swift.Collection, C.Element : SwiftUI.ReferenceFileDocument { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:documents:contentTypes:onCompletion:onCancellation:)") }
 }
 @available(iOS 27.0, macOS 27.0, visionOS 27.0, *)
 @available(watchOS, unavailable)
 @available(tvOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileExporter<D>(isPresented: SwiftUI.Binding<Swift.Bool>, document: D?, contentType: UniformTypeIdentifiers.UTType? = nil, defaultFilename: Swift.String? = nil, onCompletion: @escaping (Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void, onCancellation: (() -> Swift.Void)? = nil) -> Swift.Never where D : SwiftUI.WritableDocument, D.Writer.Destination == Foundation.URL { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:document:contentType:defaultFilename:onCompletion:onCancellation:)") }
+  nonisolated public func fileExporter<D>(isPresented: SwiftUI.Binding<Swift.Bool>, document: D?, contentType: UniformTypeIdentifiers.UTType? = nil, defaultFilename: Swift.String? = nil, onCompletion: @escaping (Swift.Result<Foundation.URL, any Swift.Error>) -> Swift.Void, onCancellation: (() -> Swift.Void)? = nil) -> some SwiftUI.View where D : SwiftUI.WritableDocument, D.Writer.Destination == Foundation.URL { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:document:contentType:defaultFilename:onCompletion:onCancellation:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func fileExporter<C>(isPresented: SwiftUI.Binding<Swift.Bool>, documents: C, contentTypes: [UniformTypeIdentifiers.UTType] = [], onCompletion: @escaping (Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void, onCancellation: (() -> Swift.Void)? = nil) -> Swift.Never where C : Swift.Collection, C.Element : SwiftUI.WritableDocument, C.Element.Writer.Destination == Foundation.URL { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:documents:contentTypes:onCompletion:onCancellation:)") }
+  nonisolated public func fileExporter<C>(isPresented: SwiftUI.Binding<Swift.Bool>, documents: C, contentTypes: [UniformTypeIdentifiers.UTType] = [], onCompletion: @escaping (Swift.Result<[Foundation.URL], any Swift.Error>) -> Swift.Void, onCancellation: (() -> Swift.Void)? = nil) -> some SwiftUI.View where C : Swift.Collection, C.Element : SwiftUI.WritableDocument, C.Element.Writer.Destination == Foundation.URL { _suiUnimplemented("SwiftUI.View.fileExporter(isPresented:documents:contentTypes:onCompletion:onCancellation:)") }
 }
 @available(visionOS 2.0, *)
 @available(watchOS, unavailable)
@@ -28236,6 +28406,8 @@ internal struct NavigationSplitViewExtraWidePrimaryColumnTraitKey : SwiftUI._Vie
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   internal typealias Value = Swift.Bool
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.NavigationSplitViewExtraWidePrimaryColumnTraitKey.init()") }
 }
 #else
 @available(iOS 18.0, visionOS 2.0, *)
@@ -28410,6 +28582,8 @@ nonisolated public struct DocumentLaunchView<Actions, DocumentView> : SwiftUI.Vi
   nonisolated public init(_ title: SwiftUI.Text? = nil, for contentTypes: [UniformTypeIdentifiers.UTType], @SwiftUI.ContentBuilder _ actions: () -> Actions, @SwiftUI.ContentBuilder onDocumentOpen: @escaping (Foundation.URL) -> DocumentView, @SwiftUI.ContentBuilder backgroundAccessoryView: @escaping (SwiftUI.DocumentLaunchGeometryProxy) -> some View) { _suiUnimplemented("SwiftUI.DocumentLaunchView.init(_:for:_:onDocumentOpen:backgroundAccessoryView:)") }
   nonisolated public init(_ title: SwiftUI.Text? = nil, for contentTypes: [UniformTypeIdentifiers.UTType], @SwiftUI.ContentBuilder _ actions: () -> Actions, @SwiftUI.ContentBuilder onDocumentOpen: @escaping (Foundation.URL) -> DocumentView, @SwiftUI.ContentBuilder overlayAccessoryView: @escaping (SwiftUI.DocumentLaunchGeometryProxy) -> some View) { _suiUnimplemented("SwiftUI.DocumentLaunchView.init(_:for:_:onDocumentOpen:overlayAccessoryView:)") }
   nonisolated public init(_ title: SwiftUI.Text? = nil, for contentTypes: [UniformTypeIdentifiers.UTType], @SwiftUI.ContentBuilder _ actions: () -> Actions, @SwiftUI.ContentBuilder onDocumentOpen: @escaping (Foundation.URL) -> DocumentView) { _suiUnimplemented("SwiftUI.DocumentLaunchView.init(_:for:_:onDocumentOpen:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DocumentLaunchView.init()") }
 }
 #else
 @available(iOS 18.0, *)
@@ -28620,7 +28794,9 @@ public struct SliderTick<V> : SwiftUI.SliderTickContent, Swift.Identifiable, Swi
     public var hashValue: Swift.Int {
       get { _suiUnimplemented("SwiftUI.SliderTick.ID.hashValue") }
     }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.SliderTick.ID.init()") }
+}
   public init(_ value: V) { _suiUnimplemented("SwiftUI.SliderTick.init(_:)") }
   public init(_ value: V, @SwiftUI.ContentBuilder label: () -> some View) { _suiUnimplemented("SwiftUI.SliderTick.init(_:label:)") }
   public var id: SwiftUI.SliderTick<V>.ID {
@@ -28631,6 +28807,8 @@ public struct SliderTick<V> : SwiftUI.SliderTickContent, Swift.Identifiable, Swi
   public var body: SwiftUI.SliderTick<V>.Body {
     get { _suiUnimplemented("SwiftUI.SliderTick.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SliderTick.init()") }
 }
 #else
 @available(iOS 26.0, macOS 26.0, watchOS 26.0, visionOS 26.0, *)
@@ -28677,7 +28855,9 @@ public struct GridItem : Swift.Sendable {
     case fixed(_: CoreGraphics.CGFloat)
     case flexible(minimum: CoreGraphics.CGFloat = 10, maximum: CoreGraphics.CGFloat = .infinity)
     case adaptive(minimum: CoreGraphics.CGFloat, maximum: CoreGraphics.CGFloat = .infinity)
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.GridItem.Size.init()") }
+}
   public var size: SwiftUI.GridItem.Size
   public var spacing: CoreGraphics.CGFloat?
   public var alignment: SwiftUI.Alignment?
@@ -28698,6 +28878,8 @@ nonisolated public struct LazyHGrid<Content> : SwiftUI.View, ~Swift.Sendable whe
   public static func _makeView(view: SwiftUI._GraphValue<SwiftUI.LazyHGrid<Content>>, inputs: SwiftUI._ViewInputs) -> SwiftUI._ViewOutputs { _suiUnimplemented("SwiftUI.LazyHGrid._makeView(view:inputs:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.LazyHGrid.init()") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LazyHGrid.body") } }
 }
@@ -28717,6 +28899,8 @@ nonisolated public struct LazyVGrid<Content> : SwiftUI.View, ~Swift.Sendable whe
   public static func _makeView(view: SwiftUI._GraphValue<SwiftUI.LazyVGrid<Content>>, inputs: SwiftUI._ViewInputs) -> SwiftUI._ViewOutputs { _suiUnimplemented("SwiftUI.LazyVGrid._makeView(view:inputs:)") }
   @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.LazyVGrid.init()") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LazyVGrid.body") } }
 }
@@ -28737,6 +28921,8 @@ nonisolated public struct LazyVGrid<Content> : SwiftUI.View where Content : Swif
   @_Concurrency.MainActor @preconcurrency public func callAsFunction(id: Swift.String) { _suiUnimplemented("SwiftUI.DismissWindowAction.callAsFunction(id:)") }
   @_Concurrency.MainActor @preconcurrency public func callAsFunction<D>(value: D) where D : Swift.Decodable, D : Swift.Encodable, D : Swift.Hashable { _suiUnimplemented("SwiftUI.DismissWindowAction.callAsFunction(value:)") }
   @_Concurrency.MainActor @preconcurrency public func callAsFunction<D>(id: Swift.String, value: D) where D : Swift.Decodable, D : Swift.Encodable, D : Swift.Hashable { _suiUnimplemented("SwiftUI.DismissWindowAction.callAsFunction(id:value:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DismissWindowAction.init()") }
 }
 @available(iOS 17.0, macOS 14.0, visionOS 1.0, *)
 @available(tvOS, unavailable)
@@ -28748,8 +28934,7 @@ extension SwiftUI.EnvironmentValues {
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func interactiveDismissDisabled(_ isDisabled: Swift.Bool = true) -> Swift.Never { _suiUnimplemented("SwiftUI.View.interactiveDismissDisabled(_:)") }
+  nonisolated public func interactiveDismissDisabled(_ isDisabled: Swift.Bool = true) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.interactiveDismissDisabled(_:)") }
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @preconcurrency @_Concurrency.MainActor public struct SectionedFetchResults<SectionIdentifier, Result> : nonisolated Swift.RandomAccessCollection where SectionIdentifier : Swift.Hashable, Result : CoreData.NSFetchRequestResult {
@@ -28808,10 +28993,12 @@ nonisolated public func interactiveDismissDisabled(_ isDisabled: Swift.Bool = tr
   public typealias Iterator = Swift.IndexingIterator<SwiftUI.SectionedFetchResults<SectionIdentifier, Result>>
   @available(macOS 12.0, iOS 15.0, tvOS 15.0, watchOS 8.0, *)
   public typealias SubSequence = Swift.Slice<SwiftUI.SectionedFetchResults<SectionIdentifier, Result>>
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SectionedFetchResults.init()") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@propertyWrapper @_Concurrency.MainActor @preconcurrency public struct SectionedFetchRequest<SectionIdentifier, Result> : ~Swift.Sendable where SectionIdentifier : Swift.Hashable, Result : CoreData.NSFetchRequestResult {
+ @_Concurrency.MainActor @preconcurrency public struct SectionedFetchRequest<SectionIdentifier, Result> : ~Swift.Sendable where SectionIdentifier : Swift.Hashable, Result : CoreData.NSFetchRequestResult {
   @_Concurrency.MainActor @preconcurrency public var wrappedValue: SwiftUI.SectionedFetchResults<SectionIdentifier, Result> {
     get { _suiUnimplemented("SwiftUI.SectionedFetchRequest.wrappedValue") }
   }
@@ -28823,10 +29010,12 @@ nonisolated public func interactiveDismissDisabled(_ isDisabled: Swift.Bool = tr
   @_Concurrency.MainActor @preconcurrency public var projectedValue: SwiftUI.Binding<SwiftUI.SectionedFetchRequest<SectionIdentifier, Result>.Configuration> {
     get { _suiUnimplemented("SwiftUI.SectionedFetchRequest.projectedValue") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SectionedFetchRequest.init()") }
 }
 #else
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-@propertyWrapper @_Concurrency.MainActor @preconcurrency public struct SectionedFetchRequest<SectionIdentifier, Result> where SectionIdentifier : Swift.Hashable, Result : CoreData.NSFetchRequestResult {
+ @_Concurrency.MainActor @preconcurrency public struct SectionedFetchRequest<SectionIdentifier, Result> where SectionIdentifier : Swift.Hashable, Result : CoreData.NSFetchRequestResult {
   @_Concurrency.MainActor @preconcurrency public var wrappedValue: SwiftUI.SectionedFetchResults<SectionIdentifier, Result> {
     get
   }
@@ -28880,6 +29069,8 @@ nonisolated public struct _WKStoryboardContent : SwiftUI.View, ~Swift.Sendable {
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI._WKStoryboardContent.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._WKStoryboardContent.init()") }
 }
 #else
 @available(watchOS 6.0, *)
@@ -28893,8 +29084,7 @@ nonisolated public struct _WKStoryboardContent : SwiftUI.View {
 #endif
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func accessibilityElement(children: SwiftUI.AccessibilityChildBehavior = .ignore) -> Swift.Never { _suiUnimplemented("SwiftUI.View.accessibilityElement(children:)") }
+  nonisolated public func accessibilityElement(children: SwiftUI.AccessibilityChildBehavior = .ignore) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.accessibilityElement(children:)") }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 extension SwiftUI.AccessibilityChildBehavior {
@@ -28932,6 +29122,8 @@ public struct SearchSuggestionsPlacement : Swift.Equatable, Swift.Sendable {
     public typealias RawValue = Swift.Int
   }
   public static func == (a: SwiftUI.SearchSuggestionsPlacement, b: SwiftUI.SearchSuggestionsPlacement) -> Swift.Bool { _suiUnimplemented("SwiftUI.SearchSuggestionsPlacement.==(a:b:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.SearchSuggestionsPlacement.init()") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.FormStyle where Self == SwiftUI.AutomaticFormStyle {
@@ -28943,8 +29135,7 @@ extension SwiftUI.FormStyle where Self == SwiftUI.AutomaticFormStyle {
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 nonisolated public struct AutomaticFormStyle : SwiftUI.FormStyle, ~Swift.Sendable {
   nonisolated public init() { _suiUnimplemented("SwiftUI.AutomaticFormStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.AutomaticFormStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AutomaticFormStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.AutomaticFormStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.AutomaticFormStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -28968,6 +29159,8 @@ nonisolated public struct RemoteImmersiveSpace<Content, Data> : SwiftUI.Scene, ~
   nonisolated public init<C>(for type: Data.Type, @SwiftUI.CompositorContentBuilder content: @escaping (SwiftUI.Binding<Data?>) -> C) where Content == SwiftUI.CompositorContentBuilder.Content<C>, C : SwiftUI.CompositorContent { _suiUnimplemented("SwiftUI.RemoteImmersiveSpace.init(for:content:)") }
   nonisolated public init<C>(id: Swift.String, for type: Data.Type = Data.self, @SwiftUI.CompositorContentBuilder content: @escaping (SwiftUI.Binding<Data>) -> C, defaultValue: @escaping () -> Data) where Content == SwiftUI.CompositorContentBuilder.Content<C>, C : SwiftUI.CompositorContent { _suiUnimplemented("SwiftUI.RemoteImmersiveSpace.init(id:for:content:defaultValue:)") }
   nonisolated public init<C>(for type: Data.Type = Data.self, @SwiftUI.CompositorContentBuilder content: @escaping (SwiftUI.Binding<Data>) -> C, defaultValue: @escaping () -> Data) where Content == SwiftUI.CompositorContentBuilder.Content<C>, C : SwiftUI.CompositorContent { _suiUnimplemented("SwiftUI.RemoteImmersiveSpace.init(for:content:defaultValue:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.RemoteImmersiveSpace.init()") }
 }
 #else
 @available(macOS 26.0, *)
@@ -28998,13 +29191,17 @@ public struct LabeledContentStyleConfiguration : ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public struct Label : SwiftUI.View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Label.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Label.body") } }
 }
   @_Concurrency.MainActor @preconcurrency public struct Content : SwiftUI.View, ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, tvOS 16.0, watchOS 9.0, *)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Content.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.LabeledContentStyleConfiguration.Content.body") } }
 }
   public let label: SwiftUI.LabeledContentStyleConfiguration.Label
@@ -29027,8 +29224,7 @@ public struct LabeledContentStyleConfiguration {
 #endif
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func labeledContentStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.LabeledContentStyle { _suiUnimplemented("SwiftUI.View.labeledContentStyle(_:)") }
+  nonisolated public func labeledContentStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.LabeledContentStyle { _suiUnimplemented("SwiftUI.View.labeledContentStyle(_:)") }
 }
 @available(macOS 11.0, *)
 @available(tvOS, unavailable)
@@ -29173,29 +29369,25 @@ extension SwiftUI.SpatialTapGesture {
   nonisolated public init(count: Swift.Int = 1, coordinateSpace: some CoordinateSpaceProtocol = .local, inputKinds: SwiftUI.GestureInputKinds = .all) { _suiUnimplemented("SwiftUI.SpatialTapGesture.init(count:coordinateSpace:inputKinds:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS, introduced: 16.0, deprecated: 100000.0, message: "use overload that accepts a CoordinateSpaceProtocol instead")
+  @available(iOS, introduced: 16.0, deprecated: 100000.0, message: "use overload that accepts a CoordinateSpaceProtocol instead")
   @available(macOS, introduced: 13.0, deprecated: 100000.0, message: "use overload that accepts a CoordinateSpaceProtocol instead")
   @available(watchOS, introduced: 9.0, deprecated: 100000.0, message: "use overload that accepts a CoordinateSpaceProtocol instead")
   @available(tvOS, unavailable)
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "use overload that accepts a CoordinateSpaceProtocol instead")
-  @_disfavoredOverload nonisolated public func onTapGesture(count: Swift.Int = 1, coordinateSpace: SwiftUI.CoordinateSpace = .local, perform action: @escaping (CoreGraphics.CGPoint) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onTapGesture(count:coordinateSpace:perform:)") }
+  @_disfavoredOverload nonisolated public func onTapGesture(count: Swift.Int = 1, coordinateSpace: SwiftUI.CoordinateSpace = .local, perform action: @escaping (CoreGraphics.CGPoint) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onTapGesture(count:coordinateSpace:perform:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 17.0, macOS 14.0, watchOS 10.0, *)
+  @available(iOS 17.0, macOS 14.0, watchOS 10.0, *)
   @available(tvOS, unavailable)
-  nonisolated public func onTapGesture(count: Swift.Int = 1, coordinateSpace: some CoordinateSpaceProtocol = .local, perform action: @escaping (CoreGraphics.CGPoint) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onTapGesture(count:coordinateSpace:perform:)") }
+  nonisolated public func onTapGesture(count: Swift.Int = 1, coordinateSpace: some CoordinateSpaceProtocol = .local, perform action: @escaping (CoreGraphics.CGPoint) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onTapGesture(count:coordinateSpace:perform:)") }
 }
 @available(anyAppleOS 27.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onTapGesture(count: Swift.Int = 1, coordinateSpace: some CoordinateSpaceProtocol = .local, inputKinds: SwiftUI.GestureInputKinds = .all, perform action: @escaping (CoreGraphics.CGPoint) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onTapGesture(count:coordinateSpace:inputKinds:perform:)") }
+  nonisolated public func onTapGesture(count: Swift.Int = 1, coordinateSpace: some CoordinateSpaceProtocol = .local, inputKinds: SwiftUI.GestureInputKinds = .all, perform action: @escaping (CoreGraphics.CGPoint) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onTapGesture(count:coordinateSpace:inputKinds:perform:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func interactionActivityTrackingTag(_ tag: Swift.String) -> Swift.Never { _suiUnimplemented("SwiftUI.View.interactionActivityTrackingTag(_:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func interactionActivityTrackingTag(_ tag: Swift.String) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.interactionActivityTrackingTag(_:)") }
 }
 @available(iOS 13.0, tvOS 13.0, watchOS 6.0, *)
 public protocol _UIHostingViewable : AnyObject {
@@ -29297,11 +29489,9 @@ extension SwiftUI.WindowGroup {
 }
 @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func presentationBackground<S>(_ style: S) -> Swift.Never where S : SwiftUI.ShapeStyle { _suiUnimplemented("SwiftUI.View.presentationBackground(_:)") }
+  nonisolated public func presentationBackground<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.ShapeStyle { _suiUnimplemented("SwiftUI.View.presentationBackground(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func presentationBackground<V>(alignment: SwiftUI.Alignment = .center, @SwiftUI.ContentBuilder content: () -> V) -> Swift.Never where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.presentationBackground(alignment:content:)") }
+  nonisolated public func presentationBackground<V>(alignment: SwiftUI.Alignment = .center, @SwiftUI.ContentBuilder content: () -> V) -> some SwiftUI.View where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.presentationBackground(alignment:content:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(macOS 15.0, *)
@@ -29311,9 +29501,12 @@ nonisolated public func presentationBackground<V>(alignment: SwiftUI.Alignment =
 nonisolated public struct WindowDragGesture : SwiftUI.Gesture, ~Swift.Sendable {
   public struct Value : Swift.Equatable, ~Swift.Sendable {
     public static func == (a: SwiftUI.WindowDragGesture.Value, b: SwiftUI.WindowDragGesture.Value) -> Swift.Bool { _suiUnimplemented("SwiftUI.WindowDragGesture.Value.==(a:b:)") }
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.WindowDragGesture.Value.init()") }
+}
   nonisolated public init() { _suiUnimplemented("SwiftUI.WindowDragGesture.init()") }
-  nonisolated public var body: some SwiftUI.Gesture<SwiftUI.WindowDragGesture.Value> {
+    // port: opaque type is a witness for a declared associated type / has no Never conformance; declared as Never (R3)
+nonisolated public var body: Self {
     get { _suiUnimplemented("SwiftUI.WindowDragGesture.body") }
   }
   // port: synthesized witness for Gesture (R7); Apple implements it with an internal member
@@ -29352,18 +29545,18 @@ nonisolated public struct RenameButton<Label> : SwiftUI.View where Label : Swift
 }
 #endif
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func renameAction(_ isFocused: SwiftUI.FocusState<Swift.Bool>.Binding) -> Swift.Never { _suiUnimplemented("SwiftUI.View.renameAction(_:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func renameAction(_ isFocused: SwiftUI.FocusState<Swift.Bool>.Binding) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.renameAction(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  nonisolated public func renameAction(_ action: @escaping () -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.renameAction(_:)") }
+  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
+  nonisolated public func renameAction(_ action: @escaping () -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.renameAction(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
 public struct RenameAction : ~Swift.Sendable {
   public func callAsFunction() { _suiUnimplemented("SwiftUI.RenameAction.callAsFunction()") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.RenameAction.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -29393,12 +29586,10 @@ extension SwiftUI.NavigationViewStyle where Self == SwiftUI.StackNavigationViewS
 @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
 public struct StackNavigationViewStyle : SwiftUI.NavigationViewStyle, ~Swift.Sendable {
   public init() { _suiUnimplemented("SwiftUI.StackNavigationViewStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-public func _body(configuration: SwiftUI._NavigationViewStyleConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUI.StackNavigationViewStyle._body(configuration:)") }
+  public func _body(configuration: SwiftUI._NavigationViewStyleConfiguration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.StackNavigationViewStyle._body(configuration:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 15.0, tvOS 15.0, watchOS 8.0, *)
-    public func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUI.StackNavigationViewStyle._columnBasedBody(configuration:)") }
+  @available(iOS 15.0, tvOS 15.0, watchOS 8.0, *)
+    public func _columnBasedBody(configuration: SwiftUI._NavigationViewStyleConfiguration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.StackNavigationViewStyle._columnBasedBody(configuration:)") }
 }
 #else
 @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "replace stack-styled NavigationView with NavigationStack")
@@ -29420,6 +29611,8 @@ nonisolated public struct Label<Title, Icon> : SwiftUI.View, ~Swift.Sendable whe
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.Label.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.Label.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -29468,25 +29661,23 @@ extension SwiftUI.EnvironmentValues {
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func labelReservedIconWidth(_ value: CoreGraphics.CGFloat) -> Swift.Never { _suiUnimplemented("SwiftUI.View.labelReservedIconWidth(_:)") }
+  nonisolated public func labelReservedIconWidth(_ value: CoreGraphics.CGFloat) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.labelReservedIconWidth(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func labelIconToTitleSpacing(_ value: CoreGraphics.CGFloat) -> Swift.Never { _suiUnimplemented("SwiftUI.View.labelIconToTitleSpacing(_:)") }
+  nonisolated public func labelIconToTitleSpacing(_ value: CoreGraphics.CGFloat) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.labelIconToTitleSpacing(_:)") }
 }
 @available(iOS 27.0, macOS 27.0, tvOS 27.0, watchOS 27.0, visionOS 27.0, *)
 extension SwiftUI.TabContent {
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func help(_ textKey: SwiftUI.LocalizedStringKey) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.help(_:)") }
+nonisolated public func help(_ textKey: SwiftUI.LocalizedStringKey) -> Self { _suiUnimplemented("SwiftUI.TabContent.help(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func help(_ textResource: FoundationShims.LocalizedStringResource) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.help(_:)") }
+@_disfavoredOverload nonisolated public func help(_ textResource: FoundationShims.LocalizedStringResource) -> Self { _suiUnimplemented("SwiftUI.TabContent.help(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func help<S>(_ text: S) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.TabContent.help(_:)") }
+@_disfavoredOverload nonisolated public func help<S>(_ text: S) -> Self where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.TabContent.help(_:)") }
   
     // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func help(_ text: SwiftUI.Text) -> Swift.Never { _suiUnimplemented("SwiftUI.TabContent.help(_:)") }
+nonisolated public func help(_ text: SwiftUI.Text) -> Self { _suiUnimplemented("SwiftUI.TabContent.help(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 17.0, macOS 14.0, *)
@@ -29502,6 +29693,8 @@ nonisolated public struct DisclosureTableRow<Label, Content> : SwiftUI.TableRowC
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public static func _containsOutlineSymbol(inputs: SwiftUI._TableRowInputs) -> Swift.Bool { _suiUnimplemented("SwiftUI.DisclosureTableRow._containsOutlineSymbol(inputs:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DisclosureTableRow.init()") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, *)
@@ -29553,11 +29746,10 @@ extension SwiftUI.EnvironmentValues {
   }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 27.0, visionOS 27.0, *)
+  @available(iOS 27.0, visionOS 27.0, *)
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func toolbarOverflowMenu<C>(@SwiftUI.ContentBuilder content: () -> C) -> Swift.Never where C : SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarOverflowMenu(content:)") }
+  nonisolated public func toolbarOverflowMenu<C>(@SwiftUI.ContentBuilder content: () -> C) -> some SwiftUI.View where C : SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarOverflowMenu(content:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 27.0, visionOS 27.0, *)
@@ -29570,6 +29762,8 @@ nonisolated public struct ToolbarOverflowMenu<Content> : SwiftUI.ToolbarContent,
     @available(tvOS, unavailable)
   @available(watchOS, unavailable)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ToolbarOverflowMenu.init()") }
   // port: synthesized witness for ToolbarContent (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.ToolbarOverflowMenu.body") } }
 }
@@ -29602,8 +29796,7 @@ nonisolated public struct SwitchToggleStyle : SwiftUI.ToggleStyle, ~Swift.Sendab
   @available(watchOS, introduced: 7.0, deprecated: 100000.0, message: "Use ``View/tint(_)`` instead.")
   @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use ``View/tint(_)`` instead.")
   nonisolated public init(tint: SwiftUI.Color) { _suiUnimplemented("SwiftUI.SwitchToggleStyle.init(tint:)") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func makeBody(configuration: SwiftUI.SwitchToggleStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.SwitchToggleStyle.makeBody(configuration:)") }
+  nonisolated public func makeBody(configuration: SwiftUI.SwitchToggleStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.SwitchToggleStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 18.0, watchOS 6.0, *)
@@ -29715,13 +29908,11 @@ extension SwiftUI.ModifiedContent where Modifier == SwiftUI.AccessibilityAttachm
 @available(watchOS, unavailable)
 @available(visionOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func defaultAdaptableTabBarPlacement(_ defaultPlacement: SwiftUI.AdaptableTabBarPlacement = .automatic) -> Swift.Never { _suiUnimplemented("SwiftUI.View.defaultAdaptableTabBarPlacement(_:)") }
+  nonisolated public func defaultAdaptableTabBarPlacement(_ defaultPlacement: SwiftUI.AdaptableTabBarPlacement = .automatic) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.defaultAdaptableTabBarPlacement(_:)") }
 }
 @available(anyAppleOS 27.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func defaultTabBarPlacement(_ defaultPlacement: SwiftUI.AdaptableTabBarPlacement) -> Swift.Never { _suiUnimplemented("SwiftUI.View.defaultTabBarPlacement(_:)") }
+  nonisolated public func defaultTabBarPlacement(_ defaultPlacement: SwiftUI.AdaptableTabBarPlacement) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.defaultTabBarPlacement(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
@@ -29765,6 +29956,8 @@ nonisolated public struct ColorPicker<Label> : SwiftUI.View, ~Swift.Sendable whe
   nonisolated public var body: some SwiftUI.View {
     get { _suiUnimplemented("SwiftUI.ColorPicker.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ColorPicker.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, *)
@@ -29801,7 +29994,7 @@ extension SwiftUI.ColorPicker where Label == SwiftUI.Text {
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-@frozen @propertyWrapper @preconcurrency @_Concurrency.MainActor public struct FocusedObject<ObjectType> : SwiftUI.DynamicProperty, ~Swift.Sendable where ObjectType : Combine.ObservableObject {
+@frozen  @preconcurrency @_Concurrency.MainActor public struct FocusedObject<ObjectType> : SwiftUI.DynamicProperty, ~Swift.Sendable where ObjectType : Combine.ObservableObject {
   @preconcurrency @_Concurrency.MainActor @dynamicMemberLookup @frozen public struct Wrapper : ~Swift.Sendable {
     @_Concurrency.MainActor @preconcurrency internal let root: ObjectType
     @_Concurrency.MainActor @preconcurrency public subscript<T>(dynamicMember keyPath: Swift.ReferenceWritableKeyPath<ObjectType, T>) -> SwiftUI.Binding<T> {
@@ -29830,7 +30023,7 @@ extension SwiftUI.ColorPicker where Label == SwiftUI.Text {
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-@frozen @propertyWrapper @preconcurrency @_Concurrency.MainActor public struct FocusedObject<ObjectType> : SwiftUI.DynamicProperty where ObjectType : Combine.ObservableObject {
+@frozen  @preconcurrency @_Concurrency.MainActor public struct FocusedObject<ObjectType> : SwiftUI.DynamicProperty where ObjectType : Combine.ObservableObject {
   @preconcurrency @_Concurrency.MainActor @dynamicMemberLookup @frozen public struct Wrapper {
     @_Concurrency.MainActor @preconcurrency internal let root: ObjectType
     @_Concurrency.MainActor @preconcurrency public subscript<T>(dynamicMember keyPath: Swift.ReferenceWritableKeyPath<ObjectType, T>) -> SwiftUI.Binding<T> {
@@ -29927,6 +30120,8 @@ public struct ToolbarPlacement : ~Swift.Sendable {
   public static var statusBar: SwiftUI.ToolbarPlacement {
     get { _suiUnimplemented("SwiftUI.ToolbarPlacement.statusBar") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ToolbarPlacement.init()") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -29993,6 +30188,8 @@ nonisolated public struct DocumentGroupLaunchScene<Actions> : SwiftUI.Scene, ~Sw
   nonisolated public var body: some SwiftUI.Scene {
     get { _suiUnimplemented("SwiftUI.DocumentGroupLaunchScene.body") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.DocumentGroupLaunchScene.init()") }
 }
 #else
 @available(iOS 18.0, visionOS 2.0, *)
@@ -30150,19 +30347,16 @@ nonisolated public struct SpatialEventGesture : SwiftUI.Gesture {
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func help(_ textKey: SwiftUI.LocalizedStringKey) -> Swift.Never { _suiUnimplemented("SwiftUI.View.help(_:)") }
+  nonisolated public func help(_ textKey: SwiftUI.LocalizedStringKey) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.help(_:)") }
   
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   @_disfavoredOverload @export(implementation) nonisolated public func help(_ textKey: FoundationShims.LocalizedStringResource) -> some SwiftUI.View {
         help(Text(textKey))
     }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func help(_ text: SwiftUI.Text) -> Swift.Never { _suiUnimplemented("SwiftUI.View.help(_:)") }
+  nonisolated public func help(_ text: SwiftUI.Text) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.help(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func help<S>(_ text: S) -> Swift.Never where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.help(_:)") }
+  @_disfavoredOverload nonisolated public func help<S>(_ text: S) -> some SwiftUI.View where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.View.help(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -30174,6 +30368,8 @@ internal struct ListRowBackgroundTraitKey : SwiftUI._ViewTraitKey, ~Swift.Sendab
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   @usableFromInline
   internal typealias Value = SwiftUI.AnyView?
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ListRowBackgroundTraitKey.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -30203,6 +30399,8 @@ internal struct ClipsListRowBackgroundTraitKey : SwiftUI._ViewTraitKey, ~Swift.S
   @available(macOS 14.0, iOS 17.0, tvOS 17.0, watchOS 10.0, *)
   @usableFromInline
   internal typealias Value = Swift.Bool
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ClipsListRowBackgroundTraitKey.init()") }
 }
 #else
 @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
@@ -30232,6 +30430,8 @@ internal struct ListRowBackgroundHighlightTraitKey : SwiftUI._ViewTraitKey, ~Swi
   @available(watchOS, unavailable)
   @available(visionOS, unavailable)
   internal typealias Value = Swift.Bool
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.ListRowBackgroundHighlightTraitKey.init()") }
 }
 #else
 @available(iOS 27.0, *)
@@ -30400,17 +30600,23 @@ public struct LabelStyleConfiguration : ~Swift.Sendable {
   public struct Title : ~Swift.Sendable {
     @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
     public typealias Body = Swift.Never
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Title.init()") }
+}
   public struct Icon : ~Swift.Sendable {
     @available(macOS 11.0, iOS 14.0, tvOS 14.0, watchOS 7.0, *)
     public typealias Body = Swift.Never
-  }
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.Icon.init()") }
+}
   public var title: SwiftUI.LabelStyleConfiguration.Title {
     get { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.title") }
   }
   public var icon: SwiftUI.LabelStyleConfiguration.Icon {
     get { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.icon") }
   }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.LabelStyleConfiguration.init()") }
 }
 #else
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -30433,8 +30639,7 @@ public struct LabelStyleConfiguration {
 #endif
 @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func labelStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.LabelStyle { _suiUnimplemented("SwiftUI.View.labelStyle(_:)") }
+  nonisolated public func labelStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.LabelStyle { _suiUnimplemented("SwiftUI.View.labelStyle(_:)") }
 }
 @available(macOS 11.0, *)
 @available(tvOS, unavailable)
@@ -30475,79 +30680,62 @@ public struct UnifiedCompactWindowToolbarStyle : SwiftUI.WindowToolbarStyle {
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(tvOS, unavailable)
+  @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func onDrag(_ data: @escaping () -> FoundationShims.NSItemProvider) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onDrag(_:)") }
+  nonisolated public func onDrag(_ data: @escaping () -> FoundationShims.NSItemProvider) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onDrag(_:)") }
 }
 @available(iOS 15.0, macOS 12.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func onDrag<V>(_ data: @escaping () -> FoundationShims.NSItemProvider, @SwiftUI.ContentBuilder preview: () -> V) -> Swift.Never where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.onDrag(_:preview:)") }
+  nonisolated public func onDrag<V>(_ data: @escaping () -> FoundationShims.NSItemProvider, @SwiftUI.ContentBuilder preview: () -> V) -> some SwiftUI.View where V : SwiftUI.View { _suiUnimplemented("SwiftUI.View.onDrag(_:preview:)") }
 }
 @available(iOS 27.0, macOS 26.0, visionOS 27.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func draggable<ItemID>(containerItemID: ItemID, containerNamespace: SwiftUI.Namespace.ID? = nil) -> Swift.Never where ItemID : Swift.Hashable, ItemID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.draggable(containerItemID:containerNamespace:)") }
+  nonisolated public func draggable<ItemID>(containerItemID: ItemID, containerNamespace: SwiftUI.Namespace.ID? = nil) -> some SwiftUI.View where ItemID : Swift.Hashable, ItemID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.draggable(containerItemID:containerNamespace:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func draggable<Item>(_ itemType: Item.Type = Item.self, item: @autoclosure @escaping () -> Item?, containerNamespace: SwiftUI.Namespace.ID? = nil) -> Swift.Never where Item : CoreTransferable.Transferable, Item : Swift.Identifiable, Item.ID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.draggable(_:item:containerNamespace:)") }
+  nonisolated public func draggable<Item>(_ itemType: Item.Type = Item.self, item: @autoclosure @escaping () -> Item?, containerNamespace: SwiftUI.Namespace.ID? = nil) -> some SwiftUI.View where Item : CoreTransferable.Transferable, Item : Swift.Identifiable, Item.ID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.draggable(_:item:containerNamespace:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func draggable<Item>(_ itemType: Item.Type = Item.self, containerNamespace: SwiftUI.Namespace.ID? = nil, _ item: @escaping () -> Item?) -> Swift.Never where Item : CoreTransferable.Transferable, Item : Swift.Identifiable, Item.ID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.draggable(_:containerNamespace:_:)") }
+  nonisolated public func draggable<Item>(_ itemType: Item.Type = Item.self, containerNamespace: SwiftUI.Namespace.ID? = nil, _ item: @escaping () -> Item?) -> some SwiftUI.View where Item : CoreTransferable.Transferable, Item : Swift.Identifiable, Item.ID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.draggable(_:containerNamespace:_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dragContainerSelection<ItemID>(_ selection: @autoclosure @escaping () -> Swift.Array<ItemID>, containerNamespace: SwiftUI.Namespace.ID? = nil) -> Swift.Never where ItemID : Swift.Hashable, ItemID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.dragContainerSelection(_:containerNamespace:)") }
+  nonisolated public func dragContainerSelection<ItemID>(_ selection: @autoclosure @escaping () -> Swift.Array<ItemID>, containerNamespace: SwiftUI.Namespace.ID? = nil) -> some SwiftUI.View where ItemID : Swift.Hashable, ItemID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.dragContainerSelection(_:containerNamespace:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func draggable<Item, ItemID>(_ itemType: Item.Type = Item.self, id: Swift.KeyPath<Item, ItemID>, item: @autoclosure @escaping () -> Item?, containerNamespace: SwiftUI.Namespace.ID? = nil) -> Swift.Never where Item : CoreTransferable.Transferable, ItemID : Swift.Hashable, ItemID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.draggable(_:id:item:containerNamespace:)") }
+  nonisolated public func draggable<Item, ItemID>(_ itemType: Item.Type = Item.self, id: Swift.KeyPath<Item, ItemID>, item: @autoclosure @escaping () -> Item?, containerNamespace: SwiftUI.Namespace.ID? = nil) -> some SwiftUI.View where Item : CoreTransferable.Transferable, ItemID : Swift.Hashable, ItemID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.draggable(_:id:item:containerNamespace:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func draggable<Item, ItemID>(_ itemType: Item.Type = Item.self, id: Swift.KeyPath<Item, ItemID>, containerNamespace: SwiftUI.Namespace.ID? = nil, _ payload: @escaping () -> Item?) -> Swift.Never where Item : CoreTransferable.Transferable, ItemID : Swift.Hashable, ItemID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.draggable(_:id:containerNamespace:_:)") }
+  nonisolated public func draggable<Item, ItemID>(_ itemType: Item.Type = Item.self, id: Swift.KeyPath<Item, ItemID>, containerNamespace: SwiftUI.Namespace.ID? = nil, _ payload: @escaping () -> Item?) -> some SwiftUI.View where Item : CoreTransferable.Transferable, ItemID : Swift.Hashable, ItemID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.draggable(_:id:containerNamespace:_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func dragContainer<ItemID, Item, Data>(for itemType: Item.Type = Item.self, itemID: Swift.KeyPath<Item, ItemID>, in namespace: SwiftUI.Namespace.ID? = nil, _ payload: @escaping (_ draggedItemID: ItemID) -> Data) -> Swift.Never where ItemID : Swift.Hashable, ItemID : Swift.Sendable, Item : CoreTransferable.Transferable, Item == Data.Element, Data : Swift.Collection { _suiUnimplemented("SwiftUI.View.dragContainer(for:itemID:in:_:)") }
+  @_disfavoredOverload nonisolated public func dragContainer<ItemID, Item, Data>(for itemType: Item.Type = Item.self, itemID: Swift.KeyPath<Item, ItemID>, in namespace: SwiftUI.Namespace.ID? = nil, _ payload: @escaping (_ draggedItemID: ItemID) -> Data) -> some SwiftUI.View where ItemID : Swift.Hashable, ItemID : Swift.Sendable, Item : CoreTransferable.Transferable, Item == Data.Element, Data : Swift.Collection { _suiUnimplemented("SwiftUI.View.dragContainer(for:itemID:in:_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dragContainer<Item, Data>(for itemType: Item.Type = Item.self, in namespace: SwiftUI.Namespace.ID? = nil, _ payload: @escaping (_ draggedItemIDs: Swift.Array<Item.ID>) -> Data) -> Swift.Never where Item : CoreTransferable.Transferable, Item : Swift.Identifiable, Item == Data.Element, Data : Swift.Collection, Item.ID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.dragContainer(for:in:_:)") }
+  nonisolated public func dragContainer<Item, Data>(for itemType: Item.Type = Item.self, in namespace: SwiftUI.Namespace.ID? = nil, _ payload: @escaping (_ draggedItemIDs: Swift.Array<Item.ID>) -> Data) -> some SwiftUI.View where Item : CoreTransferable.Transferable, Item : Swift.Identifiable, Item == Data.Element, Data : Swift.Collection, Item.ID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.dragContainer(for:in:_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_disfavoredOverload nonisolated public func dragContainer<Item, Data>(for itemType: Item.Type = Item.self, in namespace: SwiftUI.Namespace.ID? = nil, _ payload: @escaping (_ draggedItemID: Item.ID) -> Data) -> Swift.Never where Item : CoreTransferable.Transferable, Item : Swift.Identifiable, Item == Data.Element, Data : Swift.Collection, Item.ID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.dragContainer(for:in:_:)") }
+  @_disfavoredOverload nonisolated public func dragContainer<Item, Data>(for itemType: Item.Type = Item.self, in namespace: SwiftUI.Namespace.ID? = nil, _ payload: @escaping (_ draggedItemID: Item.ID) -> Data) -> some SwiftUI.View where Item : CoreTransferable.Transferable, Item : Swift.Identifiable, Item == Data.Element, Data : Swift.Collection, Item.ID : Swift.Sendable { _suiUnimplemented("SwiftUI.View.dragContainer(for:in:_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func dragContainer<ItemID, Item, Data>(for itemType: Item.Type = Item.self, itemID: Swift.KeyPath<Item, ItemID>, in namespace: SwiftUI.Namespace.ID? = nil, _ payload: @escaping (_ draggedItemIDs: Swift.Array<ItemID>) -> Data) -> Swift.Never where ItemID : Swift.Hashable, ItemID : Swift.Sendable, Item : CoreTransferable.Transferable, Item == Data.Element, Data : Swift.Collection { _suiUnimplemented("SwiftUI.View.dragContainer(for:itemID:in:_:)") }
+  nonisolated public func dragContainer<ItemID, Item, Data>(for itemType: Item.Type = Item.self, itemID: Swift.KeyPath<Item, ItemID>, in namespace: SwiftUI.Namespace.ID? = nil, _ payload: @escaping (_ draggedItemIDs: Swift.Array<ItemID>) -> Data) -> some SwiftUI.View where ItemID : Swift.Hashable, ItemID : Swift.Sendable, Item : CoreTransferable.Transferable, Item == Data.Element, Data : Swift.Collection { _suiUnimplemented("SwiftUI.View.dragContainer(for:itemID:in:_:)") }
 }
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 27.0, macOS 26.0, visionOS 27.0, *)
+  @available(iOS 27.0, macOS 26.0, visionOS 27.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func onDragSessionUpdated(_ onUpdate: @escaping (SwiftUI.DragSession) -> Swift.Void) -> Swift.Never { _suiUnimplemented("SwiftUI.View.onDragSessionUpdated(_:)") }
+  nonisolated public func onDragSessionUpdated(_ onUpdate: @escaping (SwiftUI.DragSession) -> Swift.Void) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.onDragSessionUpdated(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@available(iOS 27.0, macOS 26.0, visionOS 27.0, *)
+  @available(iOS 27.0, macOS 26.0, visionOS 27.0, *)
   @available(tvOS, unavailable)
   @available(watchOS, unavailable)
-  nonisolated public func dragConfiguration(_ configuration: SwiftUI.DragConfiguration) -> Swift.Never { _suiUnimplemented("SwiftUI.View.dragConfiguration(_:)") }
+  nonisolated public func dragConfiguration(_ configuration: SwiftUI.DragConfiguration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.dragConfiguration(_:)") }
 }
 @available(iOS 16.0, macOS 13.0, *)
 @available(tvOS, unavailable)
 @available(watchOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func draggable<T>(_ payload: @autoclosure @escaping () -> T) -> Swift.Never where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.draggable(_:)") }
+  nonisolated public func draggable<T>(_ payload: @autoclosure @escaping () -> T) -> some SwiftUI.View where T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.draggable(_:)") }
   
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func draggable<V, T>(_ payload: @autoclosure @escaping () -> T, @SwiftUI.ContentBuilder preview: () -> V) -> Swift.Never where V : SwiftUI.View, T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.draggable(_:preview:)") }
+  nonisolated public func draggable<V, T>(_ payload: @autoclosure @escaping () -> T, @SwiftUI.ContentBuilder preview: () -> V) -> some SwiftUI.View where V : SwiftUI.View, T : CoreTransferable.Transferable { _suiUnimplemented("SwiftUI.View.draggable(_:preview:)") }
 }
 @available(anyAppleOS 27.1, *)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func toolbarVerticalBehavior(_ behavior: SwiftUI.ToolbarVerticalBehavior) -> Swift.Never { _suiUnimplemented("SwiftUI.View.toolbarVerticalBehavior(_:)") }
+  nonisolated public func toolbarVerticalBehavior(_ behavior: SwiftUI.ToolbarVerticalBehavior) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.View.toolbarVerticalBehavior(_:)") }
 }
 @available(anyAppleOS 27.1, *)
 public struct ToolbarVerticalBehavior : Swift.Hashable, Swift.Sendable {
@@ -30605,6 +30793,8 @@ public struct _ScrollViewProxy : Swift.Equatable, ~Swift.Sendable {
   public func scrollRectToVisible(_ rect: CoreGraphics.CGRect, animated: Swift.Bool, completion: ((Swift.Bool) -> Swift.Void)? = nil) { _suiUnimplemented("SwiftUI._ScrollViewProxy.scrollRectToVisible(_:animated:completion:)") }
   public func contentOffsetOfNextPage(_ directions: SwiftUI._EventDirections) -> CoreGraphics.CGPoint { _suiUnimplemented("SwiftUI._ScrollViewProxy.contentOffsetOfNextPage(_:)") }
   public static func == (lhs: SwiftUI._ScrollViewProxy, rhs: SwiftUI._ScrollViewProxy) -> Swift.Bool { _suiUnimplemented("SwiftUI._ScrollViewProxy.==(lhs:rhs:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._ScrollViewProxy.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -30657,6 +30847,8 @@ public struct _ScrollViewProxy : Swift.Equatable {
 public struct _ContainedScrollViewKey : ~Swift.Sendable {
   public typealias Value = SwiftUI._ScrollViewProxy?
   public static func reduce(value: inout SwiftUI._ContainedScrollViewKey.Value, nextValue: () -> SwiftUI._ContainedScrollViewKey.Value) { _suiUnimplemented("SwiftUI._ContainedScrollViewKey.reduce(value:nextValue:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._ContainedScrollViewKey.init()") }
 }
 #else
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
@@ -30690,8 +30882,7 @@ extension SwiftUI.Scene {
 @available(tvOS, unavailable)
 @_Concurrency.MainActor @preconcurrency public struct AccessoryCircularGaugeStyle : SwiftUI.GaugeStyle, ~Swift.Sendable {
   @_Concurrency.MainActor @preconcurrency public init() { _suiUnimplemented("SwiftUI.AccessoryCircularGaugeStyle.init()") }
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-@_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AccessoryCircularGaugeStyle.Configuration) -> Swift.Never { _suiUnimplemented("SwiftUI.AccessoryCircularGaugeStyle.makeBody(configuration:)") }
+  @_Concurrency.MainActor @preconcurrency public func makeBody(configuration: SwiftUI.AccessoryCircularGaugeStyle.Configuration) -> some SwiftUI.View { _suiUnimplemented("SwiftUI.AccessoryCircularGaugeStyle.makeBody(configuration:)") }
 }
 #else
 @available(iOS 16.0, macOS 13.0, watchOS 9.0, *)
@@ -30722,6 +30913,8 @@ nonisolated public struct Window<Content> : SwiftUI.Scene, ~Swift.Sendable where
         self.init(Text(titleResource), id: id, content: content)
     }
   @_disfavoredOverload nonisolated public init<S>(_ title: S, id: Swift.String, @SwiftUI.ContentBuilder content: () -> Content) where S : Swift.StringProtocol { _suiUnimplemented("SwiftUI.Window.init(_:id:content:)") }
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI.Window.init()") }
 }
 #else
 @available(macOS 13.0, visionOS 26.0, *)
@@ -30759,7 +30952,9 @@ public struct DatePickerStyleConfiguration : ~Swift.Sendable {
     @available(macOS 13.0, iOS 16.0, watchOS 10.0, *)
     @available(tvOS, unavailable)
     public typealias Body = Swift.Never
-      // port: synthesized witness for View (R7); Apple implements it with an internal member
+      // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+    public init() { _suiUnimplemented("SwiftUI.DatePickerStyleConfiguration.Label.init()") }
+    // port: synthesized witness for View (R7); Apple implements it with an internal member
     public var body: Swift.Never { get { _suiUnimplemented("SwiftUI.DatePickerStyleConfiguration.Label.body") } }
 }
   public let label: SwiftUI.DatePickerStyleConfiguration.Label
@@ -30808,8 +31003,7 @@ public struct DatePickerStyleConfiguration {
 @available(iOS 13.0, macOS 10.15, watchOS 10.0, *)
 @available(tvOS, unavailable)
 extension SwiftUI.View {
-    // port: opaque result type is not expressible in source; declared as Never (R3)
-nonisolated public func datePickerStyle<S>(_ style: S) -> Swift.Never where S : SwiftUI.DatePickerStyle { _suiUnimplemented("SwiftUI.View.datePickerStyle(_:)") }
+  nonisolated public func datePickerStyle<S>(_ style: S) -> some SwiftUI.View where S : SwiftUI.DatePickerStyle { _suiUnimplemented("SwiftUI.View.datePickerStyle(_:)") }
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 13.0, macOS 10.15, watchOS 10.0, *)
@@ -30818,6 +31012,8 @@ nonisolated public struct _DatePickerStyleLabel : SwiftUI.View, ~Swift.Sendable 
   @available(macOS 10.15, iOS 13.0, watchOS 10.0, *)
   @available(tvOS, unavailable)
   public typealias Body = Swift.Never
+  // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
+  public init() { _suiUnimplemented("SwiftUI._DatePickerStyleLabel.init()") }
   // port: synthesized witness for View (R7); Apple implements it with an internal member
   public var body: Swift.Never { get { _suiUnimplemented("SwiftUI._DatePickerStyleLabel.body") } }
 }

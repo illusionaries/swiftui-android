@@ -177,6 +177,7 @@ and the exact cross-compile commands.
 from __future__ import annotations
 
 import argparse
+import glob
 import json
 import os
 import re
@@ -572,6 +573,8 @@ class Container:
     is_property_wrapper: bool = False
     #: True when the declaration carries a `where` clause (used to tell unconstrained defaults)
     has_where: bool = False
+    #: True for `@resultBuilder` / `@_functionBuilder` types
+    is_result_builder: bool = False
 
 
 # ---------------------------------------------------------------------------
@@ -644,10 +647,10 @@ def normalize_type_path(raw: str) -> str:
     text = text[:cut].strip()
     text = _strip_generics(text)
     parts = [part for part in text.strip().split(".") if part]
-    # Drop leading module qualifiers (the retargeter may qualify a name more than once, e.g.
-    # `SwiftUICore::SwiftUICore::Text`, and Apple's printer always qualifies foreign modules).
-    while len(parts) > 1 and parts[0] in MODULE_NAMES:
-        parts = parts[1:]
+    # Drop module-name components: the interface printer qualifies nested lookups as well
+    # (`SwiftUICore::SystemFormatStyle.SwiftUICore::DateReference`), and a repeated module name
+    # must not leak into the port's type paths.
+    parts = [part for part in parts if part not in MODULE_NAMES]
     return ".".join(parts)
 
 
@@ -970,6 +973,10 @@ class Parser:
                 is_property_wrapper=any(
                     kind == "attr" and name_ == "propertyWrapper" for kind, name_ in prefix
                 ),
+                is_result_builder=any(
+                    kind == "attr" and name_ in ("resultBuilder", "_functionBuilder")
+                    for kind, name_ in prefix
+                ),
             )
         else:
             name_token = self.tokens[self.i]
@@ -1001,6 +1008,10 @@ class Parser:
                 is_property_wrapper=any(
                     kind == "attr" and name_ == "propertyWrapper" for kind, name_ in prefix
                 ),
+                is_result_builder=any(
+                    kind == "attr" and name_ in ("resultBuilder", "_functionBuilder")
+                    for kind, name_ in prefix
+                ),
             )
 
         container.children.append(child)
@@ -1009,7 +1020,10 @@ class Parser:
         child.end = self.tokens[self.i - 1].end
 
     def parse_conformances(self, header: str) -> list[str]:
-        text = _WHERE_RE.split(header)[0]
+        # `::` is the interface spelling of module qualification; it is not an inheritance colon,
+        # so normalise it before looking for the conformance list (otherwise
+        # `extension SwiftUI::Text : SwiftUI::View` yields no conformances at all).
+        text = _WHERE_RE.split(header)[0].replace("::", ".")
         depth = 0
         for index, ch in enumerate(text):
             if ch in "<([":
@@ -1441,6 +1455,8 @@ class ModuleStats:
     synthesized_witnesses: int = 0
     wrapper_attributes_removed: int = 0
     convenience_init_rewrites: int = 0
+    duplicate_witnesses_omitted: int = 0
+    synthesized_inits: int = 0
 
     def as_dict(self) -> dict[str, int]:
         return {
@@ -1457,6 +1473,8 @@ class ModuleStats:
             "synthesized_witnesses": self.synthesized_witnesses,
             "wrapper_attributes_removed": self.wrapper_attributes_removed,
             "convenience_init_rewrites": self.convenience_init_rewrites,
+            "duplicate_witnesses_omitted": self.duplicate_witnesses_omitted,
+            "synthesized_inits": self.synthesized_inits,
         }
 
 
@@ -1473,8 +1491,8 @@ class Generator:
         self.override_hits: set[str] = set()
         self.omitted_projections: list[str] = []
         self.omitted_typealiases: set[int] = set()
+        self.init_hits: set[str] = set()
         self.stats = ModuleStats()
-        self.never_conformances: set[str] = set()
         self.opaque_typealias_members: dict[str, list[Member]] = {}
         self.opaque_typealias_paths: set[str] = set()
         self.toplevel_types: dict[str, str] = {}
@@ -1531,6 +1549,9 @@ class Generator:
         return interface[body_offset:]
 
     # -- analysis ---------------------------------------------------------
+    #: Names of protocols Apple already declares `Never` conformance to.
+    never_conformances: set[str] = set()
+
     def collect_never_conformances(self, root: Container) -> None:
         def visit(container: Container) -> None:
             if container.kind == "extension" and container.path in ("Never",):
@@ -1602,6 +1623,41 @@ class Generator:
                 self.stats.declarations += 1
                 symbol = self.symbol_for(container, member)
                 self.note_seam(member, symbol)
+                # R13: a result-builder attribute on a protocol requirement is applied to every
+                # witness's body; the stub's `Never` cannot satisfy the builder's constraints
+                # (`Never.TabValue == Self.TabValue`), so the convenience attribute is dropped
+                # from the requirement. Signature and call sites are unchanged.
+                if container.kind == "protocol" and not self.has_real_body(member):
+                    self.strip_builder_attributes(member)
+                # R10: a duplicate associated-type witness from Apple's other module interface.
+                if id(member) in shared.omitted:
+                    self.add_comment(
+                        member.start,
+                        "omitted: a single-module port can only keep one witness per "
+                        "associated type (R10)",
+                    )
+                    self.edits.append(Edit(member.start, member.end, ""))
+                    self.stats.duplicate_witnesses_omitted += 1
+                    continue
+                # A parameterless initializer in an extension duplicates the implicit memberwise
+                # `init()` of a value type; the port declares one public stub instead (R11).
+                if (
+                    member.kind == "init"
+                    and member.name == "init()"
+                    and container.kind == "extension"
+                    and (
+                        container.path in shared.synth_inits
+                        or container.path in shared.no_stored_props
+                    )
+                ):
+                    self.add_comment(
+                        member.start,
+                        "duplicate parameterless initializer; the port declares one public "
+                        "`init()` in the type (R11)",
+                    )
+                    self.edits.append(Edit(member.start, member.end, ""))
+                    self.stats.duplicate_witnesses_omitted += 1
+                    continue
 
                 # R6: the engine implements this symbol; omit the declaration entirely.
                 if symbol in self.implemented:
@@ -1642,9 +1698,29 @@ class Generator:
             for child in container.children:
                 self.stats.types += 1
                 visit(child, child.kind == "protocol")
+            if container.kind in ("struct", "class", "enum", "actor"):
+                entry = shared.synth_inits.get(container.path)
+                symbol = f"{self.module}.{container.path}.init()"
+                if entry is not None and entry[1] is container and symbol not in self.init_hits:
+                    self.init_hits.add(symbol)
+                    indent = self.indent_at(container.end - 1) if container.end else ""
+                    override = "override " if container.path in shared.override_inits else ""
+                    self.edits.append(
+                        Edit(
+                            container.end - 1, container.end - 1,
+                            f"{indent}  // port: public parameterless initializer (R11); Apple's "
+                            f"implicit memberswise initializer is internal\n"
+                            f"{indent}  public {override}init() {{ _suiUnimplemented(\"{symbol}\") }}\n",
+                        )
+                    )
+                    self.stats.synthesized_inits += 1
+                    self.stats.bodies_injected += 1
+                    self.record_body(symbol, "init", False)
 
         visit(self.root, False)
         self.synthesize_witnesses(shared)
+        for block in shared.synthetic_extensions.get(self.spec.file_stem, []):
+            self.edits.append(Edit(len(self.body), len(self.body), block))
         missing = sorted(self.implemented - self.override_hits)
         if missing:
             raise GenerationError(
@@ -1701,6 +1777,72 @@ class Generator:
         self.stats.synthesized_projections_omitted += 1
         self.omitted_projections.append(symbol)
 
+    @staticmethod
+    def has_real_body(member: Member) -> bool:
+        """True when the member carries Apple's own code (an `@inlinable` body)."""
+        if member.has_body and not member.accessors:
+            return True
+        return any(accessor.has_body for accessor in member.accessors)
+
+    def strip_builder_attributes(self, member: Member) -> None:
+        """Remove result-builder attributes from a declaration that is about to get a stub body.
+
+        A `.swiftinterface` spells a builder-returning requirement as
+        ``@TabContentBuilder<Self.TabValue> var body: Self.Body { get }``. When the port injects
+        ``{ get { _suiUnimplemented(...) } }``, the result-builder transform applies to that stub
+        expression and requires `Never` to satisfy the builder's generic constraints
+        (`Never.TabValue == Self.TabValue`), which is not true. The attribute is a client-side
+        convenience; without it the declaration keeps the same signature, so it is stripped from
+        stubbed declarations only (never from Apple's real `@inlinable` bodies). R13.
+        """
+        if not self.shared or not self.shared.builder_names:
+            return
+        if member.keyword_span is None:
+            return
+        region_start = member.start
+        region_end = member.keyword_span[0]
+        if region_end <= region_start:
+            return
+        tokens = tokenize(self.body[region_start:region_end])
+        index = 0
+        while index < len(tokens):
+            if tokens[index].text != "@":
+                index += 1
+                continue
+            start = index
+            index += 1
+            if index >= len(tokens):
+                break
+            name = tokens[index].text
+            index += 1
+            while index < len(tokens):
+                if tokens[index].text == "." and index + 1 < len(tokens) and tokens[index + 1].kind == "id":
+                    name = tokens[index + 1].text
+                    index += 2
+                    continue
+                if (
+                    tokens[index].text == ":"
+                    and index + 2 < len(tokens)
+                    and tokens[index + 1].text == ":"
+                    and tokens[index + 2].kind == "id"
+                ):
+                    name = tokens[index + 2].text
+                    index += 3
+                    continue
+                break
+            if index < len(tokens) and tokens[index].text == "<":
+                index = skip_tokens(tokens, index)
+            if index < len(tokens) and tokens[index].text == "(":
+                index = skip_tokens(tokens, index)
+            if name in self.shared.builder_names:
+                self.edits.append(
+                    Edit(
+                        region_start + tokens[start].start,
+                        region_start + tokens[index - 1].end,
+                        "",
+                    )
+                )
+
     def inject_accessors(self, member: Member, symbol: str, kind: str) -> None:
         """Inject bodies into bodyless accessors of a property/subscript accessor block."""
         injected = 0
@@ -1727,15 +1869,28 @@ class Generator:
             return
         # A declaration with a real (Apple `@inlinable`) body infers its own opaque type; never
         # rewrite it, or the body would no longer match its declared return type.
-        if member.has_body or any(accessor.has_body for accessor in member.accessors):
+        if self.has_real_body(member):
             return
-        if "some" not in self.span_text(member.result_type_span):
+        span_text = self.span_text(member.result_type_span)
+        if "some" not in span_text:
             return
-        if not self.opaque_needs_never(member.result_type_span, container):
+        # `some P<Args>` (a protocol with primary associated types) cannot be satisfied by the
+        # stub's `Never`: `Never`'s conformance would bind the associated types to `Never`, which
+        # does not match `P<Args>` (e.g. `some TabContent<TabValue>` requires `Never.TabValue ==
+        # TabValue`). Drop the constraint by declaring the result `Swift.Never` instead.
+        generic_opaque = "<" in span_text
+        if not generic_opaque and not self.opaque_needs_never(member.result_type_span, container):
             return
         span = member.result_type_span
+        if generic_opaque and container.kind != "module":
+            # `some P<Args>`: `Self` is known to satisfy `P<Args>` in a type/protocol-extension
+            # context (the conformance that declares the requirement), and `Never` converts to
+            # `Self`, so Apple's inlinable callers keep type-checking.
+            replacement = "Self"
+        else:
+            replacement = "Swift.Never"
         self.add_comment(member.start, message)
-        self.edits.append(Edit(span[0], span[1], "Swift.Never"))
+        self.edits.append(Edit(span[0], span[1], replacement))
         self.stats.opaque_rewrites += 1
 
     def opaque_needs_never(self, span: tuple[int, int], container: Container) -> bool:
@@ -1768,6 +1923,7 @@ class Generator:
                 self.stats.convenience_init_rewrites += 1
         if member.accessors:
             # A subscript with an accessor block (`{ get set }`), not a function body.
+            self.strip_builder_attributes(member)
             self.maybe_rewrite_opaque(
                 container, member,
                 "opaque result type is not expressible in source; declared as Never (R3)",
@@ -1780,11 +1936,14 @@ class Generator:
                 self.stats.inlinable_bodies_preserved += 1
                 self.record_body(symbol, member.kind, True)
             return
+        self.strip_builder_attributes(member)
         self.maybe_rewrite_opaque(
             container, member,
             "opaque result type is not expressible in source; declared as Never (R3)",
         )
-        self.edits.append(Edit(member.end, member.end, f' {{ _suiUnimplemented("{symbol}") }}'))
+        self.edits.append(
+            Edit(member.end, member.end, f' {{ _suiUnimplemented("{symbol}") }}')
+        )
         self.stats.bodies_injected += 1
         self.record_body(symbol, member.kind, False)
 
@@ -1795,8 +1954,8 @@ class Generator:
             and not member.has_body
         )
         stored_in_extension = (
-            container.kind == "extension" and not member.accessors
-            and member.result_type_span is not None and not member.has_body
+            container.kind in ("extension", "module") and not member.accessors
+            and member.result_type_span is not None and not self.has_real_body(member)
         )
         if stored_static or stored_in_extension:
             reason = (
@@ -1811,13 +1970,17 @@ class Generator:
                 span = member.keyword_span
                 self.edits.append(Edit(span[0], span[1], "var"))
             self.edits.append(
-                Edit(member.end, member.end, f' {{ get {{ _suiUnimplemented("{symbol}") }} }}')
+                Edit(
+                    member.end, member.end,
+                    f' {{ get {{ _suiUnimplemented("{symbol}") }} }}',
+                )
             )
             self.stats.static_storage_rewrites += 1
             self.stats.bodies_injected += 1
             self.record_body(symbol, "var", False)
             return
 
+        self.strip_builder_attributes(member)
         self.maybe_rewrite_opaque(
             container, member,
             "opaque type is a witness for a declared associated type / has no Never "
@@ -1912,18 +2075,24 @@ class Generator:
 
     # -- module qualification (R1) ----------------------------------------
     def requalify_modules(self, text: str) -> str:
-        """Rewrite Apple module qualifiers to the port module name.
+        """Rewrite Apple module qualifiers for the single-module port.
 
-        ``SwiftUICore::Foo`` / ``SwiftUICore.Foo`` / ``SwiftUI.Foo`` all become
-        ``SwiftUI.Foo``. The qualifier is *kept* (not dropped, as an earlier revision of this
-        rule did) because dropping it lets a generic parameter or a nested type shadow the
-        intended type: `extension MenuBarExtra where Label == Label<Text, Image>` resolved
-        `Label<Text, Image>` to the generic parameter `Label` and produced "cannot specialize
-        non-generic type 'Label'". `SwiftUI.Foo` is valid self-qualification inside the module
-        being compiled, and the Port SDK's `deps/` directory no longer contains a prebuilt
-        `SwiftUI` module, so it cannot bind to anything else.
+        Two distinct spellings occur in the interfaces:
+
+        * a *leading* module qualifier: ``SwiftUICore::View``, ``SwiftUICore.View`` and
+          ``SwiftUI.View`` -> ``SwiftUI.View`` (self-qualification inside the module being
+          compiled). The qualifier is kept rather than dropped: dropping it lets a generic
+          parameter or a nested type shadow the intended type
+          (`extension MenuBarExtra where Label == Label<Text, Image>` resolved `Label` to the
+          generic parameter and failed with "cannot specialize non-generic type 'Label'").
+        * a *nested* module qualifier: the interface printer writes member lookups as
+          ``SwiftUICore::Image.SwiftUICore::ResizingMode``; there the second qualifier is a
+          disambiguation aid, not part of the type name, so it is dropped:
+          ``SwiftUI.Image.ResizingMode``. Renaming it instead yields the invalid
+          ``SwiftUI::Image.SwiftUI::ResizingMode`` (``SwiftUI::ResizingMode`` is not a type).
         """
-        if not self.spec.requalify:
+        names = set(self.spec.requalify) | {COMPILED_MODULE}
+        if not names:
             return text
         tokens = tokenize(text)
         edits: list[Edit] = []
@@ -1931,24 +2100,36 @@ class Generator:
         index = 0
         while index < len(tokens):
             token = tokens[index]
-            if token.kind == "id" and token.text in self.spec.requalify:
-                is_qualifier = (
+            if token.kind == "id" and token.text in names:
+                separator_end: int | None = None
+                is_angle_separator = False
+                if (
                     index + 2 < len(tokens)
-                    and (
-                        (
-                            tokens[index + 1].text == ":"
-                            and tokens[index + 2].text == ":"
-                            and tokens[index + 1].end == tokens[index + 2].start
-                        )
-                        or (
-                            tokens[index + 1].text == "."
-                            and tokens[index + 2].kind == "id"
-                        )
-                    )
-                )
-                if is_qualifier:
-                    edits.append(Edit(token.start, token.end, COMPILED_MODULE))
+                    and tokens[index + 1].text == ":"
+                    and tokens[index + 2].text == ":"
+                    and tokens[index + 1].end == tokens[index + 2].start
+                ):
+                    separator_end = tokens[index + 2].end
+                    is_angle_separator = True
+                elif (
+                    index + 2 < len(tokens)
+                    and tokens[index + 1].text == "."
+                    and tokens[index + 2].kind == "id"
+                ):
+                    separator_end = tokens[index + 1].end
+                if separator_end is not None:
+                    # Find the previous significant character in the original text.
+                    cursor = token.start
+                    while cursor > 0 and text[cursor - 1] in " \t\r\n":
+                        cursor -= 1
+                    nested = cursor > 0 and text[cursor - 1] == "."
+                    if nested:
+                        edits.append(Edit(token.start, separator_end, ""))
+                    elif token.text != COMPILED_MODULE:
+                        edits.append(Edit(token.start, token.end, COMPILED_MODULE))
                     rewritten += 1
+                    index += 3 if is_angle_separator else 2
+                    continue
             index += 1
         self.stats.self_qualifiers_removed += rewritten
         if not edits:
@@ -1981,20 +2162,39 @@ class Generator:
     def banner(self) -> str:
         rules = [
             "//   R1  `Module::Foo` / `Module.Foo` qualifiers for the two Apple modules are",
-            "//       dropped: the port compiles Apple's SwiftUICore + SwiftUI declarations into",
-            "//       one Swift module (`SwiftUI`), so their names are local. `@_exported import",
-            "//       SwiftUICore` is dropped for the same reason.",
+            "//       requalified to the compiled module (`SwiftUI::Foo` / `SwiftUI.Foo`); nested",
+            "//       duplicate qualifiers (`.SwiftUICore::Foo`) are dropped. `@_exported import",
+            "//       SwiftUICore` is dropped (both interfaces are one module here). Keeping the",
+            "//       leading qualifier avoids generic-parameter shadowing (`Label`).",
             "//   R2  stored static `let x: T` -> computed read-only `static var x: T { get { ... } }`",
             "//       (interface-only spelling of Apple's binary storage; no initializer in source).",
-            "//       Stored properties in extensions become computed for the same reason.",
+            "//       Stored properties in extensions and at module scope become computed too.",
             "//   R3  `@_opaqueReturnTypeOf(...)` typealiases and opaque results that cannot be",
-            "//       expressed in source -> `Swift.Never`.",
+            "//       expressed in source -> `Swift.Never`; `some P<Args>` (primary associated",
+            "//       types) -> `Self`, which satisfies `Self.X == Self.Body.X`.",
             "//   R4  Apple-compiler `#if` feature conditions are evaluated for the pinned toolchain;",
             "//       dead fallback branches are preserved verbatim but not injected into.",
             "//   R5  `$`-prefixed property-wrapper projections are omitted: Swift synthesises them,",
             "//       and the `$` prefix cannot be declared in source.",
             "//   R6  declarations listed in `port-impl/implemented.txt` are omitted so the engine",
             "//       can implement them in an extension in the same module (witnesses supported).",
+            "//   R7  conformance witnesses Apple implements `internal` are synthesised from the",
+            "//       protocol declarations (same-module conformances).",
+            "//   R8  `@propertyWrapper` / `@_projectedValueProperty` attributes are removed: the",
+            "//       port does not use Apple's wrappers, and the compiler recurses through them.",
+            "//   R9  designated initializers Apple declares in extensions of classes become",
+            "//       `convenience init` (Swift forbids the former in source).",
+            "//   R10 duplicate associated-type witnesses from Apple's two interfaces are unified:",
+            "//       one unconditional `Body`/`body` per type (`Body = Self` when the halves",
+            "//       disagree); duplicate witnesses are omitted and listed in the manifest.",
+            "//   R11 value types with no stored properties get one public `init()` stub (the",
+            "//       implicit memberwise initializer is internal and cannot be used in default",
+            "//       arguments); duplicate extension `init()`s are omitted.",
+            "//   R13 result-builder attributes are removed from declarations that receive a stub",
+            "//       body: the builder would transform the `Never`-typed stub and fail.",
+            "//       (There is no R12: the `never`-conformance pass it named was removed because",
+            "//       `Body = Self` made it unnecessary and `Never` cannot satisfy constrained",
+            "//       associated types such as `Scope : AttributeScope`.)",
         ]
         lines = [
             f"// {self.spec.file_stem}.swift — GENERATED FILE, DO NOT EDIT BY HAND.",
@@ -2159,6 +2359,7 @@ class SharedModel:
     """
 
     def __init__(self, generators: list["Generator"]) -> None:
+        self.generators = generators
         self.protocols: dict[str, tuple[Container, str, str]] = {}
         self.protocol_by_name: dict[str, list[str]] = {}
         self.associated_defaults: dict[str, dict[str, str]] = {}
@@ -2167,10 +2368,24 @@ class SharedModel:
         self.implemented: dict[str, set[str]] = {}
         self.synthesized: dict[str, set[str]] = {}
         self.unsupported: list[str] = []
-        self.attribute_names: set[str] = {"_projectedValueProperty"}
+        self.attribute_names: set[str] = {"_projectedValueProperty", "propertyWrapper"}
         self.type_kinds: dict[str, str] = {}
         self.shim_type_kinds: dict[str, str] = {}
         self._requirements: dict[str, list[Requirement]] = {}
+        self._assoc_names: dict[str, set[str]] = {}
+        self.chosen_assoc: dict[tuple[str, str], str] = {}
+        self.omitted: set[int] = set()
+        self.omitted_keys: set[tuple[str, int]] = set()
+        self.omissions: list[tuple["Generator", Member, str]] = []
+        self.synth_inits: dict[str, tuple["Generator", Container]] = {}
+        self.synth_body: dict[str, str] = {}
+        #: Paths whose `Body` witness is already declared, so only the `body` stub is added.
+        self.synth_body_has_alias: set[str] = set()
+        self.no_stored_props: set[str] = set()
+        self.builder_names: set[str] = set()
+        self._paths_with_init: set[str] = set()
+        self.synthetic_extensions: dict[str, list[str]] = {}
+        self.override_inits: set[str] = set()
 
         for generator in generators:
             for container in walk_containers(generator.root):
@@ -2178,6 +2393,8 @@ class SharedModel:
                     continue
                 if container.is_property_wrapper:
                     self.attribute_names.add(container.path.split(".")[-1])
+                if container.is_result_builder:
+                    self.builder_names.add(container.path.split(".")[-1])
                 if container.kind in ("struct", "class", "enum", "actor"):
                     self.type_kinds[container.path] = container.kind
                 self.implemented.setdefault(container.path, set()).update(
@@ -2231,6 +2448,439 @@ class SharedModel:
         if kind:
             return kind
         return self.shim_type_kinds.get(path.split(".")[-1])
+
+    # -- R10: duplicate associated-type witnesses (Apple's two module interfaces) ---------
+    def association_names(self, protocol_path: str) -> set[str]:
+        cached = self._assoc_names.get(protocol_path)
+        if cached is not None:
+            return cached
+        names: set[str] = set()
+        container, _, body = self.protocols[protocol_path]
+        for member in container.members:
+            if member.kind == "associatedtype":
+                match = re.match(r"associatedtype\s+(\w+)", body[member.start:member.end].strip())
+                if match:
+                    names.add(match.group(1))
+            elif member.kind == "typealias":
+                names.add(member.name)
+        for ancestor in self.ancestors(protocol_path):
+            names |= self.association_names(ancestor)
+        self._assoc_names[protocol_path] = names
+        return names
+
+    def _normalize_type_text(self, text: str) -> str:
+        text = re.sub(r"\b(?:SwiftUI|SwiftUICore|Swift)(?:::|\.)", "", text)
+        return re.sub(r"\s+", "", text)
+
+    def declared_body_witness(self, path: str) -> str | None:
+        """The type of a type's single (kept) `typealias Body`, if it declares one."""
+        values: set[str] = set()
+        for generator in self.generators:
+            for container in walk_containers(generator.root):
+                if container.path != path:
+                    continue
+                for member in container.members:
+                    if member.kind != "typealias" or member.name != "Body":
+                        continue
+                    if id(member) in self.omitted:
+                        continue
+                    text = generator.body[member.start:member.end]
+                    equals = text.find("=")
+                    if equals >= 0:
+                        values.add(text[equals + 1:].strip())
+        if len(values) == 1:
+            return values.pop()
+        return None
+
+    def _chosen_body_type(self, path: str) -> str | None:
+        chosen = self.chosen_assoc.get((path, "Body"))
+        return self._normalize_type_text(chosen) if chosen else None
+
+    def reconcile_associated_types(self) -> None:
+        """Collapse duplicate associated-type witnesses caused by merging the two interfaces.
+
+        Apple ships `SwiftUI` and `SwiftUICore` as two modules, and a type may declare a
+        different witness for the same associated type in each (for example `ForEach` has
+        ``typealias Body = Never`` for `View` in SwiftUICore and
+        ``typealias Body = ForEach<...>`` for `TabContent` in SwiftUI). In one module Swift
+        allows only one witness per associated type, so the port keeps one and omits the others
+        (the associated type itself is not lost: it keeps a single value). The kept value is the
+        one that mentions the type itself when such a candidate exists (it is Apple's
+        "natural" recursive body), otherwise the first non-`Never` one.
+
+        The `body` properties are reconciled with it: the member whose declared type is the
+        kept witness is retained, conflicting ones are omitted, and if none matches the
+        requirement, R7 synthesizes one.
+        """
+        primary: dict[str, tuple["Generator", Container]] = {}
+        for generator in self.generators:
+            for container in walk_containers(generator.root):
+                if container.kind in ("struct", "class", "enum", "actor"):
+                    primary.setdefault(container.path, (generator, container))
+        by_path: dict[str, list[tuple["Generator", Container]]] = {}
+        for generator in self.generators:
+            for container in walk_containers(generator.root):
+                if container.kind == "module":
+                    continue
+                by_path.setdefault(container.path, []).append((generator, container))
+
+        for path, entries in sorted(by_path.items()):
+            if len(entries) < 2:
+                # A single container can still declare a `body` whose type disagrees with the
+                # type's `Body` witness (Apple's public closure property named `body`); reconcile
+                # that below without touching associated types.
+                self.reconcile_body_witness(path, entries)
+                continue
+            assoc_names: set[str] = set()
+            for _, container in entries:
+                for conformance in container.conformances:
+                    protocol_path = self.resolve(conformance)
+                    if protocol_path:
+                        assoc_names |= self.association_names(protocol_path)
+            for name in sorted(assoc_names):
+                declarations = [
+                    (generator, container, member)
+                    for generator, container in entries
+                    for member in container.members
+                    if member.kind == "typealias" and member.name == name
+                ]
+                if len(declarations) < 2:
+                    continue
+                rhs: dict[int, str] = {}
+                unconditional: dict[int, bool] = {}
+                for generator, container, member in declarations:
+                    text = generator.body[member.start:member.end]
+                    equals = text.find("=")
+                    if equals >= 0:
+                        rhs[id(member)] = text[equals + 1:].strip()
+                    unconditional[id(member)] = not container.has_where
+                if len({self._normalize_type_text(v) for v in rhs.values()}) < 2:
+                    continue
+                if name == "Body":
+                    # `Body` is constrained by protocols the type conforms to (`View`,
+                    # `TabContent`, ...). A witness declared in a conditional extension is
+                    # invisible to a conformance declared under different constraints, so no
+                    # *conditional* spelling can serve every conformance. The port therefore
+                    # declares `Body = Self` once, unconditionally, in the type itself: `Self`
+                    # satisfies every `Body: P` constraint the type's own conformance declares,
+                    # and `Self.TabValue == Self.Body.TabValue` holds by construction.
+                    primary_entry = primary.get(path)
+                    # `Self` is legal in an extension of a foreign type too (`Optional<Wrapped>`),
+                    # where the witness is emitted as one unconditional extension.
+                    chosen = "Self"
+                    if primary_entry is not None and primary_entry[1].kind == "class":
+                        chosen = "Never"
+                else:
+                    chosen = self._choose_witness_type(
+                        path,
+                        [(rhs[id(member)], unconditional[id(member)]) for _, _, member in declarations
+                         if id(member) in rhs],
+                    )
+                self.chosen_assoc[(path, name)] = chosen
+                for generator, container, member in declarations:
+                    value = rhs.get(id(member))
+                    if value is None:
+                        continue
+                    if name != "Body" and self._normalize_type_text(value) == self._normalize_type_text(chosen):
+                        continue
+                    self.omit(
+                        generator, container, member,
+                        f"duplicate associated-type witness '{name} = {value}' from Apple's other "
+                        f"module interface; the port keeps '{chosen}' (R10)",
+                    )
+            body_members = [
+                (generator, container, member)
+                for generator, container in entries
+                for member in container.members
+                if member.kind in ("var", "let") and member.name == "body"
+            ]
+            if not body_members:
+                continue
+            typed: list[tuple[Generator, Container, Member, str]] = []
+            for generator, container, member in body_members:
+                span = member.result_type_span
+                typed.append(
+                    (generator, container, member,
+                     generator.body[span[0]:span[1]] if span else "")
+                )
+            target = self._chosen_body_type(path)
+            types = {self._normalize_type_text(text) for _, _, _, text in typed}
+            if len(types) < 2:
+                continue
+            if (path, "Body") in self.chosen_assoc:
+                # See above: drop every conditional `body` and declare one unconditional stub.
+                for generator, container, member, text in typed:
+                    self.omit(
+                        generator, container, member,
+                        f"conflicting 'body' witness ('{text}'); the port declares one "
+                        f"unconditional `body: Never` (R10)",
+                    )
+                self.synth_body[path] = (
+                    "Self" if self.chosen_assoc.get((path, "Body")) == "Self" else "Swift.Never"
+                )
+                continue
+            if target is not None and target in types:
+                keep = {id(member) for _, _, member, text in typed
+                        if self._normalize_type_text(text) == target}
+            elif target is not None:
+                keep = set()
+            elif len(types) == 1 and path not in self.synth_body:
+                declared = self.declared_body_witness(path)
+                if declared is not None and self._normalize_type_text(declared) not in types:
+                    # The only declared `body` has a different type than the type's single
+                    # `Body` witness (Apple's per-module shadowing again): drop it and declare
+                    # the matching witness instead (R10).
+                    for generator, container, member, text in typed:
+                        self.omit(
+                            generator, container, member,
+                            f"'body' witness of type '{text}' conflicts with the declared "
+                            f"'Body = {declared}'; the port declares the matching witness (R10)",
+                        )
+                    self.synth_body[path] = declared
+                    self.implemented.setdefault(path, set()).discard("body")
+                    continue
+            else:
+                counts: dict[str, int] = {}
+                for _, _, _, text in typed:
+                    normalized = self._normalize_type_text(text)
+                    counts[normalized] = counts.get(normalized, 0) + 1
+                best = sorted(counts.items(), key=lambda item: (-item[1], item[0]))[0][0]
+                keep = {id(member) for _, _, member, text in typed
+                        if self._normalize_type_text(text) == best}
+            for generator, container, member, text in typed:
+                if id(member) in keep:
+                    continue
+                self.omit(
+                    generator, container, member,
+                    f"conflicting 'body' witness ('{text}'); only one associated-type witness per "
+                    f"type is legal in a single module, the port keeps "
+                    f"'{self.chosen_assoc.get((path, 'Body'), 'the synthesized one')}' (R10)",
+                )
+
+    def reconcile_body_witness(
+        self, path: str, entries: list[tuple["Generator", Container]]
+    ) -> None:
+        body_members = [
+            (generator, container, member)
+            for generator, container in entries
+            for member in container.members
+            if member.kind in ("var", "let") and member.name == "body"
+            and member.accessors  # never drop a stored property: Apple's inlinable inits assign it
+        ]
+        if not body_members:
+            return
+        declared = self.declared_body_witness(path)
+        if declared is None:
+            return
+        target = self._normalize_type_text(declared)
+        typed = []
+        for generator, container, member in body_members:
+            span = member.result_type_span
+            typed.append((generator, container, member, generator.body[span[0]:span[1]] if span else ""))
+        if all(self._normalize_type_text(text) == target or not text for _, _, _, text in typed):
+            return
+        for generator, container, member, text in typed:
+            if self._normalize_type_text(text) == target:
+                continue
+            self.omit(
+                generator, container, member,
+                f"'body' witness of type '{text}' conflicts with the declared 'Body = {declared}'; "
+                f"the port declares the matching witness (R10)",
+            )
+        if path not in self.synth_body:
+            self.synth_body[path] = declared
+            self.synth_body_has_alias.add(path)
+        self.implemented.setdefault(path, set()).discard("body")
+
+    def _choose_witness_type(self, path: str, candidates: list[tuple[str, bool]]) -> str:
+        """Pick the one associated-type witness the merged module keeps.
+
+        An *unconditional* declaration wins: a witness declared in a `where`-constrained
+        extension cannot satisfy an unconditional conformance (`extension ForEach : View` has no
+        `where Content : TabContent`, so it cannot see `ForEach`'s `Body` if that was only
+        declared for the `TabContent` conformance). Among equally unconditional candidates the
+        one that mentions the type itself wins, then the most frequent one.
+        """
+        unconditional = [value for value, is_unconditional in candidates if is_unconditional]
+        pools = [unconditional] if unconditional else []
+        pools.append([value for value, _ in candidates])
+        for scope in pools:
+            normalized = [value for value in scope if self._normalize_type_text(value) != "Never"]
+            type_name = path.split(".")[-1]
+            self_named = [
+                value for value in normalized
+                if re.search(r"\b%s\b" % re.escape(type_name), self._normalize_type_text(value))
+            ]
+            pool = self_named or normalized
+            if pool:
+                counts: dict[str, int] = {}
+                for value in pool:
+                    counts[value] = counts.get(value, 0) + 1
+                return sorted(counts.items(), key=lambda item: (-item[1], item[0]))[0][0]
+            if any(self._normalize_type_text(value) == "Never" for value in scope):
+                return "Never"
+        return "Never"
+
+    def omit(self, generator: "Generator", container: Container, member: Member, reason: str) -> None:
+        key = (generator.spec.file_stem, member.start)
+        if key in self.omitted_keys:
+            return
+        self.omitted_keys.add(key)
+        self.omitted.add(id(member))
+        self.omissions.append((generator, member, reason))
+
+    def rebuild_implemented(self) -> None:
+        self.implemented = {}
+        for generator in self.generators:
+            for container in walk_containers(generator.root):
+                if container.kind == "module":
+                    continue
+                for member in container.members:
+                    if member.kind == "import" or id(member) in self.omitted:
+                        continue
+                    self.implemented.setdefault(container.path, set()).add(member.name)
+
+    def stored_property_paths(self) -> set[str]:
+        paths: set[str] = set()
+        for generator in self.generators:
+            for container in walk_containers(generator.root):
+                for member in container.members:
+                    if member.kind in ("var", "let") and not member.accessors:
+                        paths.add(container.path)
+        return paths
+
+    def _paths_with_init_declared(self) -> set[str]:
+        paths: set[str] = set()
+        for generator in self.generators:
+            for container in walk_containers(generator.root):
+                for member in container.members:
+                    if member.kind == "init":
+                        paths.add(container.path)
+        return paths
+
+    def class_superclass(self, container: Container) -> str | None:
+        for conformance in container.conformances:
+            kind = self.type_kinds.get(conformance) or self.shim_type_kinds.get(
+                conformance.split(".")[-1]
+            )
+            if kind == "class":
+                return conformance.split(".")[-1]
+        return None
+
+    def class_has_superclass(self, container: Container) -> bool:
+        """True when the class inherits from another class (so `init()` needs `override`)."""
+        return self.class_superclass(container) is not None
+
+    def superclass_declares_parameterless_init(self, superclass: str) -> bool:
+        if superclass in self.type_kinds:
+            return superclass in self._paths_with_init
+        # Shimmed class: look for an `init()` in its source declaration.
+        for path in sorted(glob.glob(os.path.join(ROOT, "port-shims", "*", "*.swift"))):
+            try:
+                text = open(path, encoding="utf-8").read()
+            except OSError:
+                continue
+            for match in re.finditer(r"\bclass\s+%s\b" % re.escape(superclass), text):
+                window = text[match.end():match.end() + 3000]
+                if re.search(r"\binit\s*\(\s*\)", window):
+                    return True
+        return False
+
+    def init_paths(self) -> set[str]:
+        paths: set[str] = set()
+        for generator in self.generators:
+            for container in walk_containers(generator.root):
+                for member in container.members:
+                    if member.kind == "init" and member.name == "init()":
+                        paths.add(container.path)
+        return paths
+
+    # -- bootstrapping ----------------------------------------------------
+    def prepare(self) -> None:
+        """Run R10 reconciliation and compute the per-type facts later passes need."""
+        self.reconcile_associated_types()
+        self.rebuild_implemented()
+        stored = self.stored_property_paths()
+        inits = self.init_paths()
+        primary: dict[str, tuple["Generator", Container]] = {}
+        for generator in self.generators:
+            for container in walk_containers(generator.root):
+                if container.kind in ("struct", "class", "enum", "actor"):
+                    primary.setdefault(container.path, (generator, container))
+        self.synth_inits = {}
+        self.no_stored_props = {path for path in primary if path not in stored}
+        self._paths_with_init = self._paths_with_init_declared()
+        for path, (generator, container) in primary.items():
+            has_stored = path in stored
+            has_init = path in inits
+            if container.kind == "class":
+                needed = has_stored and not has_init
+            else:
+                # A value type with no stored properties gets an implicit *internal* `init()`;
+                # Apple's public interfaces use `T()` in default arguments, which needs a public
+                # initializer.
+                needed = not has_stored and not has_init
+            if needed:
+                self.synth_inits[path] = (generator, container)
+                if container.kind == "class":
+                    superclass = self.class_superclass(container)
+                    if superclass and self.superclass_declares_parameterless_init(superclass):
+                        self.override_inits.add(path)
+        for path in sorted(self.synth_body):
+            entry = primary.get(path)
+            if entry is None:
+                # A type declared by Apple as an extension of a foreign type (e.g. `Optional`,
+                # `ForEach` lives elsewhere): append one unconditional extension instead.
+                owner = next(
+                    (gen for gen in self.generators
+                     if any(c.path == path for c in walk_containers(gen.root))),
+                    self.generators[0],
+                )
+                symbol_body = f"{owner.module}.{path}.body"
+                target_type = self.synth_body[path]
+                alias = "Self" if target_type == "Self" else target_type
+                self.synthetic_extensions.setdefault(owner.spec.file_stem, []).append(
+                    f"\n// port: unconditional `body` witness for the declared associated type (R10)\n"
+                    f"extension {path} {{\n"
+                    + (
+                        ""
+                        if path in self.synth_body_has_alias
+                        else f"  public typealias Body = {alias}\n"
+                    )
+                    + f"  public var body: {target_type} {{ get {{ "
+                    f"_suiUnimplemented(\"{symbol_body}\") }} }}\n"
+                    f"}}\n"
+                )
+                owner.stats.bodies_injected += 1
+                owner.record_body(symbol_body, "var", False)
+                self.implemented.setdefault(path, set()).update({"Body", "body"})
+                continue
+            generator, container = entry
+            symbol_typealias = f"{generator.module}.{path}.Body"
+            symbol_body = f"{generator.module}.{path}.body"
+            target_type = self.synth_body[path]
+            target_alias = "Self" if target_type == "Self" else target_type
+            indent = generator.indent_at(container.end - 1) if container.end else ""
+            generator.edits.append(
+                Edit(
+                    container.end - 1, container.end - 1,
+                    f"{indent}  // port: unconditional `body` witness for the declared "
+                    f"associated type (R10)\n"
+                    + (
+                        ""
+                        if container.path in self.synth_body_has_alias
+                        else f"{indent}  public typealias Body = {target_alias}\n"
+                    )
+                    + f"{indent}  public var body: {target_type} {{ get {{ "
+                    f"_suiUnimplemented(\"{symbol_body}\") }} }}\n",
+                )
+            )
+            generator.stats.bodies_injected += 1
+            generator.record_body(symbol_body, "var", False)
+            self.implemented.setdefault(path, set()).update({"Body", "body"})
+        # R12 is disabled: the unified `Body = Self` witness removed the need for `Never`
+        # conformances, and the ones this pass emitted could not satisfy constrained associated
+        # types (`Never.Scope` is not an `AttributeScope`), so it only added diagnostics.
 
     def resolve(self, path: str) -> str | None:
         candidates = self.protocol_by_name.get(path.split(".")[-1])
@@ -2333,6 +2983,7 @@ def generate() -> tuple[dict[str, str], list[Generator], "SharedModel"]:
     for generator in generators:
         generator.parse()
     shared = SharedModel(generators)
+    shared.prepare()
     for generator in generators:
         generator.generate_edits(shared)
     sources = {

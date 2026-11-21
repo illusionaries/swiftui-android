@@ -91,7 +91,7 @@ Each rule is also listed in the banner of every generated file. Rules are mechan
 applied by pattern, not by hand, and never delete API (except R5/R6, which are explicit,
 recorded omissions).
 
-### R1 — module qualification (`SwiftUICore::Foo` → `Foo`, `@_exported import SwiftUICore` dropped)
+### R1 — module requalification (`SwiftUICore::Foo` → `SwiftUI.Foo`, duplicates dropped)
 
 **Apple construct:** textual interfaces spell cross-module references with `::`
 (`SwiftUICore::EnvironmentValues`) or a dot (`SwiftUICore.View`), and SwiftUI re-exports
@@ -99,7 +99,15 @@ SwiftUICore via `@_exported import SwiftUICore`.
 **Why:** both interfaces compile into one module here, so those names are local. A Swift source
 file cannot import a module that does not exist, and `Module::Name` on the module being compiled
 would resolve to the prebuilt *Apple* interface, creating two distinct `View` types.
-**Count:** ~17–19 k qualifier removals per generation (see `self_qualifiers_removed` in the
+
+The qualifier is **rewritten to the compiled module name, not stripped**: dropping it lets a
+generic parameter or a nested type shadow the intended type (`extension MenuBarExtra where
+Label == Label<Text, Image>` then resolves `Label` to the generic parameter and fails with
+"cannot specialize non-generic type 'Label'"). The printer also writes *nested* module
+qualifiers (`SwiftUICore::SystemFormatStyle.SwiftUICore::DateReference`); there the second
+qualifier is a lookup aid and is dropped (`SwiftUI.SystemFormatStyle.DateReference`), because
+renaming it would produce the invalid `SwiftUI::SystemFormatStyle.SwiftUI::DateReference`.
+**Count:** ~24–25 k requalifications per generation (see `self_qualifiers_removed` in the
 manifest).
 
 ### R2 — interface-only stored properties become computed (`static let x: T` → `static var x: T { get { … } }`)
@@ -199,7 +207,13 @@ public var body: Never { get { _suiUnimplemented("SwiftUI.ToggleStyleConfigurati
 ```
 
 `Self.X` in the requirement is substituted by the type's own `typealias X` or the protocol's
-associated-type default; an unknown associated type becomes `Swift.Never`. Witnesses are emitted
+associated-type default; an unknown associated type becomes `Swift.Never`.
+
+An opaque result that carries generic arguments (`some TabContent<TabValue>`,
+`some Gesture<Value>`, `some AttributedTextFormattingDefinition<Scope>`) is declared `Self`
+when the declaration lives in a type or protocol extension: `Never` would have to satisfy the
+primary-associated-type equality (`Never.TabValue == Self.TabValue`), while `Self` satisfies it
+by construction, and `Never` converts to `Self`. Witnesses are emitted
 `public` because outside library evolution Swift requires the witness of a public protocol to be
 public. Requirement kinds the generator cannot spell (e.g. exotic accessor sets) are reported in
 the manifest under `unsupported_requirements` instead of being silently skipped.
@@ -225,6 +239,69 @@ shim, and Swift rejects designated initializers in extensions. The generator loo
 type up in `port-shims/**/*.swift`; if it is a `class`, the initializer is emitted as
 `convenience init` (its stub body never returns, so no delegation is required). Value types are
 untouched.
+
+### R10 — duplicate conformance witnesses from Apple's two interfaces are unified
+
+**Apple construct:** the same type declares different witnesses for the same associated type in
+each module. `ForEach` has `typealias Body = Never` for `View` in SwiftUICore and
+`typealias Body = ForEach<...>` for `TabContent` in SwiftUI; the `body` properties follow the
+same split (`Optional`, `Group`, `_ConditionalContent`, `ForEach` are the main cases).
+**Why:** cross-module, Swift resolves each conformance against its own module's witness. In one
+module there is exactly one witness per associated type ("invalid redeclaration of 'Body'",
+"duplicate protocol requirement 'body'"), and a witness declared in a `where`-constrained
+extension is invisible to a conformance declared under different constraints (`extension
+ForEach : View where Content : View` cannot see a `Body` declared by `extension ForEach :
+TabContent`). No conditional spelling can serve every conformance.
+
+The port therefore keeps exactly one **unconditional** witness, emitted into the type's own
+declaration (or one unconditional extension for a foreign type such as `Optional`):
+
+* `typealias Body = Self` and `var body: Self { get { … } }` when the type's two halves disagree.
+  `Self` satisfies every `Body: P` constraint of the type's own conformances and makes
+  `Self.TabValue == Self.Body.TabValue` hold, so `TabContent`/`SliderTickContent`/`ToolbarContent`
+  and friends all agree on one witness. `Never` would violate those primary-associated-type
+  equalities.
+* When the declared witness is a concrete type and a computed `body` has a different type, the
+  mismatching `body` is omitted and a matching stub declared instead.
+* A stored `body` property is never dropped (Apple's `@inlinable` initializers assign it), so
+  `GestureStateGesture` keeps its public `body: (Value, inout State, inout Transaction) -> Void`
+  closure and its `Gesture` conformance remains a reported gap.
+* `Never`-conformances synthesised to support the old `Body = Never` unification (an earlier R12)
+  were removed: `Never` cannot satisfy constrained associated types (`Scope: AttributeScope`), and
+  `Body = Self` made them unnecessary.
+
+Omitting a duplicate witness does not delete API: the associated type and the `body` requirement
+keep exactly one declaration each, and the manifest lists every omission
+(`duplicate_witnesses_omitted`).
+
+### R11 — one public parameterless initializer per value type
+
+**Apple construct:** Apple's `Spring` prints only `init(duration:bounce:)` (both parameters have
+defaults) yet its own interface uses `Spring()` in a default argument; `AttributedTextSelection`
+prints `init()` in an extension although the type has no stored properties.
+**Why:** a struct with no stored properties gets an *implicit internal* `init()`, which public
+default arguments cannot call (`initializer 'init()' is internal and cannot be referenced from a
+default argument value`), while a second `init()` in an extension is an
+`invalid redeclaration of synthesized 'init()'`; a class with stored properties and no
+initializers is `class 'X' has no initializers`.
+
+The generator therefore declares one `public init()` stub inside the type's own declaration when
+a value type has no stored properties and no parameterless initializer, and omits any
+parameterless `init()` in an extension of such a type. Classes with stored properties and no
+initializers get the same stub (with `override` when the superclass declares `init()`).
+
+### R13 — result-builder attributes are removed from stubbed declarations
+
+**Apple construct:** `@TabContentBuilder<Self.TabValue> var body: Self.Body { get }`,
+`@ViewBuilder var body: Self.Body { get }`, `@KeyframesBuilder<Value>` parameters.
+**Why:** a result-builder attribute on a *protocol requirement* is applied to each witness's
+body. The injected stub is `_suiUnimplemented(...)`, whose type is `Never`, so the builder
+transform requires `Never` to satisfy the builder's generic constraints (`Never.TabValue ==
+Self.TabValue`, `Never.Scope == Scope`) and the declaration fails to type-check
+("static method 'buildExpression' requires that 'Never' conform to 'TabContent'"). The attribute
+is a client-side convenience: without it the signature and every call site are unchanged, so it
+is removed from declarations that receive a stub body (and from protocol requirements), and
+never from Apple's `@inlinable` bodies.
 
 ## 5. Symbol spelling (used by the manifest and by `port-impl/implemented.txt`)
 
@@ -358,13 +435,14 @@ incomplete shims) and reported separately.
 The generator prints counts; `--check`/`generate.sh` keeps them honest. A representative
 generation of the pinned toolchain:
 
-* 11,188 declarations reproduced, 4,043 types;
-* ~7,000 stub bodies injected (funcs, initializers, subscripts, accessors, deinit);
-* ~700 `@inlinable` bodies preserved verbatim;
-* ~850 opaque-result rewrites (R3), ~670 static-storage rewrites (R2), ~90 synthesised
-  witnesses (R7), ~17–19 k module-qualifier removals (R1);
-* engine seams: ~180 `_makeView(view:inputs:)`, ~90 `_makeViewList(view:inputs:)`,
-  ~42 `_viewListCount(inputs:)`, ~246 `body` (the manifest lists them all).
+* 11,197 declarations reproduced, 4,018 types;
+* 8,102 stub bodies injected (functions, initializers, subscripts, accessors, deinit);
+* 1,797 bodies kept as printed, of which 704 are Apple's `@inlinable` bodies (never modified);
+* 815 opaque-result rewrites (R3), 669 static-storage rewrites (R2), 384 synthesised
+  witnesses (R7), 35 duplicate-witness omissions (R10), 646 synthesised initializers (R11),
+  24,766 module requalifications (R1);
+* engine seams: 178 `_makeView(view:inputs:)`, 87 `_makeViewList(view:inputs:)`,
+  42 `_viewListCount(inputs:)`, 304 `body` (the manifest lists them all).
 
 ## 10. Known gaps outside this generator (report, do not work around)
 
@@ -405,6 +483,30 @@ into the generated files but are *caused* by the Port SDK:
   declarations now present in the generated files; that is a same-module redeclaration and
   shows up as `'FillStyle' is ambiguous for type lookup`. Engine-internal types should be
   namespaced/prefixed (`PortFillStyle`, …) or renamed.
+* **`Never` conformances missing from shims** (open, 3 diagnostics): the generated code implements
+  `Transferable.transferRepresentation` (`some CoreTransferable.TransferRepresentation`) by
+  returning `Never`; that requires `extension Never : CoreTransferable.TransferRepresentation`
+  (and the associated-type inference it needs) in the CoreTransferable shim, as Apple's binary
+  module has. Affected symbols: `SwiftUI.Color.transferRepresentation`,
+  `SwiftUI.Image.transferRepresentation`,
+  `SwiftUI.AttributedTextFormatting.Transferable.transferRepresentation`.
+* **Open generator gaps after this cycle** (44 diagnostics in the `SWIFTUI_PORT_GENERATED=1`
+  package gate, down from 244). Remaining buckets, all reported rather than suppressed:
+  1. `cannot convert return expression of type 'Never' to return type '<Body type>'` (12):
+     the destination types (`_ShapeView<Rectangle, Style>`, `EmptyView`,
+     `DefaultTextFieldStyle._Body`, `AutomaticTextEditorStyle.Body`,
+     `_TabContentBodyAdaptor<C>.body: C.Body._IdentifiedView`,
+     `IdentityTransition.Content`) are `Body`/style-witness types whose own conformance or
+     generic constraints are satisfied only through synthesised witnesses; the compiler reports
+     the conversion instead of the underlying gap and emits no note. Needs a dedicated probe.
+  2. `SliderTickContent` conformance of `Optional`/`_ConditionalContent` (2): their `TabValue`
+     and `TicksCollection` witnesses are declared in constrained extensions, so the single
+     unconditional `Body = Self` witness is not enough for that protocol.
+  3. `GestureStateGesture: Gesture` (1): the public stored `body` closure property (R10 keeps it)
+     has a different type than `Gesture`'s `body` requirement.
+  4. `AttributedTextSelection.Attributes<Text>: Sequence` (1): needs a concrete `Iterator`
+     witness; R7's `Never` fallback cannot satisfy `IteratorProtocol`.
+  5. `Transferable` (3): see the shim gap above.
 
 ## 11. What the engine must implement first for a screen to render
 
