@@ -1791,17 +1791,17 @@ extension SwiftUICore::View {
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension SwiftUICore::ForEach where ID == Data.Element.ID, Data.Element : Swift::Identifiable {
   @usableFromInline
-  internal static func create(_ data: Data, @SwiftUICore::ContentBuilder content: @escaping (Data.Element) -> Content) -> SwiftUICore::ForEach<Data, ID, Content> { _suiUnimplemented("SwiftUICore.ForEach.create(_:?:)") }
+  internal static func create(_ data: Data, @SwiftUICore::ContentBuilder content: @escaping (Data.Element) -> Content) -> SwiftUICore::ForEach<Data, ID, Content> { ForEach(data: data, content: content) }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension SwiftUICore::ForEach {
   @usableFromInline
-  internal static func create(_ data: Data, id: Swift::KeyPath<Data.Element, ID>, @SwiftUICore::ContentBuilder content: @escaping (Data.Element) -> Content) -> SwiftUICore::ForEach<Data, ID, Content> { _suiUnimplemented("SwiftUICore.ForEach.create(_:id:?:)") }
+  internal static func create(_ data: Data, id: Swift::KeyPath<Data.Element, ID>, @SwiftUICore::ContentBuilder content: @escaping (Data.Element) -> Content) -> SwiftUICore::ForEach<Data, ID, Content> { ForEach(data: data, content: content) }
 }
 @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
 extension SwiftUICore::ForEach where Data == Swift::Range<Swift::Int>, ID == Swift::Int {
   @usableFromInline
-  @_semantics("swiftui.requires_constant_range") internal static func create(_ data: Swift::Range<Swift::Int>, @SwiftUICore::ContentBuilder content: @escaping (Swift::Int) -> Content) -> SwiftUICore::ForEach<Data, ID, Content> { _suiUnimplemented("SwiftUICore.ForEach.create(_:?:)") }
+  @_semantics("swiftui.requires_constant_range") internal static func create(_ data: Swift::Range<Swift::Int>, @SwiftUICore::ContentBuilder content: @escaping (Swift::Int) -> Content) -> SwiftUICore::ForEach<Data, ID, Content> { ForEach(data: data, content: content) }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -3205,10 +3205,10 @@ public enum WorldRecenterPhase : Swift::Sendable {
     public typealias Element = SwiftUICore::Axis.Set
     public let rawValue: Swift::Int8
     public init(rawValue: Swift::Int8) { _suiUnimplemented("SwiftUICore.Axis.Set.init(rawValue:)") }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var horizontal: SwiftUICore::Axis.Set { get { _suiUnimplemented("SwiftUICore.Axis.Set.horizontal") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var vertical: SwiftUICore::Axis.Set { get { _suiUnimplemented("SwiftUICore.Axis.Set.vertical") } }
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
     public typealias ArrayLiteralElement = SwiftUICore::Axis.Set.Element
     @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -3223,7 +3223,7 @@ public static var vertical: SwiftUICore::Axis.Set { get { _suiUnimplemented("Swi
     get { _suiUnimplemented("SwiftUICore.Axis.allCases") }
   }
   public var rawValue: Swift::Int8 {
-    get { _suiUnimplemented("SwiftUICore.Axis.rawValue") }
+    get { switch self { case .horizontal: return 0; case .vertical: return 1 } }
   }
   // port: public parameterless initializer (R11); Apple's implicit memberswise initializer is internal
   public init() { _suiUnimplemented("SwiftUICore.Axis.init()") }

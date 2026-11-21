@@ -66,6 +66,7 @@ public final class PortGraphContext {
     public func beginFrame(environment: PortEnvironment) {
         self.environment = environment
         PortStateStore.beginFrame()
+        PortScrollStore.beginFrame()
         views.removeAll(keepingCapacity: true)
         proposals.removeAll(keepingCapacity: true)
         results.removeAll(keepingCapacity: true)

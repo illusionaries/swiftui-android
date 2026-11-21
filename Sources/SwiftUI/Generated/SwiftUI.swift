@@ -18395,11 +18395,8 @@ nonisolated public struct ScrollView<Content> : SwiftUICore.View, ~Swift.Sendabl
     get { _suiUnimplemented("SwiftUICore.ScrollView.showsIndicators") }
     set { _suiUnimplemented("SwiftUICore.ScrollView.showsIndicators") }
   }
-  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use the ScrollView(_:content:) initializer and the scrollIndicators(:_) modifier")
-  @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use the ScrollView(_:content:) initializer and the scrollIndicators(:_) modifier")
-  @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "Use the ScrollView(_:content:) initializer and the scrollIndicators(:_) modifier")
-  @available(watchOS, introduced: 6.0, deprecated: 100000.0, message: "Use the ScrollView(_:content:) initializer and the scrollIndicators(:_) modifier")
-  nonisolated public init(_ axes: SwiftUICore.Axis.Set = .vertical, showsIndicators: Swift.Bool = true, @SwiftUICore.ContentBuilder content: () -> Content) { _suiUnimplemented("SwiftUICore.ScrollView.init(_:showsIndicators:content:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   nonisolated public var body: some SwiftUICore.View {
     get { _suiUnimplemented("SwiftUICore.ScrollView.body") }
   }

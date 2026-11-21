@@ -10,46 +10,27 @@ import SwiftUI
 struct PortDemoView: View {
     @State private var taps = 0
 
+    private let rows = Array(1...14)
+
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 14) {
             header
 
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Gradients, shapes, shadows")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                Text("RoundedRectangle, LinearGradient, shadow")
-                    .font(.caption)
-                    .foregroundColor(.white)
-            }
-            .padding(18)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(
-                RoundedRectangle(cornerSize: CGSize(width: 20, height: 20))
-                    .fill(LinearGradient(colors: [.indigo, .pink],
-                                         startPoint: UnitPoint(x: 0, y: 0),
-                                         endPoint: UnitPoint(x: 1, y: 1)))
-            )
-            .shadow(color: .black, radius: 12, x: 0, y: 6)
-
-            HStack(spacing: 12) {
-                stat(value: "128", label: "screens", tint: .green)
-                stat(value: "4.9", label: "rating", tint: .orange)
-            }
-
-            VStack(spacing: 12) {
-                Text("Taps: \(taps)")
-                    .font(.headline)
-                HStack(spacing: 12) {
-                    Button("Tap me") { taps += 1 }
-                    Button("Reset") { taps = 0 }
+            ScrollView {
+                VStack(spacing: 12) {
+                    gradientCard
+                    HStack(spacing: 12) {
+                        stat(value: "128", label: "screens", tint: .green)
+                        stat(value: "4.9", label: "rating", tint: .orange)
+                    }
+                    tapCard
+                    ForEach(rows, id: \.self) { index in
+                        row(index)
+                    }
                 }
+                .padding(.vertical, 2)
             }
-            .padding(16)
-            .background(
-                RoundedRectangle(cornerSize: CGSize(width: 16, height: 16))
-                    .fill(Color.blue.opacity(0.12))
-            )
+            .frame(height: 560)
         }
         .padding(20)
     }
@@ -71,6 +52,43 @@ struct PortDemoView: View {
         }
     }
 
+    var gradientCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Gradients, shapes, shadows")
+                .font(.headline)
+                .foregroundColor(.white)
+            Text("RoundedRectangle filled with a LinearGradient, clipped and shadowed")
+                .font(.caption)
+                .foregroundColor(.white)
+        }
+        .padding(18)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerSize: CGSize(width: 20, height: 20))
+                .fill(LinearGradient(colors: [.indigo, .pink],
+                                     startPoint: UnitPoint(x: 0, y: 0),
+                                     endPoint: UnitPoint(x: 1, y: 1)))
+        )
+        .shadow(color: .black, radius: 12, x: 0, y: 6)
+    }
+
+    var tapCard: some View {
+        VStack(spacing: 12) {
+            Text("Taps: \(taps)")
+                .font(.headline)
+            HStack(spacing: 12) {
+                Button("Tap me") { taps += 1 }
+                Button("Reset") { taps = 0 }
+            }
+        }
+        .padding(16)
+        .frame(maxWidth: .infinity)
+        .background(
+            RoundedRectangle(cornerSize: CGSize(width: 16, height: 16))
+                .fill(Color.blue.opacity(0.12))
+        )
+    }
+
     func stat(value: String, label: String, tint: Color) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(value)
@@ -85,6 +103,25 @@ struct PortDemoView: View {
         .background(
             RoundedRectangle(cornerSize: CGSize(width: 16, height: 16))
                 .fill(tint)
+        )
+    }
+
+    func row(_ index: Int) -> some View {
+        HStack(spacing: 12) {
+            Circle()
+                .fill(index.isMultiple(of: 2) ? Color.indigo : Color.teal)
+                .frame(width: 28, height: 28)
+            Text("Row \(index)")
+                .font(.body)
+            Spacer()
+            Text("ForEach")
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerSize: CGSize(width: 12, height: 12))
+                .fill(Color.white)
         )
     }
 }
@@ -128,6 +165,8 @@ public final class SwiftUIHostScene: PortScene {
         return hit.action != nil
     }
 
-    public func handleDrag(_ gesture: PortDragGesture) -> Bool { false }
+    public func handleDrag(_ gesture: PortDragGesture) -> Bool {
+        PortScrollStore.apply(drag: gesture, at: gesture.location)
+    }
 }
 

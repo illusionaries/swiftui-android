@@ -218,6 +218,12 @@ MODULE_SPECS = (
 )
 MODULES = tuple(spec.interface_module for spec in MODULE_SPECS)
 
+#: The single module both interfaces compile into (see Package.swift: target `SwiftUICore`).
+OUTPUT_MODULE = "SwiftUICore"
+
+#: Symbols from `implemented.txt` that a generation pass actually omitted.
+OVERRIDE_HITS: set[str] = set()
+
 #: `port-impl/implemented.txt`: symbols the engine implements, omitted from generated output.
 IMPLEMENTED_PATH = os.path.join(ROOT, "port-impl", "implemented.txt")
 
@@ -1487,6 +1493,9 @@ class Generator:
     def __init__(self, spec: "ModuleSpec", implemented: set[str]) -> None:
         self.spec = spec
         self.module = spec.interface_module
+        # Both interfaces are compiled into one module (`SwiftUICore`), so symbols — and the
+        # engine's override list — are named after that module, not the interface they came from.
+        self.symbol_module = OUTPUT_MODULE
         self.implemented = implemented
         self.entries: list[BodyEntry] = []
         #: (category, symbol) for every engine seam found (stub, inlined or overridden)
@@ -1587,16 +1596,16 @@ class Generator:
         self.edits.append(Edit(offset, offset, f"{indent}// port: {message}\n"))
 
     def symbol_for(self, container: Container, member: Member) -> str:
-        prefix = self.module
+        prefix = self.symbol_module
         if container.path:
-            prefix = f"{self.module}.{container.path}"
+            prefix = f"{self.symbol_module}.{container.path}"
         return f"{prefix}.{member.name}"
 
     def span_text(self, span: tuple[int, int]) -> str:
         return self.body[span[0]:span[1]]
 
     def record_body(self, symbol: str, kind: str, inlined: bool) -> None:
-        self.entries.append(BodyEntry(symbol, self.module, kind, inlined))
+        self.entries.append(BodyEntry(symbol, self.symbol_module, kind, inlined))
 
     def note_seam(self, member: Member, symbol: str) -> None:
         self.note_seam_name(member.name, symbol)
@@ -1709,7 +1718,7 @@ class Generator:
                 visit(child, child.kind == "protocol")
             if container.kind in ("struct", "class", "enum", "actor"):
                 entry = shared.synth_inits.get(container.path)
-                symbol = f"{self.module}.{container.path}.init()"
+                symbol = f"{self.symbol_module}.{container.path}.init()"
                 if entry is not None and entry[1] is container and symbol not in self.init_hits:
                     self.init_hits.add(symbol)
                     # The engine may own a synthesized initializer too (e.g. the opaque graph
@@ -1740,17 +1749,7 @@ class Generator:
         # `implemented.txt` covers both interfaces, but each interface is processed by its own
         # pass. Only symbols belonging to *this* module can be resolved here; the other pass
         # resolves the rest (each pass records its own hits).
-        missing = sorted(
-            symbol
-            for symbol in self.implemented - self.override_hits
-            if symbol.split(".", 1)[0] == self.module
-        )
-        if missing:
-            raise GenerationError(
-                "port-impl/implemented.txt lists symbols that are not bodyless declarations in "
-                f"the {self.module} interface (check spelling against build/port-sdk/"
-                "injected-bodies.json):\n  " + "\n  ".join(missing)
-            )
+        OVERRIDE_HITS.update(self.override_hits)
 
     def apply_override(self, container: Container, member: Member, symbol: str) -> None:
         """R6: omit a declaration the engine implements in `Sources/SwiftUI/Engine/Implemented/`."""
@@ -2215,7 +2214,7 @@ class Generator:
                     continue
                 if shared.has_default(protocol_path, requirement.name):
                     continue
-                symbol = f"{self.module}.{path}.{requirement.name}"
+                symbol = f"{self.symbol_module}.{path}.{requirement.name}"
                 self.note_seam_name(requirement.name, symbol)
                 if symbol in self.implemented:
                     shared.synthesized.setdefault(path, set()).add(requirement.name)
@@ -3251,6 +3250,16 @@ def generate() -> tuple[dict[str, str], list[Generator], "SharedModel"]:
         generator.spec.file_stem: generator.render_source(shared.attribute_names)
         for generator in generators
     }
+
+    # Each interface is processed by its own pass, so a symbol implemented in the engine may be
+    # declared in either half; validate the override list once both passes are done.
+    unresolved = sorted(implemented - OVERRIDE_HITS)
+    if unresolved:
+        raise GenerationError(
+            "port-impl/implemented.txt lists symbols that are not bodyless declarations in either "
+            "interface (check spelling against build/port-sdk/injected-bodies.json):\n  "
+            + "\n  ".join(unresolved)
+        )
 
     # Apple's two interfaces are compiled as one module: a type declared in both would collide.
     owners: dict[str, tuple[str, str]] = {}

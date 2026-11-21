@@ -133,8 +133,8 @@ SwiftUICore.Text.kerning(_:)
 SwiftUICore.Text.tracking(_:)
 
 # Buttons: storage is injected (port-impl/storage.txt); the adapters supply the behaviour.
-SwiftUI.Button.init(action:label:)
-SwiftUI.Button.init(_:action:)
+SwiftUICore.Button.init(action:label:)
+SwiftUICore.Button.init(_:action:)
 SwiftUICore.Text.init(_:tableName:bundle:comment:)
 
 # Dynamic properties: the engine owns their storage (see Sources/SwiftUI/Adapters/PortState.swift).
@@ -149,3 +149,8 @@ SwiftUICore.Binding.projectedValue
 SwiftUICore.LazyState.init(initialValue:)
 SwiftUICore.LazyState.wrappedValue
 SwiftUICore.LazyState.projectedValue
+
+# Lists and scrolling.
+SwiftUICore.Axis.Set.horizontal
+SwiftUICore.Axis.Set.vertical
+SwiftUICore.ScrollView.init(_:showsIndicators:content:)

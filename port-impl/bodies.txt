@@ -35,3 +35,11 @@ SwiftUICore.LocalizedStringKey.StringInterpolation.appendLiteral(_:) => self._po
 SwiftUICore.LocalizedStringKey.StringInterpolation.appendInterpolation(_:)#1 => self._portText += string
 SwiftUICore.LocalizedStringKey.StringInterpolation.appendInterpolation(_:specifier:) => self._portText += String(describing: value)
 SwiftUICore.LocalizedStringKey.init(stringInterpolation:) => self.key = stringInterpolation._portText; self.hasFormatting = false; self.arguments = []
+
+# Raw values of Apple's small enums (declaration order is the raw value).
+SwiftUICore.Axis.rawValue => switch self { case .horizontal: return 0; case .vertical: return 1 }
+
+# `ForEach`'s public initialisers funnel through these internal factories; the struct's own
+# storage (`data`, `content`) is real, so the factory just builds the value.
+SwiftUICore.ForEach.create(_:?:) => ForEach(data: data, content: content)
+SwiftUICore.ForEach.create(_:id:?:) => ForEach(data: data, content: content)
