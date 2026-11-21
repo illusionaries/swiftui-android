@@ -643,7 +643,7 @@ extension SwiftUI::ShapeStyle where Self == SwiftUI::AngularGradient {
   internal var gradient: SwiftUI::Gradient
   internal var startPoint: SwiftUI::UnitPoint
   internal var endPoint: SwiftUI::UnitPoint
-  nonisolated public init(gradient: SwiftUI::Gradient, startPoint: SwiftUI::UnitPoint, endPoint: SwiftUI::UnitPoint) { _suiUnimplemented("SwiftUICore.LinearGradient.init(gradient:startPoint:endPoint:)") }
+  nonisolated public init(gradient: SwiftUI::Gradient, startPoint: SwiftUI::UnitPoint, endPoint: SwiftUI::UnitPoint) { self.gradient = gradient; self.startPoint = startPoint; self.endPoint = endPoint }
   @export(implementation) nonisolated public init(colors: [SwiftUI::Color], startPoint: SwiftUI::UnitPoint, endPoint: SwiftUI::UnitPoint) {
         self.init(gradient: Gradient(colors: colors),
             startPoint: startPoint, endPoint: endPoint)
@@ -2882,12 +2882,13 @@ extension SwiftUI::EnvironmentalModifier {
   @frozen public struct Stop : Swift::Equatable {
     public var color: SwiftUI::Color
     public var location: CoreGraphics::CGFloat
-    public init(color: SwiftUI::Color, location: CoreGraphics::CGFloat) { _suiUnimplemented("SwiftUICore.Gradient.Stop.init(color:location:)") }
-    public static func == (a: SwiftUI::Gradient.Stop, b: SwiftUI::Gradient.Stop) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Gradient.Stop.==(a:b:)") }
+    public init(color: SwiftUI::Color, location: CoreGraphics::CGFloat) { self.color = color; self.location = location }
+    public static func == (a: SwiftUI::Gradient.Stop, b: SwiftUI::Gradient.Stop) -> Swift::Bool { PortStyleRegistry.pointer(of: a.color) == PortStyleRegistry.pointer(of: b.color) && a.location == b.location }
   }
   public var stops: [SwiftUI::Gradient.Stop]
-  public init(stops: [SwiftUI::Gradient.Stop]) { _suiUnimplemented("SwiftUICore.Gradient.init(stops:)") }
-  public init(colors: [SwiftUI::Color]) { _suiUnimplemented("SwiftUICore.Gradient.init(colors:)") }
+  public init(stops: [SwiftUI::Gradient.Stop]) { self.stops = stops }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   public static func == (a: SwiftUI::Gradient, b: SwiftUI::Gradient) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Gradient.==(a:b:)") }
 }
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -4340,11 +4341,12 @@ extension SwiftUI::View {
   @_hasStorage internal var provider: SwiftUI::AnyFontBox {
     get { _suiUnimplemented("SwiftUICore.Font.provider") }
   }
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Font.hash(into:)") }
-  public static func == (lhs: SwiftUI::Font, rhs: SwiftUI::Font) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Font.==(lhs:rhs:)") }
-  public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.Font.hashValue") }
-  }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @_hasMissingDesignatedInitializers @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -4777,7 +4779,8 @@ extension SwiftUI::Color {
 }
   public init(_ colorSpace: SwiftUI::Color.RGBColorSpace = .sRGB, red: Swift::Double, green: Swift::Double, blue: Swift::Double, opacity: Swift::Double = 1) { _suiUnimplemented("SwiftUICore.Color.init(_:red:green:blue:opacity:)") }
   public init(_ colorSpace: SwiftUI::Color.RGBColorSpace = .sRGB, white: Swift::Double, opacity: Swift::Double = 1) { _suiUnimplemented("SwiftUICore.Color.init(_:white:opacity:)") }
-  public init(hue: Swift::Double, saturation: Swift::Double, brightness: Swift::Double, opacity: Swift::Double = 1) { _suiUnimplemented("SwiftUICore.Color.init(hue:saturation:brightness:opacity:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 #if compiler(>=5.3) && $TildeSendable
 @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
@@ -10244,47 +10247,42 @@ extension SwiftUI::Text.DateStyle : Swift::Codable {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::Color {
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var red: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.red") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var orange: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.orange") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var yellow: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.yellow") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var green: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.green") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  public static var mint: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.mint") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  public static var teal: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.teal") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  public static var cyan: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.cyan") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var blue: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.blue") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  public static var indigo: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.indigo") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var purple: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.purple") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var pink: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.pink") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-@available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  public static var brown: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.brown") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var white: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.white") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var gray: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.gray") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var black: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.black") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var clear: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.clear") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var primary: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.primary") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var secondary: SwiftUI::Color { get { _suiUnimplemented("SwiftUICore.Color.secondary") } }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -15867,31 +15865,28 @@ extension SwiftUI::EnvironmentValues {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::Font {
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var largeTitle: SwiftUI::Font { get { _suiUnimplemented("SwiftUICore.Font.largeTitle") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var title: SwiftUI::Font { get { _suiUnimplemented("SwiftUICore.Font.title") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  public static var title2: SwiftUI::Font { get { _suiUnimplemented("SwiftUICore.Font.title2") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  public static var title3: SwiftUI::Font { get { _suiUnimplemented("SwiftUICore.Font.title3") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var headline: SwiftUI::Font { get { _suiUnimplemented("SwiftUICore.Font.headline") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var subheadline: SwiftUI::Font { get { _suiUnimplemented("SwiftUICore.Font.subheadline") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var body: SwiftUI::Font { get { _suiUnimplemented("SwiftUICore.Font.body") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var callout: SwiftUI::Font { get { _suiUnimplemented("SwiftUICore.Font.callout") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var footnote: SwiftUI::Font { get { _suiUnimplemented("SwiftUICore.Font.footnote") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var caption: SwiftUI::Font { get { _suiUnimplemented("SwiftUICore.Font.caption") } }
-    // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-@available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
-  public static var caption2: SwiftUI::Font { get { _suiUnimplemented("SwiftUICore.Font.caption2") } }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
     // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
 @available(visionOS 1.0, *)
       @available(tvOS, unavailable)
@@ -15904,12 +15899,8 @@ public static var caption: SwiftUI::Font { get { _suiUnimplemented("SwiftUICore.
   public static var extraLargeTitle2: SwiftUI::Font { get { _suiUnimplemented("SwiftUICore.Font.extraLargeTitle2") } }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   public static func system(_ style: SwiftUI::Font.TextStyle, design: SwiftUI::Font.Design? = nil, weight: SwiftUI::Font.Weight? = nil) -> SwiftUI::Font { _suiUnimplemented("SwiftUICore.Font.system(_:design:weight:)") }
-  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use `system(_:design:weight:)` instead.")
-  @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `system(_:design:weight:)` instead.")
-  @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "Use `system(_:design:weight:)` instead.")
-  @available(watchOS, introduced: 6.0, deprecated: 100000.0, message: "Use `system(_:design:weight:)` instead.")
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use `system(_:design:weight:)` instead.")
-  @_disfavoredOverload public static func system(_ style: SwiftUI::Font.TextStyle, design: SwiftUI::Font.Design = .default) -> SwiftUI::Font { _suiUnimplemented("SwiftUICore.Font.system(_:design:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   public enum TextStyle : Swift::CaseIterable, Swift::Sendable {
     case largeTitle
     case title
@@ -15961,7 +15952,8 @@ extension SwiftUI::Font.TextStyle {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::Font {
-  public func italic() -> SwiftUI::Font { _suiUnimplemented("SwiftUICore.Font.italic()") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public func italic(_ isActive: Swift::Bool) -> SwiftUI::Font { _suiUnimplemented("SwiftUICore.Font.italic(_:)") }
   public func smallCaps() -> SwiftUI::Font { _suiUnimplemented("SwiftUICore.Font.smallCaps()") }
@@ -15974,14 +15966,16 @@ extension SwiftUI::Font {
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public func uppercaseSmallCaps(_ isActive: Swift::Bool) -> SwiftUI::Font { _suiUnimplemented("SwiftUICore.Font.uppercaseSmallCaps(_:)") }
   public func monospacedDigit() -> SwiftUI::Font { _suiUnimplemented("SwiftUICore.Font.monospacedDigit()") }
-  public func weight(_ weight: SwiftUI::Font.Weight) -> SwiftUI::Font { _suiUnimplemented("SwiftUICore.Font.weight(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   public func width(_ width: SwiftUI::Font.Width) -> SwiftUI::Font { _suiUnimplemented("SwiftUICore.Font.width(_:)") }
-  public func bold() -> SwiftUI::Font { _suiUnimplemented("SwiftUICore.Font.bold()") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public func bold(_ isActive: Swift::Bool) -> SwiftUI::Font { _suiUnimplemented("SwiftUICore.Font.bold(_:)") }
-  @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
-  public func monospaced() -> SwiftUI::Font { _suiUnimplemented("SwiftUICore.Font.monospaced()") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @available(iOS 26.0, macOS 26.0, tvOS 26.0, watchOS 26.0, visionOS 26.0, *)
   public func monospaced(_ isActive: Swift::Bool) -> SwiftUI::Font { _suiUnimplemented("SwiftUICore.Font.monospaced(_:)") }
   @available(iOS 14.0, macOS 11.0, tvOS 14.0, watchOS 7.0, *)
@@ -15999,29 +15993,30 @@ extension SwiftUI::Font {
   public func _stylisticAlternative(_ alternative: SwiftUI::Font._StylisticAlternative) -> SwiftUI::Font { _suiUnimplemented("SwiftUICore.Font._stylisticAlternative(_:)") }
   @frozen public struct Weight : Swift::Hashable {
     package var value: CoreGraphics::CGFloat
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var ultraLight: SwiftUI::Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.ultraLight") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var thin: SwiftUI::Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.thin") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var light: SwiftUI::Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.light") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var regular: SwiftUI::Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.regular") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var medium: SwiftUI::Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.medium") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var semibold: SwiftUI::Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.semibold") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var bold: SwiftUI::Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.bold") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var heavy: SwiftUI::Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.heavy") } }
-        // port: interface describes static storage (no initializer); emitted as read-only computed property (R2)
-public static var black: SwiftUI::Font.Weight { get { _suiUnimplemented("SwiftUICore.Font.Weight.black") } }
-    public static func == (a: SwiftUI::Font.Weight, b: SwiftUI::Font.Weight) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Font.Weight.==(a:b:)") }
-    public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Font.Weight.hash(into:)") }
-    public var hashValue: Swift::Int {
-      get { _suiUnimplemented("SwiftUICore.Font.Weight.hashValue") }
-    }
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+        // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   public struct Width : Swift::Hashable, Swift::Sendable {
@@ -16405,7 +16400,7 @@ extension Swift::Optional : SwiftUI::Gesture where Wrapped : SwiftUI::Gesture {
   internal let height: CoreGraphics::CGFloat?
   internal let alignment: SwiftUI::Alignment
   @usableFromInline
-  nonisolated package init(width: CoreGraphics::CGFloat?, height: CoreGraphics::CGFloat?, alignment: SwiftUI::Alignment) { _suiUnimplemented("SwiftUICore._FrameLayout.init(width:height:alignment:)") }
+  nonisolated package init(width: CoreGraphics::CGFloat?, height: CoreGraphics::CGFloat?, alignment: SwiftUI::Alignment) { self.width = width; self.height = height; self.alignment = alignment }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias AnimatableData = SwiftUI::EmptyAnimatableData
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -16441,7 +16436,7 @@ extension SwiftUI::View {
   internal let maxHeight: CoreGraphics::CGFloat?
   internal let alignment: SwiftUI::Alignment
   @usableFromInline
-  nonisolated package init(minWidth: CoreGraphics::CGFloat? = nil, idealWidth: CoreGraphics::CGFloat? = nil, maxWidth: CoreGraphics::CGFloat? = nil, minHeight: CoreGraphics::CGFloat? = nil, idealHeight: CoreGraphics::CGFloat? = nil, maxHeight: CoreGraphics::CGFloat? = nil, alignment: SwiftUI::Alignment) { _suiUnimplemented("SwiftUICore._FlexFrameLayout.init(minWidth:idealWidth:maxWidth:minHeight:idealHeight:maxHeight:alignment:)") }
+  nonisolated package init(minWidth: CoreGraphics::CGFloat? = nil, idealWidth: CoreGraphics::CGFloat? = nil, maxWidth: CoreGraphics::CGFloat? = nil, minHeight: CoreGraphics::CGFloat? = nil, idealHeight: CoreGraphics::CGFloat? = nil, maxHeight: CoreGraphics::CGFloat? = nil, alignment: SwiftUI::Alignment) { self.minWidth = minWidth; self.idealWidth = idealWidth; self.maxWidth = maxWidth; self.minHeight = minHeight; self.idealHeight = idealHeight; self.maxHeight = maxHeight; self.alignment = alignment }
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
   public typealias AnimatableData = SwiftUI::EmptyAnimatableData
   @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
@@ -17057,22 +17052,22 @@ extension SwiftUI::GraphicsContext {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::Text {
-  @available(iOS, introduced: 13.0, deprecated: 100000.0, renamed: "foregroundStyle(_:)")
-  @available(macOS, introduced: 10.15, deprecated: 100000.0, renamed: "foregroundStyle(_:)")
-  @available(tvOS, introduced: 13.0, deprecated: 100000.0, renamed: "foregroundStyle(_:)")
-  @available(watchOS, introduced: 6.0, deprecated: 100000.0, renamed: "foregroundStyle(_:)")
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, renamed: "foregroundStyle(_:)")
-  nonisolated public func foregroundColor(_ color: SwiftUI::Color?) -> SwiftUI::Text { _suiUnimplemented("SwiftUICore.Text.foregroundColor(_:)") }
-  @available(iOS 17.0, macOS 14.0, tvOS 17.0, watchOS 10.0, *)
-  nonisolated public func foregroundStyle<S>(_ style: S) -> SwiftUI::Text where S : SwiftUI::ShapeStyle { _suiUnimplemented("SwiftUICore.Text.foregroundStyle(_:)") }
-  nonisolated public func font(_ font: SwiftUI::Font?) -> SwiftUI::Text { _suiUnimplemented("SwiftUICore.Text.font(_:)") }
-  nonisolated public func fontWeight(_ weight: SwiftUI::Font.Weight?) -> SwiftUI::Text { _suiUnimplemented("SwiftUICore.Text.fontWeight(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   nonisolated public func fontWidth(_ width: SwiftUI::Font.Width?) -> SwiftUI::Text { _suiUnimplemented("SwiftUICore.Text.fontWidth(_:)") }
-  nonisolated public func bold() -> SwiftUI::Text { _suiUnimplemented("SwiftUICore.Text.bold()") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   nonisolated public func bold(_ isActive: Swift::Bool) -> SwiftUI::Text { _suiUnimplemented("SwiftUICore.Text.bold(_:)") }
-  nonisolated public func italic() -> SwiftUI::Text { _suiUnimplemented("SwiftUICore.Text.italic()") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   nonisolated public func italic(_ isActive: Swift::Bool) -> SwiftUI::Text { _suiUnimplemented("SwiftUICore.Text.italic(_:)") }
   @available(iOS 16.4, macOS 13.3, tvOS 16.4, watchOS 9.4, *)
@@ -17087,8 +17082,10 @@ extension SwiftUI::Text {
   nonisolated public func underline(_ isActive: Swift::Bool = true, color: SwiftUI::Color? = nil) -> SwiftUI::Text { _suiUnimplemented("SwiftUICore.Text.underline(_:color:)") }
   @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
   nonisolated public func underline(_ isActive: Swift::Bool = true, pattern: SwiftUI::Text.LineStyle.Pattern, color: SwiftUI::Color? = nil) -> SwiftUI::Text { _suiUnimplemented("SwiftUICore.Text.underline(_:pattern:color:)") }
-  nonisolated public func kerning(_ kerning: CoreGraphics::CGFloat) -> SwiftUI::Text { _suiUnimplemented("SwiftUICore.Text.kerning(_:)") }
-  nonisolated public func tracking(_ tracking: CoreGraphics::CGFloat) -> SwiftUI::Text { _suiUnimplemented("SwiftUICore.Text.tracking(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   nonisolated public func baselineOffset(_ baselineOffset: CoreGraphics::CGFloat) -> SwiftUI::Text { _suiUnimplemented("SwiftUICore.Text.baselineOffset(_:)") }
   nonisolated public func _stylisticAlternative(_ alternative: SwiftUI::Font._StylisticAlternative) -> SwiftUI::Text { _suiUnimplemented("SwiftUICore.Text._stylisticAlternative(_:)") }
 }
@@ -18088,14 +18085,15 @@ extension SwiftUI::EnvironmentValues {
   public var cgColor: CoreGraphics::CGColor? {
     get { _suiUnimplemented("SwiftUICore.Color.cgColor") }
   }
-  public func hash(into hasher: inout Swift::Hasher) { _suiUnimplemented("SwiftUICore.Color.hash(into:)") }
-  public static func == (lhs: SwiftUI::Color, rhs: SwiftUI::Color) -> Swift::Bool { _suiUnimplemented("SwiftUICore.Color.==(lhs:rhs:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   public var description: Swift::String {
     get { _suiUnimplemented("SwiftUICore.Color.description") }
   }
-  public var hashValue: Swift::Int {
-    get { _suiUnimplemented("SwiftUICore.Color.hashValue") }
-  }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
 }
 @available(iOS 15.0, macOS 12.0, tvOS 15.0, watchOS 8.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -22220,7 +22218,8 @@ public func saturation(_ amount: Swift::Double) -> Swift.Never { _suiUnimplement
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::Color {
-  public func opacity(_ opacity: Swift::Double) -> SwiftUI::Color { _suiUnimplemented("SwiftUICore.Color.opacity(_:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   @available(iOS 18.0, macOS 15.0, tvOS 18.0, watchOS 11.0, visionOS 2.0, *)
   public func mix(with rhs: SwiftUI::Color, by fraction: Swift::Double, in colorSpace: SwiftUI::Gradient.ColorSpace = .perceptual) -> SwiftUI::Color { _suiUnimplemented("SwiftUICore.Color.mix(with:by:in:)") }
 }
@@ -23582,14 +23581,10 @@ extension SwiftUI::Font {
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::Font {
-  @available(iOS 16.0, macOS 13.0, tvOS 16.0, watchOS 9.0, *)
-  public static func system(size: CoreGraphics::CGFloat, weight: SwiftUI::Font.Weight? = nil, design: SwiftUI::Font.Design? = nil) -> SwiftUI::Font { _suiUnimplemented("SwiftUICore.Font.system(size:weight:design:)") }
-  @available(iOS, introduced: 13.0, deprecated: 100000.0, message: "Use `system(size:weight:design:)` instead.")
-  @available(macOS, introduced: 10.15, deprecated: 100000.0, message: "Use `system(size:weight:design:)` instead.")
-  @available(tvOS, introduced: 13.0, deprecated: 100000.0, message: "Use `system(size:weight:design:)` instead.")
-  @available(watchOS, introduced: 6.0, deprecated: 100000.0, message: "Use `system(size:weight:design:)` instead.")
-  @available(visionOS, introduced: 1.0, deprecated: 100000.0, message: "Use `system(size:weight:design:)` instead.")
-  @_disfavoredOverload public static func system(size: CoreGraphics::CGFloat, weight: SwiftUI::Font.Weight = .regular, design: SwiftUI::Font.Design = .default) -> SwiftUI::Font { _suiUnimplemented("SwiftUICore.Font.system(size:weight:design:)") }
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
+    // port: implemented by the engine (port-impl/implemented.txt); declaration omitted (R6)
+
   public enum Design : Swift::Hashable, Swift::Sendable {
     case `default`
     @available(watchOS 7.0, *)
@@ -26736,7 +26731,7 @@ extension SwiftUI::Axis.Set : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::_PaddingLayout : SwiftUI::Animatable {  // port: synthesized witness for Animatable (R7); Apple implements it with an internal member
-  public var animatableData: Swift.Never { get { _suiUnimplemented("SwiftUICore._PaddingLayout.animatableData") } set { _suiUnimplemented("SwiftUICore._PaddingLayout.animatableData") } }
+  public var animatableData: Swift.Never { get { fatalError("animatableData is not used by the port") } set { fatalError("animatableData is not used by the port") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -28117,7 +28112,7 @@ extension SwiftUI::SemanticRequirement : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::_FrameLayout : SwiftUI::Animatable {  // port: synthesized witness for Animatable (R7); Apple implements it with an internal member
-  public var animatableData: Swift.Never { get { _suiUnimplemented("SwiftUICore._FrameLayout.animatableData") } set { _suiUnimplemented("SwiftUICore._FrameLayout.animatableData") } }
+  public var animatableData: Swift.Never { get { fatalError("animatableData is not used by the port") } set { fatalError("animatableData is not used by the port") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)
@@ -28144,7 +28139,7 @@ extension SwiftUI::_FrameLayout : Swift::Sendable {}
 @_originallyDefinedIn(module: "SwiftUI", tvOS 18.0)
 @_originallyDefinedIn(module: "SwiftUI", watchOS 11.0)
 extension SwiftUI::_FlexFrameLayout : SwiftUI::Animatable {  // port: synthesized witness for Animatable (R7); Apple implements it with an internal member
-  public var animatableData: Swift.Never { get { _suiUnimplemented("SwiftUICore._FlexFrameLayout.animatableData") } set { _suiUnimplemented("SwiftUICore._FlexFrameLayout.animatableData") } }
+  public var animatableData: Swift.Never { get { fatalError("animatableData is not used by the port") } set { fatalError("animatableData is not used by the port") } }
 }
 @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
 @_originallyDefinedIn(module: "SwiftUI", iOS 18.0)

@@ -8,3 +8,17 @@
 SwiftUICore.Edge.Set.init(rawValue:) => self.rawValue = rawValue
 SwiftUICore.HorizontalDirection.Set.init(rawValue:) => self.rawValue = rawValue
 SwiftUICore.VerticalDirection.Set.init(rawValue:) => self.rawValue = rawValue
+
+# Structs whose initializer is synthesised by the compiler: keep the declaration, provide the body.
+SwiftUICore.Gradient.init(stops:) => self.stops = stops
+SwiftUICore.Gradient.Stop.init(color:location:) => self.color = color; self.location = location
+SwiftUICore.Gradient.Stop.==(a:b:) => PortStyleRegistry.pointer(of: a.color) == PortStyleRegistry.pointer(of: b.color) && a.location == b.location
+SwiftUICore.LinearGradient.init(gradient:startPoint:endPoint:) => self.gradient = gradient; self.startPoint = startPoint; self.endPoint = endPoint
+
+# Layout modifier structs: their fields are real storage in the interface; the initialisers and
+# animatable data are what Apple's binary supplied.
+SwiftUICore._FrameLayout.init(width:height:alignment:) => self.width = width; self.height = height; self.alignment = alignment
+SwiftUICore._FrameLayout.animatableData => fatalError("animatableData is not used by the port")
+SwiftUICore._FlexFrameLayout.init(minWidth:idealWidth:maxWidth:minHeight:idealHeight:maxHeight:alignment:) => self.minWidth = minWidth; self.idealWidth = idealWidth; self.maxWidth = maxWidth; self.minHeight = minHeight; self.idealHeight = idealHeight; self.maxHeight = maxHeight; self.alignment = alignment
+SwiftUICore._FlexFrameLayout.animatableData => fatalError("animatableData is not used by the port")
+SwiftUICore._PaddingLayout.animatableData => fatalError("animatableData is not used by the port")

@@ -9,12 +9,67 @@ import SwiftUI
 /// A first screen written in genuine SwiftUI syntax and rendered through Apple's declarations.
 struct PortDemoView: View {
     var body: some View {
-        VStack(spacing: 10) {
-            Text("SwiftUI")
-            Text("rendered from Apple's declarations")
-            Text("Swift -> JNI -> Skia canvas")
+        VStack(spacing: 16) {
+            header
+
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Gradients, shapes, shadows")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                Text("RoundedRectangle, LinearGradient, shadow")
+                    .font(.caption)
+                    .foregroundColor(.white)
+            }
+            .padding(18)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(
+                RoundedRectangle(cornerSize: CGSize(width: 20, height: 20))
+                    .fill(LinearGradient(colors: [.indigo, .pink],
+                                         startPoint: UnitPoint(x: 0, y: 0),
+                                         endPoint: UnitPoint(x: 1, y: 1)))
+            )
+            .shadow(color: .black, radius: 12, x: 0, y: 6)
+
+            HStack(spacing: 12) {
+                stat(value: "128", label: "screens", tint: .green)
+                stat(value: "4.9", label: "rating", tint: .orange)
+            }
         }
-        .padding(24)
+        .padding(20)
+    }
+
+    var header: some View {
+        HStack(spacing: 12) {
+            RoundedRectangle(cornerSize: CGSize(width: 14, height: 14))
+                .fill(Color.blue)
+                .frame(width: 44, height: 44)
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Ported SwiftUI")
+                    .font(.title3)
+                    .fontWeight(.bold)
+                Text("Apple's declarations, Android canvas")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
+            }
+            Spacer()
+        }
+    }
+
+    func stat(value: String, label: String, tint: Color) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(value)
+                .font(.title2)
+                .fontWeight(.semibold)
+            Text(label)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+        .padding(14)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerSize: CGSize(width: 16, height: 16))
+                .fill(tint)
+        )
     }
 }
 

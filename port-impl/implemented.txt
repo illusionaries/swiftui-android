@@ -58,3 +58,76 @@ SwiftUICore.EdgeInsets.inset(by:edges:)
 
 # OptionSet raw-value initializers: omitting Apple's stub lets Swift synthesize the initializer
 # from the stored `rawValue` (which is what satisfies the RawRepresentable witness).
+
+
+# Colours, fonts and their statics: Apple keeps the values in its binary.
+SwiftUICore.Color.red
+SwiftUICore.Color.orange
+SwiftUICore.Color.yellow
+SwiftUICore.Color.green
+SwiftUICore.Color.mint
+SwiftUICore.Color.teal
+SwiftUICore.Color.cyan
+SwiftUICore.Color.blue
+SwiftUICore.Color.indigo
+SwiftUICore.Color.purple
+SwiftUICore.Color.pink
+SwiftUICore.Color.brown
+SwiftUICore.Color.white
+SwiftUICore.Color.gray
+SwiftUICore.Color.black
+SwiftUICore.Color.clear
+SwiftUICore.Color.primary
+SwiftUICore.Color.secondary
+SwiftUICore.Color.init(hue:saturation:brightness:opacity:)
+SwiftUICore.Color.opacity(_:)
+SwiftUICore.Color.==(lhs:rhs:)
+SwiftUICore.Color.hash(into:)
+SwiftUICore.Color.hashValue
+SwiftUICore.Font.largeTitle
+SwiftUICore.Font.title
+SwiftUICore.Font.title2
+SwiftUICore.Font.title3
+SwiftUICore.Font.headline
+SwiftUICore.Font.body
+SwiftUICore.Font.callout
+SwiftUICore.Font.subheadline
+SwiftUICore.Font.footnote
+SwiftUICore.Font.caption
+SwiftUICore.Font.caption2
+SwiftUICore.Font.system(size:weight:design:)
+SwiftUICore.Font.system(_:design:)
+SwiftUICore.Font.weight(_:)
+SwiftUICore.Font.bold()
+SwiftUICore.Font.italic()
+SwiftUICore.Font.monospaced()
+SwiftUICore.Font.==(lhs:rhs:)
+SwiftUICore.Font.hash(into:)
+SwiftUICore.Font.hashValue
+
+# Gradients: storage is real in the interface, only the initialisers were Apple's.
+SwiftUICore.Gradient.init(colors:)
+
+# Font.Weight standard weights (storage is real; the statics were Apple's binary).
+SwiftUICore.Font.Weight.ultraLight
+SwiftUICore.Font.Weight.thin
+SwiftUICore.Font.Weight.light
+SwiftUICore.Font.Weight.regular
+SwiftUICore.Font.Weight.medium
+SwiftUICore.Font.Weight.semibold
+SwiftUICore.Font.Weight.bold
+SwiftUICore.Font.Weight.heavy
+SwiftUICore.Font.Weight.black
+SwiftUICore.Font.Weight.==(a:b:)
+SwiftUICore.Font.Weight.hash(into:)
+SwiftUICore.Font.Weight.hashValue
+
+# Text styling: the values live in Apple's binary; the port stores them in the text value.
+SwiftUICore.Text.font(_:)
+SwiftUICore.Text.fontWeight(_:)
+SwiftUICore.Text.foregroundColor(_:)
+SwiftUICore.Text.foregroundStyle(_:)
+SwiftUICore.Text.bold()
+SwiftUICore.Text.italic()
+SwiftUICore.Text.kerning(_:)
+SwiftUICore.Text.tracking(_:)

@@ -121,6 +121,15 @@ extension ModifiedContent: _PortRenderable where Content: View, Modifier: ViewMo
             return [LayoutNode.padding(insets, child)]
         }
 
+        if let frame = modifier as? _FlexFrameLayout {
+            let spec = FrameSpec(minWidth: frame.minWidth, idealWidth: frame.idealWidth, maxWidth: frame.maxWidth,
+                                 minHeight: frame.minHeight, idealHeight: frame.idealHeight, maxHeight: frame.maxHeight,
+                                 horizontalAlignment: PortAdapters.hMultiplier(frame.alignment.horizontal),
+                                 verticalAlignment: PortAdapters.vMultiplier(frame.alignment.vertical))
+            let child = context.makeNode(content, proposal: proposal)
+            return [LayoutNode.frame(spec, child)]
+        }
+
         if let frame = modifier as? _FrameLayout {
             let spec = FrameSpec(minWidth: frame.width, idealWidth: frame.width, maxWidth: frame.width,
                                  minHeight: frame.height, idealHeight: frame.height, maxHeight: frame.height,
@@ -128,6 +137,75 @@ extension ModifiedContent: _PortRenderable where Content: View, Modifier: ViewMo
                                  verticalAlignment: PortAdapters.vMultiplier(frame.alignment.vertical))
             let child = context.makeNode(content, proposal: proposal)
             return [LayoutNode.frame(spec, child)]
+        }
+
+        // Style-carrying modifiers adjust the environment for their subtree.
+        if let font = modifier as? _EnvironmentKeyWritingModifier<Font?> {
+            return context.withEnvironment { environment in
+                environment.font = font.value.flatMap { PortStyleRegistry.spec(of: $0) }
+            } body: {
+                context.makeNodes(content, proposal: proposal)
+            }
+        }
+
+        if let foreground = modifier as? _EnvironmentKeyWritingModifier<Color?> {
+            return context.withEnvironment { environment in
+                if let color = foreground.value, let rgba = PortStyleRegistry.rgba(of: color) {
+                    environment.foreground = rgba
+                }
+            } body: {
+                context.makeNodes(content, proposal: proposal)
+            }
+        }
+
+        if let weight = modifier as? _EnvironmentKeyWritingModifier<Font.Weight?> {
+            return context.withEnvironment { environment in
+                if let weight = weight.value { environment.fontWeight = PortAdapters.textWeight(weight) }
+            } body: {
+                context.makeNodes(content, proposal: proposal)
+            }
+        }
+
+        // `_OverlayModifier` / `_BackgroundModifier` are generic in the decorating view, so the
+        // decoratee is read through reflection (the port cannot name `Background`).
+        if let background = PortAdapters.child(of: modifier, named: "background", as: (any View).self) {
+            let backdrop = context.makeNode(background, proposal: proposal)
+            let front = context.makeNode(content, proposal: proposal)
+            return [LayoutNode.background(backdrop, front)]
+        }
+
+        if let overlay = PortAdapters.child(of: modifier, named: "overlay", as: (any View).self) {
+            let layer = context.makeNode(overlay, proposal: proposal)
+            let base = context.makeNode(content, proposal: proposal)
+            return [LayoutNode.overlay(layer, base)]
+        }
+
+        // `.clipShape(...)` is generic in the shape, so the shape is read by reflection and
+        // mapped onto the engine's primitives.
+        if let shape = PortAdapters.child(of: modifier, named: "shape", as: (any Shape).self) {
+            let child = context.makeNode(content, proposal: proposal)
+            let measured = child.measure(proposal)
+            let radius: CGFloat
+            switch shape {
+            case let rounded as RoundedRectangle: radius = rounded.cornerSize.width
+            case is Circle: radius = min(measured.width, measured.height) / 2
+            case is Capsule: radius = min(measured.width, measured.height) / 2
+            default: radius = 0
+            }
+            return [LayoutNode(.clip(cornerRadius: radius), children: [child])]
+        }
+
+        if let shadow = modifier as? _ShadowEffect {
+            let rgba = PortStyleRegistry.rgba(of: shadow.color) ?? context.environment.foreground
+            let child = context.makeNode(content, proposal: proposal)
+            return [LayoutNode(.shadow(dx: shadow.offset.width, dy: shadow.offset.height,
+                                       blur: shadow.radius, color: rgba),
+                               children: [child])]
+        }
+
+        if let opacity = modifier as? _OpacityEffect {
+            let child = context.makeNode(content, proposal: proposal)
+            return [LayoutNode(.opacity(opacity.opacity), children: [child])]
         }
 
         // Unknown modifier for now: draw the content unchanged and record the symbol so the gap is
@@ -165,17 +243,33 @@ enum PortAdapters {
     /// `AnyColorBox`), so the first slice renders in the environment's type scale; the
     /// modifier-aware path is the next step in docs/RENDERER.md.
     static func node(for text: Text, environment: PortEnvironment) -> LayoutNode {
-        let string: String
-        switch text.storage {
-        case let .verbatim(value):
-            string = value
-        default:
-            string = ""
-        }
-        let style = TextStyleDescriptor(size: environment.defaultFontSize,
-                                        weight: .regular,
-                                        color: environment.isDark ? .white : RGBAColor(hex: 0x111114))
+        let string = text._portString ?? ""
+        let port = text._portStorage
+        let style = TextStyleDescriptor(size: port?.font?.size ?? environment.font?.size ?? environment.defaultFontSize,
+                                        weight: port?.weight ?? port?.font.map { textWeight($0.weight) } ?? environment.fontWeight,
+                                        color: port?.color ?? environment.foreground)
         return LayoutNode.text(string, style: style)
+    }
+
+    /// Apple's `Font.Weight` is an opaque struct; its standard members are the identity we need.
+    static func textWeight(_ weight: Font.Weight) -> TextStyleDescriptor.Weight {
+        switch weight {
+        case .ultraLight: return .ultraLight
+        case .thin: return .thin
+        case .light: return .light
+        case .medium: return .medium
+        case .semibold: return .semibold
+        case .bold: return .bold
+        case .heavy: return .heavy
+        case .black: return .black
+        default: return .regular
+        }
+    }
+
+    /// Reads a stored property of a generic modifier struct by label (the port cannot name the
+    /// generic parameters `_BackgroundModifier<Background>` and friends introduce).
+    static func child<T>(of value: Any, named label: String, as type: T.Type) -> T? {
+        Mirror(reflecting: value).children.first { $0.label == label }?.value as? T
     }
 
     static func edgeInsets(_ layout: _PaddingLayout) -> EdgeInsetsLike {

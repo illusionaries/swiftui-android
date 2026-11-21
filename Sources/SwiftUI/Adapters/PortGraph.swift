@@ -23,15 +23,27 @@ public struct PortEnvironment: Equatable {
     public var accentColor: RGBAColor = RGBAColor(hex: 0x0A84FF)
     public var displayScale: CGFloat = 1
     public var defaultFontSize: CGFloat = 17
+    /// Set by `.font(...)`; nil means "the default type scale".
+    public var font: PortFontSpec?
+    /// Set by `.foregroundStyle(...)` / `.foregroundColor(...)`.
+    public var foreground: RGBAColor
+    /// Default text weight, raised by `.bold()` / `.fontWeight(...)`.
+    public var fontWeight: TextStyleDescriptor.Weight
 
     public init(isDark: Bool = false,
                 accentColor: RGBAColor = RGBAColor(hex: 0x0A84FF),
                 displayScale: CGFloat = 1,
-                defaultFontSize: CGFloat = 17) {
+                defaultFontSize: CGFloat = 17,
+                font: PortFontSpec? = nil,
+                foreground: RGBAColor? = nil,
+                fontWeight: TextStyleDescriptor.Weight = .regular) {
         self.isDark = isDark
         self.accentColor = accentColor
         self.displayScale = displayScale
         self.defaultFontSize = defaultFontSize
+        self.font = font
+        self.foreground = foreground ?? (isDark ? RGBAColor(hex: 0xF2F2F7) : RGBAColor(hex: 0x111114))
+        self.fontWeight = fontWeight
     }
 }
 
@@ -113,6 +125,15 @@ public final class PortGraphContext {
     public func finish(_ nodes: [LayoutNode]) -> _ViewOutputs {
         results.append(nodes)
         return _ViewOutputs()
+    }
+
+    /// Runs `body` with a tweaked environment (how style modifiers scope their values).
+    public func withEnvironment(_ tweak: (inout PortEnvironment) -> Void,
+                                body: () -> [LayoutNode]) -> [LayoutNode] {
+        let saved = environment
+        tweak(&environment)
+        defer { environment = saved }
+        return body()
     }
 
     public func noteUnimplemented(_ symbol: String) {
